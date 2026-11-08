@@ -219,15 +219,18 @@ with sync_playwright() as p:
         pg.reload(); pg.wait_for_timeout(400)
         before = pg.evaluate("localStorage.getItem('dscanSide')")
         if start: pg.goto(DEV_ORIGIN + start); pg.wait_for_selector('#sidePanel .side-msg.err', timeout=8000); pg.wait_for_timeout(200); s = pg.evaluate(ST)
-        else: s = login(pg)
+        else:
+            try: s = login(pg)
+            except Exception as e:   # the page left for somewhere else (an address CCP's metadata shouldn't have been trusted with)
+                check(False, f"{label}: {code}; instead the page went to {pg.url[:60]!r}"); c.close(); return None
         ok = f'({code})' in s['msg'] and not s['inRow'] and s['rec'] == before and 'tvSsoWho' not in s['ss'] and 'tvSsoRefresh' not in s['ss'] and 'tvSsoPending' not in s['ss'] and s['btn'] and not s['dis']
         check(ok, f"{label}: {code}, nothing saved changes, the button there to try again ({s['msg'][:90]!r})")
         c.close(); return s
     refused('cancelled at EVE', 'SSO-01', deny=True)
-    s = refused('a state this tab did not send', 'SSO-02', start='/?code=madeUpCode0024&state=madeUpForgedState#intel')
+    s = refused('a state this tab did not send', 'SSO-02', start='/?code=madeUpCode0024&state=madeUpForgedState#intel') or {'search': '?', 'hash': '', 'msg': ''}
     check(s['search'] == '' and s['hash'] == '#intel', f"the foreign answer is out of the address, the hash kept ({s['search']!r}, {s['hash']!r})")
     refused('metadata down', 'SSO-03', meta='down')
-    s = refused('an HTML 500 from the token endpoint', 'SSO-03', token='html500')
+    s = refused('an HTML 500 from the token endpoint', 'SSO-03', token='html500') or {'msg': ''}
     check('500' in s['msg'] and 'made-up error page' not in s['msg'], 'the HTML 500: its status, never its body')
     refused('an authorize address that is not CCP\'s', 'SSO-03', auth_ep='https://evil.example/authorize')
     refused('the code expired', 'SSO-05', token='invalid_grant')
