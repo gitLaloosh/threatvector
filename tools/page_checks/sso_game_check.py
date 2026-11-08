@@ -267,7 +267,9 @@ with sync_playwright() as p:
     check(4900 <= nx <= 6100, f'the next check at Expires (5 s after the answer), never sooner ({nx / 1000:.1f} s)')
     n0 = len(LREQ); pg.wait_for_timeout(2500)
     check(len(LREQ) == n0, f'no request before Expires ({len(LREQ) - n0} more in 2.5 s)')
-    pg.evaluate("() => { window.__draws = 0; new MutationObserver((ms) => { for(const m of ms) if(!(m.target.closest && m.target.closest('[data-it-glat]'))) window.__draws++; }).observe(document.querySelector('#intelPanel [data-it-glbox]'), {childList: true, subtree: true, characterData: true}); }")
+    # drawn: a change on screen (the checked time aside), or a forced redraw (itRender(true) skips the page's own compare, LESSON #120)
+    pg.evaluate("() => { window.__draws = 0; new MutationObserver((ms) => { for(const m of ms) if(!(m.target.closest && m.target.closest('[data-it-glat]'))) window.__draws++; }).observe(document.querySelector('#intelPanel [data-it-glbox]'), {childList: true, subtree: true, characterData: true});"
+                " const r = itRender; itRender = function(f){ if(f === true) window.__draws++; return r.apply(this, arguments); }; }")
     pg.wait_for_timeout(4000)
     dr = pg.evaluate("() => window.__draws")
     check(len(LREQ) > n0 and dr == 0, f'an answer that changes nothing draws nothing ({len(LREQ) - n0} answers, {dr} redraws)')
