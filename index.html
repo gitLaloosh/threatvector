@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ZiSJWxMBXvKqMXPFc5YB7X13sfcQeNu1nXnr5a5vTWY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XaW1Vl41sMaKNGK0dDq/G3IOYvpqGDftfhv2wNZph1Q='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -24026,7 +24026,7 @@ async function ssoStart(want, from){
 }
 // The Back-button bug ([stated] 2026-11-07, "stuck in an evaluating login result state"): Back on EVE's page may bring this page back from
 // the browser's back/forward cache as it was when it left (pageshow, persisted). Nothing is checked then, so the press is undone.
-function ssoCameBack(){
+function ssoCameBack(){   // LESSON #150
   if(!sso.leaving && !sso.starting) return;
   const from = sso.from;
   sso.leaving = 0; sso.starting = false; sso.from = '';
@@ -24209,7 +24209,7 @@ function ssoAlsoText(){ const w = ssoWant(); return w.length ? `Also asks for: $
 function ssoPermsHtml(){
   const s = (sso.scp || []).filter(x => SSO_SCOPE_NAMES[x]);
   if(!s.length) return '';
-  return `<div class="sso-perms"><span class="sso-pl">EVE permissions:</span>${ssoTagsHtml(s)}<a href="${escapeHtml(SSO_APPS_URL)}" target="_blank" rel="noopener">Manage on EVE's site ↗</a></div>`;
+  return `<div class="sso-perms"><span class="sso-pl">EVE permissions:</span>${ssoTagsHtml(s)}<a href="${escapeHtml(SSO_APPS_URL)}">Manage on EVE's site ↗</a></div>`;
 }
 function ssoTagsHtml(s){ return s.map(x => `<span class="sso-tag">${escapeHtml(SSO_SCOPE_NAMES[x])}</span>`).join(''); }
 function ssoNoteHtml(){ return sso.note && sso.note.text ? `<div class="status side-msg${itOnHtml(sso.note.err, 'err')}">${escapeHtml(sso.note.text)}</div>` : ''; }
