@@ -248,6 +248,16 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   (`itLookAgain`) on tab shown / focus and, while the setup card shows, every `IT_RESCAN_MS`: nothing while hidden, redrawn only when
   `itFoundKey` changed. A permission taken back while Intel runs: INTEL-02 (`itPermLostText`) with Allow reading in the error line
   (`itAllowNoteHtml`). `intel_folder_check.py` (a stand-in folder whose answers switch, and a stand-in store so a reload restores it).
+- **Intel in one tab at a time** (v2026.11.08.3, build queue 026; Project doc roadmap/intel-one-tab-plan.md): a Web Lock (`IT_LOCK`,
+  `tv-intel`) is held exactly while Intel runs (`itLockTake`, `itLockFree` in `itStop`); the switch asks for it only when free, and
+  another tab's card says "Intel is on in another tab." with **Move Intel here** (`itMoveHere`: the folder permission from the press
+  first, then `steal`); its switch is greyed out (the owner: the button is the only way). The tab that loses the lock stops
+  (`itLockLost`: "Intel moved to another tab.", Move Intel back here). A BroadcastChannel (same name) carries the running tab's mark
+  only when it changes (`itLockState` from `itHeaderSync`), "stopped" and "closed" (pagehide); a tab shown again asks and checks
+  `locks.query()` (a crashed tab). Nothing starts by itself (the owner: "there is a switch for a reason"). No `navigator.locks`:
+  as before. `itR2Fetch` drops a request that waited at the gate for a reader that stopped (LESSON #148). A catch-up after a gap waits
+  a random 0-10 s first (`IT_CATCHUP_JITTER_MS`; not on start, the owner: "Only after a gap"). The map's ResizeObserver redraws on the
+  next frame. `intel_one_tab_check.py`.
 - **The logo** (v2026.11.07.4, build queue 022; Project doc roadmap/logo-header-plan.md; mockup `Claude outputs/logo_header_mockup.html`):
   R37 "Orbit Contact", inline left of the title in `.hero-title-row` (`.hero-brand`, `.hero-logo`, aria-hidden), 1.6em of the title's
   size, its T's top on the title's T's top (`--logo-nudge`, -0.19em / -0.16em under 600 px; re-tune if the title's font or size
