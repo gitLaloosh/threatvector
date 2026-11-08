@@ -12,7 +12,8 @@ window.name, which survives a reload: its storage flags didn't always, here). Ch
     the folder (1)"; never "No Local log"; Allow reading asks from the click itself (the page's activation is live) and then lists the
     characters; reload with "granted": nothing asked, the characters there;
   * reload, "denied": the blocked line and Change…, no Allow reading;
-  * read with no Local log: the real "No Local log in this folder from the last 2 days" text, only then;
+  * read with no Local log: the real "No Local log in this folder from the last 2 days" text, only then (a folder with no chat logs at
+    all counts as read: INTEL-04, and the same text);
   * Intel off, the setup card shown: a Local log added after load is found when the tab is shown again, and within one look-again
     (15 s); while the tab is hidden nothing is read or drawn; with nothing new, nothing is redrawn;
   * Intel on and the permission taken back: INTEL-02 with Allow reading in the Intel card, the profile mark "not working"; Allow
@@ -148,6 +149,12 @@ with sync_playwright() as p:
     s = pg.evaluate(ST)
     check('(INTEL-02)' in s['err'] and s['perm'] == 'prompt' and s['noteAllow'], f"reading starts failing mid-run (NotAllowedError): INTEL-02 with Allow reading ({s['err'][:60]!r})")
     pg.evaluate("() => { __fs.block = false; }")
+    c.close()
+    # ---- a folder with no chat logs at all: read, so step 3 says so (not "Reading the folder…") ----
+    c = ctx_new(); pg = c.new_page(); pg.goto('file://' + HTML); pg.wait_for_function("typeof it !== 'undefined' && it.loaded")
+    pg.click('#tabBtnIntel'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_function("it.perm === 'granted'"); pg.wait_for_timeout(300)
+    s = pg.evaluate(ST)
+    check(s['read'] and 'No Local log in this folder' in s['b3'] and '(INTEL-04)' in s['notes'], f"a folder with no chat logs: read, step 3 says no Local log, INTEL-04 ({s['b3'][:60]!r})")
     c.close()
     # ---- phone ----
     c = ctx_new(390); pg = c.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(400)

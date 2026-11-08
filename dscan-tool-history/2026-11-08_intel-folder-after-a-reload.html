@@ -19,7 +19,7 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 
 <h2>What changed</h2>
 <ul>
-<li><b>Step 1 by what the browser says</b> (<code>it.perm</code>): needs your OK this visit: "Needs your OK this visit." with <b>Allow reading</b> (asks from the click itself) and Change…, and one short line "Pick Allow on every visit to skip this" (the plan's longer line was over the 40-character limit; the full explanation went into Intel's info panel, "The folder after a reload"). Blocked: "The browser is blocking this folder for this site." with Change…. Otherwise as before.</li>
+<li><b>Step 1 by what the browser says</b> (<code>it.perm</code>): needs your OK this visit: "Needs your OK this visit." with <b>Allow reading</b> (asks from the click itself) and Change…, and one short line "Pick Allow on every visit to skip this" (the plan's longer line was over the 40-character limit; the full explanation went into Intel's info panel, under "Reloads"). Blocked: "The browser is blocking this folder for this site." with Change…. Otherwise as before.</li>
 <li><b>Steps 2 and 3 wait</b> while the folder can't be read ("Waiting for the folder (1)"; step 2's saved ticks dimmed), and step 3 says <b>"No Local log in this folder from the last 2 days. In EVE: Settings → Chat → Log Chat to File, then log in again."</b> only after a read that found none.</li>
 <li><b>Looks again by itself</b> while the setup card shows: when the tab is shown again or the window gets focus, and every 15 s while the card can be seen. Nothing is read or drawn while the tab is hidden, and the card is redrawn only when the channels or characters found changed. So logging into EVE after choosing the folder shows up without pressing anything.</li>
 <li><b>While Intel runs:</b> a permission taken back (seen on focus, or when reading fails with NotAllowedError) shows INTEL-02 with <b>Allow reading</b> in the Intel card; the profile mark shows "not working" until it reads again. INTEL-02's text names Chrome's "Allow on every visit".</li>
@@ -29,9 +29,9 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <h2>Checks</h2>
 <ul>
 <li>New <code>intel_folder_check.py</code>: intel_check's made-up folder with switchable answers (prompt, granted, denied; reading that throws NotAllowedError) and a stand-in for Intel's store so a reload restores the folder. It covers choose, reload with each answer, Allow reading from a click, the real "No Local log", the look-again (tab shown, 15 s, nothing while hidden, nothing redrawn without a change), the permission taken back while Intel runs, and 390 px. The stand-in keeps its own flags in <code>window.name</code>: flags kept in the page's storage didn't always survive the check's reloads (the page's own settings did; this was the stand-in only).</li>
-<li>Mutants: MUTANTS_LINE</li>
-<li>CHECKS_LINE</li>
-<li>Page size: SIZE_LINE</li>
+<li>Mutants: 13, all caught: "No Local log" while waiting; step 1 without Allow reading; denied shown as normal; steps 2-3 not waiting; no look-again timer; no look-again when shown; the look-again redrawing every time; the look-again while hidden; Allow reading asked outside a click; the permission not read again; no Allow reading in the error line; the permission kept as granted after reading failed; a folder with no chat logs never counted as read.</li>
+<li>Every check (<code>run_checks.py --auto</code> picked <code>all</code>): 20 lints, the pyfa chain and 81 page checks in 39 min. It caught three things from this change, all fixed and rerun: ERRORS.md not regenerated after INTEL-02's text changed, and <code>intel_place_check</code>'s count of folded headings in Intel's info panel (now 9) and its words-shown limit (the heading is "Reloads"). 0 flaky.</li>
+<li>Page size: 786,782 &rarr; 788,872 bytes gzipped (<code>gzip -9</code>), 11,128 bytes under the 800 KB line.</li>
 </ul>
 
 <h2>Waiting on the owner's hand test</h2>

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-AFcehmqO9DB1F+taj1QGq4Pc4WZs6eCX96v4AkpbwCo='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-+nZDVMEG4oiIE1RLaeeyDqCGfulDmp78bNtg4PQl2OA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3048,7 +3048,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.08.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.08.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3446,7 +3446,7 @@ const CARD_INFO = {
   "**Start:** in EVE, Settings → Chat → Log Chat to File. Here: choose the Chatlogs folder, tick your intel channels, then turn on the switch beside the gear (amber while Intel is off).",
   "**{card:itnear}:** systems with reports or kills within its range under the gear, nearest first. An amber edge means within your alert range: the sound, the notification and the amber “N near” on your profile, from any tab.",
   "**{card:itfeed}:** every report and kill as it comes in.",
-  "[The folder after a reload] Chrome asks again for a folder chosen on an earlier visit. Its box offers Allow this time (for this visit only; Chrome may also take it back while the tab is in the background, which stops Intel reading), Allow on every visit (no more questions) and Don't allow. Until you answer, step 1 shows Allow reading and steps 2 and 3 wait for the folder.",
+  "[Reloads] Chrome asks again for a folder chosen on an earlier visit. Its box offers Allow this time (for this visit only; Chrome may also take it back while the tab is in the background, which stops Intel reading), Allow on every visit (no more questions) and Don't allow. Until you answer, step 1 shows Allow reading and steps 2 and 3 wait for the folder.",
   "[How a line is read] Systems, ship names (English or Chinese), counts (+5, x2) and words like clr and nv; the rest is looked up on ESI as pilot names and coloured by your {card:side}. One word typed by hand is a pilot only in the name's own capitals, and report words like linked, drag, hot or kill only when dragged in from chat. A word it can't place stays plain text, never guessed. A report about the ESS tags the system in {card:itnear}: white when someone is at it, red when they're linked to it; a bubble that isn't a gate camp is a tag too. When a line names two systems, they're placed where the line says they are (“on Y gate”, “→ Y”), else in the one within range, else the nearer; the other shows as a note. The copy button on a line copies its shape, names replaced, to report a line read wrong.",
   "[Gates and camps] A short name before “gate” (“T5Z gate”, “MOG gate”) is read among the gates of the system the line is in. A report that places them on a gate and says camp, bubble, drag, smartbomb or the gate is hot tags the system in {card:itnear} with a red Camp tag and the gate. Two kills at one gate in the time set, with no such report, tag it in orange (zKillboard places each kill at the nearest stargate). A grey tag is a gate named with no camp words. “toward you”: that gate leads closer to you. Your own shorthands (word = system) go under the gear; 4 or more letters before a system's dash (“ymjg”) read as that system when only one has them.",
   "[Kills] While Intel is on, zKillboard's live feed of every kill (about 20 small requests a minute), kept within the Feed's kill range under the gear (10 jumps unless you change it), no NPC kills. A kill near you shows in {card:itnear} with who was there and alerts like a report within your alert range. A kill's label (or a badge in {card:itnear}) opens it in the {card:fleet} tab: the victim and who killed them; a badge for several kills lists them there to pick from, grouped into fleets: kills that share 2 pilots (1 when a kill had only 1 or 2 attackers) are one fleet, the biggest first; victims never link kills. The line under the title says when a kill was last read.",
@@ -25699,6 +25699,7 @@ async function itScan(){
     if(!byChan.has(fi.chan)) byChan.set(fi.chan, []);
     byChan.get(fi.chan).push(fi);
   }
+  it.read = true; it.perm = 'granted';   // v2026.11.08.2 (025): read, even when nothing in it is a chat log
   if(!any){ it.err = withCode(`No EVE chat logs in “${it.dirName}”. Choose the Chatlogs folder (Documents\\EVE\\logs\\Chatlogs), and in EVE turn on Log Chat to File.`, 'INTEL-04'); return; }
   it.chans = [...byChan.keys()].sort((a, b) => a.localeCompare(b));
   // your characters: from their Local logs (the listener's name, the newest system)

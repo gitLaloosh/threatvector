@@ -34,7 +34,7 @@ system names; you in 1DQ1-A) up to Intel turned on, then, with made-up lines and
     name with a filler word in it is looked up and read as one pilot in its own capitals or dragged in ("T5ZI-S* Tavi from Ash",
     "... Sabre", "... (Sabre)" paired, "tavi from ash*"); other capitals, a '*' inside, a filler at an edge ("Marrek from T5ZI-S"),
     4 words, over 37 characters and names that aren't pilots ("Varro of Ash") as before; one /universe/ids/ batch.
-  * How Intel works: 3 short paragraphs, each with a bold lead, and 8 folded headings (v2026.10.31.5: Gates and camps; v2026.11.02.4:
+  * How Intel works: 3 short paragraphs, each with a bold lead, and 9 folded headings (v2026.10.31.5: Gates and camps; v2026.11.08.2: Reloads; v2026.11.02.4:
     the map), closed; one opens on a click; no
     "slider" or "red row" left; no page errors.
 """
@@ -181,8 +181,8 @@ _tail = r'''
       return [[...b.children].filter(x => x.tagName === 'P').length, b.querySelectorAll(':scope > p b').length, ds.length, ds.filter(d => d.open).length, b.innerText.split(/\\s+/).length - ((b.querySelector('.info-ex') || {}).innerText || '').split(/\\s+/).filter(Boolean).length, b.textContent]; }""")   # v2026.11.07.7: the "See an example" line is a control, not text to read
     pg.evaluate("() => { const s = document.querySelector('#intelPanel .it-head .info-body details.info-more summary'); if(s) s.click(); }"); pg.wait_for_timeout(100)
     op = pg.evaluate("() => [...document.querySelectorAll('#intelPanel .it-head .info-body details.info-more')].map(d => d.open)")
-    check(inf[:4] == [3, 3, 8, 0] and inf[4] < 110 and op[0] and not any(op[1:]),
-          f'How Intel works: 3 short paragraphs (each with a bold lead) and 8 folded headings (v2026.11.02.4: the map), closed ({inf[4]} words shown); one opens on a click {inf[:5]} {op}')
+    check(inf[:4] == [3, 3, 9, 0] and inf[4] < 110 and op[0] and not any(op[1:]),
+          f'How Intel works: 3 short paragraphs (each with a bold lead) and 9 folded headings (v2026.11.02.4: the map; v2026.11.08.2: Reloads), closed ({inf[4]} words shown); one opens on a click {inf[:5]} {op}')
     check('slider' not in inf[5] and 'red row' not in inf[5], 'no "slider" or "red row" left in it')
     check(not errs, f'no page errors {errs[:3]}')
     ie = pg.evaluate("() => [it.err, it.note]")
