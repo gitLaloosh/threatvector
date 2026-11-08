@@ -39,7 +39,10 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <ul>
 <li>New <code>sso_game_check.py</code>: a stand-in for CCP's login (keys made per run) and for ESI's location route (recording each request's headers; Expires, rate-limit headers, 401, 403, 429), the made-up Chatlogs folder kept across the trip to EVE. It covers the defaults, box 3 and its info panel, the scope asked for and read back (array and string), the profile's permissions and Log out, the headers sent, Expires and the slow-down, 429, 401, 403, the renewal (one at a time, the new refresh token kept first, invalid_grant, 429, an HTML 500), the login not being You, the tab without the lock, a duplicated tab, Back from EVE's page (a fresh load and from the cache), Intel after the trip (each case), the other tab's line, the stopped-reading sound and 390 px.</li>
 <li><code>check_request_gates.py</code>: the token, the compatibility date and X-User-Agent only in esiFetch's auth branch, which refuses anything but ESI first; ssoAccess only from esiFetch; a caller with the login must stop on a 401; ssoRenew listed.</li>
-<li>The two checks that count alerts (<code>intel_check</code>, <code>intel_one_tab_check</code>) now start as a player who turned alerts on.</li>
+<li>The three checks that count alerts (<code>intel_check</code>, <code>intel_one_tab_check</code>, <code>alert_sound_check</code>) now start as a player who turned alerts on; alert_sound_check also checks the new default.</li>
+<li>Mutants: 18 on the page, all caught (one needed the check to count forced redraws too); 6 on the request-gate lint, all caught. The "tab without the lock" case has no mutant: the checks run only from Intel's tick, which runs only while the tab holds the lock.</li>
+<li>Every page check (the picker chose all: esiFetch is shared code), 47 min: two failures from this change, both checks' assumptions (the new sound default; a second <code>target="_blank"</code>, now dropped), fixed and rerun; then the served-copy checks: 0 failed.</li>
+<li>Page size: source 801,375 bytes gzipped (<code>gzip -9</code>; no ceiling); served 500,552, 299,448 under the 800,000-byte ceiling.</li>
 </ul>
 
 <h2>Lesson for future models</h2>
