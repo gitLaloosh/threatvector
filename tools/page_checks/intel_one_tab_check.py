@@ -60,7 +60,7 @@ with sync_playwright() as p:
         pg.on('pageerror', lambda e: errs.append(f'{name}: {e}'))
         pg.on('request', lambda r: R2.__setitem__(name, R2[name] + 1) if 'r2z2.zkillboard.com' in r.url else None)
         pg.goto('file://' + HTML)
-        if first: pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.removeItem('dscanIntel'); }", SIDE); pg.reload()
+        if first: pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true})); }", SIDE); pg.reload()   # v2026.11.08.4 (028): a new user's alerts start off; these cases are a player who turned them on
         pg.wait_for_function("typeof it !== 'undefined' && it.loaded")
         setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(400)
         if not pg.is_checked('[data-it-chan="region.intel"]'): pg.check('[data-it-chan="region.intel"]')

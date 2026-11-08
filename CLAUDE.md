@@ -138,8 +138,8 @@ workers: blob:); `<meta name="referrer" content="no-referrer">`. So:
 
 **Log in with EVE** (v2026.11.08.1, build queue 024, SSO Phase 1; Project docs roadmap/sso-phase1-plan.md and roadmap/eve-sso-plan.md;
 LESSON #147): the profile's Pilot section has CCP's black button above the typed name ("or type it"); logged in, the field is the name,
-an "EVE login" tag and Log out. CCP's PKCE recipe, no server: no client secret anywhere, **no scope** at login (a later feature asks
-for its own when it is turned on). So:
+an "EVE login" tag and Log out. CCP's PKCE recipe, no server: no client secret anywhere, **no scope** at login on its own (a feature
+asks for its own when it is turned on; Phase 2 below). So:
 - **The login is optional.** Nothing may require it: typing a pilot, hand-kept Standings and EFT pastes all stay.
 - **The address is cleaned before any request:** `SSO_RET` at the top of the script takes code/state/error out of the address
   (keeping other parameters and the hash) before `gdVersionCheck` or anything else asks anything; `ssoFinish` uses it after start-up.
@@ -147,18 +147,41 @@ for its own when it is turned on). So:
   called only from the functions in `SSO_SITES` in `tools/check_request_gates.py`; the host is written once, `const SSO_HOST`.
   Only JSON answers are read (`ssoJson`; an HTML error page is its status number). The endpoints come from CCP's metadata, never
   hard-coded.
-- **Tokens:** the access token in memory only (Phase 1 sends it nowhere: no Authorization header yet); the refresh token and `{id,
-  name}` in sessionStorage (`tvSsoRefresh`, `tvSsoWho`; `tvSsoPending` for the press), never localStorage. Log out revokes it and clears
-  the pilot. No link to EVE's authorized apps (developers.eveonline.com/authorized-apps): it lists apps with the permissions they hold
-  and a revoke, and a login with none isn't listed (the owner's hand test, 2026-11-08); the first permission (Phase 2) brings the
-  link back. CCP has no logout page for apps: the player stays signed in on EVE's own site, so nothing may promise more. Another tab changing the pilot logs this tab out.
+- **Tokens:** the access token in memory only, sent only to ESI by esiFetch's auth branch (Phase 2); the refresh token and `{id,
+  name}` in sessionStorage (`tvSsoRefresh`, `tvSsoWho`; `tvSsoPending` for the press; `tvSsoTab` since Phase 2), never localStorage.
+  Log out revokes it and clears the pilot. The link to EVE's authorized apps (developers.eveonline.com/authorized-apps, through
+  `leaveAsk`) shows only with a permission held ("EVE permissions:"): a login with none isn't listed there (the owner's hand test,
+  2026-11-08). CCP has no logout page for apps: the player stays signed in on EVE's own site, so nothing may promise more. Another tab changing the pilot logs this tab out.
 - **CCP's button image stays as CCP made it** (DLA 7.2; one of its four images, black large here): hover and focus are drawn on the
   `<button>` around it, never a filter, opacity or resize on the image.
 - **The token is checked** (`ssoVerify`): the JWKS key its kid names, RS256 + RSA or ES256 + P-256 only; iss, aud (the Client ID and
   "EVE Online"), exp, sub `CHARACTER:EVE:<id>`. The Client ID comes from the origin (`SSO_APPS`: threatvector.space, the dev app at
-  http://localhost:8000); any other origin shows the button disabled. Errors SSO-01..05.
+  http://localhost:8000); any other origin shows the button disabled. Errors SSO-01..08 (06-08 Phase 2).
 - **Never a live login in a check:** `tools/page_checks/sso_check.py` serves the page at both origins and answers for CCP with keys
   made per run; made-up tokens in the `madeUp…` form. The only live login is the owner's hand test on the dev app.
+- **Phase 2, Use my game location** (v2026.11.08.4, build queue 028; Project doc roadmap/sso-phase2-plan.md; LESSON #150): a checkbox in
+  Intel's box 3 (`itGlHtml`, `it.set.gameLoc` in `dscanIntel`). Turned on without the permission it shows Continue to EVE / Cancel;
+  `ssoStart(want, from)` asks for `esi-location.read_location.v1` plus what the tab holds and what's on (`ssoWant`), never a ship scope
+  (the owner: no feature may suggest the page knows the fit you fly unless it reads ship and fit from the game). The switch turns on only
+  when the token's `scp` has it (else SSO-07). So:
+  - **The token goes out only through `esiFetch(url, init, kind, {scope})`:** ESI URLs only, checked before `ssoAccess()`; only there
+    Authorization, `X-Compatibility-Date: ESI_COMPAT` (a date ESI answered, never a future one) and `X-User-Agent` (`ESI_UA`). Outside
+    that branch esiFetch still sends what it is given. `ssoAccess` is called only from esiFetch (check_request_gates).
+  - **Renewal** (`ssoAccess`/`ssoRenew`): lazy, under a minute left, one at a time per tab; refresh_token + Client ID, no secret; a new
+    refresh token saved first; invalid_grant ends the login (SSO-06); 429 waits Retry-After; else 30/60/120 s then 5 min. A duplicated
+    tab (same `tvSsoTab` answered on the `tv-sso` channel) drops its copy without revoking.
+  - **The checks** (`itGameLoc`): on Intel's tick only, in the tab holding Intel's lock, while it runs, when the login is Intel's You;
+    never before `Expires` (5 s floor), twice as long under 25% of the group's tokens, Retry-After on 420/429; 401 stops it for good
+    (SSO-08), 403 turns it off (SSO-07). Newer wins (`itMySys` = `itGlSys` or the log's, `it.me.logAt`); amber when they differ; kept in
+    memory only (DLA 9.5); redrawn only when `itGlKey` changes (the checked time is its own span).
+  - **The trip to EVE:** `sso.starting` / `sso.leaving` (never `busy`, which is only the return being checked); `pageshow` persisted
+    undoes it ("nothing changed"); a normal load drops `tvSsoPending`. `intelWasOn` in the pending entry restarts Intel after the return
+    (Authorize or Cancel), never otherwise; a folder needing a click shows Allow reading, which then starts it; sound on adds "Click
+    anywhere…" (`IT_WAKE_NOTE`). Other tabs say "Intel is paused while the other tab logs in with EVE." (`why: 'away'`, cleared by
+    `{back: true}` or the tab running again).
+  - **Intel's alerts start unchecked** for someone with no saved settings (`itDefaults`; saved values kept). Checks that test alerts seed
+    `{sound: true, notify: true}`. **Intel stopped reading** (`itLostSound`): one built-in sound once per stop, sound on only.
+  - Checked by `tools/page_checks/sso_game_check.py` (stand-in SSO and ESI location; never live).
 
 **My Ship** (v2026.10.14.33, `roadmap/my-ship-plan.md`): the user's own fit, saved in
 the browser (`localStorage` `dscanMyShip`: EFT text, module states, the switch; never the

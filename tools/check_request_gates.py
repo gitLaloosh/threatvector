@@ -28,8 +28,12 @@ limits errors rather than speed. A new ESI call still has to be listed.
     named in code only by functions in SSO_SITES. Comments don't count.
   * v2026.11.08.1 (build queue 024, SSO Phase 1): ssoFetch is the one fetch() to CCP's login: it refuses an address outside
     SSO_HOST before its fetch() and sends without cookies; it is called only from SSO_SITES; the host is written only in the
-    `const SSO_HOST` line. Phase 2 (TODO, when the code exists): esiFetch adds Authorization only for ${ESI} URLs; a 401 from ESI
-    ends that feature's calls (no esiFetch retried in a loop that ignores the status).
+    `const SSO_HOST` line.
+  * v2026.11.08.4 (build queue 028, SSO Phase 2): esiFetch's auth branch (`if(auth){ ... }`, its 4th argument {scope}) is the only
+    place a token goes out: it refuses an address that isn't ${ESI}/ before ssoAccess(), and only there are Authorization,
+    X-Compatibility-Date and X-User-Agent written; outside that branch esiFetch still sends what it was given. ssoAccess is called
+    only from esiFetch. A function that calls esiFetch with the login handles 401 by stopping (`status === 401` and a stop flag),
+    so a refused login is never asked again in a loop. ssoRenew joins SSO_SITES (the renewal).
   * v2026.11.04.4 (build queue 012, the lookup budgets): esiFetch is the page's one fetch() to ESI. It sends the request
     it is given as it is (fetch(url, init): no added headers, no cache-busting) and only reads the answer. Every
     esiFetch(...) call names ${ESI}, sits in a function listed in ESI_SITES, and says which kind of lookup it is (a key of
@@ -49,9 +53,13 @@ SITES = {
 }
 # function -> its esiFetch calls (v2026.11.04.4; before, each of these had its own fetch() to ESI)
 ESI_SITES = {'resolveNamesToIds', 'getType', 'getGroup', 'resolveIdsToNames', 'fetchKillmail',
-    'getOrg', 'saAffiliation', 'paAffEsi', 'itSecFetch', 'itGateDest', 'gdServerVersion', 'esiDownCheck'}   # v2026.11.06.6: esiDownCheck (ESI /status/ once a minute only while ESI is down, build queue 015)   # v2026.11.04.3: gdServerVersion (ESI /status/ once per load: item data after a patch); v2026.10.31.5: itGateDest (a stargate's destination); v2026.10.29.5: itCheckBuild (ESI /status/) removed
+    'getOrg', 'saAffiliation', 'paAffEsi', 'itSecFetch', 'itGateDest', 'gdServerVersion', 'esiDownCheck',
+    'itGameLoc'}   # v2026.11.08.4 (028): Use my game location, with the login   # v2026.11.06.6: esiDownCheck (ESI /status/ once a minute only while ESI is down, build queue 015)   # v2026.11.04.3: gdServerVersion (ESI /status/ once per load: item data after a patch); v2026.10.31.5: itGateDest (a stargate's destination); v2026.10.29.5: itCheckBuild (ESI /status/) removed
 HOST_RX = {'zkb': r'\$\{ZKB\}|zkillboard\.com/api', 'r2z2': r'\$\{IT_R2Z2\}|r2z2\.zkillboard\.com', 'esi': r'\$\{ESI\}|esi\.evetech\.net'}
 problems = []
+def code_only(s):   # the script with // and /* */ comments blanked (same length, so positions and lines still match)
+    out = re.sub(r'/\*.*?\*/', lambda m: re.sub(r'[^\n]', ' ', m.group(0)), s, flags=re.S)
+    return re.sub(r'(^|[^:\\\'"`])//[^\n]*', lambda m: m.group(1) + ' ' * (len(m.group(0)) - len(m.group(1))), out)
 
 def func_spans(s):
     starts = [(m.start(), m.group(1)) for m in re.finditer(r'^\s*(?:async\s+)?function\s+(\w+)\s*\(', s, re.M)]
@@ -98,7 +106,7 @@ for fn in SITES:
 mk = re.search(r'const ESI_KINDS = \{([^}]*)\}', src)
 KINDS = set(re.findall(r'(\w+):', mk.group(1))) if mk else set()
 if not KINDS: problems.append('ESI_KINDS not found (the kinds of ESI lookup the budgets panel counts)')
-esi_seen = set()
+esi_seen, auth_callers = set(), set()
 for m in re.finditer(r'(?<![\w.$])esiFetch\(', src):
     if src[:m.start()].rstrip().endswith('function'): continue
     fn = enclosing(starts, m.start()); esi_seen.add(fn)
@@ -109,11 +117,36 @@ for m in re.finditer(r'(?<![\w.$])esiFetch\(', src):
     args = src[m.end():i - 1]
     if fn not in ESI_SITES: problems.append(f'index.html:{line(src, m.start())}: esiFetch() in {fn}(), which is not in ESI_SITES: list it')
     if not re.match(r'\s*`\$\{ESI\}', args): problems.append(f'index.html:{line(src, m.start())}: esiFetch() for something other than ${{ESI}}: {args[:60]!r}')
-    kk = re.search(r",\s*'(\w+)'\s*$", args)
+    kk = re.search(r",\s*'(\w+)'\s*(?:,\s*\{[^{}]*\})?\s*$", args)   # the kind; 028: then {scope} for a call with the login
+    if re.search(r",\s*'\w+'\s*,\s*\{", args):
+        auth_callers.add(fn)
     if not kk or kk.group(1) not in KINDS: problems.append(f'index.html:{line(src, m.start())}: esiFetch() without a kind of lookup from ESI_KINDS (the last argument): {args[-40:]!r}')
 for fn in ESI_SITES - esi_seen: problems.append(f'{fn}() is in ESI_SITES but has no esiFetch() any more: update the list')
 eb = body(src, 'esiFetch') or ''
-if re.search(r'headers|cache|Date\.now\(\)\s*\+|[?&]_=', eb.split('esiNote')[0]): problems.append('esiFetch changes the request (headers or cache-busting); it must send what it was given')
+# v2026.11.08.4 (028): the auth branch, cut out; the rest still sends what it was given
+_ai = eb.find('if(auth){'); _auth = ''
+if _ai >= 0:
+    _d, _j = 0, eb.index('{', _ai)
+    for _k in range(_j, len(eb)):
+        _d += {'{': 1, '}': -1}.get(eb[_k], 0)
+        if _d == 0: break
+    _auth, eb = eb[_ai:_k + 1], eb[:_ai] + eb[_k + 1:]
+if re.search(r'headers|cache|Date\.now\(\)\s*\+|[?&]_=', eb.split('esiNote')[0]): problems.append('esiFetch changes the request (headers or cache-busting) outside its auth branch; it must send what it was given')
+if _auth:
+    _g, _a = _auth.find("!url.startsWith(ESI + '/')"), _auth.find('ssoAccess()')
+    if _g < 0 or _a < 0 or _g > _a: problems.append("esiFetch's auth branch no longer refuses an address outside ${ESI}/ before ssoAccess()")
+    if 'Authorization' not in _auth: problems.append("esiFetch's auth branch no longer sends the token")
+for _h in ('X-Compatibility-Date', 'X-User-Agent'):
+    for _m in re.finditer(re.escape(_h), code_only(src)):
+        if not _auth or enclosing(starts, _m.start()) != 'esiFetch' or not (src.find(_auth) <= _m.start() <= src.find(_auth) + len(_auth)):
+            problems.append(f'index.html:{line(src, _m.start())}: {_h} outside esiFetch\'s auth branch')
+for _m in re.finditer(r'(?<![\w.$])ssoAccess\(', code_only(src)):
+    if src[:_m.start()].rstrip().endswith('function'): continue
+    _fn = enclosing(starts, _m.start())
+    if _fn != 'esiFetch': problems.append(f'index.html:{line(src, _m.start())}: ssoAccess() in {_fn}(): only esiFetch renews the login')
+for _fn in sorted(auth_callers):
+    _b = body(src, _fn) or ''
+    if not re.search(r'status === 401\)\s*\{[^}]*\.stop\s*=', _b): problems.append(f'{_fn}() calls esiFetch with the login but doesn\'t stop on a 401 (SSO-08: never asked again)')
 
 # zKillboard API: only through the queue
 callers = [enclosing(starts, m.start()) for m in re.finditer(r'(?<![\w.$])zkbFetchNow\(', src) if not src[:m.start()].rstrip().endswith('function')]
@@ -169,10 +202,7 @@ for m in re.finditer(r'setTimeout\([^;\n]*\bi\s*\*[^;\n]*', src):
 # v2026.11.08.1 (build queue 024, SSO Phase 1): the functions that call ssoFetch (the metadata, the token, the keys, the revoke).
 # The host itself is written once, in `const SSO_HOST = ...` (with SSO_ISS, the token's issuer names), and ssoFetch refuses any
 # address that doesn't start with it, before its fetch().
-SSO_SITES = {'ssoMeta', 'ssoFinish', 'ssoVerify', 'ssoRevoke'}
-def code_only(s):   # the script with // and /* */ comments blanked (same length, so positions and lines still match)
-    out = re.sub(r'/\*.*?\*/', lambda m: re.sub(r'[^\n]', ' ', m.group(0)), s, flags=re.S)
-    return re.sub(r'(^|[^:\\\'"`])//[^\n]*', lambda m: m.group(1) + ' ' * (len(m.group(0)) - len(m.group(1))), out)
+SSO_SITES = {'ssoMeta', 'ssoFinish', 'ssoVerify', 'ssoRevoke', 'ssoRenew'}   # v2026.11.08.4 (028): ssoRenew, the renewal
 _sc = re.search(r'<script\b[^>]*>(.*?)</script', src, re.S)
 _off = _sc.start(1) if _sc else 0
 code = (' ' * _off + code_only(_sc.group(1))) if _sc else ''
