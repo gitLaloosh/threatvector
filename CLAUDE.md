@@ -140,9 +140,10 @@ for its own when it is turned on). So:
   Only JSON answers are read (`ssoJson`; an HTML error page is its status number). The endpoints come from CCP's metadata, never
   hard-coded.
 - **Tokens:** the access token in memory only (Phase 1 sends it nowhere: no Authorization header yet); the refresh token and `{id,
-  name}` in sessionStorage (`tvSsoRefresh`, `tvSsoWho`; `tvSsoPending` for the press), never localStorage. Log out revokes it, clears
-  the pilot and links EVE's page of authorized apps (`SSO_APPS_PAGE`, confirmed by the owner's hand test). CCP has no logout page for
-  apps: the player stays signed in on EVE's own site, so nothing may promise more. Another tab changing the pilot logs this tab out.
+  name}` in sessionStorage (`tvSsoRefresh`, `tvSsoWho`; `tvSsoPending` for the press), never localStorage. Log out revokes it and clears
+  the pilot. No link to EVE's authorized apps (developers.eveonline.com/authorized-apps): it lists apps with the permissions they hold
+  and a revoke, and a login with none isn't listed (the owner's hand test, 2026-11-08); the first permission (Phase 2) brings the
+  link back. CCP has no logout page for apps: the player stays signed in on EVE's own site, so nothing may promise more. Another tab changing the pilot logs this tab out.
 - **CCP's button image stays as CCP made it** (DLA 7.2; one of its four images, black large here): hover and focus are drawn on the
   `<button>` around it, never a filter, opacity or resize on the image.
 - **The token is checked** (`ssoVerify`): the JWKS key its kid names, RS256 + RSA or ES256 + P-256 only; iss, aud (the Client ID and

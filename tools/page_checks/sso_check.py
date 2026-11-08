@@ -16,8 +16,8 @@ Made-up pilot (sa_mocks.py) and made-up tokens only. Checks:
     "Logged in for this tab"; the refresh token in sessionStorage only, the access token in neither storage; the profile shows the pilot;
   * reload: still logged in, nothing asked of CCP; a new tab: the button again, the pilot as saved;
   * another tab clears the pilot: this tab is logged out with its line, the refresh token revoked;
-  * Log out: revoke gets the refresh token, its hint and the Client ID; the keys go; the pilot is cleared; the authorized-apps link,
-    which asks first (leaveAsk, "EVE's community site");
+  * Log out: revoke gets the refresh token, its hint and the Client ID; the keys go; the pilot is cleared; its one line, no
+    authorized-apps link (a login with no permissions isn't listed on CCP's page, the owner's hand test 2026-11-08);
   * CCP's image is left as it is: hover draws an outline on the button, no filter on the image;
   * each refusal shows its code and changes nothing saved: cancelled (SSO-01), a state this tab didn't send / not the pending one / too old / used
     twice (SSO-02), metadata down, an HTML 500 from the token endpoint, an address that isn't CCP's (SSO-03), the token checks
@@ -202,12 +202,8 @@ with sync_playwright() as p:
           f"Log out: revoke gets the refresh token, its hint and the Client ID {rv[0][2] if rv else None}")
     check(not s['inRow'] and s['btn'] and s['field'] and s['pilot'] is None and json.loads(s['rec'])['pilot'] is None and 'tvSsoWho' not in s['ss'] and 'tvSsoRefresh' not in s['ss'] and not s['mem'],
           'Log out: the keys and the token go, the pilot is cleared, the logged-out layout')
-    check('Logged out of this tab, and Your pilot is cleared' in s['msg'] and s['apps'] == 'https://community.eveonline.com/support/third-party-applications',
-          f"Log out: its line and the authorized-apps link ({s['apps']})")
-    pg.click('#sidePanel .side-msg a'); pg.wait_for_timeout(200)
-    lv = pg.evaluate("() => (document.getElementById('leaveBox') || {}).textContent || ''")
-    check("Open EVE's community site?" in lv, f"the link asks first, as every link out of the site does ({lv[:40]!r})")
-    pg.keyboard.press('Escape')
+    check(s['msg'].strip() == 'Logged out of this tab, and Your pilot is cleared.' and not s['apps'],
+          f"Log out: its line, and no authorized-apps link (a login with no permissions isn't listed there) ({s['msg']!r})")
     pg.close(); c.close()
 
     # ---- refusals: each its code, nothing saved changes ----

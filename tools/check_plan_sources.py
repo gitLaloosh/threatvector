@@ -19,6 +19,8 @@ The UNVERIFIED rows are listed, so the build session can put each one in the pul
 import re, sys
 
 SECONDARY = re.compile(r'wiki|forum|reddit|blog|stackoverflow|medium\.com|crate|npm|pypi|github\.com/(?!esi|ccp)', re.I)
+# the providers' own sites are primary even where the path says blog or forum (CCP's developer blog, docs, zKillboard, pyfa's repo)
+PRIMARY = re.compile(r'https?://[^\s/]*(eveonline\.com|evetech\.net|zkillboard\.com)|github\.com/pyfa-org', re.I)
 DATE = re.compile(r'\b20\d\d-\d\d-\d\d\b')
 SOURCE = re.compile(r'https?://|`[^`]*[/.][^`]*`|\blive (answer|JWKS|response)\b|\bthe owner\b|claude/|tools/|\.py\b|\.md\b', re.I)
 VAGUE = re.compile(r'\bfrom memory\b|\bI (believe|think)\b|\bprobably (is|uses|returns)\b', re.I)
@@ -46,6 +48,7 @@ def check(path):
         if not SOURCE.search(' '.join(cells[1:])): bad.append(f'{fact[:60]!r}: no source (a URL, a file, or a named live answer)')
         if not DATE.search(r): bad.append(f'{fact[:60]!r}: no date checked (YYYY-MM-DD)')
         src = ' '.join(cells[1:2])
+        if PRIMARY.search(src): continue
         if SECONDARY.search(src) and not re.search(r'secondary', r, re.I): bad.append(f'{fact[:60]!r}: a secondary source not labelled "secondary"')
         if SECONDARY.search(src) and not re.search(r'https?://(?![^ ]*(wiki|forum|reddit|blog))', src) and not re.search(r'docs\.|live|primary|the owner', r, re.I):
             bad.append(f'{fact[:60]!r}: only a secondary source; add the provider\'s own, or mark it UNVERIFIED')
@@ -67,7 +70,9 @@ BAD = [('no Sources section', "# p\nThe sub is EVE:CHARACTER:id.\n"),
        ('no date', GOOD.replace('2026-11-08', 'recently')),
        ('secondary only', GOOD.replace('https://docs.esi.evetech.net/docs/sso/validating_eve_jwt.html', 'https://wiki.eveuniversity.org/SSO')),
        ('UNVERIFIED with no way to confirm', GOOD.replace("**UNVERIFIED**: the owner's hand test", 'UNVERIFIED')),
-       ('from memory', GOOD + "\nThe revoke address is /v2/oauth/revoke, from memory.\n")]
+       ('from memory', GOOD + "\nThe revoke address is /v2/oauth/revoke, from memory.\n"),
+       ('a wiki is still secondary', GOOD.replace('https://docs.esi.evetech.net/docs/sso/validating_eve_jwt.html', 'https://wiki.eveuniversity.org/Authorized_apps'))]
+GOOD2 = GOOD.replace('https://docs.esi.evetech.net/docs/sso/validating_eve_jwt.html', 'https://developers.eveonline.com/blog/some-post')   # CCP's own blog is primary
 
 
 def self_test():
@@ -76,6 +81,7 @@ def self_test():
     def run(text):
         p = os.path.join(d, 'p.md'); open(p, 'w').write(text); return check(p)[0]
     if run(GOOD): fails.append(f'a good plan refused: {run(GOOD)}')
+    if run(GOOD2): fails.append(f'CCP\'s own blog refused as secondary: {run(GOOD2)}')
     for name, text in BAD:
         if not run(text): fails.append(f'{name}: not refused')
     for f in fails: print('PLAN SOURCES SELF-TEST', f)
