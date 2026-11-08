@@ -101,7 +101,7 @@ Before changing any calculation:
      reply (Summary + Description as above) for him to commit himself (the owner, 2026-10-30).
    After the last edit to index.html: `python3 -I tools/csp_hash.py --write` (v2026.11.07.3; the CSP names the script by hash).
 6. Report both of index.html's gzipped sizes in every delivery: the source's (`gzip -9 -c index.html | wc -c`) and the
-   served copy's (`tools/publish.py` prints it). The 800 KB ceiling (800,000 bytes) applies to the served copy since
+   served copy's (`tools/publish.py --size` prints both, without copying the site). The 800 KB ceiling (800,000 bytes) applies to the served copy since
    build queue 027 (the owner, 2026-11-08: "confirmed"; first "At 800 KB", 2026-11-03): past it, stop and ask the owner
    before delivering. The source's size has no ceiling.
    Before the pull request: `python3 -I tools/run_checks.py --served` (the served copy through SERVED_CHECKS).
