@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-+nZDVMEG4oiIE1RLaeeyDqCGfulDmp78bNtg4PQl2OA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HHFXQaqtT2P+pGnhtK+JlkkoDB6fvLtbIs/XZTnmjFA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2588,7 +2588,7 @@
   .it-box{border:1px solid var(--line); border-radius:8px; padding:12px; min-width:0;}
   /* v2026.11.08.2 (025): steps 2-3 while the folder can't be read; step 1's two buttons */
   .it-box.it-wait label{opacity:.5;} .it-btns{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
-  @media (max-width:599px){ .it-btns button, .it-box button[data-it-act="allow"]{min-height:44px;} }
+  @media (max-width:599px){ .it-btns button, .it-box button[data-it-act="allow"], #itNotes button[data-it-act="move"]{min-height:44px;} }
   .it-box .k{font:600 var(--label-size) var(--sans); letter-spacing:var(--label-tracking); text-transform:uppercase; color:var(--text-dim); margin-bottom:6px;}
   .it-box .v{font:600 13px var(--sans); color:var(--heading); overflow-wrap:anywhere;} .it-box .c{font:400 12px var(--sans); color:var(--text-dim); margin-top:3px;}
   .it-box label{display:flex; gap:7px; align-items:center; font:400 12.5px var(--sans); color:var(--text); margin:4px 0; min-width:0;}
@@ -3048,7 +3048,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.08.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.08.3</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3446,7 +3446,7 @@ const CARD_INFO = {
   "**Start:** in EVE, Settings → Chat → Log Chat to File. Here: choose the Chatlogs folder, tick your intel channels, then turn on the switch beside the gear (amber while Intel is off).",
   "**{card:itnear}:** systems with reports or kills within its range under the gear, nearest first. An amber edge means within your alert range: the sound, the notification and the amber “N near” on your profile, from any tab.",
   "**{card:itfeed}:** every report and kill as it comes in.",
-  "[Reloads] Chrome asks again for a folder chosen on an earlier visit. Its box offers Allow this time (for this visit only; Chrome may also take it back while the tab is in the background, which stops Intel reading), Allow on every visit (no more questions) and Don't allow. Until you answer, step 1 shows Allow reading and steps 2 and 3 wait for the folder.",
+  "[Reloads] Chrome asks again for a folder chosen on an earlier visit. Its box offers Allow this time (for this visit only; Chrome may also take it back while the tab is in the background, which stops Intel reading), Allow on every visit (no more questions) and Don't allow. Until you answer, step 1 shows Allow reading and steps 2 and 3 wait for the folder. Intel runs in one tab at a time: another tab shows it's on and can take it over with Move Intel here.",
   "[How a line is read] Systems, ship names (English or Chinese), counts (+5, x2) and words like clr and nv; the rest is looked up on ESI as pilot names and coloured by your {card:side}. One word typed by hand is a pilot only in the name's own capitals, and report words like linked, drag, hot or kill only when dragged in from chat. A word it can't place stays plain text, never guessed. A report about the ESS tags the system in {card:itnear}: white when someone is at it, red when they're linked to it; a bubble that isn't a gate camp is a tag too. When a line names two systems, they're placed where the line says they are (“on Y gate”, “→ Y”), else in the one within range, else the nearer; the other shows as a note. The copy button on a line copies its shape, names replaced, to report a line read wrong.",
   "[Gates and camps] A short name before “gate” (“T5Z gate”, “MOG gate”) is read among the gates of the system the line is in. A report that places them on a gate and says camp, bubble, drag, smartbomb or the gate is hot tags the system in {card:itnear} with a red Camp tag and the gate. Two kills at one gate in the time set, with no such report, tag it in orange (zKillboard places each kill at the nearest stargate). A grey tag is a gate named with no camp words. “toward you”: that gate leads closer to you. Your own shorthands (word = system) go under the gear; 4 or more letters before a system's dash (“ymjg”) read as that system when only one has them.",
   "[Kills] While Intel is on, zKillboard's live feed of every kill (about 20 small requests a minute), kept within the Feed's kill range under the gear (10 jumps unless you change it), no NPC kills. A kill near you shows in {card:itnear} with who was there and alerts like a report within your alert range. A kill's label (or a badge in {card:itnear}) opens it in the {card:fleet} tab: the victim and who killed them; a badge for several kills lists them there to pick from, grouped into fleets: kills that share 2 pilots (1 when a kill had only 1 or 2 attackers) are one fleet, the biggest first; victims never link kills. The line under the title says when a kill was last read.",
@@ -25146,6 +25146,7 @@ const IT_KILL_BEHIND_MS = 2 * 60000;         // v2026.10.29.8: a kill read live 
 // RIFT does (its source, ZkillboardR2Z2Observer): start at sequence.json; on a 404 wait 6 s and ask for the same number; after
 // a minute with no kill re-read sequence.json: past the number being waited on, that number is a gap (read past it); not past
 // it, the 404 was "too soon" (keep waiting). LESSON #102
+const IT_CATCHUP_JITTER_MS = 10000;          // v2026.11.08.3 (026): catch-up after a gap waits a random 0-10 s first
 const IT_KILL_RESEQ_MS = 60000;              // a minute with no kill read while live: sequence.json read again (RIFT: 60 s; zKillboard's developer: 5 min)
 const IT_KILL_SLOW_MS = 5 * 60000;           // no kill read for 5 minutes: the status line says so, in amber
 const IT_FEED_TYPES = [['all', 'All'], ['reports', 'Reports'], ['kills', 'Kills']];
@@ -25166,6 +25167,7 @@ const it = {
   kf: null, kfNote: '', charNames: new Map(), sec: new Map(), secAsk: new Set(), q: '',   // v.99: kills, names on kills, security, the Feed's search
   rawOpen: new Set(),   // v.100: Feed rows showing the line as typed
   nearOpen: new Set(),   // v2026.10.30.1: Near You rows opened (system ids; several at once, the owner)
+  other: false, lockWhy: '', remote: null,   // v2026.11.08.3 (026): another tab runs Intel; why this tab's line shows ('moved' | 'closed' | 'here'); the running tab's mark {s, n}
   fl: [],   // v2026.11.07.1 (build queue 010): the Feed's filter chips, {kind: 'sys'|'corporation'|'alliance'|'ship', id, label}; not kept across reloads
   gateDest: new Map(), gateAsk: new Map()   // v2026.10.31.5: stargate id -> the system it leads to (itGateDest)
 };
@@ -26100,9 +26102,13 @@ function itR2Stop(why){
 }
 function itR2StopErr(){ const x = new Error('stopped'); x.r2stop = true; return x; }
 async function itR2Fetch(path){
+  const kf0 = it.kf;
   const at = await itKillTurn();
   const kf = it.kf;
   if(itR2Stopped()) throw itR2StopErr();
+  // v2026.11.08.3 (026): a request that waited at the gate for a reader that has stopped since (the switch, or Intel moved to another
+  // tab) isn't sent: only the tab running Intel asks R2Z2. LESSON #148
+  if(!it.on || kf !== kf0) return IT_R2_HALT;
   if(kf && kf.halt) return IT_R2_HALT;
   // the tripwire counts the starts the gate gave out (a busy page can run the code after two turns close together, though the
   // gate spaced them); a request that didn't come through the gate counts as now
@@ -26258,6 +26264,9 @@ async function itKillPump(){   // v2026.10.29.8: R2Z2 read as documented (and as
           if(gen !== it.gen) return;
           if(s >= kf.seq){   // past the one waited on: it was a gap; far behind (a sleeping tab): only the last 240
             if(s + 1 - IT_KILL_BACK > kf.seq) kf.seq = s + 1 - IT_KILL_BACK;
+            // v2026.11.08.3 (026, the owner's "Staggered catch-up", "Only after a gap"): a random 0-10 s first, so browsers on one address
+            // that wake together don't read back at the same moment (each still at most IT_R2_PER_S)
+            kf.waitUntil = Date.now() + Math.random() * IT_CATCHUP_JITTER_MS;
             kf.head = false; break;   // read on to it at the read-back's pace
           }
         }
@@ -26550,7 +26559,7 @@ function itTickerStart(){
 }
 function itTickerStop(){ if(it.ticker){ it.ticker.stop(); it.ticker = null; } }
 function itReady(){ return !!(it.dir && it.set.channels.length); }
-async function itStart(){
+async function itStart(move){   // move (v2026.11.08.3, 026): Move Intel here takes the lock from the tab running Intel
   if(it.on) return;
   if(it.set.sound) itAudioWake();   // v2026.11.01.8: the switch is a press: the first real alert isn't silent
   it.err = ''; it.note = '';
@@ -26565,22 +26574,126 @@ async function itStart(){
     it.perm = p;   // v2026.11.08.2 (025)
     if(p !== 'granted'){ it.err = withCode(`The browser didn't allow reading “${it.dirName}”. Press the slider again and choose Allow on every visit (or Allow this time).`, 'INTEL-02'); itRender(); return; }
   }catch(e){ it.err = withCode(`The page can't read “${it.dirName}” (${e.message}). Choose the folder again under the gear.`, 'INTEL-02'); itRender(); return; }
+  // v2026.11.08.3 (build queue 026): one tab runs Intel. The switch asks only for a free lock; Move Intel here takes it over.
+  if(!(await itLockTake(!!move))){ it.other = true; it.lockWhy = ''; itLockPost({ask: true}); itRender(true); return; }
+  if(it.on){ itLockFree(); return; }   // started meanwhile (a second press)
+  if(move){ it.lockWhy = 'here'; it.other = false; it.remote = null; clearTimeout(itLk.hereT); itLk.hereT = setTimeout(() => { if(it.lockWhy === 'here'){ it.lockWhy = ''; itRender(); } }, IT_LOCK_HERE_MS); }
+  else it.lockWhy = '';
   // the browser asks for notifications only after a press: this one (the slider)
   if(it.set.notify && typeof Notification !== 'undefined' && Notification.permission === 'default'){ try{ Notification.requestPermission().then(() => itRender()).catch(() => {}); }catch(e){} }
   it.on = true; it.gen++; bgPaint();   // v2026.11.04.4: the gauge shows Intel's live kills only while Intel is on
   it.feed = []; it.near = new Map(); it.alerted = new Map(); it.lastLine = 0; it.files = new Map(); it.lastScan = 0;
   it.kf = itKfNew(); it.kfNote = '';   // v.99
   itRender();
-  try{ await itLoadNames(); }catch(e){ it.err = withCode(e.message, e.code || 'INTEL-03'); itStop(); return; }
-  try{ it.lastScan = Date.now(); await itScan(); }catch(e){ it.err = withCode(`The page can't read “${it.dirName}” (${e.message}). Choose the folder again under the gear.`, 'INTEL-02'); itStop(); return; }
+  const gen = it.gen;   // v2026.11.08.3 (026): stopped meanwhile (moved to another tab, or the switch): nothing more starts
+  try{ await itLoadNames(); }catch(e){ if(gen !== it.gen) return; it.err = withCode(e.message, e.code || 'INTEL-03'); itStop(); return; }
+  if(gen !== it.gen) return;
+  try{ it.lastScan = Date.now(); await itScan(); }catch(e){ if(gen !== it.gen) return; it.err = withCode(`The page can't read “${it.dirName}” (${e.message}). Choose the folder again under the gear.`, 'INTEL-02'); itStop(); return; }
+  if(gen !== it.gen) return;
   itTickerStart();
   itTick();
   itKillPump();
 }
-function itStop(){
+function itStop(moved){   // moved (026): another tab took Intel over; it says so itself, so nothing is posted
+  const was = it.on;
   it.on = false; it.gen++; bgPaint();
   itTickerStop();
+  itLockFree();
+  if(was && !moved) itLockPost({on: false, why: 'stopped'});
+  if(it.lockWhy === 'here') it.lockWhy = '';
   itRender();
+}
+// ---- v2026.11.08.3 (build queue 026; Project doc roadmap/intel-one-tab-plan.md): Intel in one tab at a time ----
+// The owner: "we really only want users to utilize a single tab to begin with. multiple tabs complicate things like INTEL requests".
+// Every tab running Intel had its own R2Z2 reader at IT_R2_PER_S (three tabs = zKillboard's 15 a second; LESSON #93) and its own
+// sounds. A Web Lock (IT_LOCK, per origin) is held exactly while Intel runs; the switch asks for it only when free (ifAvailable), and
+// Move Intel here takes it over (steal), from its own press, after the folder permission. The tab that loses it gets AbortError and
+// stops; its in-flight work stops at its next it.gen check. Nothing starts by itself (the owner: "there is a switch for a reason").
+// A BroadcastChannel (same name) carries the running tab's mark (state, count) only when it changes, "stopped" / "closed", and asks;
+// a crashed tab is noticed by locks.query() when a tab is shown. No navigator.locks: Intel runs as before, with no line.
+const IT_LOCK = 'tv-intel', IT_LOCK_HERE_MS = 6000;
+const itLk = {ok: typeof navigator !== 'undefined' && !!navigator.locks && typeof navigator.locks.request === 'function', release: null, bc: null, last: '', hereT: 0};
+function itLockTake(steal){
+  if(!itLk.ok) return Promise.resolve(true);
+  return new Promise((res) => {
+    let held = false;
+    navigator.locks.request(IT_LOCK, steal ? {steal: true} : {ifAvailable: true}, (l) => {
+      if(!l){ res(false); return null; }
+      held = true; res(true);
+      return new Promise((r) => { itLk.release = r; });
+    }).catch((e) => { if(!held){ res(false); return; } if(e && e.name === 'AbortError') itLockLost(); });
+  });
+}
+function itLockFree(){ const r = itLk.release; itLk.release = null; if(r) r(); }
+function itLockLost(){   // the lock was taken over: Move Intel here in another tab
+  itLk.release = null;
+  if(!it.on) return;
+  it.other = true; it.lockWhy = 'moved'; it.remote = null;
+  itStop(true);
+  itRender(true); itSwSync();
+}
+function itLockPost(m){ if(itLk.bc){ try{ itLk.bc.postMessage(m); }catch(e){} } }
+function itLockState(){   // the running tab: its mark to the other tabs, only when it changed (called from itHeaderSync)
+  if(!itLk.bc || !it.on) return;
+  const s = itMarkState(), n = itNearCount(), k = `${s}|${n}`;
+  if(k === itLk.last) return;
+  itLk.last = k; itLockPost({on: true, s, n});
+}
+function itLockHear(m){
+  if(!m || typeof m !== 'object') return;
+  if(m.ask){ if(it.on){ itLk.last = ''; itLockState(); } return; }
+  if(it.on) return;   // this tab runs Intel: another tab's word changes nothing here
+  const before = JSON.stringify([it.other, it.lockWhy, it.remote]);
+  if(m.on === true){
+    const st = ['off', 'clear', 'near', 'in', 'broken'].includes(m.s) ? m.s : 'clear', n = Number.isFinite(m.n) ? m.n : 0;
+    it.other = true; it.remote = {s: st, n};
+    if(it.lockWhy === 'closed') it.lockWhy = '';
+  } else if(m.on === false && it.other){
+    it.other = false; it.remote = null;
+    it.lockWhy = m.why === 'closed' ? 'closed' : '';
+  }
+  if(JSON.stringify([it.other, it.lockWhy, it.remote]) !== before){ itRender(true); itSwSync(); }   // drawn only when it changed (LESSON #120)
+}
+async function itLockCheck(){   // a tab opened or shown again: ask, and see whether a tab still holds Intel (one may have crashed)
+  if(!itLk.ok || !itLk.bc || it.on) return;
+  itLockPost({ask: true});
+  let held = false;
+  try{ held = (await navigator.locks.query()).held.some(l => l.name === IT_LOCK); }catch(e){ return; }
+  if(it.on) return;
+  if(held && !it.other){ it.other = true; it.lockWhy = ''; itRender(true); itSwSync(); }
+  else if(!held && it.other){ it.other = false; it.remote = null; it.lockWhy = 'closed'; itRender(true); itSwSync(); }
+}
+// Move Intel here (its own press): the folder permission first, as the first thing awaited (025), then the lock taken over
+async function itMoveHere(){
+  if(it.on) return;
+  if(it.set.sound) itAudioWake();
+  if(it.dir && it.dir.requestPermission){
+    let p;
+    try{ p = await it.dir.requestPermission({mode: 'read'}); }catch(e){ p = 'prompt'; }
+    it.perm = p;
+    if(p !== 'granted'){ it.err = withCode(`The browser didn't allow reading “${it.dirName}”, so Intel stays in the other tab. Press Move Intel here again and choose Allow on every visit (or Allow this time).`, 'INTEL-02'); itRender(true); return; }
+  }
+  it.err = '';
+  await itStart(true);
+  itSwSync();
+}
+function itLockHtml(){   // the card's line about the other tab (in #itNotes)
+  if(!itLk.ok) return '';
+  if(!it.on && it.other){
+    const back = it.lockWhy === 'moved';
+    return `<div class="pr-msg it-lock">${escapeHtml(back ? 'Intel moved to another tab.' : 'Intel is on in another tab.')} <button type="button" data-it-act="move">${escapeHtml(back ? 'Move Intel back here' : 'Move Intel here')}</button></div>`;
+  }
+  if(!it.on && it.lockWhy === 'closed') return '<div class="pr-msg it-lock">The tab running Intel was closed, so Intel is off.</div>';
+  if(it.on && it.lockWhy === 'here') return '<div class="pr-msg it-lock">Intel moved here. The other tab stopped it.</div>';
+  return '';
+}
+function itLockInit(){
+  if(!itLk.ok || typeof BroadcastChannel !== 'function') return;
+  try{ itLk.bc = new BroadcastChannel(IT_LOCK); }catch(e){ return; }
+  itLk.bc.onmessage = (e) => itLockHear(e.data);
+  if(typeof window !== 'undefined' && window.addEventListener) window.addEventListener('pagehide', () => { if(it.on) itLockPost({on: false, why: 'closed'}); });
+  if(typeof document !== 'undefined' && document.addEventListener) document.addEventListener('visibilitychange', () => { if(!document.hidden) itLockCheck(); });
+  itLockCheck();
 }
 // v2026.10.29.5 (the owner: "Eve deploys patches very often. is there a way to automate the update so the user never has to see
 // it?"): the page no longer compares EVE's build with the table's and warns after every patch (patches seldom touch gates).
@@ -26621,7 +26734,7 @@ function itNearList(){
 // v2026.10.30.1 (the owner: "killmails within specified kill range show in feed but not in 'Near You' list"; his example: a neutral
 // killed by a pilot of his own corporation). v.100 showed such kills in the Feed ("Definitely show enemy kills as well") but Near
 // You hid every system with friendlies only. Now such a kill is a sighting of the victim's side (itAddKill: e.sighting, itNearAdd).
-function itNearCount(){ return it.on ? itNearList().filter(x => x.j !== null && x.j <= it.set.range && itThreat(x.st)).length : 0; }
+function itNearCount(){ return it.on ? itNearList().filter(x => x.j !== null && x.j <= it.set.range && itThreat(x.st)).length : it.other && it.remote ? it.remote.n : 0; }
 // v.98: a pilot's name opens them in the Pilot Analyzer (in the ship the line pairs them with, the owner: "Paired ship")
 function itPilotTitle(x, pair){ return `${SIDE_WORD[x.side]} (${cardName('side')}). Open ${x.name} in the Pilot Analyzer${pair ? `, in the ${pair.name} reported with them` : ''}`; }
 // v.99 (the owner: "As drawn"): who's who: a standing mark, the corporation and alliance logos, the name coloured by standing, then
@@ -27064,7 +27177,7 @@ function itFeedListHtml(){ itAnCan = new Map(); const feed = itFeedShown(), why 
 function itNearListHtml(){ const near = itNearList(); return near.length ? near.map(itNearRowHtml).join('') : `<div class="pr-msg">${it.on ? 'Nothing reported in the last ' + it.set.forget + ' minutes.' : 'Nothing yet.'}</div>`; }
 // Redraw only the two lists (the filter bar in use keeps its focus and caret)
 function itAllowNoteHtml(){ return it.dir && it.perm === 'prompt' ? ' <button type="button" data-it-act="allow">Allow reading</button>' : ''; }   // v2026.11.08.2 (025)
-function itNotesHtml(){ return `${it.err ? `<div class="pr-msg err">${escapeHtml(it.err)}${itAllowNoteHtml()}</div>` : ''}${it.note ? `<div class="pr-msg">${escapeHtml(it.note)}</div>` : ''}${it.on && it.kfNote ? `<div class="pr-msg" data-it-kfnote>${escapeHtml(it.kfNote)}</div>` : ''}`; }
+function itNotesHtml(){ return `${itLockHtml()}${it.err ? `<div class="pr-msg err">${escapeHtml(it.err)}${itAllowNoteHtml()}</div>` : ''}${it.note ? `<div class="pr-msg">${escapeHtml(it.note)}</div>` : ''}${it.on && it.kfNote ? `<div class="pr-msg" data-it-kfnote>${escapeHtml(it.kfNote)}</div>` : ''}`; }
 function itRenderLists(){
   itHeaderSync();
   const el = typeof document !== 'undefined' && document.getElementById && document.getElementById('intelPanel');
@@ -27496,11 +27609,12 @@ function itExPlace(f){
 // v2026.11.07.8 (the owner: "we need to just disable the on/off switch until a folder is chosen and at least one channel is checked"):
 // the switch can't be pressed until both are done (or in a browser that can't read the folder); its hover says what's missing. Intel
 // already on stays pressable, so it can always be turned off.
-function itSwLocked(){ return !it.on && (!it.supported || !itReady()); }
+function itSwLocked(){ return !it.on && (!it.supported || !itReady() || !!it.other); }   // v2026.11.08.3 (026): greyed while another tab runs Intel (the owner)
 function itSwLockHtml(what){ return itSwLocked() ? escapeHtml(what) : ''; }   // ' disabled' / ' is-off' (fixed words)
 function itSwTitle(){
   if(it.on) return it.set.channels.length ? `Watching ${it.set.channels.length} intel channel${it.set.channels.length === 1 ? '' : 's'} (named under the gear)` : 'Watching no channel yet';
   if(!it.supported) return 'Intel needs Chrome or Edge on a computer';
+  if(it.other) return 'Intel is running in another tab. Use Move Intel here to run it in this tab.';   // v2026.11.08.3 (026)
   if(!it.dir) return 'Choose the Chatlogs folder (1 below), then tick an intel channel (2), to turn Intel on';
   if(!it.set.channels.length) return 'Tick an intel channel (2 below) to turn Intel on';
   return 'Intel is off';
@@ -27584,7 +27698,7 @@ function itFocusKey(a){   // a selector that finds the same control again after 
 }
 function itQuickKey(){
   const f = it.feed[0], sz = (m) => m ? m.size : 0;
-  return [it.on, it.dirName, it.perm, it.read, it.err, it.note, it.pop, it.kfNote, it.q, JSON.stringify(it.fl), it.feed.length, f ? f.id : 0, it.near.size, it.me && it.me.sys, sz(it.chars), sz(it.files),
+  return [it.on, it.other, it.lockWhy, it.dirName, it.perm, it.read, it.err, it.note, it.pop, it.kfNote, it.q, JSON.stringify(it.fl), it.feed.length, f ? f.id : 0, it.near.size, it.me && it.me.sys, sz(it.chars), sz(it.files),
     it.chans.length, it.names ? it.names.list.length : 0, sz(it.pilots), sz(it.aff), sz(it.charNames), sz(it.sec), sz(it.gateDest), sz(orgCache),
     sz(it.rawOpen), sz(it.nearOpen), it.shape ? it.shape.id : 0, JSON.stringify(it.set), itR2Stopped(), it.sndRev || 0, itFeedDown() ? itR2EverRead + 1 : 0, itFeedWhy()].join('|');   // v2026.11.06.6: the Feed note's reason   // v2026.11.06.1   // v2026.11.01.8: your sound files
 }
@@ -27613,7 +27727,7 @@ function itAgePeriod(){
 // Near: an amber tab on the profile's left, "Intel · N near". In system: the Hostile red, "In system", with a ring and a slow pulse,
 // so it differs by shape as well as colour. Pressing it opens the Intel tab; only the card's switch turns Intel on or off (LESSON #95).
 function itMarkState(){
-  if(!it.on) return 'off';
+  if(!it.on) return it.other && it.remote ? it.remote.s : 'off';   // v2026.11.08.3 (026): the running tab's mark, in every tab
   if(it.err || it.kfNote || itR2Stopped() || itFeedDown()) return 'broken';
   const near = itNearList().filter(x => x.j !== null && x.j <= it.set.range && itThreat(x.st));
   return near.some(x => x.j === 0) ? 'in' : near.length ? 'near' : 'clear';
@@ -27635,13 +27749,15 @@ function itHeaderSync(){
     : s === 'broken' ? `on but not working: ${it.err ? 'an error' : 'the kill feed isn\'t answering'} (see the ${name} tab)`
     : s === 'near' ? `${n} system${n === 1 ? '' : 's'} with a hostile or neutral report within ${it.set.range} jump${it.set.range === 1 ? '' : 's'}`
     : s === 'in' ? 'a hostile or neutral reported in your system' : 'off';
-  const lbl = `${name}: ${why}. Open ${name}`;
+  const far = !it.on && it.other && it.remote;   // v2026.11.08.3 (026): the mark of the tab running Intel
+  const lbl = far ? `${name}: ${why.replace(/^on but not working: .*$/, 'on but not working')} (from your other Threat Vector tab). Open ${name}` : `${name}: ${why}. Open ${name}`;
   if(b.title !== lbl){ b.title = lbl; b.setAttribute('aria-label', lbl); }
   const tab = document.getElementById('tabBtnIntel');
   if(tab && tab.dataset){
     if(tab.dataset.s !== s) tab.dataset.s = s;
     if(!tab.querySelector('.tb')){ const d = document.createElement('span'); d.className = 'tb'; d.setAttribute('aria-hidden', 'true'); tab.appendChild(d); }
   }
+  itLockState();   // v2026.11.08.3 (026): the other tabs see this mark (posted only when it changed)
 }
 function itToggle(on){ Promise.resolve(on ? itStart() : itStop()).then(itSwSync, itSwSync); }
 // v2026.11.07.8: the box always shows whether Intel is on (a press that didn't start it, a folder the browser refused, could leave it
@@ -27724,7 +27840,9 @@ function itMapMake(){
   itm.el = el; itm.box = el.querySelector('.it-map-box'); itm.cv = el.querySelector('canvas'); itm.tip = el.querySelector('.it-map-tip'); itm.hint = el.querySelector('.it-map-hint');
   itm.fx = el.querySelector('canvas.it-map-fx'); itm.you = el.querySelector('.it-map-you');
   itMapBind();
-  if(typeof ResizeObserver !== 'undefined') new ResizeObserver(() => itMapRefresh()).observe(itm.box);
+  // v2026.11.08.3 (026, plan section 5): on the next frame, once a frame; redrawing inside the observer's callback changed layout in the
+  // same frame ("ResizeObserver loop completed with undelivered notifications"), as the Intel example's observer already avoids
+  if(typeof ResizeObserver !== 'undefined'){ let raf = 0; new ResizeObserver(() => { if(raf) return; raf = requestAnimationFrame(() => { raf = 0; itMapRefresh(); }); }).observe(itm.box); }
   return el;
 }
 // into the card just drawn (itRender), then refreshed
@@ -28262,6 +28380,7 @@ function rsBind(root){
     if(a.dataset.itAct === 'example' || a.dataset.itAct === 'exclose'){ itExOpen(a.dataset.itAct === 'example'); return; }   // v2026.11.07.7
     if(a.dataset.itAct === 'folder') itChooseFolder();
     if(a.dataset.itAct === 'allow') itAllowRead();   // v2026.11.08.2 (025): from the click itself
+    if(a.dataset.itAct === 'move') itMoveHere();   // v2026.11.08.3 (026): from the click itself (the folder permission first)
   });
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && it.pop){ it.pop = false; itRender(true); itGearFocus(); } });
   setInterval(() => { if(it.on && itShown()) itStatusPaint(el); }, 1000);   // v2026.11.01.4: only while it can be seen, and only when its text changed
@@ -28271,6 +28390,7 @@ function rsBind(root){
   document.addEventListener('visibilitychange', () => { if(!document.hidden) itLookAgain(); });
   if(typeof window !== 'undefined' && window.addEventListener) window.addEventListener('focus', () => itLookAgain());
   setInterval(() => { if(!it.on && it.perm === 'granted') itLookAgain(); }, IT_RESCAN_MS);
+  itLockInit();   // v2026.11.08.3 (026): one tab runs Intel
   // v2026.11.07.1 (build queue 010): the "+N more systems below" count follows Near You's own scroll (one frame a scroll; passive)
   el.addEventListener('scroll', (e) => { if(e.target && e.target.id === 'itNearList') itNearMoreSoon(); }, {capture: true, passive: true});
   if(typeof window !== 'undefined' && window.addEventListener){ let rt = 0; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if(it.on || it.near.size){ for(const x of el.querySelectorAll('#itNearList, #itFeedList, #itNotes')) x._h = null; itRenderLists(); } }, 200); }); }   // v2026.11.01.4: redrawn though the text is the same: the widths changed   // v2026.10.30.1: the 3-line cap follows the width

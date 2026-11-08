@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-08 — Intel in one tab at a time</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel in one tab at a time</h1>
+<p><span class="tag">Page</span> 2026-11-08 &middot; <code>v2026.11.08.3</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>Build queue 026, Project doc <code>roadmap/intel-one-tab-plan.md</code> (the clickable prototype stays in the Project, the owner's choice at the review). The owner: "we really only want users to utilize a single tab to begin with. multiple tabs complicate things like INTEL requests". Every tab with Intel on ran its own reader of zKillboard's live feed at up to 5 requests a second: three tabs reach zKillboard's 15-a-second line (an hour's block for the address, LESSON #93), and alerts sounded once per tab.</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>One tab runs Intel.</b> A Web Lock is held exactly while Intel runs. In another tab, Intel's card says "Intel is on in another tab." with <b>Move Intel here</b>, and the switch is greyed out (the owner: the button is the only way, so nobody takes Intel from another tab without meaning to). Move Intel here asks for the folder from the press itself (needed in a new tab since 025), then takes the lock; the old tab stops and says "Intel moved to another tab." with Move Intel back here. Closing the running tab: "The tab running Intel was closed, so Intel is off." Nothing starts by itself.</li>
+<li><b>The mark in every tab:</b> the other tabs' profile mark and Intel tab dot show the running tab's state (its title says it's from the other tab). Sent only when it changes. A tab shown again checks whether the running tab still holds the lock, so a crashed tab doesn't leave a stale mark.</li>
+<li><b>Staggered catch-up</b> (the owner: "Only after a gap"): catching up after a minute or more without kills (a computer waking up) waits a random 0&ndash;10 s first, so browsers on one address don't read back at the same moment. Turning Intel on reads at once, as before.</li>
+<li><b>A stopped reader sends nothing more</b> (LESSON #148): requests already waiting at the feed's gate went out after Intel stopped (the switch, and now a move): up to 5 more in a few seconds. Found by the new check counting each tab's requests after a move; such a request is now dropped.</li>
+<li><b>The Intel map's "ResizeObserver loop" errors:</b> the map redraws on the next frame after its box changes size, as the Intel example already did.</li>
+<li>Intel's &#9432; panel: one sentence under Reloads (the panel's shown words were at their limit). Nothing new is kept in the browser.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>intel_one_tab_check.py</code>: two pages in one browser context with the made-up Chatlogs folder, R2Z2 requests counted per page. It covers the line and greyed switch in the second tab, the mark from the other tab, a click on the greyed switch, Move Intel here (the folder asked from the press), only the new tab reading afterwards, the permission refused, one alert across both tabs, a repeated mark not redrawn, the running tab closed and crashed, the catch-up wait, no Web Locks, the map's resizes and 390 px.</li>
+<li>Confirmed in Chromium before building (the plan had them UNVERIFIED): two pages in one context share the lock and the channel, also from a local file; <code>steal</code> makes the old holder's request reject with AbortError; a crashed tab's lock is released.</li>
+<li>Mutants: 11, all caught (no lock; the switch enabled while another tab runs; the old tab not stopping; starting by itself when the other closes; redrawn on every message; no catch-up wait; the map redrawn inside its observer; a stopped reader's queued requests sent; no word when the running tab closes; the lock not checked when shown, both halves).</li>
+<li>The page's other two resize observers (the fit list's pinned card, the damage chart): no loop error in seven checks that resize or draw fits, run on a copy that turns the error into a page error.</li>
+<li>The checks picked from the changes since <code>main</code> (8 areas, 82 page checks, 25 min): one failure from this change, <code>intel_guard_check</code> (the new gate check sat before the stop's own error; fixed, the stop first), then rerun with the served-copy checks: 0 failed.</li>
+<li>Page size: source 791,690 bytes gzipped (<code>gzip -9</code>); served 493,696, 306,304 under the 800,000-byte ceiling.</li>
+</ul>
+
+<h2>The owner's hand test</h2>
+<ul>
+<li>Two tabs: turn Intel on in one; the other says so and shows the mark. Move it; the first stops. Close the running tab; the other's mark goes off and nothing starts.</li>
+<li>Sleep and wake with Intel running: it catches up a few seconds after waking.</li>
+<li>Press Back to the page from another site with Intel running: does Intel carry on, and do other tabs still see it running? (Unverified: whether Chrome keeps a page holding a lock in its back/forward cache.)</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #148: stopping a reader must also stop what it already queued at a gate. A flag checked between batches doesn't reach requests already waiting their turn; check after the wait, and test "it stopped" by counting requests after the stop.</p>
+</body></html>

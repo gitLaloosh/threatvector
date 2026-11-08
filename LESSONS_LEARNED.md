@@ -194,6 +194,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #105 A reader that decides a word's kind before its lookups can't use what they say: decide after. See also #88.
 - #106 A rate guard must stop at the first refusal, stay stopped, and count what it granted. See also #93, #94.
 - #140 Wait as long as the service itself waits, and let one slow item fail alone: a short timeout read as an outage stops everything. See also #106.
+- #148 Stopping a reader must also stop what it already queued at the gate: check whether the reader still runs after the wait, not only before. See also #106.
 
 **Delivery, privacy and the repository**
 
@@ -1054,6 +1055,18 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 148. Stopping a reader must also stop what it already queued at the gate: check whether the reader still runs after the wait, not only before
+
+- **What happened (v2026.11.08.3, build queue 026, while building):** the one-tab check counted R2Z2 requests per tab. After Intel
+  moved from tab A to tab B, A still sent 5 requests in the next 4 seconds. Its read-back had queued a batch of reads at the gate
+  (`itKillTurn`, one start every 200 ms); `itStop` bumped `it.gen`, and the reader checks the generation after each batch, but the
+  requests already waiting at the gate went out one by one when their turn came. The same happened every time Intel was switched
+  off during a read-back, unnoticed since v2026.10.30.3, because no check counted requests after a stop.
+- **How it was caught:** `intel_one_tab_check.py` counts each page's R2Z2 requests after the move and expects none from the old tab.
+- **Do this instead:** in a gate that holds requests back, check after the wait that the caller is still current (`itR2Fetch`: the
+  reader that queued the request is still `it.kf` and Intel is on) and drop it otherwise. A check for "it stopped" counts requests
+  after the stop, not just the flag. See also #106.
 
 ## 147. A format a plan writes down is a claim, not a source: check it against the provider's own before it becomes a check in code
 

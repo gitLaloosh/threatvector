@@ -248,6 +248,16 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   (`itLookAgain`) on tab shown / focus and, while the setup card shows, every `IT_RESCAN_MS`: nothing while hidden, redrawn only when
   `itFoundKey` changed. A permission taken back while Intel runs: INTEL-02 (`itPermLostText`) with Allow reading in the error line
   (`itAllowNoteHtml`). `intel_folder_check.py` (a stand-in folder whose answers switch, and a stand-in store so a reload restores it).
+- **Intel in one tab at a time** (v2026.11.08.3, build queue 026; Project doc roadmap/intel-one-tab-plan.md): a Web Lock (`IT_LOCK`,
+  `tv-intel`) is held exactly while Intel runs (`itLockTake`, `itLockFree` in `itStop`); the switch asks for it only when free, and
+  another tab's card says "Intel is on in another tab." with **Move Intel here** (`itMoveHere`: the folder permission from the press
+  first, then `steal`); its switch is greyed out (the owner: the button is the only way). The tab that loses the lock stops
+  (`itLockLost`: "Intel moved to another tab.", Move Intel back here). A BroadcastChannel (same name) carries the running tab's mark
+  only when it changes (`itLockState` from `itHeaderSync`), "stopped" and "closed" (pagehide); a tab shown again asks and checks
+  `locks.query()` (a crashed tab). Nothing starts by itself (the owner: "there is a switch for a reason"). No `navigator.locks`:
+  as before. `itR2Fetch` drops a request that waited at the gate for a reader that stopped (LESSON #148). A catch-up after a gap waits
+  a random 0-10 s first (`IT_CATCHUP_JITTER_MS`; not on start, the owner: "Only after a gap"). The map's ResizeObserver redraws on the
+  next frame. `intel_one_tab_check.py`.
 - **The logo** (v2026.11.07.4, build queue 022; Project doc roadmap/logo-header-plan.md; mockup `Claude outputs/logo_header_mockup.html`):
   R37 "Orbit Contact", inline left of the title in `.hero-title-row` (`.hero-brand`, `.hero-logo`, aria-hidden), 1.6em of the title's
   size, its T's top on the title's T's top (`--logo-nudge`, -0.19em / -0.16em under 600 px; re-tune if the title's font or size
@@ -378,12 +388,13 @@ with a `// LESSON #n` comment that points at the entry.
 
 **Checks: run what the change needs** (v2026.10.30.2, the owner: "yep, do it"; picked automatically since page-unchanged
 v2026.10.31.7, the owner: "yes please" to the review's "choose the level from the changed files, not by hand").
-`python3 -I tools/run_checks.py --auto --since <the repo as last delivered>` (or with a .git folder, `--auto` alone: changes
-since the last commit) runs the fast lints, then the tier `tools/check_picker.py` picks from the changed lines and files:
+`python3 -I tools/run_checks.py --auto --since <a copy of main>` (`git archive origin/main | tar -x -C <folder>`) runs the fast lints, then the tier `tools/check_picker.py` picks from the changed lines and files:
 the engine, a PYFA CORE section or a calculation input (regression_suite/, the generators, the pyfa tools) -> `calc`; one
 area's functions, CSS or info text -> `area` with those areas; shared code or anything unmapped -> `all`; every 5th delivery
 -> `all`. `--plan` only says what it would run. Pick a tier by hand only to run more than it picks. When a section moves or a
 new area gets its own prefix, update REGIONS / PREFIX / CSS in check_picker.py (its `--self-test`, a fast lint, says so).
+Never `--auto` alone on a branch: it compares with the last commit, so once the work is committed it sees no change and runs only
+the lints (026, 2026-11-08). `--plan` first: a page change must pick page areas, not "fast" alone.
 The fast lints include the regression suite, the D-Scan parse tests (seconds) and a check that PYFA_SRC is the verified pyfa commit (LESSON #116). A page check gets 5 minutes (`SLOW` for
 more). A new page check gets its areas in `AREAS` (`--check-tags`, a chain step). A check that keeps failing under load gets
 its cause fixed (LESSON #115); while that's under way it may go in the ledger's Quarantine table (a reason, at most 14 days;
