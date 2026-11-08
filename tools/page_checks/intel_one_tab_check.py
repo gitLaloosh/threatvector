@@ -84,12 +84,12 @@ with sync_playwright() as p:
     check(not st(B)['on'] and st(A)['on'], 'a click on B\'s disabled switch starts nothing')
 
     # the same mark twice redraws nothing; a new count is drawn
-    B.evaluate("() => { window.__draws = 0; new MutationObserver(() => window.__draws++).observe(document.getElementById('intelPanel'), {childList: true, subtree: true}); }")
+    B.evaluate("() => { window.__draws = 0; const r = itRender; itRender = function(){ window.__draws++; return r.apply(this, arguments); }; }")
     B.evaluate("() => { itLockHear({on: true, s: it.remote.s, n: it.remote.n}); itLockHear({on: true, s: it.remote.s, n: it.remote.n}); }"); B.wait_for_timeout(200)
     same = B.evaluate("() => window.__draws")
     B.evaluate("() => itLockHear({on: true, s: 'near', n: 4})"); B.wait_for_timeout(200)
     nb = st(B)
-    check(same == 0 and nb['mark'] == 'near' and nb['near'] == '4 near', f'the same mark posted twice redraws nothing ({same} writes); a new one is drawn {nb["mark"]} {nb["near"]!r}')
+    check(same == 0 and nb['mark'] == 'near' and nb['near'] == '4 near', f'the same mark posted twice draws nothing ({same} redraws asked); a new one is drawn {nb["mark"]} {nb["near"]!r}')
     A.evaluate("() => { itLk.last = ''; itLockState(); }"); B.wait_for_timeout(300)   # back to A's real mark
 
     # Move Intel here (B)
@@ -132,6 +132,11 @@ with sync_playwright() as p:
     C = page(c, 'C')
     A.click('#intelSwLabel'); A.wait_for_function("it.on", timeout=8000); C.wait_for_timeout(800)
     check(st(C)['other'], 'C sees A running')
+    # a message missed: C, shown again, finds the lock held by itself
+    C.evaluate("() => { it.other = false; it.remote = null; itRender(true); }"); C.wait_for_timeout(200)
+    C.evaluate("() => { itLk.bc.onmessage = null; document.dispatchEvent(new Event('visibilitychange')); }"); C.wait_for_timeout(500)
+    check(st(C)['other'] and st(C)['swDis'] is True, 'a tab that missed the messages finds the running tab through the lock when shown again')
+    C.evaluate("() => { itLk.bc.onmessage = (e) => itLockHear(e.data); }")
     try: A.goto('chrome://crash', timeout=3000)   # the renderer dies: no pagehide, no message
     except Exception: pass
     C.wait_for_timeout(800)
