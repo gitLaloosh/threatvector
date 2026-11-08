@@ -9,6 +9,8 @@
     python3 -I tools/run_checks.py --list            # the areas and their page checks
     python3 -I tools/run_checks.py --check-tags      # every page check has an area (a chain step)
     add --ledger to append the run to tools/check_ledger.md; --jobs N (default twice the cores, at most 6); an index.html path to check another copy
+    python3 -I tools/run_checks.py --served [--all]  # build queue 027: the copy GitHub Pages serves (tools/publish.py), made in a
+                                                     # scratch folder, through SERVED_CHECKS (--all: every page check)
 
 Which tier (CLAUDE.md "Checks"): --auto (v2026.10.31.7, page unchanged) picks it from the changed lines and files
 (tools/check_picker.py): a calculation change or one of its inputs -> calc (+ the areas that show it); page or Intel work ->
@@ -49,6 +51,9 @@ NAMES = sorted({a for v in AREAS.values() for a in v})
 PAGE_TIMEOUT = 300
 SLOW = {'intel_kills_check': 600, 'zkb_slow_check': 600, 'outage_check': 900}
 QUARANTINE_MAX_DAYS = 14
+# build queue 027 (Project doc roadmap/page-publish-plan.md): the page checks run on the served copy before every pull request.
+# The source-form checks (the PYFA CORE lock, the HTML-sink baseline, LESSON markers) read comments, so they stay on the source.
+SERVED_CHECKS = ['csp_check', 'html_escape_check', 'intel_example_check', 'profile_check', 'sso_check', 'header_check']
 
 def quarantine():
     """The ledger's Quarantine table: {check: (why, since, until)} and the problems with it."""
@@ -82,6 +87,7 @@ def fast(html):
         ('no new unescaped HTML (LESSON #144)', q('check_html_sinks.py'), lambda l: l.endswith(' 0 problems')),
         ('HTML-sink lint self-test', q('check_html_sinks.py') + ' --self-test', lambda l: l.endswith(': ok')),
         ('the Intel example\'s made-up names (offline)', q('check_example_names.py'), lambda l: l.endswith(' 0 problems')),
+        ('publish step self-test (027)', 'python3 -I tools/publish.py --self-test', lambda l: l.endswith(': 0 problems')),
         ('plan sources lint self-test (LESSON #147)', 'python3 -I tools/check_plan_sources.py --self-test', lambda l: l.endswith(': ok')),
         ('subtext rule', q('check_subtext.py'), lambda l: l.endswith(' 0 problems')),
         ('card names', q('check_card_names.py'), lambda l: l.endswith(' 0 problems')),
@@ -130,9 +136,41 @@ def version(html):
     m = re.search(r'class="build-tag"[^>]*>(v[\d.]+)<', open(os.path.join(ROOT, html), encoding='utf-8').read())
     return m.group(1) if m else '?'
 
+def served(argv):
+    """Make the served copy (tools/publish.py) in a scratch folder and run the served-copy checks against it."""
+    import tempfile
+    jobs = int(argv[argv.index('--jobs') + 1]) if '--jobs' in argv else min(6, 2 * (os.cpu_count() or 2))
+    t0 = time.time(); failed, lines = [], []
+    with tempfile.TemporaryDirectory(prefix='served-') as d:
+        site = os.path.join(d, '_site'); html = os.path.join(site, 'index.html')
+        out, dt = sh(f'python3 -I tools/publish.py --out {site}', 600)
+        for l in out.splitlines(): lines.append('     ' + l)
+        if last(out) != 'PUBLISH: ok':
+            print('\n'.join(lines)); print('RUN CHECKS (served): 1 failed (publish)'); return 1
+        steps = [('regression suite (served)', f'node regression_suite/run_regression.mjs --served {html}', lambda l: l.endswith('ALL PASS')),
+                 ('D-Scan parse tests (served)', f'node regression_suite/dscan_parse_tests.mjs {html}', lambda l: bool(re.fullmatch(r'(\d+)/\1 PASS', l)))]
+        for label, cmd, ok in steps:
+            o, t = sh(cmd, 600); good = ok(last(o))
+            lines.append(f'{"OK  " if good else "FAIL"} {label} ({t:.0f} s): {last(o)[:160]}')
+            if not good: failed.append(label)
+        want = sorted(AREAS) if '--all' in argv else SERVED_CHECKS
+        def run(name): o, t = sh(f'python3 -I tools/page_checks/{name}.py {html}', SLOW.get(name, PAGE_TIMEOUT)); return name, o, t
+        with ThreadPoolExecutor(max_workers=max(1, jobs)) as ex: res = list(ex.map(run, want))
+        for name, o, t in res:
+            if last(o) != 'FAILURES: 0': o, t = sh(f'python3 -I tools/page_checks/{name}.py {html}', SLOW.get(name, PAGE_TIMEOUT))
+            good = last(o) == 'FAILURES: 0'
+            lines.append(f'{"OK  " if good else "FAIL"} {name} (served, {t:.0f} s)' + ('' if good else f': {last(o)}'))
+            if not good:
+                failed.append(name); lines += ['     ' + l[:200] for l in o.splitlines() if l.startswith('FAIL ')][:6]
+    for l in lines: print(l)
+    print(f'served copy: {len(steps)} steps + {len(want)} page checks in {(time.time() - t0) / 60:.0f} min')
+    print(f'RUN CHECKS (served): {len(failed)} failed' + (f' ({", ".join(failed)})' if failed else ''))
+    return 1 if failed else 0
+
 def main(argv):
     if '--check-tags' in argv: return check_tags()
     if '--check-pyfa-src' in argv: return check_pyfa_src()
+    if '--served' in argv: return served(argv)
     if '--list' in argv:
         for a in NAMES: print(f'{a}: ' + ', '.join(k for k, v in sorted(AREAS.items()) if a in v))
         return 0

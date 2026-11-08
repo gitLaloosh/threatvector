@@ -40,7 +40,10 @@ import { checkPyfaCore } from '../tools/check_pyfa_core.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const htmlPath = process.argv[2] || path.join(__dirname, '..', 'index.html');
+// --served (build queue 027): the copy GitHub Pages serves (tools/publish.py), comments gone; the PYFA CORE lock reads the
+// source's fences (comments), so it runs on the source only, and every golden fit runs on the served copy as on the source.
+const SERVED = process.argv.includes('--served');
+const htmlPath = process.argv.slice(2).find(a => !a.startsWith('--')) || path.join(__dirname, '..', 'index.html');
 const goldenPath = path.join(__dirname, 'golden_fits.json');
 
 if (!fs.existsSync(htmlPath)) {
@@ -84,7 +87,8 @@ const PROJ_PIN = /^(tackled|painted)@/;
 // PYFA CORE lock (2026-10-14, PYFA_CORE.md): code fenced as PYFA CORE in index.html
 // must match the fingerprints in tools/pyfa_core_manifest.json. A changed section
 // fails the suite until it is re-verified against pyfa and the manifest updated.
-{
+if (SERVED) console.log('PYFA CORE: not checked on the served copy (its fences are comments; the source is checked)');
+else {
   const core = checkPyfaCore(html);
   if (core.ok) console.log(`PYFA CORE: ${Object.keys(core.sections).length} sections match the manifest`);
   else { console.log('*** PYFA CORE LOCK:\n  ' + core.problems.join('\n  ')); anyFail = true; }
