@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-IK3OB3rpFmNyV2iTdmaI0mycNNPz+cXwm776KJq9ejs='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-+nZDVMEG4oiIE1RLaeeyDqCGfulDmp78bNtg4PQl2OA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2586,6 +2586,9 @@
   .it-kslow{color:var(--amber);}   /* v2026.10.29.4: no kill read for 5 minutes */
   .it-setup{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:14px; margin-top:14px;}
   .it-box{border:1px solid var(--line); border-radius:8px; padding:12px; min-width:0;}
+  /* v2026.11.08.2 (025): steps 2-3 while the folder can't be read; step 1's two buttons */
+  .it-box.it-wait label{opacity:.5;} .it-btns{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
+  @media (max-width:599px){ .it-btns button, .it-box button[data-it-act="allow"]{min-height:44px;} }
   .it-box .k{font:600 var(--label-size) var(--sans); letter-spacing:var(--label-tracking); text-transform:uppercase; color:var(--text-dim); margin-bottom:6px;}
   .it-box .v{font:600 13px var(--sans); color:var(--heading); overflow-wrap:anywhere;} .it-box .c{font:400 12px var(--sans); color:var(--text-dim); margin-top:3px;}
   .it-box label{display:flex; gap:7px; align-items:center; font:400 12.5px var(--sans); color:var(--text); margin:4px 0; min-width:0;}
@@ -3045,7 +3048,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.08.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.08.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3443,6 +3446,7 @@ const CARD_INFO = {
   "**Start:** in EVE, Settings → Chat → Log Chat to File. Here: choose the Chatlogs folder, tick your intel channels, then turn on the switch beside the gear (amber while Intel is off).",
   "**{card:itnear}:** systems with reports or kills within its range under the gear, nearest first. An amber edge means within your alert range: the sound, the notification and the amber “N near” on your profile, from any tab.",
   "**{card:itfeed}:** every report and kill as it comes in.",
+  "[Reloads] Chrome asks again for a folder chosen on an earlier visit. Its box offers Allow this time (for this visit only; Chrome may also take it back while the tab is in the background, which stops Intel reading), Allow on every visit (no more questions) and Don't allow. Until you answer, step 1 shows Allow reading and steps 2 and 3 wait for the folder.",
   "[How a line is read] Systems, ship names (English or Chinese), counts (+5, x2) and words like clr and nv; the rest is looked up on ESI as pilot names and coloured by your {card:side}. One word typed by hand is a pilot only in the name's own capitals, and report words like linked, drag, hot or kill only when dragged in from chat. A word it can't place stays plain text, never guessed. A report about the ESS tags the system in {card:itnear}: white when someone is at it, red when they're linked to it; a bubble that isn't a gate camp is a tag too. When a line names two systems, they're placed where the line says they are (“on Y gate”, “→ Y”), else in the one within range, else the nearer; the other shows as a note. The copy button on a line copies its shape, names replaced, to report a line read wrong.",
   "[Gates and camps] A short name before “gate” (“T5Z gate”, “MOG gate”) is read among the gates of the system the line is in. A report that places them on a gate and says camp, bubble, drag, smartbomb or the gate is hot tags the system in {card:itnear} with a red Camp tag and the gate. Two kills at one gate in the time set, with no such report, tag it in orange (zKillboard places each kill at the nearest stargate). A grey tag is a gate named with no camp words. “toward you”: that gate leads closer to you. Your own shorthands (word = system) go under the gear; 4 or more letters before a system's dash (“ymjg”) read as that system when only one has them.",
   "[Kills] While Intel is on, zKillboard's live feed of every kill (about 20 small requests a minute), kept within the Feed's kill range under the gear (10 jumps unless you change it), no NPC kills. A kill near you shows in {card:itnear} with who was there and alerts like a report within your alert range. A kill's label (or a badge in {card:itnear}) opens it in the {card:fleet} tab: the victim and who killed them; a badge for several kills lists them there to pick from, grouped into fleets: kills that share 2 pilots (1 when a kill had only 1 or 2 attackers) are one fleet, the biggest first; victims never link kills. The line under the title says when a kill was last read.",
@@ -3812,8 +3816,8 @@ const ERROR_CODES = {
  "INTEL-02": {
   "title": "The chat logs folder can't be read",
   "where": "{card:intel} tab",
-  "trigger": "The browser didn't allow reading the chosen folder (Allow not pressed after a restart), or the folder was moved or deleted while watching.",
-  "check": "Turn the slider on again and choose Allow; or choose the folder again under the gear.",
+  "trigger": "The browser didn't allow reading the chosen folder (Allow not pressed after a restart), took a one-time permission back (Chrome may, while the tab is in the background), or the folder was moved or deleted while watching.",
+  "check": "Press Allow reading (or the slider) and choose Allow on every visit in Chrome's box, so it isn't asked again; or choose the folder again under the gear.",
   "why": "",
   "since": "2026-10-28 (v2026.10.14.96)",
   "doc": "2026-10-28_intel-feed.html"
@@ -25158,7 +25162,7 @@ const it = {
   set: null, on: false, dir: null, dirName: '', perm: '', files: new Map(), local: null, me: null,
   feed: [], near: new Map(), chans: [], chars: new Map(), lastLine: 0, err: '', note: '', pop: false,
   ticker: null, busy: false, lastScan: 0, gen: 0, alerted: new Map(), names: null, namesBusy: null,
-  pilots: new Map(), aff: new Map(), supported: false, loaded: false,
+  pilots: new Map(), aff: new Map(), supported: false, loaded: false, read: false,   // v2026.11.08.2 (025): read = the folder was read
   kf: null, kfNote: '', charNames: new Map(), sec: new Map(), secAsk: new Set(), q: '',   // v.99: kills, names on kills, security, the Feed's search
   rawOpen: new Set(),   // v.100: Feed rows showing the line as typed
   nearOpen: new Set(),   // v2026.10.30.1: Near You rows opened (system ids; several at once, the owner)
@@ -25695,6 +25699,7 @@ async function itScan(){
     if(!byChan.has(fi.chan)) byChan.set(fi.chan, []);
     byChan.get(fi.chan).push(fi);
   }
+  it.read = true; it.perm = 'granted';   // v2026.11.08.2 (025): read, even when nothing in it is a chat log
   if(!any){ it.err = withCode(`No EVE chat logs in “${it.dirName}”. Choose the Chatlogs folder (Documents\\EVE\\logs\\Chatlogs), and in EVE turn on Log Chat to File.`, 'INTEL-04'); return; }
   it.chans = [...byChan.keys()].sort((a, b) => a.localeCompare(b));
   // your characters: from their Local logs (the listener's name, the newest system)
@@ -25726,7 +25731,49 @@ async function itScan(){
   }
   for(const ch of [...it.files.keys()]) if(!want.has(ch)) it.files.delete(ch);
   it.me = it.set.me ? it.chars.get(it.set.me) || null : null;
+  it.read = true; it.perm = 'granted';   // v2026.11.08.2 (025): the folder was actually read (step 3's "nothing found" needs this)
 }
+// v2026.11.08.2 (build queue 025; Project doc roadmap/intel-folder-permission-plan.md): the chat-logs folder after a reload. Chrome 122+
+// asks again for a folder kept from an earlier visit ("Allow this time" lasts the session; "Allow on every visit" stays) and may take a
+// one-time grant back while the tab is in the background (developer.chrome.com/blog/persistent-permissions-for-the-file-system-access-api).
+// A folder restored from storage "is also likely to return 'prompt'" (wicg.github.io/file-system-access, queryPermission), and asking
+// needs a click (requestPermission throws SecurityError without one). it.perm: none / prompt / granted / denied.
+async function itPermRead(){
+  if(!it.dir){ it.perm = 'none'; return it.perm; }
+  try{ it.perm = it.dir.queryPermission ? await it.dir.queryPermission({mode: 'read'}) : 'granted'; }catch(e){ it.perm = 'prompt'; }
+  return it.perm;
+}
+// "Allow reading": only from a click. requestPermission is the first thing it awaits, so the click's activation is still there.
+async function itAllowRead(){
+  if(!it.dir) return;
+  let p;
+  try{ p = it.dir.requestPermission ? await it.dir.requestPermission({mode: 'read'}) : 'granted'; }catch(e){ p = 'prompt'; }
+  it.perm = p;
+  if(p === 'granted'){
+    it.err = '';
+    try{ await itScan(); }catch(e){ it.err = withCode(`The page can't read “${it.dirName}” (${e.message}).`, 'INTEL-02'); }
+  }
+  itRender(true);
+}
+// While the setup card shows (Intel off, a readable folder): look again when the tab is shown and every IT_RESCAN_MS, so logging into EVE
+// after choosing the folder shows up. Redrawn only when what was found changed (LESSON #120); nothing while the card can't be seen.
+function itFoundKey(){ return [it.perm, it.read, it.chans.join(','), [...it.chars.values()].map(c => `${c.id}:${c.sys}`).join(',')].join('|'); }
+let itLookBusy = false;
+async function itLookAgain(){
+  if(itLookBusy || !it.dir || !it.loaded || !itShown()) return;
+  itLookBusy = true;
+  try{
+    const k0 = itFoundKey();
+    await itPermRead();
+    if(it.on){
+      if(it.perm !== 'granted' && !it.err) it.err = itPermLostText();   // reading was taken back while the tab was away
+    }else if(it.perm === 'granted' && (!itReady() || !it.feed.length)){
+      try{ await itScan(); }catch(e){ if(e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) it.perm = 'prompt'; }
+    }
+    if(itFoundKey() !== k0) itRender(true);
+  }finally{ itLookBusy = false; }
+}
+function itPermLostText(){ return withCode(`The page can't read “${it.dirName}” any more: the browser took back the permission. Press Allow reading (in Chrome's box, Allow on every visit keeps it).`, 'INTEL-02'); }
 function itMySys(){ const s = it.me && it.me.sys; return s && it.names ? it.names.byLower.get(s.toLowerCase()) || null : null; }
 
 // ---- each tick: new lines -> reports ----
@@ -25765,6 +25812,7 @@ async function itTick(){
     it.err = '';
   }catch(e){
     if(e && e.code) it.err = withCode(e.message, e.code);
+    else if(e && (e.name === 'NotAllowedError' || e.name === 'SecurityError') && it.dir){ it.perm = 'prompt'; it.err = itPermLostText(); }   // v2026.11.08.2 (025)
     else if(e && (e.name === 'NotAllowedError' || e.name === 'NotFoundError' || e.name === 'SecurityError')){ it.err = withCode(`The page can't read “${it.dirName}” any more (${e.name === 'NotFoundError' ? 'the folder was moved or deleted' : 'the browser took back its permission'}). Choose the folder again under the gear.`, 'INTEL-02'); itStop(); }
     else { it.err = withCode(`Intel stopped reading: ${e && e.message || e}`, 'APP-01'); }
   }finally{
@@ -26514,7 +26562,8 @@ async function itStart(){
   try{
     let p = it.dir.queryPermission ? await it.dir.queryPermission({mode: 'read'}) : 'granted';
     if(p !== 'granted' && it.dir.requestPermission) p = await it.dir.requestPermission({mode: 'read'});
-    if(p !== 'granted'){ it.err = withCode(`The browser didn't allow reading “${it.dirName}”. Press the slider again and choose Allow.`, 'INTEL-02'); itRender(); return; }
+    it.perm = p;   // v2026.11.08.2 (025)
+    if(p !== 'granted'){ it.err = withCode(`The browser didn't allow reading “${it.dirName}”. Press the slider again and choose Allow on every visit (or Allow this time).`, 'INTEL-02'); itRender(); return; }
   }catch(e){ it.err = withCode(`The page can't read “${it.dirName}” (${e.message}). Choose the folder again under the gear.`, 'INTEL-02'); itRender(); return; }
   // the browser asks for notifications only after a press: this one (the slider)
   if(it.set.notify && typeof Notification !== 'undefined' && Notification.permission === 'default'){ try{ Notification.requestPermission().then(() => itRender()).catch(() => {}); }catch(e){} }
@@ -26541,7 +26590,7 @@ async function itChooseFolder(){
   if(!it.supported){ it.err = withCode(itNoFsText(), 'INTEL-01'); itRender(); return; }
   let h;
   try{ h = await window.showDirectoryPicker({id: 'eve-chatlogs', mode: 'read'}); }catch(e){ return; }   // cancelled
-  it.dir = h; it.dirName = h.name; it.chans = []; it.chars = new Map(); it.files = new Map(); it.err = '';
+  it.dir = h; it.dirName = h.name; it.chans = []; it.chars = new Map(); it.files = new Map(); it.err = ''; it.read = false; it.perm = 'granted';
   itKvSet('dir', h);
   try{ await itScan(); }catch(e){ it.err = withCode(`The page can't read “${h.name}” (${e.message}).`, 'INTEL-02'); }
   if(!it.set.channels.length){ const guess = it.chans.filter(c => /intel/i.test(c)); if(guess.length === 1){ it.set.channels = guess; itWriteSet(); } }
@@ -27014,7 +27063,8 @@ function itFeedWhy(){   // v2026.11.06.6 (015): why no new kills come, the most 
 function itFeedListHtml(){ itAnCan = new Map(); const feed = itFeedShown(), why = itFeedWhy(); return (why ? `<div class="it-why" data-it-why>${why}</div>` : '') + (feed.length ? feed.map(itFeedRowHtml).join('') : `<div class="pr-msg">${!it.on ? 'Nothing yet.' : it.q || it.fl.length || it.set.feed.types !== 'all' || it.set.feed.dist ? 'Nothing matches the filters.' : 'Nothing in the last ' + it.set.forget + ' minutes.'}</div>`); }   // v2026.11.06.1: the Feed note first
 function itNearListHtml(){ const near = itNearList(); return near.length ? near.map(itNearRowHtml).join('') : `<div class="pr-msg">${it.on ? 'Nothing reported in the last ' + it.set.forget + ' minutes.' : 'Nothing yet.'}</div>`; }
 // Redraw only the two lists (the filter bar in use keeps its focus and caret)
-function itNotesHtml(){ return `${it.err ? `<div class="pr-msg err">${escapeHtml(it.err)}</div>` : ''}${it.note ? `<div class="pr-msg">${escapeHtml(it.note)}</div>` : ''}${it.on && it.kfNote ? `<div class="pr-msg" data-it-kfnote>${escapeHtml(it.kfNote)}</div>` : ''}`; }
+function itAllowNoteHtml(){ return it.dir && it.perm === 'prompt' ? ' <button type="button" data-it-act="allow">Allow reading</button>' : ''; }   // v2026.11.08.2 (025)
+function itNotesHtml(){ return `${it.err ? `<div class="pr-msg err">${escapeHtml(it.err)}${itAllowNoteHtml()}</div>` : ''}${it.note ? `<div class="pr-msg">${escapeHtml(it.note)}</div>` : ''}${it.on && it.kfNote ? `<div class="pr-msg" data-it-kfnote>${escapeHtml(it.kfNote)}</div>` : ''}`; }
 function itRenderLists(){
   itHeaderSync();
   const el = typeof document !== 'undefined' && document.getElementById && document.getElementById('intelPanel');
@@ -27151,6 +27201,30 @@ function itAssessEnd(restore){
   it.saved = null; sa.intel = null;
   if(n) n.hidden = true;
 }
+// v2026.11.08.2 (build queue 025): step 1 by what the browser says about the folder; steps 2 and 3 wait while it can't be read, and say
+// "No Local log" only after a read that found none
+function itWaiting(){ return !!it.dir && (it.perm === 'prompt' || it.perm === 'denied'); }
+function itWaitHtml(k){ return !itWaiting() ? '' : k === 'cls' ? ' it-wait' : '<div class="c">Waiting for the folder (1).</div>'; }
+function itOnHtml(on, what){ return on ? ` ${escapeHtml(what)}` : ''; }
+function itChansHtml(chans){
+  if(chans.length) return chans.map(c => `<label><input type="checkbox" data-it-chan="${escapeHtml(c)}"${itOnHtml(it.set.channels.includes(c), 'checked')}> ${escapeHtml(c)}</label>`).join('');
+  return itWaiting() ? '' : `<div class="c">${escapeHtml(it.dir && it.read ? 'No channel logs from the last 2 days.' : 'Found in the folder.')}</div>`;
+}
+function itCharsHtml(chars){
+  if(chars.length) return chars.map(c => `<label><input type="radio" name="itMe" data-it-me="${Number(c.id)}"${itOnHtml(c.id === it.set.me, 'checked')}> ${escapeHtml(c.name)} <span class="it-dim">${escapeHtml(c.sys || '')}</span></label>`).join('');
+  return `<div class="c">${escapeHtml(itYouEmptyText())}</div>`;
+}
+function itYouEmptyText(){
+  if(!it.dir) return 'From your Local log; follows you as you jump.';
+  if(itWaiting()) return 'Waiting for the folder (1).';
+  if(!it.read) return 'Reading the folder…';
+  return 'No Local log in this folder from the last 2 days. In EVE: Settings → Chat → Log Chat to File, then log in again.';
+}
+function itFolderStateHtml(){
+  if(it.dir && it.perm === 'prompt') return `<div class="c">Needs your OK this visit.</div><div class="it-btns"><button type="button" data-it-act="allow">Allow reading</button><button type="button" data-it-act="folder">Change…</button></div>${ctxHtml('Pick Allow on every visit to skip this')}`;
+  if(it.dir && it.perm === 'denied') return `<div class="c">The browser is blocking this folder for this site.</div><button type="button" data-it-act="folder">Change…</button>`;
+  return `<div class="c">${escapeHtml(it.dir ? 'EVE’s Chatlogs folder' : 'Documents\\EVE\\logs\\Chatlogs; the browser asks once')}</div><button type="button" data-it-act="folder">${escapeHtml(it.dir ? 'Change…' : 'Choose folder…')}</button>`;
+}
 function itSettingsHtml(numbered){
   const n = (i, t) => `<div class="k">${numbered ? `${i} · ` : ''}${t}</div>`;
   const chars = [...it.chars.values()].sort((a, b) => a.name.localeCompare(b.name));
@@ -27158,9 +27232,9 @@ function itSettingsHtml(numbered){
   const opts = (vals, cur, unit) => vals.map(v => `<option value="${v}"${v === cur ? ' selected' : ''}>${v}${unit}</option>`).join('');
   const notifyNote = typeof Notification === 'undefined' ? ' (not in this browser)' : Notification.permission === 'denied' ? ' (blocked in the browser)' : '';
   return `<div class="it-setup">
-    <div class="it-box">${n(1, 'Chat logs folder')}<div class="v">${it.dir ? escapeHtml(it.dirName) : 'not chosen'}</div><div class="c">${it.dir ? 'EVE’s Chatlogs folder' : 'Documents\\EVE\\logs\\Chatlogs; the browser asks once'}</div><button type="button" data-it-act="folder">${it.dir ? 'Change…' : 'Choose folder…'}</button></div>
-    <div class="it-box">${n(2, 'Intel channels')}${chans.length ? chans.map(c => `<label><input type="checkbox" data-it-chan="${escapeHtml(c)}"${it.set.channels.includes(c) ? ' checked' : ''}> ${escapeHtml(c)}</label>`).join('') : `<div class="c">${it.dir ? 'No channel logs from the last 2 days.' : 'Found in the folder.'}</div>`}</div>
-    <div class="it-box">${n(3, 'You')}${chars.length ? chars.map(c => `<label><input type="radio" name="itMe" data-it-me="${c.id}"${c.id === it.set.me ? ' checked' : ''}> ${escapeHtml(c.name)} <span class="it-dim">${escapeHtml(c.sys || '')}</span></label>`).join('') : `<div class="c">${it.dir ? 'No Local log from the last 2 days: log in once with Log Chat to File on.' : 'From your Local log; follows you as you jump.'}</div>`}</div>
+    <div class="it-box">${n(1, 'Chat logs folder')}<div class="v">${it.dir ? escapeHtml(it.dirName) : 'not chosen'}</div>${itFolderStateHtml()}</div>
+    <div class="it-box${itWaitHtml('cls')}">${n(2, 'Intel channels')}${itWaitHtml('note')}${itChansHtml(chans)}</div>
+    <div class="it-box">${n(3, 'You')}${itCharsHtml(chars)}</div>
     <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
     ${numbered ? '' : itAliasBoxHtml()}
     ${leaveHosts().length ? `<div class="it-box">${n(5, 'Links outside this site')}<div class="c">${escapeHtml(leaveHosts().map(leaveName).join(', '))} open${leaveHosts().length === 1 ? 's' : ''} without asking (you chose “Don't ask again”).</div><button type="button" data-it-act="leaveask">Ask again</button></div>` : ''}
@@ -27510,7 +27584,7 @@ function itFocusKey(a){   // a selector that finds the same control again after 
 }
 function itQuickKey(){
   const f = it.feed[0], sz = (m) => m ? m.size : 0;
-  return [it.on, it.dirName, it.err, it.note, it.pop, it.kfNote, it.q, JSON.stringify(it.fl), it.feed.length, f ? f.id : 0, it.near.size, it.me && it.me.sys, sz(it.chars), sz(it.files),
+  return [it.on, it.dirName, it.perm, it.read, it.err, it.note, it.pop, it.kfNote, it.q, JSON.stringify(it.fl), it.feed.length, f ? f.id : 0, it.near.size, it.me && it.me.sys, sz(it.chars), sz(it.files),
     it.chans.length, it.names ? it.names.list.length : 0, sz(it.pilots), sz(it.aff), sz(it.charNames), sz(it.sec), sz(it.gateDest), sz(orgCache),
     sz(it.rawOpen), sz(it.nearOpen), it.shape ? it.shape.id : 0, JSON.stringify(it.set), itR2Stopped(), it.sndRev || 0, itFeedDown() ? itR2EverRead + 1 : 0, itFeedWhy()].join('|');   // v2026.11.06.6: the Feed note's reason   // v2026.11.06.1   // v2026.11.01.8: your sound files
 }
@@ -28187,17 +28261,24 @@ function rsBind(root){
     if(a.dataset.itAct === 'leaveask'){ leaveSave([]); itRender(true); return; }   // v2026.10.31.3: links outside the site ask again
     if(a.dataset.itAct === 'example' || a.dataset.itAct === 'exclose'){ itExOpen(a.dataset.itAct === 'example'); return; }   // v2026.11.07.7
     if(a.dataset.itAct === 'folder') itChooseFolder();
+    if(a.dataset.itAct === 'allow') itAllowRead();   // v2026.11.08.2 (025): from the click itself
   });
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && it.pop){ it.pop = false; itRender(true); itGearFocus(); } });
   setInterval(() => { if(it.on && itShown()) itStatusPaint(el); }, 1000);   // v2026.11.01.4: only while it can be seen, and only when its text changed
   document.addEventListener('visibilitychange', itShowAgain);   // v2026.11.01.4: the browser tab shown again: draw what came in meanwhile
+  // v2026.11.08.2 (025): the folder's permission can change while the tab is away; look again when it's shown, and while the setup card
+  // shows (Intel off), every IT_RESCAN_MS; itLookAgain does nothing while hidden and redraws only on a change
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) itLookAgain(); });
+  if(typeof window !== 'undefined' && window.addEventListener) window.addEventListener('focus', () => itLookAgain());
+  setInterval(() => { if(!it.on && it.perm === 'granted') itLookAgain(); }, IT_RESCAN_MS);
   // v2026.11.07.1 (build queue 010): the "+N more systems below" count follows Near You's own scroll (one frame a scroll; passive)
   el.addEventListener('scroll', (e) => { if(e.target && e.target.id === 'itNearList') itNearMoreSoon(); }, {capture: true, passive: true});
   if(typeof window !== 'undefined' && window.addEventListener){ let rt = 0; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if(it.on || it.near.size){ for(const x of el.querySelectorAll('#itNearList, #itFeedList, #itNotes')) x._h = null; itRenderLists(); } }, 200); }); }   // v2026.11.01.4: redrawn though the text is the same: the widths changed   // v2026.10.30.1: the 3-line cap follows the width
   itKvGet('dir').then(async (h) => {   // the folder chosen before; read it now if the browser still allows it (else the slider asks)
     if(h && !it.dir){
       it.dir = h; it.dirName = h.name;
-      try{ if(h.queryPermission && await h.queryPermission({mode: 'read'}) === 'granted') await itScan(); }catch(e){ /* asked when turned on */ }
+      // v2026.11.08.2 (025): remember what the browser says; "prompt" shows Allow reading in step 1 (the page can't ask without a click)
+      try{ if(await itPermRead() === 'granted') await itScan(); }catch(e){ it.perm = 'prompt'; }
     }
     it.loaded = true; itRender();
   });
