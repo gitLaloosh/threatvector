@@ -82,6 +82,7 @@ def fast(html):
         ('no new unescaped HTML (LESSON #144)', q('check_html_sinks.py'), lambda l: l.endswith(' 0 problems')),
         ('HTML-sink lint self-test', q('check_html_sinks.py') + ' --self-test', lambda l: l.endswith(': ok')),
         ('the Intel example\'s made-up names (offline)', q('check_example_names.py'), lambda l: l.endswith(' 0 problems')),
+        ('plan sources lint self-test (LESSON #147)', 'python3 -I tools/check_plan_sources.py --self-test', lambda l: l.endswith(': ok')),
         ('subtext rule', q('check_subtext.py'), lambda l: l.endswith(' 0 problems')),
         ('card names', q('check_card_names.py'), lambda l: l.endswith(' 0 problems')),
         ('zKillboard request gates', q('check_request_gates.py'), lambda l: l.endswith(' 0 problems')),

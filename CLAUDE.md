@@ -391,4 +391,11 @@ file, starting with `**BUG | …`. Never put the backlog in a repo file: the rep
 **If you don't have the memory tools, say so and stop.** Tell the owner you can't add it to the backlog from here; don't write it
 anywhere else.
 Build queue: the Project docs folder `claude/build-queue/` holds prompts waiting to be built; read its README when the owner says to take the next item.
+**Facts from outside the project carry their source** (LESSON #147; the owner, 2026-11-08: "let's force planners to learn from it as
+well"; the build queue README's rule of the same name). A plan, research note or code comment that states a provider's fact (CCP's SSO,
+ESI, SDE or DLA, zKillboard, pyfa, GitHub, browsers) the code will match exactly or send (a format, address, field or header name,
+status, limit, scope, rule) cites the provider's own source and the date checked, or says **UNVERIFIED** with what would confirm it.
+A remembered fact is UNVERIFIED. Plans end with a "Sources" table; `python3 -I tools/check_plan_sources.py <plan.md>` refuses one
+without it (the planner runs it before queueing, the builder before its review). The builder opens each source at the review: a fact
+with no source, or one its source contradicts, is a concern raised before building, and the plan doc is corrected.
 **`todo-inbox/` is the owner's drop box.** Agents read it and empty it; agents never write new items into it.

@@ -1066,6 +1066,10 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - **Do this instead:** for every field a security check matches exactly (a claim's form, an issuer, an audience, a header), find the
   provider's own page or a primary source and write the source next to the code; build the stand-in from that, not from the plan.
   Where the plan is wrong, say so in the pull request so the plan gets corrected. See also #118.
+- **Made a rule for planners too (2026-11-08, the owner: "let's force planners to learn from it as well"):** the build queue
+  README's "Facts from outside the project carry their source" and CLAUDE.md's paragraph of the same name: every outside fact in a
+  plan cites the provider's own source and the date, or says UNVERIFIED; plans end with a Sources table, refused without one by
+  `tools/check_plan_sources.py`; the builder opens each source at its review.
 
 ## 146. Measure rows in a scroll box against the box itself: make it positioned, and never take a sticky row's offsetTop
 
