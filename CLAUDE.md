@@ -128,6 +128,30 @@ workers: blob:); `<meta name="referrer" content="no-referrer">`. So:
   `tools/page_checks/csp_check.py` is the only one with the policy on, and it is where the policy is tested. A new page check
   uses `bypass_csp=True` too; never turn the policy off in csp_check.
 
+**Log in with EVE** (v2026.11.08.1, build queue 024, SSO Phase 1; Project docs roadmap/sso-phase1-plan.md and roadmap/eve-sso-plan.md;
+LESSON #147): the profile's Pilot section has CCP's black button above the typed name ("or type it"); logged in, the field is the name,
+an "EVE login" tag and Log out. CCP's PKCE recipe, no server: no client secret anywhere, **no scope** at login (a later feature asks
+for its own when it is turned on). So:
+- **The login is optional.** Nothing may require it: typing a pilot, hand-kept Standings and EFT pastes all stay.
+- **The address is cleaned before any request:** `SSO_RET` at the top of the script takes code/state/error out of the address
+  (keeping other parameters and the hash) before `gdVersionCheck` or anything else asks anything; `ssoFinish` uses it after start-up.
+- **Every request to login.eveonline.com goes through `ssoFetch`** (its host only, `credentials: 'omit'`, no cache, no referrer),
+  called only from the functions in `SSO_SITES` in `tools/check_request_gates.py`; the host is written once, `const SSO_HOST`.
+  Only JSON answers are read (`ssoJson`; an HTML error page is its status number). The endpoints come from CCP's metadata, never
+  hard-coded.
+- **Tokens:** the access token in memory only (Phase 1 sends it nowhere: no Authorization header yet); the refresh token and `{id,
+  name}` in sessionStorage (`tvSsoRefresh`, `tvSsoWho`; `tvSsoPending` for the press), never localStorage. Log out revokes it and clears
+  the pilot. No link to EVE's authorized apps (developers.eveonline.com/authorized-apps): it lists apps with the permissions they hold
+  and a revoke, and a login with none isn't listed (the owner's hand test, 2026-11-08); the first permission (Phase 2) brings the
+  link back. CCP has no logout page for apps: the player stays signed in on EVE's own site, so nothing may promise more. Another tab changing the pilot logs this tab out.
+- **CCP's button image stays as CCP made it** (DLA 7.2; one of its four images, black large here): hover and focus are drawn on the
+  `<button>` around it, never a filter, opacity or resize on the image.
+- **The token is checked** (`ssoVerify`): the JWKS key its kid names, RS256 + RSA or ES256 + P-256 only; iss, aud (the Client ID and
+  "EVE Online"), exp, sub `CHARACTER:EVE:<id>`. The Client ID comes from the origin (`SSO_APPS`: threatvector.space, the dev app at
+  http://localhost:8000); any other origin shows the button disabled. Errors SSO-01..05.
+- **Never a live login in a check:** `tools/page_checks/sso_check.py` serves the page at both origins and answers for CCP with keys
+  made per run; made-up tokens in the `madeUp…` form. The only live login is the owner's hand test on the dev app.
+
 **My Ship** (v2026.10.14.33, `roadmap/my-ship-plan.md`): the user's own fit, saved in
 the browser (`localStorage` `dscanMyShip`: EFT text, module states, the switch; never the
 numbers, which are recomputed from the text). Code: the `MY SHIP` block at the end of the
@@ -368,4 +392,6 @@ file, starting with `**BUG | …`. Never put the backlog in a repo file: the rep
 **If you don't have the memory tools, say so and stop.** Tell the owner you can't add it to the backlog from here; don't write it
 anywhere else.
 Build queue: the Project docs folder `claude/build-queue/` holds prompts waiting to be built; read its README when the owner says to take the next item.
+**Outside facts carry their source** (LESSON #147): the rule lives in the build queue README ("Facts from outside the project carry
+their source"); `tools/check_plan_sources.py <plan.md>` enforces its shape. Planners and builders read it there.
 **`todo-inbox/` is the owner's drop box.** Agents read it and empty it; agents never write new items into it.

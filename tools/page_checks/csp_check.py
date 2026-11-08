@@ -7,7 +7,7 @@ and mutants, which the policy rightly refuses. This is the one check that keeps 
 here and nowhere else. The page is served over HTTP from its own folder (as GitHub Pages serves it, so 'self' and the referrer
 behave as they will live); ESI, zKillboard, R2Z2 and EVE's images are the page checks' stand-ins (made-up data, no network).
   * a tour with the policy on: every tab, the Fit Analyzer with a fit, the Pilot Analyzer (zKillboard), Local, the profile and
-    My Fits panels, and Intel running (its timer worker, reports read from made-up logs): 0 policy violations, no page errors;
+    My Fits panels (the EVE login's button image, and its metadata read from a stand-in for CCP, v2026.11.08.1), and Intel running (its timer worker, reports read from made-up logs): 0 policy violations, no page errors;
   * an inline handler injected the way a missed escape would let it in (<img onerror>) is refused: it doesn't run, and the
     browser reports a script-src-attr violation;
   * each data-imgfail kind does what its inline handler did (hide, remove, none, next, next-block, initials), with EVE's
@@ -44,6 +44,10 @@ REFERERS = []
 def make_ctx(b):
     ctx = b.new_context(viewport={'width': 1440, 'height': 1000})   # no bypass_csp: the policy is what's under test
     ctx.add_init_script(COLLECT); ctx.add_init_script(FS); route(ctx)
+    # v2026.11.08.1 (build queue 024): CCP's login answers its metadata (made up; never a live login)
+    H = 'https://login.eveonline.com'
+    ctx.route(re.compile(r'https://login\.eveonline\.com/.*'), lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps(
+        {'issuer': H, 'authorization_endpoint': H + '/v2/oauth/authorize', 'token_endpoint': H + '/v2/oauth/token', 'jwks_uri': H + '/oauth/jwks', 'revocation_endpoint': H + '/v2/oauth/revoke'})))
     ctx.on('request', lambda r: REFERERS.append(r.headers.get('referer')) if not r.url.startswith('http://127.0.0.1') else None)
     return ctx
 
@@ -71,7 +75,11 @@ try:
         pg.click('#tabBtnPilot'); pg.fill('#pilotName', 'Test Pilot'); pg.click('#fitBtn'); pg.wait_for_timeout(6000)
         pg.evaluate("() => switchTab('dscan')"); pg.wait_for_timeout(300)
         pg.fill('#localInput', '\n'.join(M.LOCAL.split('\n')[:12])); pg.click('#analyzeBtn'); pg.wait_for_timeout(5000)
-        pg.evaluate("() => openProfile()"); pg.wait_for_timeout(600); pg.keyboard.press('Escape')
+        pg.evaluate("() => openProfile()"); pg.wait_for_timeout(600)
+        # v2026.11.08.1 (024): the EVE button's image (a data: image) and a request to CCP's login (connect-src) under the policy
+        ssoq = pg.evaluate("async () => { const i = document.querySelector('button.sso-btn img'); let m; try{ m = (await ssoMeta()).token_endpoint; }catch(e){ m = 'error: ' + e.message; } return [i ? i.naturalWidth : 0, m]; }")
+        check(ssoq == [270, 'https://login.eveonline.com/v2/oauth/token'], f"the EVE login under the policy: its button image shows, CCP's metadata is read {ssoq}")
+        pg.keyboard.press('Escape')
         pg.evaluate("() => openMyShipPanel(undefined, {})"); pg.wait_for_timeout(600); pg.keyboard.press('Escape')
         # Intel: made-up logs, its timer worker running, reports read
         pg.click('#tabBtnIntel'); setup_logs(pg); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(500)

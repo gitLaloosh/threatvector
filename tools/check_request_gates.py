@@ -25,9 +25,11 @@ ESI (esi.evetech.net) is listed but not gated: its calls are capped by how many 
 limits errors rather than speed. A new ESI call still has to be listed.
   * v2026.11.07.3 (build queue 023, the SSO plan's Phase 0 hardening; roadmap/sso-hardening-plan.md step 5): an `Authorization`
     header may appear only in esiFetch (there are none today, so this catches Phase 1 mistakes); login.eveonline.com may be
-    named in code only by functions in SSO_SITES (empty until Phase 1 lists its login functions). Comments don't count.
-    Phase 1 (TODO, when the code exists): esiFetch adds Authorization only for ${ESI} URLs; a 401 from ESI ends that feature's
-    calls (no esiFetch retried in a loop that ignores the status); a token answer is parsed only after its content-type is JSON.
+    named in code only by functions in SSO_SITES. Comments don't count.
+  * v2026.11.08.1 (build queue 024, SSO Phase 1): ssoFetch is the one fetch() to CCP's login: it refuses an address outside
+    SSO_HOST before its fetch() and sends without cookies; it is called only from SSO_SITES; the host is written only in the
+    `const SSO_HOST` line. Phase 2 (TODO, when the code exists): esiFetch adds Authorization only for ${ESI} URLs; a 401 from ESI
+    ends that feature's calls (no esiFetch retried in a loop that ignores the status).
   * v2026.11.04.4 (build queue 012, the lookup budgets): esiFetch is the page's one fetch() to ESI. It sends the request
     it is given as it is (fetch(url, init): no added headers, no cache-busting) and only reads the answer. Every
     esiFetch(...) call names ${ESI}, sits in a function listed in ESI_SITES, and says which kind of lookup it is (a key of
@@ -43,6 +45,7 @@ src = open(HTML, encoding='utf-8').read()
 SITES = {
     'zkbFetchNow': 'zkb', 'itR2Fetch': 'r2z2',
     'esiFetch': 'esi',   # v2026.11.04.4: the one fetch() to ESI; its callers are ESI_SITES
+    'ssoFetch': 'sso',   # v2026.11.08.1 (build queue 024): the one fetch() to CCP's login; its callers are SSO_SITES
 }
 # function -> its esiFetch calls (v2026.11.04.4; before, each of these had its own fetch() to ESI)
 ESI_SITES = {'resolveNamesToIds', 'getType', 'getGroup', 'resolveIdsToNames', 'fetchKillmail',
@@ -82,6 +85,8 @@ for m in re.finditer(r'(?<![\w.$])fetch\(', src):
     host = SITES[fn]
     if fn == 'zkbFetchNow':
         if not arg.startswith('url'): problems.append(f'index.html:{line(src, m.start())}: zkbFetchNow fetches something other than its url argument')
+    elif fn == 'ssoFetch':
+        if not arg.startswith('url, '): problems.append(f'index.html:{line(src, m.start())}: ssoFetch must fetch its url argument')
     elif fn == 'esiFetch':
         if not arg.startswith('url, init)'): problems.append(f'index.html:{line(src, m.start())}: esiFetch must send the request it was given as it is: fetch(url, init)')
     elif not re.search(HOST_RX[host], arg.split(')')[0] if host != 'esi' else arg):
@@ -161,7 +166,10 @@ for m in re.finditer(r'setTimeout\([^;\n]*\bi\s*\*[^;\n]*', src):
     if re.search(r'itKillGet|itKillSeq|itR2Fetch|zkbFetch', ctx): problems.append(f'index.html:{line(src, m.start())}: timers staggered by index next to a zKillboard request: in a hidden tab they fire together')
 
 # v2026.11.07.3 (build queue 023): tokens go only to CCP. An Authorization header only in esiFetch; login.eveonline.com only from SSO_SITES.
-SSO_SITES = set()   # Phase 1 lists its login functions here (the metadata, token and revoke requests)
+# v2026.11.08.1 (build queue 024, SSO Phase 1): the functions that call ssoFetch (the metadata, the token, the keys, the revoke).
+# The host itself is written once, in `const SSO_HOST = ...` (with SSO_ISS, the token's issuer names), and ssoFetch refuses any
+# address that doesn't start with it, before its fetch().
+SSO_SITES = {'ssoMeta', 'ssoFinish', 'ssoVerify', 'ssoRevoke'}
 def code_only(s):   # the script with // and /* */ comments blanked (same length, so positions and lines still match)
     out = re.sub(r'/\*.*?\*/', lambda m: re.sub(r'[^\n]', ' ', m.group(0)), s, flags=re.S)
     return re.sub(r'(^|[^:\\\'"`])//[^\n]*', lambda m: m.group(1) + ' ' * (len(m.group(0)) - len(m.group(1))), out)
@@ -172,8 +180,22 @@ for m in re.finditer(r'(?<![\w-])[\'"]?authorization[\'"]?\s*[:,]', code, re.I):
     fn = enclosing(starts, m.start())
     if fn != 'esiFetch': problems.append(f'index.html:{line(src, m.start())}: an Authorization header in {fn}(): tokens go only to ESI, through esiFetch')
 for m in re.finditer(r'login\.eveonline\.com', code):
+    ln = code[code.rfind('\n', 0, m.start()) + 1:code.find('\n', m.start())]
+    if ln.startswith("const SSO_HOST = 'https://login.eveonline.com', SSO_ISS = ['https://login.eveonline.com', 'login.eveonline.com'];"): continue
     fn = enclosing(starts, m.start())
     if fn not in SSO_SITES: problems.append(f'index.html:{line(src, m.start())}: login.eveonline.com in {fn}(), which is not in SSO_SITES (the login functions, Phase 1)')
+
+sso_seen = set()
+for m in re.finditer(r'(?<![\w.$])ssoFetch\(', code):
+    if code[:m.start()].rstrip().endswith('function'): continue
+    fn = enclosing(starts, m.start()); sso_seen.add(fn)
+    if fn not in SSO_SITES: problems.append(f'index.html:{line(src, m.start())}: ssoFetch() in {fn}(), which is not in SSO_SITES: list it')
+for fn in SSO_SITES - sso_seen: problems.append(f'{fn}() is in SSO_SITES but has no ssoFetch() any more: update the list')
+_sb = body(src, 'ssoFetch') or ''
+_g, _f = _sb.find("if(typeof url !== 'string' || !url.startsWith(SSO_HOST + '/')) throw"), _sb.find('fetch(')
+if _g < 0 or _f < 0 or _g > _f: problems.append("ssoFetch no longer refuses an address outside SSO_HOST before its fetch()")
+if "credentials: 'omit'" not in _sb: problems.append("ssoFetch no longer sends without cookies (credentials: 'omit')")
+if not re.search(r"^const SSO_HOST = 'https://login\.eveonline\.com',", src, re.M): problems.append('SSO_HOST is no longer CCP\'s login host')
 
 for f in glob.glob(os.path.join(ROOT, 'browser-extension', '*.js')):
     t = open(f, encoding='utf-8').read()
