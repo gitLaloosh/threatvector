@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-08 — Checks picked against main</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+table{border-collapse:collapse; font-size:13px;} td,th{border:1px solid #ddd; padding:4px 8px; text-align:left;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Checks picked against main</h1>
+<p><span class="tag">Tools</span> 2026-11-08 &middot; page unchanged (after <code>v2026.11.08.3</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>Building 026, <code>run_checks.py --auto</code> ran only the lints: with no <code>--since</code> the picker compared with the last commit, and the work was already committed, so it saw no change. Rerun against a copy of main, it picked 82 page checks and one found a real bug.</li>
+<li>A fresh build session's dry run showed the other side: a one-line comment in an Intel function picked every area, because the CSP meta's script hash (line 6) changes with every edit to the page and counted as a change to every area.</li>
+<li>The owner: "make it your first priority - these deliveries have been taking forever."</li>
+</ul>
+
+<h2>What changed (tools only)</h2>
+<ul>
+<li><b>Compared with main:</b> with a .git folder, the picker compares with where the branch left main (<code>git merge-base HEAD origin/main</code>; origin/main itself in a shallow clone), committed work included, and the run says what it compared with. With no origin/main it warns that it fell back to the last commit.</li>
+<li><b>The CSP hash alone isn't a change:</b> a line that differs only in the script hash counts as nothing; a change to the policy itself still runs every page check.</li>
+<li><b>Never-delivered files don't count:</b> git-ignored <code>*.local.*</code> files (the names list) and <code>_site/</code>.</li>
+<li><b>Files that picked everything for no reason:</b> the HTML-sink baseline, <code>csp_hash.py</code> and the publish step are lints (fast); the site's icons, <code>render_icons.py</code> and <code>CNAME</code> go to the layout checks.</li>
+<li>A <code>.git</code> file (a git worktree) is accepted as well as a folder. CLAUDE.md says <code>--auto</code> alone works again (after <code>git fetch origin</code>).</li>
+</ul>
+
+<h2>The last 12 deliveries, replayed</h2>
+<p>Each delivery's change (its parent against it, from git) through the old picker and the new one; "checks" is the number of page checks the tier runs (82 = all).</p>
+<table>
+<tr><th>Delivery</th><th>Old</th><th>New</th></tr>
+<tr><td>v2026.11.08.3 one-tab Intel (026)</td><td>8 areas, 82</td><td>intel, layout: 42</td></tr>
+<tr><td>page unchanged, publish step (027)</td><td>all, 82</td><td>calc + layout: 43 (it changed the regression suite)</td></tr>
+<tr><td>v2026.11.08.2 folder after a reload (025)</td><td>all, 82</td><td>intel, layout: 42</td></tr>
+<tr><td>v2026.11.08.1 log in with EVE (024)</td><td>all, 82</td><td>all, 82 (code at the top of the script, shared)</td></tr>
+<tr><td>v2026.11.07.8 Intel's switch waits</td><td>all, 82</td><td>6 areas, 82</td></tr>
+<tr><td>v2026.11.07.7 Intel example (017)</td><td>all, 82</td><td>all, 82 (the shared info-panel code)</td></tr>
+<tr><td>v2026.11.07.6 amber show-more buttons</td><td>4 areas, 62</td><td>4 areas, 62</td></tr>
+<tr><td>v2026.11.07.5 long lists (011)</td><td>8 areas, 82</td><td>layout, pilot, system: 52</td></tr>
+<tr><td>page unchanged, logo note</td><td>fast</td><td>fast</td></tr>
+<tr><td>v2026.11.07.4 logo (022)</td><td>all, 82</td><td>8 areas, 82 (a shared CSS token)</td></tr>
+<tr><td>v2026.11.07.3 CSP (023)</td><td>all, 82</td><td>all, 82 (shared code)</td></tr>
+<tr><td>v2026.11.07.2 escaping quotes (021)</td><td>all, 82</td><td>all, 82 (shared code)</td></tr>
+</table>
+<ul>
+<li>Where the new picker still runs everything, the change touched code every part of the page uses (the top of the script, the info panels, escaping, a site-wide colour): running everything there is right.</li>
+<li>Every 5th delivery still runs everything, as before.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li><code>check_picker.py --self-test</code>: 13 made-up edits (new: the CSP hash alone picks nothing; the CSP policy picks every page check).</li>
+<li>A committed one-line comment in <code>itRender</code>, in a throwaway worktree: <code>--auto --plan</code> picks intel only and says it compared with main (before: "fast").</li>
+<li>The fast lints: 0 failed.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #149: a check runner that compares with the wrong starting point passes by testing nothing. Compare with where the branch left main, say what was compared, and replay past deliveries through a changed picker.</p>
+</body></html>

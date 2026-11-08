@@ -186,6 +186,7 @@ def main(argv):
         import check_picker
         tier, areas, why = check_picker.pick(ROOT, opt('--since'), AREAS, NAMES)
         print(f'AUTO: tier {tier}' + (f' --area {",".join(areas)}' if areas else ''))
+        for n in check_picker.BASE_NOTE: print('  ' + n)   # 2026-11-08: what it compared with (main, not the last commit)
         for k, v in sorted(why.items()): print(f'  {k}: {v}')
         if '--plan' in argv: return 0
     bad = [a for a in areas if a not in NAMES]

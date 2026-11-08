@@ -195,6 +195,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #106 A rate guard must stop at the first refusal, stay stopped, and count what it granted. See also #93, #94.
 - #140 Wait as long as the service itself waits, and let one slow item fail alone: a short timeout read as an outage stops everything. See also #106.
 - #148 Stopping a reader must also stop what it already queued at the gate: check whether the reader still runs after the wait, not only before. See also #106.
+- #149 A check runner that compares with the wrong starting point passes by testing nothing: compare with where the branch left main, and say what was compared. See also #115.
 
 **Delivery, privacy and the repository**
 
@@ -1055,6 +1056,20 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 149. A check runner that compares with the wrong starting point passes by testing nothing: compare with where the branch left main, and say what was compared
+
+- **What happened (v2026.11.08.3, build queue 026):** `run_checks.py --auto` asked the picker what changed, and the picker, with a
+  .git folder and no `--since`, compared with the last commit (`git diff HEAD`). The build session commits as it goes, so by the time
+  the checks ran everything was in that commit: no change, tier "fast", 21 lints, 0 page checks, "RUN CHECKS: 0 failed". Rerun with
+  a copy of main it picked 82 page checks and one failed, a real bug of that delivery. The other way round, every edit to the page
+  changes the CSP meta's script hash (line 6), which the picker read as a change to every area: a one-line Intel change ran 82 page
+  checks. A replay of 12 deliveries also found lint inputs and the site's icons unmapped, so they picked everything.
+- **How it was caught:** the summary line ("0 page checks") of a page change; then a fresh session's dry run, whose plan listed the
+  CSP line and the git-ignored names list as changes.
+- **Do this instead:** compare with `git merge-base HEAD origin/main` (origin/main itself in a shallow clone), committed work
+  included, and print what was compared; ignore a hash that only follows other edits and files that are never delivered; replay
+  past deliveries through a changed picker to see what each would have run.
 
 ## 148. Stopping a reader must also stop what it already queued at the gate: check whether the reader still runs after the wait, not only before
 
