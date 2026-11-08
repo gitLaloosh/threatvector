@@ -134,6 +134,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #144 Escape for the place the text goes: text-node escaping isn't attribute escaping. escapeHtml escapes quotes; attributes are double-quoted. See also #104.
 - #145 A security policy the checks switch off is untested: one check runs the page with it on, every other opens with bypass_csp=True.
 - #146 Measure rows in a scroll box against the box itself: make it positioned, and never take a sticky row's offsetTop (it moves while stuck).
+- #147 A format a plan writes down is a claim, not a source: check it against the provider's own before it becomes a check in code. See also #118.
 - #112 Read a short name against what the line is about, not the whole map: a gate word means one of that system's gates.
 - #113 Judge a layout at its worst, at the real width: every tag, badge and name at once, in a frame as wide as the window.
 - #114 Size a mockup the way the page sizes it, and test with names as long as the real ones: short made-up names hide gaps.
@@ -1053,6 +1054,18 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 147. A format a plan writes down is a claim, not a source: check it against the provider's own before it becomes a check in code
+
+- **What happened (v2026.11.08.1, build queue 024, while building):** the SSO plan said the access token's `sub` "matches
+  `EVE:CHARACTER:<digits>`". CCP's tokens carry `CHARACTER:EVE:<digits>`. Built as written, every real login would have failed the
+  token check (SSO-04), and the stand-in, made from the same plan, would have passed it: the check and the code would have agreed with
+  each other and both been wrong.
+- **How it was caught:** before writing the regular expression, the format was looked up in CCP's documentation for validating the
+  token and in a published client library's claims model; both say `CHARACTER:EVE:`.
+- **Do this instead:** for every field a security check matches exactly (a claim's form, an issuer, an audience, a header), find the
+  provider's own page or a primary source and write the source next to the code; build the stand-in from that, not from the plan.
+  Where the plan is wrong, say so in the pull request so the plan gets corrected. See also #118.
 
 ## 146. Measure rows in a scroll box against the box itself: make it positioned, and never take a sticky row's offsetTop
 

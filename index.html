@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-seInrCTX8relxasuf2x62omUBSsHCln2cEq+L/Tt+Cg='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-+eCEXLl32G1meIu5uWkjZTyf0KtVAMB7oywp0hhQmtA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3001,8 +3001,25 @@
   .pp-ok{width:16px; height:16px; border-radius:3px; background:var(--tag-fill); display:inline-flex; align-items:center; justify-content:center; font:700 11px var(--sans); color:var(--text-dim); flex:none;}
   .pp-ok::before{content:"·";}
   .pp-sec.done .pp-ok{background:color-mix(in srgb, var(--cyan) 20%, #151b20); color:var(--cyan);} .pp-sec.done .pp-ok::before{content:"✓";}
-  button.pp-sso{min-height:34px; margin-top:6px; padding:0 12px; border-radius:4px; border:1px solid transparent; background:var(--tag-fill); color:var(--text); font:600 12.5px var(--sans); opacity:0.5; cursor:default;}
-  .pp-foot{margin-top:12px; font-size:12px; color:var(--text-dim);} button.pp-sso .ctx{display:inline; margin-left:4px;}
+  /* v2026.11.08.1 (build queue 024): Log in with EVE in the Pilot section; CCP's own button image, unaltered (DLA 7.2; CCP: "please use
+     one of the following images for the button"): hover and focus are drawn on the button around it, never on the image's pixels */
+  .sso-box{margin:0 0 14px;}
+  .sso-or{display:flex; align-items:center; gap:8px; margin:12px 0 0; font:600 11px var(--sans); color:var(--text-dim); text-transform:uppercase; letter-spacing:.5px;}
+  .sso-or::before, .sso-or::after{content:""; flex:1 1 auto; height:1px; background:var(--line);}
+  button.sso-btn{display:block; min-height:0; padding:0; border:0; border-radius:4px; background:transparent; cursor:pointer; line-height:0;}
+  button.sso-btn img{display:block; width:270px; height:45px;}
+  button.sso-btn:hover:not(:disabled){outline:2px solid var(--accent-edge); outline-offset:2px;}
+  button.sso-btn:disabled{cursor:not-allowed;}
+  button.sso-btn:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+  .sso-sub{display:flex; align-items:center; gap:6px; margin-top:6px;}
+  .sso-in{display:flex; align-items:center; gap:8px; min-height:36px;}
+  .sso-in .sso-who{flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:8px; overflow:hidden;}
+  .sso-in .sso-who b{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--heading);}
+  .sso-tag{flex:none; padding:1px 6px; border-radius:3px; background:var(--tag-fill); color:var(--text-dim); font:600 11px var(--sans);}
+  .sso-in button{padding:6px 12px; flex:none;}
+  .side-msg a{color:var(--cyan);}
+  @media (max-width:599px){ .sso-in button{min-height:44px;} }
+  .pp-foot{margin-top:12px; font-size:12px; color:var(--text-dim);}
   /* the two sections that were panels of their own: no frame, no position of their own now */
   .pp .side-panel, .pp .mys-panel{position:static; width:auto; max-height:none; overflow:visible; border:none; border-radius:0; box-shadow:none; background:none; padding:0; z-index:auto;}
   .pp .side-panel{padding:0;}
@@ -3028,7 +3045,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.07.8</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.08.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3198,6 +3215,21 @@ if(typeof document !== 'undefined' && document.addEventListener) document.addEve
   else if(k === 'next' || k === 'next-block'){ t.style.display = 'none'; if(nx) nx.style.display = k === 'next' ? '' : 'block'; }
   else if(k === 'initials'){ const sp = document.createElement('span'); sp.className = 'pf-ini'; sp.textContent = t.dataset.initials || ''; t.replaceWith(sp); }
 }, true);
+// v2026.11.08.1 (build queue 024, SSO Phase 1; Project doc roadmap/sso-phase1-plan.md): coming back from EVE's login. The code and
+// state are taken out of the address here, before the page asks anything of anyone, so they can't leak (a referrer, the history, a
+// copied link); other parameters and the hash stay. ssoFinish (by the profile code) uses them once the page has started.
+const SSO_RET = (() => {
+  try{
+    if(typeof location === 'undefined' || typeof history === 'undefined' || !location.search) return null;
+    const q = new URLSearchParams(location.search);
+    if(!q.has('state') || !(q.has('code') || q.has('error'))) return null;
+    const r = {code: q.get('code'), state: q.get('state'), error: q.get('error')};
+    for(const k of ['code', 'state', 'error', 'error_description', 'iss']) q.delete(k);
+    const rest = q.toString();
+    history.replaceState(history.state, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+    return r;
+  }catch(e){ return null; }
+})();
 const ESI = 'https://esi.evetech.net/latest';
 const ZKB = 'https://zkillboard.com/api';
 
@@ -3351,6 +3383,12 @@ const CARD_INFO = {
   "[Kills and losses] With a system known (an Intel Assess's, else ⚙: your location from Intel, or a typed system), the line over the results counts its kills and losses in the last 1 to 72 hours (24 unless you change it) from one zKillboard request per system an hour, and the killmails read from ESI (the newest 300 at most; zKillboard lists 1,000). Each group, corporation, pilot and hull gets its own: ▲ kills it was on, ▼ its losses, with the whole kill's ISK, so totals across rows don't add up; NPCs count for nobody; folded rows show none. The numbers link to zKillboard, whose pages show all time, not the hours chosen.",
   "{card:onscan} (with a D-Scan pasted) sits beside Local's results, or takes the whole width when there's no Local: the hulls on scan by role, with their resists, ammo and drones on hover."
  ],
+ "side#sso": [
+  "Logging in with EVE Online tells Threat Vector which character you are, and nothing else: the login asks EVE for no permissions. It fills Your pilot, the same as typing the name.",
+  "Features that need more from EVE (your location, your contacts, your skills) ask for their own permission when you turn them on. EVE's page lists exactly what each one asks for before you agree.",
+  "The login lasts for this tab: reloading keeps it, a new tab asks again (usually one click, as EVE remembers you), and closing the tab forgets it. Nothing is sent to or kept on a Threat Vector server; there isn't one.",
+  "Log out ends it in this tab and clears Your pilot. To take the permission back completely, remove Threat Vector from your authorized apps on EVE's site."
+ ],
  "side": [
   "Your pilot sets your corporation and alliance; they're looked up again each time you analyze Local, so a change of corporation is picked up.",
   "Add other friendly alliances or corporations, such as your coalition: one at a time, or as a pasted list with one name per line. Use the full name; a ticker in < > or [ ] after it is ignored. Hostile works the same way. Adding a group to one list takes it off the other.",
@@ -3458,7 +3496,7 @@ function ctxHtml(text, extraCls = '', full = ''){
 // user to confirm"; "Don't ask again" per site, as recommended): every zKillboard link is this icon, and every link that leaves the page
 // asks first (leaveAsk), unless the person said not to for that site (localStorage LEAVE_KEY; "Ask again" under Intel's gear).
 const FLEET_ICON = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.5l2.2 4H5.8z"/><path d="M3.2 7.5l2.2 4H1z"/><path d="M12.8 7.5l2.2 4h-4.4z"/><rect x="3" y="13" width="10" height="1.2" rx=".6"/></svg>';   // three ships: a fleet
-const LEAVE_KEY = 'dscanLeaveOk', LEAVE_NAMES = {'zkillboard.com': 'zKillboard'};
+const LEAVE_KEY = 'dscanLeaveOk', LEAVE_NAMES = {'zkillboard.com': 'zKillboard', 'community.eveonline.com': "EVE's community site"};
 function zkLinkHtml(url, what, text){   // text (v2026.11.02.3): a number to show in place of the icon, e.g. "▲ 12 kills · 3.4B"
   const t = `${what} on zKillboard (outside this site)`;
   return `<a class="${text ? 'zk-t' : 'zk-ic'}" href="${escapeHtml(url)}" target="_blank" rel="noopener" title="${escapeHtml(t)}"${text ? '' : ` aria-label="${escapeHtml(t)}"`}>${text ? escapeHtml(text) : 'zK'}</a>`;
@@ -3516,7 +3554,7 @@ function numBoxStyle(widest){ return `min-width:${String(widest).length}ch;`; }
 const INFO_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6"></path><path d="M12 7.5v.5"></path></svg>';
 // v2026.10.14.49: a key may name a variant of a card's text, "<card key>#<variant>" (the Anhinga's Mode text is
 // "tdmode#primary"), and the text names other cards as {card:key} (filled from CARD_NAMES, like ERROR_CODES).
-const INFO_TITLE = {'fit#charges': 'How the Charges list works'};   // v2026.10.14.77: a panel about part of a card
+const INFO_TITLE = {'fit#charges': 'How the Charges list works', 'side#sso': 'How logging in with EVE works'};   // v2026.10.14.77: a panel about part of a card
 // v2026.10.30.2 (a user: "Bro you gotta find a way to condense this"): a paragraph "**Lead:** text" starts with its lead in bold; a
 // paragraph "[Heading] text" is folded under its heading (Intel's few lines on top, the rest a click away). Plain text otherwise.
 function infoParaHtml(s){
@@ -4025,6 +4063,51 @@ const ERROR_CODES = {
   "why": "ESI looks groups up by their name, not their ticker.",
   "since": "v2026.10.14.81",
   "doc": "2026-10-27_system-analyzer-local-and-your-side.html"
+ },
+ "SSO-01": {
+  "title": "EVE's login was cancelled",
+  "where": "Your profile, Pilot",
+  "trigger": "EVE's login page came back with error=access_denied: the person pressed Cancel there (or EVE refused).",
+  "check": "Press the EVE button again to start over; typing your pilot works without logging in.",
+  "why": "The login is optional, so a cancel changes nothing and says so.",
+  "since": "v2026.11.08.1",
+  "doc": "2026-11-08_log-in-with-eve.html"
+ },
+ "SSO-02": {
+  "title": "The login didn't come from this tab",
+  "where": "Your profile, Pilot",
+  "trigger": "The page was opened with a login answer whose state this tab didn't send, was older than 10 minutes, or was used already (an old or copied link, or the login started in another tab).",
+  "check": "Press the EVE button again in the tab you want to log in.",
+  "why": "The state ties EVE's answer to the press that asked for it (CCP's PKCE recipe); anything else is refused.",
+  "since": "v2026.11.08.1",
+  "doc": "2026-11-08_log-in-with-eve.html"
+ },
+ "SSO-03": {
+  "title": "CCP's login couldn't be reached or answered oddly",
+  "where": "Your profile, Pilot",
+  "trigger": "CCP's login server didn't answer, answered with an error status, or answered with something other than JSON (it sends an HTML page on some errors).",
+  "check": "EVE's login may be down (daily downtime 11:00 UTC). Try again later; the number in the message is CCP's status.",
+  "why": "Only CCP's own JSON answers are read; anything else is shown as a status number, never its body.",
+  "since": "v2026.11.08.1",
+  "doc": "2026-11-08_log-in-with-eve.html"
+ },
+ "SSO-04": {
+  "title": "The login didn't check out",
+  "where": "Your profile, Pilot",
+  "trigger": "The token from CCP failed a check: its signature against CCP's published keys (by kid, RS256 or ES256 only), its issuer, its audience (this app and \"EVE Online\"), its expiry or its character.",
+  "check": "Press the EVE button again. If it keeps happening, the page's clock may be far off, or CCP changed its keys.",
+  "why": "A login is only believed when CCP's signature and claims say it is this app's, for this character, now.",
+  "since": "v2026.11.08.1",
+  "doc": "2026-11-08_log-in-with-eve.html"
+ },
+ "SSO-05": {
+  "title": "The login code had expired",
+  "where": "Your profile, Pilot",
+  "trigger": "CCP's token endpoint answered invalid_grant: the code from EVE's page had expired or was used already (a reload of the return address, or a slow return).",
+  "check": "Press the EVE button again.",
+  "why": "Each login code works once and only for a short time.",
+  "since": "v2026.11.08.1",
+  "doc": "2026-11-08_log-in-with-eve.html"
  }
 };
 function withCode(text, code){ return code ? `${text} (${code})` : text; }
@@ -23758,12 +23841,10 @@ function renderSidePanel(){
     : '';
   const sec = (k, done, head, n, body) => `<div class="pp-sec${done ? ' done' : ''}" data-k="${k}"><div class="pp-sh"><span class="pp-ok" aria-hidden="true"></span>${head}${n ? `<span class="pp-n">${n}</span>` : ''}</div>${body}</div>`;
   const nf = r.friendly.length, nh = r.hostile.length;
-  p.innerHTML = sec('pilot', !!r.pilot, 'Pilot', '', `
-    <div class="side-fld"><label class="side-lab" for="sidePilot">Your pilot</label>
-      <div class="side-row"><input type="text" id="sidePilot" value="${escapeHtml(r.pilot ? r.pilot.name : '')}" placeholder="Your pilot's name" maxlength="${EVE_NAME_MAX}"><button type="button" data-side-act="pilot">Set</button></div>
+  p.innerHTML = sec('pilot', !!r.pilot, 'Pilot', '', `${ssoTopHtml()}
+    <div class="side-fld">${sidePilotFieldHtml(r)}
       ${r.corp ? `<div class="side-res">${SIDE_MARK.f}<span>${escapeHtml(r.corp.name)} ${orgTickerHtml('corporation', r.corp.id)}${r.alliance ? ` · ${escapeHtml(r.alliance.name)} ${orgTickerHtml('alliance', r.alliance.id)}` : ' · no alliance'}</span></div>` : ''}
-      ${sideMsgHtml('pilot')}</div>
-    <button type="button" class="pp-sso" disabled title="Not yet: EVE's own login comes later">Log in with EVE <span class="ctx">(later)</span></button>`)
+      ${sideMsgHtml('pilot')}</div>${ssoFootHtml()}`)
     + sec('side', !!(nf || nh), `${escapeHtml(cardName('side'))}<span class="sa-sp"></span>${infoBtnHtml('side')}`, nf || nh ? `${nf} friendly · ${nh} hostile` : '', `
     ${sideListFieldHtml('friendly')}
     ${sideListFieldHtml('hostile')}
@@ -23786,6 +23867,15 @@ async function sideSetPilot(name){
     const ids = await resolveNamesToIds([name]);
     const c = (ids.characters || []).find(x => x.name.toLowerCase() === name.toLowerCase()) || (ids.characters || [])[0];
     if(!c){ side.msg.pilot = {text: withCode(`No pilot named "${name}" (names must match exactly).`, 'SIDE-01'), err: true}; renderSidePanel(); return; }
+    await sideSetPilotFrom(c);
+  }catch(e){ side.msg.pilot = {text: withCode('Error: ' + e.message, errorCodeOf(e)), err: true}; renderSidePanel(); }
+}
+// v2026.11.08.1 (build queue 024): the pilot from EVE's login, by its character id (no name lookup); the same affiliation and lists
+// code as typing it. Throws on a failed lookup (the login then ends: ssoFinish).
+async function sideSetPilotId(id, name){ side.msg.pilot = null; await sideSetPilotFrom({id, name}); }
+async function sideSetPilotFrom(c){
+  const r = side.rec;
+  {
     const [a] = await saAffiliation([c.id]);
     const names = await saIdsToNames([a.corporation_id, ...(a.alliance_id ? [a.alliance_id] : [])]);
     r.pilot = {id: c.id, name: c.name};
@@ -23793,9 +23883,206 @@ async function sideSetPilot(name){
     r.alliance = a.alliance_id ? {id: a.alliance_id, name: names.get(a.alliance_id) || '', kind: 'alliance'} : null;
     // your own groups can't be on the lists
     for(const k of ['friendly', 'hostile']) r[k] = r[k].filter(x => !(x.kind === 'corporation' ? x.id === r.corp.id : r.alliance && x.id === r.alliance.id));
-    side.msg.pilot = null; side.sug = null; sa.evidence = null;
+    side.msg.pilot = null; side.sug = null; sa.evidence = null; sso.note = null;
     sideChanged();
-  }catch(e){ side.msg.pilot = {text: withCode('Error: ' + e.message, errorCodeOf(e)), err: true}; renderSidePanel(); }
+  }
+}
+// ===== EVE LOGIN (v2026.11.08.1, build queue 024, SSO Phase 1; Project doc roadmap/sso-phase1-plan.md) =====
+// Who you are, nothing else: CCP's PKCE recipe for a page with no server (no client secret, no scope). The login is optional: typing
+// your pilot does the same. Per tab (sessionStorage); the access token only in memory and sent nowhere in this phase. Every request
+// to login.eveonline.com is in a function listed in SSO_SITES (tools/check_request_gates.py). SSO_RET (top of the script) took the
+// answer out of the address before anything else asked anything.
+const SSO_APPS = {'https://threatvector.space': 'eff6eec96b2e44cbb6a594f5e160a2e1', 'http://localhost:8000': '659bdd63a604458e95c419de3373fdc3'};   // public Client IDs, one per callback
+const SSO_HOST = 'https://login.eveonline.com', SSO_ISS = ['https://login.eveonline.com', 'login.eveonline.com'];
+const SSO_PENDING = 'tvSsoPending', SSO_WHO = 'tvSsoWho', SSO_REFRESH = 'tvSsoRefresh';   // sessionStorage: this tab only
+const SSO_STATE_MS = 600000;
+// Where a player removes an app's access. A candidate from the EVE University wiki (2022): CCP may have moved it, so it is confirmed in
+// the owner's hand test (the page that actually lists Threat Vector) before the merge; Project doc roadmap/sso-phase1-plan.md.
+const SSO_APPS_PAGE = 'https://community.eveonline.com/support/third-party-applications';   // a login answer older than 10 minutes is refused (SSO-02)
+const SSO_BTN_IMG = 'data:image/png;base64,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';   // CCP's "Log in with EVE Online", black, large (DLA 7.2, unaltered)
+const sso = {who: null, access: null, busy: false, note: null, meta: null};
+function ssoClientId(){ try{ return Object.prototype.hasOwnProperty.call(SSO_APPS, location.origin) ? SSO_APPS[location.origin] : null; }catch(e){ return null; } }
+function ssoGet(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
+function ssoSet(k, v){ try{ sessionStorage.setItem(k, v); return true; }catch(e){ return false; } }
+function ssoDel(...ks){ for(const k of ks){ try{ sessionStorage.removeItem(k); }catch(e){ } } }
+const ssoB64u = (bytes) => { let t = ''; for(const b of bytes) t += String.fromCharCode(b); return btoa(t).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+function ssoUnB64u(t){ t = String(t).replace(/-/g, '+').replace(/_/g, '/'); while(t.length % 4) t += '='; const b = atob(t), a = new Uint8Array(b.length); for(let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+const ssoAgain = ' Press the EVE button again to start over.';
+// The one door to CCP's login: its own host only, no cookies, nothing cached, no referrer.
+async function ssoFetch(url, init){
+  if(typeof url !== 'string' || !url.startsWith(SSO_HOST + '/')) throw codedError('SSO-03', "CCP's login gave an address that isn't CCP's." + ssoAgain);
+  try{ return await fetch(url, Object.assign({}, init, {credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer'})); }
+  catch(e){ throw codedError('SSO-03', "CCP's login couldn't be reached." + ssoAgain); }
+}
+// Only CCP's JSON is read: on some errors it sends an HTML page, which is shown as its status number only.
+async function ssoJson(r){
+  if(!/^application\/([a-z.+-]*\+)?json\b/i.test(r.headers.get('content-type') || '')) throw codedError('SSO-03', `CCP's login answered ${Number(r.status)}, not with JSON.` + ssoAgain);
+  try{ return await r.json(); }catch(e){ throw codedError('SSO-03', `CCP's login answered ${Number(r.status)} with JSON it couldn't read.` + ssoAgain); }
+}
+async function ssoMeta(){
+  if(sso.meta) return sso.meta;
+  const r = await ssoFetch(SSO_HOST + '/.well-known/oauth-authorization-server');
+  if(!r.ok) throw codedError('SSO-03', `CCP's login answered ${Number(r.status)}.` + ssoAgain);
+  const m = await ssoJson(r);
+  for(const k of ['authorization_endpoint', 'token_endpoint', 'jwks_uri']) if(!m || typeof m[k] !== 'string' || !m[k].startsWith(SSO_HOST + '/')) throw codedError('SSO-03', "CCP's login gave an address that isn't CCP's." + ssoAgain);
+  if(typeof m.revocation_endpoint !== 'string' || !m.revocation_endpoint.startsWith(SSO_HOST + '/')) m.revocation_endpoint = null;
+  return (sso.meta = m);
+}
+async function ssoStart(){
+  const cid = ssoClientId();
+  if(!cid || sso.busy) return;
+  sso.busy = true; sso.note = null; side.msg.pilot = {text: "Opening EVE's login…"}; renderSidePanel();
+  try{
+    const m = await ssoMeta();
+    const verifier = ssoB64u(crypto.getRandomValues(new Uint8Array(32)));
+    const challenge = ssoB64u(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))));
+    const state = ssoB64u(crypto.getRandomValues(new Uint8Array(16)));
+    if(!ssoSet(SSO_PENDING, JSON.stringify({verifier, state, at: Date.now()}))) throw codedError('SSO-02', "This browser won't keep the login's check for this tab (its session storage is off).");
+    const q = new URLSearchParams({response_type: 'code', redirect_uri: location.origin + '/', client_id: cid, code_challenge: challenge, code_challenge_method: 'S256', state});
+    location.assign(m.authorization_endpoint + '?' + q.toString());   // no scope: the login asks for nothing (D3)
+  }catch(e){ sso.busy = false; side.msg.pilot = {text: withCode(e.message, errorCodeOf(e)), err: true}; renderSidePanel(); }
+}
+// The access token (a JWT) checked against CCP's published keys: the key its kid names, RS256 with the RSA key or ES256 with the
+// P-256 key and nothing else; issuer, audience (this app and "EVE Online"), expiry, and a character. Returns {id, name}.
+async function ssoVerify(jwt, m, cid){
+  const bad = (why) => codedError('SSO-04', `The login from EVE didn't check out (${why}).` + ssoAgain);
+  const parts = String(jwt).split('.');
+  if(parts.length !== 3) throw bad('not a token');
+  let h, c;
+  try{ const dec = new TextDecoder(); h = JSON.parse(dec.decode(ssoUnB64u(parts[0]))); c = JSON.parse(dec.decode(ssoUnB64u(parts[1]))); }catch(e){ throw bad('unreadable'); }
+  if(!h || !c || (h.alg !== 'RS256' && h.alg !== 'ES256') || typeof h.kid !== 'string') throw bad('signature type');
+  const jr = await ssoFetch(m.jwks_uri);
+  if(!jr.ok) throw codedError('SSO-03', `CCP's login answered ${Number(jr.status)}.` + ssoAgain);
+  const jw = await ssoJson(jr);
+  const k = (jw && Array.isArray(jw.keys) ? jw.keys : []).find(x => x && x.kid === h.kid);
+  if(!k) throw bad('unknown key');
+  let ok = false;
+  try{
+    const data = new TextEncoder().encode(parts[0] + '.' + parts[1]), sig = ssoUnB64u(parts[2]);
+    if(h.alg === 'RS256' && k.kty === 'RSA'){
+      const key = await crypto.subtle.importKey('jwk', {kty: 'RSA', n: k.n, e: k.e, ext: true}, {name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256'}, false, ['verify']);
+      ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, sig, data);
+    }else if(h.alg === 'ES256' && k.kty === 'EC' && k.crv === 'P-256'){
+      const key = await crypto.subtle.importKey('jwk', {kty: 'EC', crv: 'P-256', x: k.x, y: k.y, ext: true}, {name: 'ECDSA', namedCurve: 'P-256'}, false, ['verify']);
+      ok = await crypto.subtle.verify({name: 'ECDSA', hash: 'SHA-256'}, key, sig, data);   // JWS ES256 is raw r||s, as WebCrypto wants
+    }
+  }catch(e){ ok = false; }
+  if(!ok) throw bad('signature');
+  if(!SSO_ISS.includes(c.iss)) throw bad('issuer');
+  const aud = Array.isArray(c.aud) ? c.aud : [c.aud];
+  if(!aud.includes(cid) || !aud.includes('EVE Online')) throw bad('audience');
+  if(!(typeof c.exp === 'number' && c.exp * 1000 > Date.now())) throw bad('expired');
+  const sm = /^CHARACTER:EVE:(\d{1,12})$/.exec(typeof c.sub === 'string' ? c.sub : '');   // CCP's form, e.g. CHARACTER:EVE:2112345678 (docs.esi.evetech.net, validating EVE JWTs; LESSON #147)
+  const name = typeof c.name === 'string' ? c.name.trim() : '';
+  if(!sm || !name || name.length > EVE_NAME_MAX) throw bad('character');
+  return {id: Number(sm[1]), name};
+}
+// Back from EVE (SSO_RET): the state this tab sent, then the code for tokens, then the token checked, then the pilot set by id.
+async function ssoFinish(ret){
+  let pend = null;
+  try{ pend = JSON.parse(ssoGet(SSO_PENDING) || 'null'); }catch(e){ pend = null; }
+  ssoDel(SSO_PENDING);   // used once, whatever happens next
+  openProfile('.pp-sec[data-k="pilot"]');
+  try{
+    if(ret.error === 'access_denied') throw codedError('SSO-01', "You cancelled EVE's login, so nothing changed." + ssoAgain);
+    if(ret.error) throw codedError('SSO-03', "EVE's login came back with an error." + ssoAgain);
+    const cid = ssoClientId();
+    if(!pend || typeof pend.state !== 'string' || typeof pend.verifier !== 'string' || pend.state !== ret.state || !ret.code || !cid
+       || !(typeof pend.at === 'number' && Date.now() - pend.at >= 0 && Date.now() - pend.at < SSO_STATE_MS))
+      throw codedError('SSO-02', "That login answer didn't come from this tab, or is more than 10 minutes old." + ssoAgain);
+    sso.busy = true; side.msg.pilot = null; renderSidePanel();
+    const m = await ssoMeta();
+    const r = await ssoFetch(m.token_endpoint, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({grant_type: 'authorization_code', code: ret.code, client_id: cid, code_verifier: pend.verifier}).toString()});
+    const t = await ssoJson(r);
+    if(!r.ok){
+      if(t && t.error === 'invalid_grant') throw codedError('SSO-05', 'The login code from EVE had expired or was used already.' + ssoAgain);
+      throw codedError('SSO-03', `CCP's login answered ${Number(r.status)}.` + ssoAgain);
+    }
+    if(!t || typeof t.access_token !== 'string' || typeof t.refresh_token !== 'string') throw codedError('SSO-03', `CCP's login answered ${Number(r.status)} without a token.` + ssoAgain);
+    const who = await ssoVerify(t.access_token, m, cid);
+    sso.access = t.access_token;   // memory only; Phase 1 sends it nowhere
+    ssoSet(SSO_REFRESH, t.refresh_token); ssoSet(SSO_WHO, JSON.stringify(who));
+    sso.who = who;
+    side.msg.pilot = {text: 'Looking up your pilot…'}; renderSidePanel();
+    await sideSetPilotId(who.id, who.name);
+    sso.busy = false; renderSidePanel();
+  }catch(e){
+    ssoEnd();
+    side.msg.pilot = {text: withCode(e.message, errorCodeOf(e)), err: true}; renderSidePanel();
+  }
+}
+// Ends the login in this tab: the keys go, the refresh token is revoked at CCP (its answer is 200 even for an unknown token, so
+// nothing is claimed). The pilot stays; Log out clears it (the owner's choice).
+function ssoEnd(){
+  const rt = ssoGet(SSO_REFRESH);
+  ssoDel(SSO_WHO, SSO_REFRESH);
+  sso.who = null; sso.access = null; sso.busy = false;
+  if(rt) ssoRevoke(rt);
+}
+async function ssoRevoke(rt){
+  try{
+    const cid = ssoClientId(), m = await ssoMeta();
+    if(!cid || !m.revocation_endpoint) return;
+    await ssoFetch(m.revocation_endpoint, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({token_type_hint: 'refresh_token', token: rt, client_id: cid}).toString()});
+  }catch(e){ /* nothing to tell: the tab forgets the token either way */ }
+}
+// CCP has no logout page for apps: this ends the login in this tab and revokes the token, but the player stays signed in on EVE's own
+// site (the next login is usually one click; the info panel says "as EVE remembers you"). Nothing here may promise more.
+function ssoLogout(){
+  ssoEnd();
+  sso.note = {apps: SSO_APPS_PAGE};
+  sideSetPilot('');
+}
+function ssoBtnStateHtml(){
+  if(sso.busy) return ' disabled';
+  return ssoClientId() ? '' : ' disabled title="EVE login works only on threatvector.space"';
+}
+// Above the typed name: CCP's button, its one line, "or type it". Coming back from EVE: one status line instead.
+function ssoTopHtml(){
+  if(sso.who) return '';
+  if(sso.busy && !side.msg.pilot) return '<div class="sso-box"><div class="status">Checking your login with EVE…</div></div>';
+  return `<div class="sso-box"><button type="button" class="sso-btn" data-sso="login"${ssoBtnStateHtml()}><img src="${SSO_BTN_IMG}" alt="Log in with EVE Online" width="270" height="45"></button>
+      <div class="sso-sub">${ctxHtml('Only says who you are, for this tab')}${infoBtnHtml('side#sso')}</div>
+      <div class="sso-or">or type it</div></div>`;
+}
+function ssoFootHtml(){
+  if(sso.who) return `<div class="sso-sub">${ctxHtml('Logged in for this tab')}${infoBtnHtml('side#sso')}</div>`;
+  if(sso.note && sso.note.apps) return `<div class="status side-msg">Logged out of this tab, and Your pilot is cleared. Threat Vector stays in <a href="${escapeHtml(sso.note.apps)}" rel="noopener noreferrer">your EVE authorized apps</a> until you remove it there.</div>`;
+  if(sso.note && sso.note.text) return `<div class="status side-msg">${escapeHtml(sso.note.text)}</div>`;
+  return '';
+}
+// "Your pilot": the typed field, or (logged in) the name, the EVE login tag and Log out. To pick another pilot you log out first.
+function sidePilotFieldHtml(r){
+  if(sso.who) return `<div class="side-lab">Your pilot</div>
+      <div class="sso-in"><span class="sso-who"><b title="${escapeHtml(r.pilot ? r.pilot.name : sso.who.name)}">${escapeHtml(r.pilot ? r.pilot.name : sso.who.name)}</b><span class="sso-tag">EVE login</span></span><button type="button" data-sso="logout">Log out</button></div>`;
+  return `<label class="side-lab" for="sidePilot">Your pilot</label>
+      <div class="side-row"><input type="text" id="sidePilot" value="${escapeHtml(r.pilot ? r.pilot.name : '')}" placeholder="Your pilot's name" maxlength="${EVE_NAME_MAX}"><button type="button" data-side-act="pilot">Set</button></div>`;
+}
+function ssoInit(panel){
+  let who = null;
+  try{ who = JSON.parse(ssoGet(SSO_WHO) || 'null'); }catch(e){ who = null; }
+  // a reload keeps the login when the saved pilot is still that character; nothing is fetched
+  if(who && Number.isInteger(who.id) && typeof who.name === 'string' && side.rec.pilot && side.rec.pilot.id === who.id && ssoClientId()) sso.who = {id: who.id, name: who.name};
+  else ssoDel(SSO_WHO, SSO_REFRESH);
+  panel.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-sso]');
+    if(!b || b.disabled) return;
+    e.preventDefault();
+    if(b.dataset.sso === 'login') ssoStart(); else if(b.dataset.sso === 'logout') ssoLogout();
+  });
+  // Another tab typed or cleared the pilot (side.rec is shared): this tab's login ends; the pilots aren't fought over.
+  window.addEventListener('storage', (e) => {
+    if(!sso.who || (e.key !== SIDE_KEY && e.key !== null)) return;
+    const rec = sideRead();
+    if(rec.pilot && rec.pilot.id === sso.who.id) return;
+    ssoEnd();
+    side.rec = rec; side.sug = null; sa.evidence = null;
+    side.msg.pilot = null; sso.note = {text: 'Your pilot was changed in another tab, so this tab is logged out.'};
+    renderSideChip(); renderSidePanel(); if(typeof renderProfile === 'function' && profileIsOpen()) renderProfile(); if(sa.last) saRender();
+  });
+  if(SSO_RET) Promise.resolve().then(() => ssoFinish(SSO_RET));   // after the rest of the script has started
 }
 // Adds alliances / corporations by name to one list (and takes them off the other). Lines may carry a ticker.
 async function sideAddNames(which, lines){
@@ -24002,6 +24289,7 @@ async function sideTagForPilot(charId){
   side.rec = sideRead();
   renderSideChip();
   const p = sidePanelEl();
+  ssoInit(p);   // v2026.11.08.1 (024): the EVE login, and the return from it
   p.addEventListener('click', (e) => {
     const rm = e.target.closest('[data-side-rm]');
     if(rm){ const [which, kind, id] = rm.dataset.sideRm.split(':'); side.rec[which] = side.rec[which].filter(x => !(x.kind === kind && x.id === Number(id))); side.msg[which] = null; return sideChanged(); }

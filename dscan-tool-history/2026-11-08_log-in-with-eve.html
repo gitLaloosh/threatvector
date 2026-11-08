@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-08 — Log in with EVE (SSO Phase 1)</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Log in with EVE (SSO Phase 1: who you are, nothing else)</h1>
+<p><span class="tag">Page</span> 2026-11-08 &middot; <code>v2026.11.08.1</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>Build queue 024, Project doc <code>roadmap/sso-phase1-plan.md</code> (parent plan <code>roadmap/eve-sso-plan.md</code>, Phase 1); the clickable prototype from the Project's <code>roadmap/sso-login-mockup/</code>, set to the owner's choices: CCP's black button, above the typed name, Log out clears the pilot, the login per tab, no permissions.</li>
+<li>The owner, on keeping the login optional: "the UI implementation needs to be pretty straight forward if it's going to work."</li>
+<li>Phase 0 (build queue 023, v2026.11.07.3) put in the page's security policy, the escaping lint and the request-gate rule this builds on.</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The profile's Pilot section:</b> CCP's "Log in with EVE Online" image (black, large, 270 &times; 45, unaltered: DLA 7.2) in a button, one line "Only says who you are, for this tab" with an info panel ("How logging in with EVE works", the plan's four paragraphs), "or type it", then the typed field as before. Logged in, the field becomes the name, an "EVE login" tag and Log out; "Logged in for this tab" under the corporation line. The disabled "Log in with EVE (later)" button is gone.</li>
+<li><b>How it works:</b> CCP's PKCE recipe for a page without a server. The press makes a verifier, its S256 challenge and a state, keeps them in this tab's sessionStorage, and goes to CCP's authorize address (read from CCP's metadata) with the origin's Client ID and <b>no scope</b>. Coming back, the code and state are taken out of the address at the very top of the script (<code>SSO_RET</code>), before the page asks anything of anyone; the state is checked (this tab's, under 10 minutes old, used once); the code is exchanged; the access token is checked with WebCrypto against CCP's keys (the key its kid names, RS256 with the RSA key or ES256 with the P-256 key only; issuer, audience with the Client ID and "EVE Online", expiry, <code>CHARACTER:EVE:&lt;id&gt;</code>); the pilot is set by its ID (<code>sideSetPilotId</code>, the same affiliation code as typing it).</li>
+<li><b>Tokens:</b> the access token stays in memory and goes nowhere in this phase. The refresh token and the character's ID and name are in sessionStorage, so a reload keeps the login (nothing is fetched) and a new tab asks again. Log out revokes the refresh token at CCP, clears the keys and the pilot, and links EVE's page of authorized apps (through the page's "Open EVE's community site?" question). CCP has no logout page for apps, so the player stays signed in on EVE's own site (the next login is usually one click, as the info panel says); nothing on the page promises more. Another tab changing the pilot logs this tab out, with one line saying so</li>
+<li><b>CCP's image is left as CCP made it</b> (CCP: "please use one of the following images for the button"): hover draws an outline on the button around it and focus the page's cyan ring; no filter, opacity or resize on the image.</li>
+<li><b>The Client ID</b> comes from the page's address: threatvector.space uses the production app, <code>http://localhost:8000</code> the dev app; anywhere else (a saved copy) the button is disabled with the title "EVE login works only on threatvector.space".</li>
+<li><b>Errors</b> SSO-01 (cancelled), SSO-02 (not this tab's, too old or used), SSO-03 (CCP's login unreachable or answering oddly: only JSON is read, an HTML error page is its status number), SSO-04 (the token didn't check out), SSO-05 (the code expired). Each says to press the button again; none changes what's saved.</li>
+<li><b>Kept in the browser:</b> new sessionStorage keys <code>tvSsoPending</code>, <code>tvSsoWho</code>, <code>tvSsoRefresh</code> (this tab only). Nothing new in localStorage. An older page ignores the new keys; a newer page reads everything the older one wrote.</li>
+<li><b>Differences from the plan:</b> the plan gave the token's <code>sub</code> as <code>EVE:CHARACTER:&lt;digits&gt;</code>; CCP's tokens carry <code>CHARACTER:EVE:&lt;digits&gt;</code> (CCP's page on validating the token), and the page checks CCP's form. The authorized-apps address is the research session's candidate (<code>community.eveonline.com/support/third-party-applications</code>, from a 2022 wiki), kept in <code>SSO_APPS_PAGE</code> and confirmed in the owner's hand test. The line under the button is "Only says who you are, for this tab": the plan's wording ran over the 40-character limit for such lines. The info panel's key is <code>side#sso</code> (a variant of the Standings card, as the subtext rule asks).</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>sso_check.py</code>, never a live login: the page served at both apps' addresses by routes, a stand-in for CCP's login with keys made for each run and tokens signed in the test, a revoke that records what it got. It checks the logged-out layout, the press (every parameter, no scope, the challenge from the verifier, the production ID on threatvector.space), the return (the address cleaned before any request, the token request, the logged-in row, the tokens' storage), reload, a new tab, another tab clearing the pilot, Log out, every refusal (19 kinds, each its code and nothing saved changed), a saved copy, and 1440 and 390 px.</li>
+<li><code>check_request_gates.py</code>: <code>ssoFetch</code> is the one fetch() to CCP's login (its host only, before the fetch; no cookies), called only from <code>SSO_SITES</code>; the host is written once. <code>csp_check.py</code>: the button's image and a request to CCP's login under the policy. <code>check_pii</code>: the button image reviewed and listed.</li>
+<li>Mutants: MUTANTS_LINE</li>
+<li>CHECKS_LINE</li>
+<li>Page size: SIZE_LINE</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #147: a format a plan writes down is a claim, not a source. The plan's <code>sub</code> form was the wrong way round; a stand-in built from the plan would have agreed with the code, and every real login would have failed. Check each exactly-matched field against the provider's own page before it becomes code, and say in the pull request where the plan was wrong.</li>
+</ul>
+</body></html>
