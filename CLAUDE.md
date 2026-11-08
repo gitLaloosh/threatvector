@@ -11,6 +11,12 @@ and a git pre-commit hook: `git config core.hooksPath tools/git-hooks`); persona
 are in the git-ignored `tools/pii_terms.local.txt` on the owner's computer.
 A build session's clone lacks it: copy it in from the Project first (build queue README, "The personal-data check's names list").
 
+**The served copy** (build queue 027; Project doc roadmap/page-publish-plan.md): threatvector.space serves what
+`tools/publish.py` makes from `main` (`.github/workflows/pages.yml`, on every merge): every tracked file as is, and index.html
+without comments (the script through `tools/publish/strip_js.js`: acorn, a copy kept in `tools/publish/`, checked against npm in
+the workflow; CSS and HTML comments by a small scanner; the CSP hash rewritten). The repo keeps the commented source; nothing in
+`_site` is edited by hand. Error reports quote codes, not line numbers, so the two copies needn't line up.
+
 **Never get the user's address blocked (LESSON #93).** zKillboard blocks an address that asks too fast
 (its live feed: over 15 requests a second, for an hour). Every request to zKillboard goes through one
 of two gates: `zkbFetch` (the API: starts 1 s apart, at most 3 in the air since v2026.11.06.4; a list zKillboard couldn't finish
@@ -94,9 +100,11 @@ Before changing any calculation:
    - A session without write access delivers as before: the files into the owner's folder, and a commit message in the
      reply (Summary + Description as above) for him to commit himself (the owner, 2026-10-30).
    After the last edit to index.html: `python3 -I tools/csp_hash.py --write` (v2026.11.07.3; the CSP names the script by hash).
-6. Report index.html's gzipped size in every delivery (`gzip -9 -c index.html | wc -c`). Past 800 KB, stop and ask
-   the owner before delivering (the owner, 2026-11-03: "At 800 KB"); the planned answer is a publish step that strips
-   comments (about 38% of the gzipped page), not moving tables out of the page.
+6. Report both of index.html's gzipped sizes in every delivery: the source's (`gzip -9 -c index.html | wc -c`) and the
+   served copy's (`tools/publish.py` prints it). The 800 KB ceiling (800,000 bytes) applies to the served copy since
+   build queue 027 (the owner, 2026-11-08: "confirmed"; first "At 800 KB", 2026-11-03): past it, stop and ask the owner
+   before delivering. The source's size has no ceiling.
+   Before the pull request: `python3 -I tools/run_checks.py --served` (the served copy through SERVED_CHECKS).
 
 **Error messages carry codes** (`ERRORS.md`). Every error the page writes ends
 with a code such as `(ZKB-01)`, defined once in `ERROR_CODES` in `index.html`
@@ -394,7 +402,7 @@ list or the backlog, then remove those entries from the text file and tell the
 owner what you added. If both are empty, say nothing about it.
 
 **Adding a backlog item or bug (when the owner asks).** The backlog is not in this repo. It lives in Claude's project memory for
-this Project; new items go in the newest backlog file (`areas/dscan-backlog-2.md` today), written with the memory tools in the
+this Project; new items go in the newest backlog file (`areas/dscan-backlog-3.md` today; `-2` is at its size cap), written with the memory tools in the
 format `**Severity | Scope — Name** — [stated] "<the owner's words>"`, plus what's known and "Not started". Bugs go in the same
 file, starting with `**BUG | …`. Never put the backlog in a repo file: the repo is public and the backlog quotes the owner.
 **If you don't have the memory tools, say so and stop.** Tell the owner you can't add it to the backlog from here; don't write it

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-08 — The site serves the page without comments</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The site serves the page without comments</h1>
+<p><span class="tag">Tools</span> 2026-11-08 &middot; page unchanged (after <code>v2026.11.08.2</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>Build queue 027, Project doc <code>roadmap/page-publish-plan.md</code> (no mockup: nothing users see changes). The page was 788,861 bytes gzipped, 11 KB under the owner's 800 KB line ("At 800 KB", 2026-11-03), and SSO Phase 2 would cross it. His answer then: a publish step that strips comments from the copy the site serves, not cutting features; "GitHub Actions deploys it"; the ceiling applies to the served copy ("confirmed").</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b><code>tools/publish.py</code></b> makes the served copy: every file git tracks (what the site served from the branch), less dotfiles and <code>.github/</code>, with <code>index.html</code> stripped of comments and its CSP hash rewritten. It checks the result before writing anything and prints both sizes. Measured: <b>788,861 &rarr; 492,223 bytes gzipped (&minus;38%)</b>.</li>
+<li><b>The script's comments: acorn, not terser.</b> The plan named terser; this sandbox can't reach the npm registry, so terser couldn't run here and the served copy couldn't be tested before a pull request. The owner picked "acorn, kept in the repo": acorn 8.18.0's <code>dist/acorn.js</code> (MIT, one file, no other packages) is copied into <code>tools/publish/</code> with its licence; the workflow checks the copy against npm's on every run. <code>tools/publish/strip_js.js</code> reads the script's tokens and copies each one's text as is; what lay between two tokens becomes one line break if it held one (so automatic semicolons stay where they were), else one space. Then the tokens, and whether a line break comes before each, are compared with the source's one for one. Strings, template literals and regular expressions are tokens, so nothing inside them can change.</li>
+<li><b>CSS and HTML comments</b> by a small scanner (strings and <code>url(...)</code> skipped); a comment alone on its line takes the line with it. Outside the script, the ids, <code>data-*</code> names and tags must match a second, naive reading of the source.</li>
+<li><b><code>.github/workflows/pages.yml</code></b>: on every merge to <code>main</code> and by hand, check acorn, run <code>publish.py</code>, upload and deploy (<code>configure-pages@v5</code>, <code>upload-pages-artifact@v4</code>, <code>deploy-pages@v4</code>, as GitHub's docs give them).</li>
+<li><b>The site's two PNG icons were never committed.</b> <code>.gitignore</code> ignores every <code>*.png</code> except a list, and <code>favicon-32.png</code> and <code>apple-touch-icon.png</code> (v2026.11.07.4) weren't on it, so the site has served neither since: browsers fell back to the SVG icon, and a phone's home screen got no icon. Found because the served copy failed <code>csp_check</code>'s icon test; both are now committed.</li>
+<li><b>Markdown files:</b> deploying from the branch ran Jekyll, which also served each <code>.md</code> file as an <code>.html</code> page; the workflow publishes the files as they are, so those are now served only as <code>.md</code>. Nothing on the page links to them.</li>
+<li><b>Rules:</b> CLAUDE.md step 6 (both sizes, the ceiling on the served copy, <code>run_checks.py --served</code> before a pull request) and a paragraph on the served copy; <code>run_checks.py --served [--all]</code>; <code>run_regression.mjs --served</code> (the PYFA CORE lock reads comments, so it stays on the source); the publish self-test among the fast lints; NOTICE.md credits acorn; the newest backlog file is now <code>dscan-backlog-3</code>.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li><code>publish.py --self-test</code>: a made-up page with comments in awkward places (<code>//</code> in a string, a regular expression, a template literal and its substitution; <code>/*</code> in a CSS string and a <code>url()</code>; <code>&lt;!--</code> in a script string and a CSS string; a <code>return</code> with its value on the next line; a comment before the CSP meta), and the checks refusing harmed copies (CSP hash not rewritten, a string cut, an id lost, a line break lost, a broken script, a failure exiting 0).</li>
+<li>Mutants: 12, all caught.</li>
+<li>Every check on the source (<code>run_checks.py --auto</code> picked <code>all</code>): 21 lints, the pyfa chain and 81 page checks in 40 min, 0 failed, 0 flaky.</li>
+<li>The served copy (<code>run_checks.py --served --all</code>): the regression suite (every golden fit; the PYFA CORE lock stays on the source), the D-Scan parse tests 293/293, and 80 of the 81 page checks passed in 27 min. <code>outage_check</code> failed: it ran inside EVE's daily downtime hour (11:00&ndash;12:00 UTC), when the page rightly puts the downtime line first; it failed the same 5 ways on the unchanged source in that hour and passed on the source just before 11:00. The owner: "since we know what the issue is in this case, can we bypass the outage_check and move on?" The check reading the real clock is now a backlog bug.</li>
+<li>Before the full runs, the served copy's six checks (<code>csp_check</code>, <code>html_escape_check</code>, the Intel example, the profile, <code>sso_check</code>, <code>header_check</code>) found the two icons missing; with them committed, all passed.</li>
+</ul>
+
+<h2>The owner's switch-over and hand test</h2>
+<ul>
+<li>After the merge: the workflow runs once by itself (it may fail to deploy while Pages still deploys from the branch: whether it does is unverified). Settings &rarr; Pages &rarr; Source: GitHub Actions; check the custom domain and HTTPS; run the workflow again (Actions &rarr; Publish the site &rarr; Run workflow).</li>
+<li>Then on threatvector.space: the version tag, View Source without comments, the tab icon and the phone icon, the Intel example, a Pilot Analyzer lookup, the EVE login.</li>
+<li>Going back: Source &rarr; Deploy from a branch (main, / (root)).</li>
+</ul>
+</body></html>

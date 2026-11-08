@@ -12,8 +12,13 @@ todo-inbox/
 *.bmp
 !img/fighter-abilities/*.png
 !browser-extension/icons/*.png
+# - the site's own icons (v2026.11.07.4, rendered by tools/render_icons.py; until 027 they were never committed, so the site lacked them)
+!/favicon-32.png
+!/apple-touch-icon.png
 # - old copies of the page
 index-[0-9]*.html
 # Python caches
 __pycache__/
 *.pyc
+# - the served copy tools/publish.py makes (build queue 027); never committed, never edited by hand
+_site/
