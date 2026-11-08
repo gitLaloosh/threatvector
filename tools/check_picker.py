@@ -3,8 +3,11 @@
 
     python3 -I tools/check_picker.py [--since OLD_COPY_OF_THE_REPO]   -> the tier, the areas, and why
 
-What changed: `git diff HEAD` plus new files when the repo has a .git folder, or every file that differs from --since (a copy of
-the repo as last delivered). index.html is one big file, so its changed LINES are mapped, not the file:
+What changed: with a .git folder, everything that differs from where this branch left main (`git merge-base HEAD origin/main`;
+origin/main itself when the clone is too shallow for that), committed or not, plus new files; or every file that differs from
+--since (a copy of main). Since 2026-11-08 (it used to be `git diff HEAD`: once a branch's work was committed it saw nothing and
+picked "fast", 026). The CSP meta's script hash changes with every edit to the page, so a line that differs only in that hash
+counts as nothing; a change to the policy itself counts as every page check. Git-ignored local files (*.local.*, _site/) never count. index.html is one big file, so its changed LINES are mapped, not the file:
   * inside a PYFA CORE section, or in the engine's code and tables -> the calculation chain (tier calc) and the calc page checks;
   * in a function or table of one area (its name's prefix: it* Intel, sa* System Analyzer, pd* the dossier, ...) -> that area;
   * otherwise the area of the section it sits in (REGIONS, in file order); shared code (escapeHtml, the cards, the analyzers'
@@ -105,12 +108,16 @@ FILES = [
     ('tools/refresh_golden_fixtures.py', [CHAIN, 'calc']),
     ('tools/check_*', []), ('tools/run_checks.py', []), ('tools/README.md', []), ('tools/pii_*', []),
     ('tools/git-hooks/*', []),
+    # 2026-11-08 (the owner: "these deliveries have been taking forever"; a replay of 12 deliveries found these picking everything):
+    ('tools/html_sinks_baseline.json', []), ('tools/csp_hash.py', []), ('tools/publish.py', []), ('tools/publish/*', []),   # lints and the publish step (its own self-test; --served)
+    ('tools/render_icons.py', ['layout']), ('favicon*', ['layout']), ('apple-touch-icon.png', ['layout']), ('CNAME', ['layout']), ('LICENSE', []),
     ('browser-extension/*', ['extension']),
     ('img/*', ['layout']),
     ('*.md', []), ('dscan-tool-history/*', []), ('roadmap/*', []), ('Claude outputs/*', []), ('todo-inbox/*', []),
     ('.github/*', []), ('.gitignore', []), ('.gitattributes', []), ('*.local.txt', []),
 ]
-IGNORE_DIRS = {'.git', '__pycache__', 'node_modules'}
+IGNORE_DIRS = {'.git', '__pycache__', 'node_modules', '_site'}
+LOCAL_FILE = re.compile(r'(^|/)[^/]*\.local\.[^/]*$')   # tools/pii_terms.local.txt and the like: git-ignored, never delivered
 
 
 def _line_info(lines):
@@ -171,8 +178,12 @@ def _css_areas(sel):
     return sorted(areas) or [PAGES]
 
 
+CSP_HASH = re.compile(r"(<meta http-equiv=\"Content-Security-Policy\"[^>]*script-src 'sha256-)[A-Za-z0-9+/=]+(')")
+
+
 def map_html(old, new):
     """Areas for the lines that differ between two versions of index.html, and a few examples of why."""
+    old, new = CSP_HASH.sub(r'\1HASH\2', old), CSP_HASH.sub(r'\1HASH\2', new)   # the hash follows every edit: not a change of its own
     a, b = old.split('\n'), new.split('\n')
     ia, ib = _line_info(a), _line_info(b)
     areas, why = set(), {}
@@ -214,16 +225,34 @@ def changed_files(root, since=None):
             o, n = os.path.join(since, p), os.path.join(root, p)
             ob = open(o, 'rb').read() if os.path.isfile(o) else None
             nb = open(n, 'rb').read() if os.path.isfile(n) else None
-            if ob != nb: out.append((p, rd(o), rd(n)))
+            if ob != nb and not LOCAL_FILE.search(p): out.append((p, rd(o), rd(n)))
         return out
-    if not os.path.isdir(os.path.join(root, '.git')):
+    if not os.path.exists(os.path.join(root, '.git')):   # a folder, or a file in a worktree
         raise SystemExit('check_picker: no .git folder here; give --since <a copy of the repo as last delivered>')
-    g = lambda *a: subprocess.run(['git', '-C', root, *a], capture_output=True, text=True).stdout
-    names = set(g('diff', '--name-only', 'HEAD').split()) | set(g('ls-files', '--others', '--exclude-standard').split())
+    g = lambda *a: subprocess.run(['git', '-C', root, *a], capture_output=True, text=True)
+    base = git_base(root)
+    names = set(g('diff', '--name-only', base).stdout.split()) | set(g('ls-files', '--others', '--exclude-standard').stdout.split())
     for p in sorted(names):
-        old = subprocess.run(['git', '-C', root, 'show', f'HEAD:{p}'], capture_output=True, text=True)
+        if LOCAL_FILE.search(p): continue
+        old = g('show', f'{base}:{p}')
         out.append((p, old.stdout if old.returncode == 0 else None, rd(os.path.join(root, p))))
     return out
+
+
+BASE_NOTE = []   # what git_base chose, for the report
+def git_base(root):
+    """(LESSON #149) Where this branch left main: the merge base with origin/main; origin/main itself in a shallow clone; HEAD (with a warning)
+    only when there is no origin/main at all."""
+    g = lambda *a: subprocess.run(['git', '-C', root, *a], capture_output=True, text=True)
+    if g('rev-parse', '--verify', '-q', 'origin/main').returncode != 0:
+        BASE_NOTE[:] = ['WARNING: no origin/main here (git fetch origin): compared with the last commit, which misses committed work']
+        return 'HEAD'
+    mb = g('merge-base', 'HEAD', 'origin/main')
+    if mb.returncode == 0 and mb.stdout.strip():
+        BASE_NOTE[:] = [f'compared with where this branch left main ({mb.stdout.strip()[:7]})']
+        return mb.stdout.strip()
+    BASE_NOTE[:] = ['compared with origin/main (a shallow clone has no merge base; anything newer on main counts as changed too)']
+    return 'origin/main'
 
 
 def deliveries_since_full(root):
@@ -285,12 +314,16 @@ def self_test(root):
         ('the Intel info text', (r'^ "intel": \[', r'^const CARD_INFO\b'), {'intel'}),
         ('a comment', (r'^// ==== INTEL ', None), set()),
         ('the version tag', (r'class="build-tag"', None), set()),
+        ('the CSP hash only', (r'Content-Security-Policy', None), set()),
+        ('the CSP policy', (r'Content-Security-Policy', None), {PAGES}),
     ]
     for what, (rx, after), want in cases:
         i = at(rx, after)
         if i is None: problems.append(f'{what}: no line matches {rx!r}'); continue
         j = i + 1 if what == 'the Intel info text' else i   # the entry's text, not its key
-        new = L[:j] + [L[j] + ' /*x*/ 1'] + L[j + 1:] if what not in ('a comment', 'the version tag') else L[:j] + [L[j] + ' x'] + L[j + 1:]
+        if what == 'the CSP hash only': new = L[:j] + [re.sub(r"'sha256-[A-Za-z0-9+/=]+'", "'sha256-" + 'Z' * 43 + "='", L[j])] + L[j + 1:]
+        elif what == 'the CSP policy': new = L[:j] + [L[j].replace("object-src 'none'", "object-src 'self'")] + L[j + 1:]
+        else: new = L[:j] + [L[j] + ' /*x*/ 1'] + L[j + 1:] if what not in ('a comment', 'the version tag') else L[:j] + [L[j] + ' x'] + L[j + 1:]
         got, _ = map_html(html, '\n'.join(new))
         if got != want: problems.append(f'{what} (line {j + 1}): {sorted(got)}, expected {sorted(want)}')
     for p in problems: print('PROBLEM', p)
@@ -307,4 +340,5 @@ if __name__ == '__main__':
     since = argv[argv.index('--since') + 1] if '--since' in argv else None
     tier, areas, why = pick(root, since, AREAS, NAMES)
     print(f'PICKED: tier {tier}' + (f' --area {",".join(areas)}' if areas else ''))
+    for n in BASE_NOTE: print('  ' + n)
     for k, v in sorted(why.items()): print(f'  {k}: {v}')
