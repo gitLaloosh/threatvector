@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-08 — publish.py --size</title>
+<style>body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;} code{background:#f0f0f0; padding:2px 5px; border-radius:3px;} .tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; padding:2px 8px; border-radius:3px; background:#eef; color:#334;}</style></head>
+<body>
+<h1>publish.py --size</h1>
+<p><span class="tag">Tools</span> 2026-11-08 &middot; page unchanged (after <code>v2026.11.08.3</code>)</p>
+<ul>
+<li><b>Why:</b> a planning session's review of its start-up doc found that getting the served page size meant <code>publish.py --out</code>, which copies the whole site (560+ files, about 62 MB) to report one number.</li>
+<li><b>What:</b> <code>python3 -I tools/publish.py --size</code> makes the served copy of index.html in memory, runs the same checks on it, and prints both gzipped sizes. Nothing is written. It exits 1 past the 800,000-byte ceiling. CLAUDE.md step 6 and the tools README name it.</li>
+<li><b>Checks:</b> the publish self-test (0 problems), the fast lints, and <code>--size</code> by hand: 791,679 source, 493,696 served, about 5 s.</li>
+</ul>
+</body></html>

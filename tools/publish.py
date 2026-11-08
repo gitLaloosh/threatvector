@@ -1,6 +1,7 @@
 """The copy of the site GitHub Pages serves: the repo's files, with index.html's comments taken out (build queue 027).
 
     python3 -I tools/publish.py [--out _site]   -> writes the folder; 'PUBLISH: ok' and both gzipped sizes, or exits 1
+    python3 -I tools/publish.py --size          -> only the two gzipped sizes (index.html stripped and checked in memory; nothing written)
     python3 -I tools/publish.py --self-test     -> made-up pages with comments in awkward places, and the checks catching harm
 
 Project doc roadmap/page-publish-plan.md; the owner, 2026-11-08: "GitHub Actions deploys it (Recommended)", and the 800 KB
@@ -178,6 +179,17 @@ def tracked():
     return out
 
 
+def sizes():
+    """(source, served) gzipped sizes of index.html: the served copy made and checked in memory, nothing copied (2026-11-08: a
+    planning session wanted the number, and --out copies the whole site, 560+ files)."""
+    src = open(os.path.join(ROOT, 'index.html'), 'rb').read().decode('utf-8')
+    return gz(src.encode('utf-8')), gz(strip_page(src).encode('utf-8'))
+
+
+def size_line(g_src, g_out):
+    return f'PUBLISH: index.html {g_src:,} bytes gzipped in the source, {g_out:,} served (gzip -9); ceiling {CEILING:,} for the served copy'
+
+
 def publish(out_dir):
     out_dir = os.path.abspath(out_dir)
     if out_dir == ROOT or ROOT.startswith(out_dir + os.sep): raise PublishError('the output folder must not hold the repo')
@@ -193,7 +205,7 @@ def publish(out_dir):
         else: shutil.copy2(os.path.join(ROOT, f), dst)
     g_src, g_out = gz(src.encode('utf-8')), gz(page.encode('utf-8'))
     print(f'PUBLISH: {len(files)} files into {os.path.relpath(out_dir, ROOT) if out_dir.startswith(ROOT) else out_dir}')
-    print(f'PUBLISH: index.html {g_src:,} bytes gzipped in the source, {g_out:,} served (gzip -9); ceiling {CEILING:,} for the served copy')
+    print(size_line(g_src, g_out))
     if g_out > CEILING: raise PublishError(f'the served copy is past 800 KB ({g_out:,} bytes): stop and ask the owner')
     print('PUBLISH: ok')
 
@@ -278,6 +290,14 @@ const div = 4 / 2 / 1;
 
 def main(argv):
     if '--self-test' in argv: return self_test()
+    if '--size' in argv:
+        try:
+            g_src, g_out = sizes()
+        except (PublishError, subprocess.CalledProcessError, OSError) as e:
+            print(f'PUBLISH: FAILED: {e}'); return 1
+        print(size_line(g_src, g_out))
+        if g_out > CEILING: print('PUBLISH: past 800 KB served: stop and ask the owner'); return 1
+        return 0
     out = argv[argv.index('--out') + 1] if '--out' in argv and argv.index('--out') + 1 < len(argv) else os.path.join(ROOT, '_site')
     try:
         publish(out)
