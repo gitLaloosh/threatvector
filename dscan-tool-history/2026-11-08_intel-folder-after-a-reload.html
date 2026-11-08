@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-08 — Intel: the chat-logs folder after a reload</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel: the chat-logs folder after a reload</h1>
+<p><span class="tag">Page</span> 2026-11-08 &middot; <code>v2026.11.08.2</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>Build queue 025, Project doc <code>roadmap/intel-folder-permission-plan.md</code> (no mockup, the owner's choice). The owner, logged into EVE with the folder chosen and a channel ticked, saw step 3 say "No Local log from the last 2 days" until he chose the folder again: "probably because i chose to only allow the file read on a per session basis? can we handle this behavior more cleanly?"</li>
+<li>Chrome 122 and later asks again for a folder kept from an earlier visit ("Allow this time" lasts the visit; "Allow on every visit" stays), may take a one-time grant back while the tab is in the background, and asks only from a click (Chrome's post on persistent permissions; the File System Access spec). A folder restored from the browser's storage "is also likely to return 'prompt'" (the spec).</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Step 1 by what the browser says</b> (<code>it.perm</code>): needs your OK this visit: "Needs your OK this visit." with <b>Allow reading</b> (asks from the click itself) and Change…, and one short line "Pick Allow on every visit to skip this" (the plan's longer line was over the 40-character limit; the full explanation went into Intel's info panel, "The folder after a reload"). Blocked: "The browser is blocking this folder for this site." with Change…. Otherwise as before.</li>
+<li><b>Steps 2 and 3 wait</b> while the folder can't be read ("Waiting for the folder (1)"; step 2's saved ticks dimmed), and step 3 says <b>"No Local log in this folder from the last 2 days. In EVE: Settings → Chat → Log Chat to File, then log in again."</b> only after a read that found none.</li>
+<li><b>Looks again by itself</b> while the setup card shows: when the tab is shown again or the window gets focus, and every 15 s while the card can be seen. Nothing is read or drawn while the tab is hidden, and the card is redrawn only when the channels or characters found changed. So logging into EVE after choosing the folder shows up without pressing anything.</li>
+<li><b>While Intel runs:</b> a permission taken back (seen on focus, or when reading fails with NotAllowedError) shows INTEL-02 with <b>Allow reading</b> in the Intel card; the profile mark shows "not working" until it reads again. INTEL-02's text names Chrome's "Allow on every visit".</li>
+<li>Nothing new is kept in the browser: the folder stays in Intel's IndexedDB store as before; <code>it.perm</code> isn't saved.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>intel_folder_check.py</code>: intel_check's made-up folder with switchable answers (prompt, granted, denied; reading that throws NotAllowedError) and a stand-in for Intel's store so a reload restores the folder. It covers choose, reload with each answer, Allow reading from a click, the real "No Local log", the look-again (tab shown, 15 s, nothing while hidden, nothing redrawn without a change), the permission taken back while Intel runs, and 390 px. The stand-in keeps its own flags in <code>window.name</code>: flags kept in the page's storage didn't always survive the check's reloads (the page's own settings did; this was the stand-in only).</li>
+<li>Mutants: MUTANTS_LINE</li>
+<li>CHECKS_LINE</li>
+<li>Page size: SIZE_LINE</li>
+</ul>
+
+<h2>Waiting on the owner's hand test</h2>
+<ul>
+<li>What <code>queryPermission</code> answers after a reload, for each of Chrome's three choices.</li>
+<li>Whether, and after how long, Chrome takes a one-time grant back with Intel on and the tab in the background.</li>
+<li>In EVE: the setting's path, and whether turning it on mid-session starts a Local log at once; step 3's wording follows.</li>
+</ul>
+</body></html>

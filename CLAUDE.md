@@ -232,6 +232,14 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   one stops Intel (the owner, at the review). v2026.11.07.8 (the owner: "disable the on/off switch until a folder is chosen and at least one
   channel is checked"): `#intelSw` is disabled (`itSwLocked`, dimmed, no amber breathing) with a hover saying what's missing (`itSwTitle`);
   `itSwSync` keeps the box in step with `it.on` after a press. `intel_example_check.py`.
+- **The chat-logs folder after a reload** (v2026.11.08.2, build queue 025; Project doc roadmap/intel-folder-permission-plan.md): Chrome
+  asks again for a folder kept from an earlier visit, and asking needs a click, so the page keeps what the browser says (`it.perm`: none /
+  prompt / granted / denied, `itPermRead`) and never asks on its own. `prompt`: step 1 "Needs your OK this visit" with **Allow reading**
+  (`itAllowRead`, from the click; requestPermission is its first await) and Change…; `denied`: the blocked line. Steps 2 and 3 wait
+  ("Waiting for the folder (1)", `itWaiting`) and say "No Local log" only after a read that found none (`it.read`). Look again
+  (`itLookAgain`) on tab shown / focus and, while the setup card shows, every `IT_RESCAN_MS`: nothing while hidden, redrawn only when
+  `itFoundKey` changed. A permission taken back while Intel runs: INTEL-02 (`itPermLostText`) with Allow reading in the error line
+  (`itAllowNoteHtml`). `intel_folder_check.py` (a stand-in folder whose answers switch, and a stand-in store so a reload restores it).
 - **The logo** (v2026.11.07.4, build queue 022; Project doc roadmap/logo-header-plan.md; mockup `Claude outputs/logo_header_mockup.html`):
   R37 "Orbit Contact", inline left of the title in `.hero-title-row` (`.hero-brand`, `.hero-logo`, aria-hidden), 1.6em of the title's
   size, its T's top on the title's T's top (`--logo-nudge`, -0.19em / -0.16em under 600 px; re-tune if the title's font or size
