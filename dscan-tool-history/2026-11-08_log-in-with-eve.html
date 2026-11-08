@@ -34,9 +34,9 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <ul>
 <li>New <code>sso_check.py</code>, never a live login: the page served at both apps' addresses by routes, a stand-in for CCP's login with keys made for each run and tokens signed in the test, a revoke that records what it got. It checks the logged-out layout, the press (every parameter, no scope, the challenge from the verifier, the production ID on threatvector.space), the return (the address cleaned before any request, the token request, the logged-in row, the tokens' storage), reload, a new tab, another tab clearing the pilot, Log out, every refusal (19 kinds, each its code and nothing saved changed), a saved copy, and 1440 and 390 px.</li>
 <li><code>check_request_gates.py</code>: <code>ssoFetch</code> is the one fetch() to CCP's login (its host only, before the fetch; no cookies), called only from <code>SSO_SITES</code>; the host is written once. <code>csp_check.py</code>: the button's image and a request to CCP's login under the policy. <code>check_pii</code>: the button image reviewed and listed.</li>
-<li>Mutants: MUTANTS_LINE</li>
-<li>CHECKS_LINE</li>
-<li>Page size: SIZE_LINE</li>
+<li>Mutants: 27, 25 caught: state not compared, too old, used twice (pending kept), wrong audience, issuer, expiry, an unknown kid, a sub that isn't a character, the HTML answer read as JSON, the refresh token in localStorage, a scope sent, the dev ID on threatvector.space, the address cleaned after the first request, Log out keeping the pilot, no revoke, the other tab ignored, a reload logging out, CCP's metadata trusted with another address, a filter on CCP's image, another authorized-apps address; through <code>check_request_gates</code>: ssoFetch to any host, a fetch to another host, an Authorization header outside esiFetch. Two survive with no change in behaviour: dropping the header's alg test, and taking ES256 with the RSA key (in both, WebCrypto refuses the signature at the next step).</li>
+<li>Every check (<code>run_checks.py --auto</code> picked <code>all</code>: shared code): 19 lints, the pyfa chain and 80 page checks in 36 min, 0 failed, 0 flaky. Regression suite ALL PASS; <code>check_pii</code> 0 problems.</li>
+<li>Page size: 775,666 &rarr; 786,933 bytes gzipped (<code>gzip -9</code>), 13 KB under the 800 KB line: the publish step that strips comments is due soon.</li>
 </ul>
 
 <h2>Lesson for future models</h2>
