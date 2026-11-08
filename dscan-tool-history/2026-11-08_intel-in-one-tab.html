@@ -30,7 +30,10 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <ul>
 <li>New <code>intel_one_tab_check.py</code>: two pages in one browser context with the made-up Chatlogs folder, R2Z2 requests counted per page. It covers the line and greyed switch in the second tab, the mark from the other tab, a click on the greyed switch, Move Intel here (the folder asked from the press), only the new tab reading afterwards, the permission refused, one alert across both tabs, a repeated mark not redrawn, the running tab closed and crashed, the catch-up wait, no Web Locks, the map's resizes and 390 px.</li>
 <li>Confirmed in Chromium before building (the plan had them UNVERIFIED): two pages in one context share the lock and the channel, also from a local file; <code>steal</code> makes the old holder's request reject with AbortError; a crashed tab's lock is released.</li>
-<li>RESULTS_PLACEHOLDER</li>
+<li>Mutants: 11, all caught (no lock; the switch enabled while another tab runs; the old tab not stopping; starting by itself when the other closes; redrawn on every message; no catch-up wait; the map redrawn inside its observer; a stopped reader's queued requests sent; no word when the running tab closes; the lock not checked when shown, both halves).</li>
+<li>The page's other two resize observers (the fit list's pinned card, the damage chart): no loop error in seven checks that resize or draw fits, run on a copy that turns the error into a page error.</li>
+<li>The checks picked from the changes since <code>main</code> (8 areas, 82 page checks, 25 min): one failure from this change, <code>intel_guard_check</code> (the new gate check sat before the stop's own error; fixed, the stop first), then rerun with the served-copy checks: 0 failed.</li>
+<li>Page size: source 791,690 bytes gzipped (<code>gzip -9</code>); served 493,696, 306,304 under the 800,000-byte ceiling.</li>
 </ul>
 
 <h2>The owner's hand test</h2>

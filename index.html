@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-okqnYikpy75wauGQXWQcbkHahLveLCG0b15fxAA1FRM='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HHFXQaqtT2P+pGnhtK+JlkkoDB6fvLtbIs/XZTnmjFA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -26105,10 +26105,10 @@ async function itR2Fetch(path){
   const kf0 = it.kf;
   const at = await itKillTurn();
   const kf = it.kf;
+  if(itR2Stopped()) throw itR2StopErr();
   // v2026.11.08.3 (026): a request that waited at the gate for a reader that has stopped since (the switch, or Intel moved to another
   // tab) isn't sent: only the tab running Intel asks R2Z2. LESSON #148
   if(!it.on || kf !== kf0) return IT_R2_HALT;
-  if(itR2Stopped()) throw itR2StopErr();
   if(kf && kf.halt) return IT_R2_HALT;
   // the tripwire counts the starts the gate gave out (a busy page can run the code after two turns close together, though the
   // gate spaced them); a request that didn't come through the gate counts as now
