@@ -13,7 +13,7 @@ made-up Chatlogs folder, quiet R2Z2), plus a stand-in for ESI's /characters/<id>
     the portrait's dot (online colour) on its top-right corner, the button's label; the next check at Expires and never under 60 s; no
     request before; logged off: the grey dot, the portrait greyed, "Logged off in EVE"; the same answer again redraws nothing; twice as
     long under a quarter of the group's tokens; a 429 waits its Retry-After; a 401: SSO-08 with Log in again, no second request; a 403:
-    SSO-07, off; off: nothing on the portrait, no request; Log out: off, nothing on the portrait;
+    SSO-07, off; off: nothing on the portrait, no request; a login without the permission: nothing shown, Continue to EVE; Log out: off, nothing on the portrait;
   * Intel running as You and logged off: "Your character is logged off in EVE." with Stop Intel, above the amber wake line; Intel keeps
     running; Stop Intel stops it; the checks ride Intel's tick (no timer of its own); another character as You: no line;
   * two tabs logged in as the same character: one asks, the other shows what it heard; a tab opened later hears it at once; a hidden tab
@@ -164,6 +164,10 @@ with sync_playwright() as p:
     check(not s['show'] and s['ls'] == 'false' and '(SSO-07)' in s['row'] and s['dot'] is None, f"a 403: SSO-07, off, nothing on the portrait ({s['row'][-90:]!r})")
     O['mode'] = 'ok'; n0 = len(OREQ); now(pg); pg.wait_for_timeout(1500)
     check(len(OREQ) == n0 and not sto(pg)['held'], 'off: no request, no lock')
+    # on in this browser (another tab turned it on), this tab's login without the permission, an answer heard from another tab: nothing shown
+    pg.evaluate("(id) => { sso.scp = []; ssoOnSave(true); ssoOnPump(); ssoOnSeen({id, online: true, at: Date.now() + 1000}, false); ssoOnRedraw(); }", MAIN); prof(pg); s = sto(pg)
+    check(s['dot'] is None and s['on'] is None and "doesn't have its OK yet" in s['row'] and 'Continue to EVE' in s['row'] and not s['held'],
+          f"this tab's login without the permission: nothing on the portrait, Continue to EVE ({s['dot']}; {s['row'][-80:]!r})")
     pg.close(); c.close()
 
     # ---- Intel running, logged off ----
