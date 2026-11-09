@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-DJYeNZJvQLq7Ui7nRhdeQIt+L3jsrF7VaJZaYuLtxuQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-YOPziZYm6csih9EPtCUzUdyoaHqShNOj9Bcu7oGHPLo='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -24448,18 +24448,22 @@ async function ssoOnCheck(){
 function ssoOnSeen(m, mine){
   if(!m || !Number.isInteger(m.id) || typeof m.online !== 'boolean' || !(m.at > 0) || !sso.who || m.id !== sso.who.id) return;
   ssoOn.heard = Date.now();
+  // the owner's hand test (2026-11-09): with Intel off, the tab in view takes the check over from the one hidden, and it asked at once
+  // (a request seconds after the other tab's). It waits for the next check the tab that asked had set (its Expires, 60 s at least).
+  if(!mine && Number.isFinite(m.next) && m.next > ssoOn.next) ssoOn.next = Math.min(m.next, Date.now() + SSO_ON_MAX_MS);
   const o = ssoOn.st;
   if(o && o.id === m.id && o.at >= m.at) return;
   const k0 = ssoOnKey();
   ssoOn.st = {id: m.id, online: m.online, at: m.at};
-  if(mine){ if(ssoOn.bc){ try{ ssoOn.bc.postMessage(ssoOn.st); }catch(e){ } } return; }   // ssoOnCheck draws
+  if(mine){ ssoOnPost(); return; }   // ssoOnCheck draws
   if(ssoOnKey() !== k0) ssoOnRedraw(); else ssoOnTimePaint();
 }
 function ssoOnHear(m){
   if(!m || typeof m !== 'object') return;
-  if('ask' in m){ if(ssoOn.held && ssoOn.st && ssoOn.st.id === m.ask && ssoOn.bc){ try{ ssoOn.bc.postMessage(ssoOn.st); }catch(e){ } } return; }   // a tab that just opened
+  if('ask' in m){ if(ssoOn.held && ssoOn.st && ssoOn.st.id === m.ask) ssoOnPost(); return; }   // a tab that just opened
   ssoOnSeen(m, false);
 }
+function ssoOnPost(){ if(ssoOn.bc && ssoOn.st){ try{ ssoOn.bc.postMessage(Object.assign({}, ssoOn.st, {next: ssoOn.next})); }catch(e){ } } }   // the answer and when it may be asked again
 function ssoOnHello(){ if(ssoOn.bc && sso.who && ssoOn.show){ try{ ssoOn.bc.postMessage({ask: sso.who.id}); }catch(e){ } } }
 function ssoOnInit(){
   ssoOn.show = ssoOnRead();
