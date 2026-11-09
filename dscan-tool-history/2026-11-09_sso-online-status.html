@@ -28,6 +28,14 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <li>The budget panel's ESI list gains "Your online status".</li>
 </ul>
 
+<h2>The owner's hand test (dev app, 2026-11-09)</h2>
+<ul>
+<li>EVE gave the online permission (the login asked only for it, game location being off). <code>/online/</code> answered 200: <code>Cache-Control: max-age=60</code>, Expires 60 s after Date (the 1-minute cache is this route's), <code>X-Ratelimit-Group</code> char-location, 1200/15m, one token used per request, <code>X-Compatibility-Date</code> 2020-01-01. The answer's fields: <code>online</code> (read), <code>last_login</code>, <code>last_logout</code>, <code>logins</code> (not read).</li>
+<li>Logged out of the game: the grey dot, the portrait greyed and Intel's line with Stop Intel within a minute; Intel kept running; logged back in, back to green.</li>
+<li>Two tabs: with Intel on, only its tab asked. With Intel off, the tab in view takes the check over from the hidden one, and it asked at once, seconds after the other tab: fixed in this build, the tab that asks now sends when its next check is due and a tab taking over waits for it. Retested: about one request a minute between the two tabs.</li>
+<li>Log out: the row and the dot gone in both tabs, and the EVE button no longer says it asks for Online status.</li>
+</ul>
+
 <h2>Kept in the browser</h2>
 <ul>
 <li>localStorage gains <code>tvOnlineShow</code> (true or false). An older page ignores it; going back to it leaves the key unused. No other key changes form. What EVE answers stays in memory (DLA 9.5).</li>
