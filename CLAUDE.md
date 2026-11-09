@@ -12,7 +12,8 @@ are in the git-ignored `tools/pii_terms.local.txt` on the owner's computer.
 A build session's clone lacks it: copy it in from the Project first (build queue README, "The personal-data check's names list").
 
 **The served copy** (build queue 027; Project doc roadmap/page-publish-plan.md): threatvector.space serves what
-`tools/publish.py` makes from `main` (`.github/workflows/pages.yml`, on every merge): every tracked file as is, and index.html
+`tools/publish.py` makes from `main` (`.github/workflows/pages.yml`, on every merge): every tracked file as is except the mockups in
+`Claude outputs/` (`NOT_SERVED`, page unchanged after v2026.11.08.4: served, they shared the site's browser storage), and index.html
 without comments (the script through `tools/publish/strip_js.js`: acorn, a copy kept in `tools/publish/`, checked against npm in
 the workflow; CSS and HTML comments by a small scanner; the CSP hash rewritten). The repo keeps the commented source; nothing in
 `_site` is edited by hand. Error reports quote codes, not line numbers, so the two copies needn't line up.

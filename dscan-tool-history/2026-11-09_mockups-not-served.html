@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-09 — Mockups no longer served on the site</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Mockups no longer served on the site</h1>
+<p><span class="tag">Tools</span> 2026-11-09 &middot; page unchanged (after <code>v2026.11.08.4</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>Since build queue 027 the site is everything <code>tools/publish.py</code> copies from the repo: every tracked file. That included the 45 mockups in <code>Claude outputs/</code> (about 40 MB), so each was a live page on threatvector.space.</li>
+<li>A mockup is a copy of the page with made-up data and stand-in logins. On the same site it shares the real page's browser storage, so opening one could read or overwrite a visitor's Intel settings, Standings or My Fits, and it could be taken for the real page.</li>
+<li>Found while the owner asked whether prototypes should go into the repo at all; the owner: "i'd like you to just take care of it".</li>
+</ul>
+
+<h2>What changed (tools only)</h2>
+<ul>
+<li><code>publish.py</code> skips <code>Claude outputs/</code> (<code>NOT_SERVED</code>). The files stay in the repo; the next publish leaves them out, and GitHub Pages serves only what the publish step uploads, so they stop being reachable.</li>
+<li>Its self-test fails if anything under <code>Claude outputs/</code> would be served (checked by removing the skip: caught).</li>
+<li>Prototypes for new items stay in the Project as their build scripts (the owner's choice for 028 and 029).</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>The publish self-test: 0 problems. A publish to a scratch folder: 525 files, none from <code>Claude outputs/</code> (every other tracked file still copied).</li>
+<li>The fast lints and the served-copy checks.</li>
+</ul>
+</body></html>

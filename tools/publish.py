@@ -170,11 +170,18 @@ def gz(data):
         return len(gzip.compress(data, 9))
 
 
+# Folders kept in the repo but never served (the owner, 2026-11-08: "i'd like you to just take care of it"): the mockups in
+# `Claude outputs/` are copies of the page with made-up data and stand-in logins; served on the site they would share its browser
+# storage (a visitor's Intel settings, Standings, My Fits) and could pass for the real page.
+NOT_SERVED = ('Claude outputs/',)
+
+
 def tracked():
     r = subprocess.run(['git', 'ls-files', '-z'], cwd=ROOT, capture_output=True, check=True)
     out = []
     for f in r.stdout.decode('utf-8').split('\0'):
         if not f or any(part.startswith('.') for part in f.split('/')): continue
+        if f.startswith(NOT_SERVED): continue
         out.append(f)
     return out
 
@@ -279,6 +286,7 @@ const div = 4 / 2 / 1;
     # what is served: tracked files, never a dotfile or .github/
     if any(part.startswith('.') for f in tracked() for part in f.split('/')): fails.append('a dotfile or .github/ would be served')
     if 'index.html' not in tracked(): fails.append('index.html is not among the files served')
+    if any(f.startswith(NOT_SERVED) for f in tracked()): fails.append("a mockup in 'Claude outputs/' would be served")
     # a failure exits 1 (here: an output folder that would hold the repo is refused before anything is deleted)
     import io, contextlib
     with contextlib.redirect_stdout(io.StringIO()):
