@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-09 — Show when I'm online in EVE</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Show when I'm online in EVE</h1>
+<p><span class="tag">Page</span> 2026-11-09 &middot; <code>v2026.11.09.1</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>Build queue 029, Project doc <code>roadmap/sso-online-status-plan.md</code> (the clickable prototype stays in the Project). The owner: "I'd like to have the online status reflected in the pilot's bio picture as well", and from the prototype's options, "A and C": a dot on the portrait's corner and the portrait greyed out while logged off.</li>
+<li>When Intel runs and the character is logged off, the owner chose "Line + a Stop button": Intel never stops by itself ("there is a switch for a reason").</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Show when I'm online in EVE</b> (the profile, Pilot, under the EVE login): a checkbox. Without EVE's permission it shows Continue to EVE / Cancel (Phase 2's step), asking for <code>esi-location.read_online.v1</code> plus what the tab already holds and what's on. Back from EVE it turns on only with the permission (else SSO-07). Under it: "Online in EVE · checked hh:mm UTC" or "Logged off in EVE · …".</li>
+<li><b>The portrait</b> at the top right: a green dot on its top-right corner when online; a grey dot and the portrait greyed out when logged off. Intel's square stays on the bottom-right corner. Nothing when the box is off, the tab isn't logged in, or the login lacks the permission. The profile button's label says "online in EVE" / "logged off in EVE".</li>
+<li><b>Intel</b>, running as that character, logged off: "Your character is logged off in EVE." with <b>Stop Intel</b>, above the amber "click anywhere" line. Alerts carry on until it's pressed.</li>
+<li><b>One tab asks per character</b>: a Web Lock per character (the tab running Intel takes it over and asks on Intel's tick); the others hear the answer and show it; a tab opened later asks for the last answer at once. A tab in the background without Intel asks nothing. The lock is let go before the page leaves for EVE's page and when the page is hidden for good, and a tab that waited 3 minutes without hearing an answer takes over (the tab holding it went quiet).</li>
+<li><b>Pace:</b> never before the answer's Expires and 60 s at least (about once a minute); twice as long while under a quarter of the "char-location" tokens are left; Retry-After on 420/429. 401: SSO-08 with Log in again, never asked again; 403: SSO-07, the box off.</li>
+<li><b>Log out turns it off</b> (the owner, at the review: "yes"), as it does Use my game location.</li>
+<li>The budget panel's ESI list gains "Your online status".</li>
+</ul>
+
+<h2>Kept in the browser</h2>
+<ul>
+<li>localStorage gains <code>tvOnlineShow</code> (true or false). An older page ignores it; going back to it leaves the key unused. No other key changes form. What EVE answers stays in memory (DLA 9.5).</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>sso_online_check.py</code>, on Phase 2's stand-ins (CCP's login with keys made per run, the made-up Chatlogs folder) plus a stand-in for ESI's <code>/online/</code> (recording each request's headers; Expires, rate-limit headers, 401, 403, 429). It covers the row and its info panel, the permission step and the scope asked for, the headers sent, the 60 s floor, the portrait (dot position, colours, greyed, label), no redraw for the same answer, the slow-down, 429, 401, 403, off, Log out, Intel's line and Stop Intel, the order with the wake line, another character as You, two tabs (one request per period; the other shows it; a later tab hears it at once; hidden; the Intel tab taking over; letting go before leaving; taking over after 3 minutes), the dot and Intel's square at 1440 and 390 px in each Intel state, and 44 px buttons at 390 px.</li>
+<li><code>check_request_gates.py</code>: <code>ssoOnCheck</code> listed as an ESI caller with the login; the 401 rule holds it.</li>
+</ul>
+</body></html>
