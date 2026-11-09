@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-3ZnJV44Ia/3mMRzO7dgLM94Yy+LFKUzEugu51K7WUkc='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1zljouxDveLOL/87Y7+fnxO/GNRbvURlAlnxZ90+axY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2062,6 +2062,7 @@
   .side-tag .nm{min-width:0; overflow:hidden; text-overflow:ellipsis;}
   /* v2026.11.09.2 (030): Standings from EVE: the switch block, its list, the reasons */
   .side-tag.ev .nm{color:var(--amber);}
+  .side-eve-sub{display:flex; align-items:center; gap:6px; margin-top:2px;}
   .side-eve .side-eve-sw{display:flex; align-items:center; gap:8px; font:600 13px/18px var(--sans); color:var(--text);}
   .side-eve .sso-on-ask{margin:6px 0 2px; padding:8px; border-radius:4px; background:var(--tag-fill);}
   .side-eve .sso-on-ask .c{font-size:12.5px; line-height:18px; color:var(--text);}
@@ -3442,7 +3443,7 @@ const CARD_INFO = {
   "Only one Threat Vector tab asks for each character; the others show what it found. A tab in the background asks only while it runs Intel. Log out turns it off. What EVE answers is kept in memory only."
  ],
  "side#eve": [
-  "Logged in with EVE, turn on Use my corporation's and alliance's EVE standings and the page reads your corporation's and your alliance's contacts from EVE (EVE asks for its OK the first time). They then decide who is friendly and hostile in the System Analyzer, Intel, the Fleet tab and the Pilot Analyzer.",
+  "Logged in with EVE, turn on Use my corporation's and alliance's EVE standings and the page reads your corporation's and your alliance's contacts from EVE (EVE asks for its OK the first time). They then decide who is friendly and hostile in the {card:sysan}, Intel, the Fleet tab and the Pilot Analyzer. An NPC corporation has no standings in EVE, so its pilots use the typed lists.",
   "Above 0 is friendly, below 0 hostile, 0 or no standing neutral. In one list, a standing on a pilot beats one on his corporation, which beats one on his alliance. When your corporation and your alliance disagree, your alliance's standing decides, and the reason says so. Your own corporation and alliance are always friendly.",
   "Your typed lists are hidden while this is on, and used again when you turn it off or log out. Your personal contacts aren't read.",
   "zKillboard's evidence (killed N of yours) shows beside neutrals, but doesn't make them hostile while this is on.",
@@ -24836,11 +24837,11 @@ function sideEveCount(){
 }
 // The switch block at the top of the Standings section (markup glued with +: every ${...} escaped or a builder, check_html_sinks)
 function sideEveBoxHtml(dis){ return '<label class="side-eve-sw"><input type="checkbox" data-sso="stand"' + itOnHtml(sideEve.on && !dis, 'checked') + itOnHtml(sideEve.ask || dis, 'disabled') + "> Use my corporation's and alliance's EVE standings</label>"; }
-function sideEveSubHtml(text){ return `<div class="sso-sub">${ctxHtml(text)}${infoBtnHtml('side#eve')}</div>`; }
+function sideEveSubHtml(text){ return `<div class="side-eve-sub">${ctxHtml(text)}${infoBtnHtml('side#eve')}</div>`; }
 function sideEveHtml(){
-  if(!sso.who) return ssoClientId() ? '<div class="side-fld side-eve">' + sideEveSubHtml("Log in with EVE (Pilot, above) to use your corporation's and alliance's standings instead of typing them") + '</div>' : '';
+  if(!sso.who) return ssoClientId() ? '<div class="side-fld side-eve">' + sideEveSubHtml('Log in with EVE to use your EVE standings') + '</div>' : '';
   const g = sideEveGroups();
-  if(!g.corporation && !g.alliance) return '<div class="side-fld side-eve">' + sideEveBoxHtml(true) + sideEveSubHtml('Your pilot is in an NPC corporation: EVE has no standings for it, so your typed lists are used') + '</div>';
+  if(!g.corporation && !g.alliance) return '<div class="side-fld side-eve">' + sideEveBoxHtml(true) + sideEveSubHtml('NPC corporation: typed lists are used') + '</div>';
   if(sideEve.ask) return '<div class="side-fld side-eve">' + sideEveBoxHtml(false) + `<div class="sso-on-ask"><div class="c">EVE's page will ask you to let Threat Vector read your corporation's and your alliance's contacts. This page goes there and comes back.</div><div class="it-btns"><button type="button" class="mys-primary" data-sso="st-go">Continue to EVE</button><button type="button" class="mys-quiet" data-sso="st-no">Cancel</button></div></div></div>`;
   const has = sideEveHas();
   return '<div class="side-fld side-eve">' + sideEveBoxHtml(false) + sideEveSubHtml(sideEve.on && has ? 'From your EVE login' : 'Needs its OK from EVE') + sideEveStHtml(has) + sideEveMsgHtml() + '</div>';
@@ -24852,7 +24853,7 @@ function sideEveStHtml(has){
   const c = sideEveCount(), wait = sideEve.next > Date.now() ? sideEve.next : 0, off = !!(sideEve.busy || wait);
   const dis = off ? ` disabled title="${escapeHtml(wait ? `EVE keeps them until ${ssoOnClock(wait)} UTC` : 'Reading…')}"` : '';
   return `<div class="sso-on-st">From EVE: ${c.b | 0} blue · ${c.r | 0} red · read ${escapeHtml(ssoOnClock(sideEve.at))} UTC <button type="button" class="sa-link" data-sso="st-refresh"` + dis + `>Refresh</button></div>
-      <div class="sso-sub">${ctxHtml('Your typed lists are hidden while this is on')}</div>
+      <div class="side-eve-sub">${ctxHtml('Your typed lists are hidden')}</div>
       <button type="button" class="sa-link side-eve-open" data-sso="st-list" aria-expanded="${escapeHtml(String(sideEve.open))}">${escapeHtml(sideEve.open ? "Hide EVE's standings" : "See EVE's standings")}</button>` + (sideEve.open ? sideEveListHtml() : '');
 }
 function sideEveMsgHtml(){

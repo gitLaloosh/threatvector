@@ -193,7 +193,7 @@ with sync_playwright() as p:
 
     # ---- the Standings section; the permission step ----
     c = ctx_new(); pg = page(c); prof(pg); s = sec(pg)
-    check(s['cb'] is None and "Log in with EVE (Pilot, above) to use your corporation's and alliance's standings instead of typing them" in s['sec'] and s['typedHidden'] is False,
+    check(s['cb'] is None and 'Log in with EVE to use your EVE standings' in s['sec'] and s['typedHidden'] is False,
           f"logged out: one line, the typed lists shown ({s['sec'][:120]!r})")
     pg.click('#sidePanel .side-eve summary.info-btn'); pg.wait_for_timeout(200)
     ip = pg.evaluate("() => { const d = [...document.querySelectorAll('[role=dialog]')].find(x => x.offsetParent && /How EVE standings work/.test(x.textContent)); return d ? [!!d.querySelector('button.x-close'), /alliance's standing decides/.test(d.textContent)] : null; }")
@@ -237,7 +237,7 @@ with sync_playwright() as p:
     me_npc = dict(ME, corp={'id': 1000167, 'name': 'State War Academy', 'kind': 'corporation'}, alliance=None)
     c = ctx_new(); creset(aff={'corp': 1000167, 'alliance': None}); pg = page(c, stand=True, me=me_npc); login(pg); prof(pg); s = sec(pg)
     pg.evaluate("() => sideEveNeed()"); pg.wait_for_timeout(600)
-    check(s['dis'] is True and 'NPC corporation' in s['sec'] and not CREQ, f"an NPC corporation: the switch disabled, its line, no request ({len(CREQ)})")
+    check(s['dis'] is True and 'NPC corporation: typed lists are used' in s['sec'] and not CREQ, f"an NPC corporation: the switch disabled, its line, no request ({len(CREQ)})")
     pg.close(); c.close()
     creset()
 
