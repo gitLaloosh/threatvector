@@ -80,7 +80,8 @@ with sync_playwright() as p:
     pg = ctx.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(600)
     pg.click('#tabBtnIntel'); pg.wait_for_timeout(300)
     d = pg.evaluate("() => [it.set.volume, it.set.soundNear, it.set.soundHere, it.set.sound, !!window.__ac]")
-    check(d == [70, 'chime', 'klaxon', True, False], f'defaults: 70%, Near You Chime, In system Klaxon, Sound on; no audio made before a sound {d}')
+    check(d == [70, 'chime', 'klaxon', False, False], f'defaults: 70%, Near You Chime, In system Klaxon, Sound off (v2026.11.08.4, 028: a new user turns it on); no audio made before a sound {d}')
+    pg.evaluate("() => { it.set.sound = true; it.set.notify = true; itWriteSet(); itRender(true); }")   # the rest: a player who turned sound and notifications on
     pg.evaluate("() => itStart()"); pg.wait_for_timeout(200)   # the switch pressed (here without a folder: it stops at "choose the folder")
     w = pg.evaluate("() => [!!window.__ac, window.__ac && window.__ac.state, window.__resumed || 0]")
     check(w == [True, 'running', 1], f'Intel switched on: the audio woken by that press, so the first alert isn\'t silent {w}')
@@ -189,6 +190,7 @@ with sync_playwright() as p:
     ctx = new_ctx(390); pg = ctx.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(600)
     # a database of that name already there without its store (made by something else): the page adds the store
     pg.evaluate("() => new Promise(res => { const r = indexedDB.open('dscan-intel-sounds', 1); r.onsuccess = () => { r.result.close(); res(1); }; })")
+    pg.evaluate("() => localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true}))")   # v2026.11.08.4 (028): sound starts off for a new user
     pg.reload(); pg.wait_for_timeout(600); pg.click('#tabBtnIntel'); pg.wait_for_timeout(300)
     pick('near', 'tone-1s.wav', one, 'audio/wav')
     check(pg.evaluate(IDB, 'near') == ['tone-1s.wav', len(one)], 'a database of that name without its store: the page adds it and keeps the file')

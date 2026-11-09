@@ -60,7 +60,7 @@ with sync_playwright() as p:
         pg.on('pageerror', lambda e: errs.append(f'{name}: {e}'))
         pg.on('request', lambda r: R2.__setitem__(name, R2[name] + 1) if 'r2z2.zkillboard.com' in r.url else None)
         pg.goto('file://' + HTML)
-        if first: pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.removeItem('dscanIntel'); }", SIDE); pg.reload()
+        if first: pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true})); }", SIDE); pg.reload()   # v2026.11.08.4 (028): a new user's alerts start off; these cases are a player who turned them on
         pg.wait_for_function("typeof it !== 'undefined' && it.loaded")
         setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(400)
         if not pg.is_checked('[data-it-chan="region.intel"]'): pg.check('[data-it-chan="region.intel"]')
@@ -153,10 +153,11 @@ with sync_playwright() as p:
         kf.head = true; kf.lastGot = Date.now() - 120000; kf.seqAt = 0; kf.waitUntil = 0; kf.target = kf.seq - 1;
         itKillSeq = async () => kf.seq + 50;
         const t = Date.now(); await itKillPump();
-        out.push([kf.head, Math.round(kf.waitUntil - t)]);
+        out.push([kf.head, Math.round(kf.waitUntil - t), Date.now() - t]);   // the pump's own time: the wait is set after its awaits
       }
       itKillSeq = real; return out; }""")
-    ok_w = all(h is False and 0 <= w <= 10050 for h, w in waits) and len({w // 1000 for h, w in waits}) > 1 and any(w > 0 for h, w in waits)
+    # at most 10 s after the pump set it; under load the pump's awaits add their own time (it failed once at 10,182 ms, 2026-11-09)
+    ok_w = all(h is False and 0 <= w <= 10000 + d + 50 for h, w, d in waits) and len({w // 1000 for h, w, d in waits}) > 1 and any(w > 0 for h, w, d in waits)
     check(ok_w, f'a catch-up after a gap waits a random 0-10 s first [head, wait ms] {waits}')
     C.click('#intelSwLabel'); C.wait_for_timeout(300)
 

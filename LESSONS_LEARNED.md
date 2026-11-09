@@ -148,6 +148,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #125 A view that won't redraw while a control inside it has focus will also drop the change that control just made: force that redraw.
 - #135 Saving a growing list to localStorage on every event rewrites it all each time: keep a small fixed shape and save on a timer (at most once a second, and on page close).
 - #137 A control put where a sheet's backdrop is pressed gets that tap's click when the sheet closes on the press. See also #117.
+- #150 A page that leaves for another site can come back from the back/forward cache exactly as it left: undo "in progress" on pageshow, and drop what was kept for the return on a normal load.
 
 **Checks and test machinery**
 
@@ -1056,6 +1057,24 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 150. A page that leaves for another site can come back from the back/forward cache exactly as it left: undo "in progress" on pageshow, and drop what was kept for the return on a normal load
+
+- **What happened (v2026.11.08.1 to .3, fixed in v2026.11.08.4, build queue 028):** the EVE button set `sso.busy` and "Opening EVE's
+  login…", then sent the page to CCP. Back on EVE's page brought the page back from the browser's back/forward cache with `busy` still
+  set: nothing listened for `pageshow`, so once the profile closed it showed "Checking your login with EVE…" in place of the button, and
+  the button refused presses while busy. The player couldn't log in until a reload (the owner's report, 2026-11-07). The same trip also
+  left a stale `tvSsoPending` in sessionStorage, which Phase 2's "restart Intel after the return" would have acted on at a later,
+  unrelated load; and a tab running Intel told the other tabs it was away, which nothing undid after a Back that loaded the page fresh.
+- **How it was caught:** the owner's hand test (Back on EVE's page); the stale entry and the stuck "paused" line by the new check's Back
+  cases (Playwright's go_back loads fresh in a headless browser, so the cache case is a synthetic `pageshow` with `persisted`).
+- **Do this instead:** keep "leaving" (set just before the page goes) apart from "busy" (only while a real return is checked); on
+  `pageshow` with `persisted`, undo "leaving" and say nothing changed; on a normal load without a return, drop what was kept for it and
+  undo what was announced for it (here: tell the other tabs the trip is over); and test both the cache and the fresh load.
+- **And announce before leaving, not in pagehide:** the "away" message to the other tabs was first sent from `pagehide`. It arrived in
+  the headless check but not in the owner's Chrome, which keeps the page in its back/forward cache (the other tab learned only from the
+  lock coming free, and said Intel was closed). Send what other tabs must hear just before the page goes; pagehide is a second chance.
+  The check now drops pagehide's message, as that Chrome did.
 
 ## 149. A check runner that compares with the wrong starting point passes by testing nothing: compare with where the branch left main, and say what was compared
 

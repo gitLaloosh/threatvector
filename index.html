@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HHFXQaqtT2P+pGnhtK+JlkkoDB6fvLtbIs/XZTnmjFA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-QkRPbnBvbfNIxQfoZQ30dmKhpcKxvXn0iFtf4XLt0fQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2563,6 +2563,9 @@
   button.it-gear:hover, button.it-gear[aria-expanded="true"]{color:var(--heading); border-color:var(--text-dim);}
   .it-sub{color:var(--text-dim); font:400 12.5px var(--sans); margin-top:8px;} .it-sub b{color:var(--text); font-weight:600;}
   .it-warn{color:var(--amber);}
+  .pr-msg.it-wake{padding:8px 10px; border-radius:4px; border:1px solid var(--amber); background:color-mix(in srgb, var(--amber) 12%, transparent); color:var(--amber); font:600 13px var(--sans); flex-wrap:wrap;}
+  .it-wake-t{flex:1 1 220px;}
+  @media (max-width:599px){ .pr-msg.it-wake button{min-height:44px;} }
   /* v2026.11.07.7 (build queue 017; roadmap/intel-example-plan.md): a browser without the folder picker is told before the steps */
   .it-nofs{margin-top:12px; padding:8px 12px; border-left:3px solid var(--amber); border-radius:0 4px 4px 0; background:rgba(217,154,60,.07); font:400 12.5px var(--sans); color:var(--text);}
   .it-nofs b{color:var(--amber); font-weight:600;} .it-nofs code{font:500 12px var(--mono); color:var(--heading); overflow-wrap:anywhere; user-select:all;}
@@ -3018,6 +3021,10 @@
   .sso-in{display:flex; align-items:center; gap:8px; min-height:36px;}
   .sso-in .sso-who{flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:8px; overflow:hidden;}
   .sso-in .sso-who b{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--heading);}
+  .sso-perms{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:6px; font-size:12px; color:var(--text-dim);}   /* v2026.11.08.4 (028) */
+  .sso-perms a{margin-left:4px;}
+  .it-gl{margin-top:8px;} .it-gl-sub{display:flex; align-items:center; gap:6px; margin-top:2px;} .it-gl-l{margin-top:4px;} .it-gl-ask{margin:6px 0 2px; padding:8px; border-radius:4px; background:var(--tag-fill);}
+  @media (max-width:599px){ .it-gl-ask button, .it-gl button[data-it-act]{min-height:44px;} }
   .sso-tag{flex:none; padding:1px 6px; border-radius:3px; background:var(--tag-fill); color:var(--text-dim); font:600 11px var(--sans);}
   .sso-in button{padding:6px 12px; flex:none;}
   .side-msg a{color:var(--cyan);}
@@ -3048,7 +3055,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.08.3</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.08.4</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3234,6 +3241,10 @@ const SSO_RET = (() => {
   }catch(e){ return null; }
 })();
 const ESI = 'https://esi.evetech.net/latest';
+// v2026.11.08.4 (build queue 028, SSO Phase 2): sent only with the login (esiFetch's auth branch). The compatibility date is one ESI
+// answered from this site (Project doc roadmap/sso-security-review.md, 2026-11-07); raised on purpose, never a future date (ESI
+// refuses those). X-User-Agent: browsers can't set User-Agent, CCP asks for this instead (D4).
+const ESI_COMPAT = '2025-08-26', ESI_UA = 'Threat Vector (https://threatvector.space; threatvectorapp@gmail.com)';
 const ZKB = 'https://zkillboard.com/api';
 
 // CARD NAMES (v2026.10.14.45, roadmap/card-names.md). The owner 2026-10-23: "i see a recurring issue with not having
@@ -3387,8 +3398,9 @@ const CARD_INFO = {
   "{card:onscan} (with a D-Scan pasted) sits beside Local's results, or takes the whole width when there's no Local: the hulls on scan by role, with their resists, ammo and drones on hover."
  ],
  "side#sso": [
-  "Logging in with EVE Online tells Threat Vector which character you are, and nothing else: the login asks EVE for no permissions. It fills Your pilot, the same as typing the name.",
-  "Features that need more from EVE (your location, your contacts, your skills) ask for their own permission when you turn them on. EVE's page lists exactly what each one asks for before you agree.",
+  "Logging in with EVE Online tells Threat Vector which character you are. On its own it asks EVE for no permissions. It fills Your pilot, the same as typing the name.",
+  "Features that need more from EVE ask for their own permission when you turn them on: Use my game location (Intel's settings, You) asks to read your character's location. EVE's page lists exactly what is asked before you agree. A later login asks again for the features you have on (the button's line says which).",
+  "Log out ends the login and its permissions with EVE: Threat Vector leaves your list of apps on EVE's site. You can also remove it there (Manage on EVE's site, under EVE permissions). While a feature uses the login, it is renewed in this tab about every 20 minutes.",
   "The login lasts for this tab: reloading keeps it, a new tab asks again (usually one click, as EVE remembers you), and closing the tab forgets it. Nothing is sent to or kept on a Threat Vector server; there isn't one.",
   "Log out ends it in this tab and clears Your pilot. It doesn't sign you out of EVE's own website."
  ],
@@ -3456,6 +3468,13 @@ const CARD_INFO = {
   "[Buttons] A pilot's name opens them in the Pilot Analyzer, in their ship when the line says it. Press a system, corp, alliance or ship to show only it in the Feed; the chips under the filters say what's on (× removes one; press it again for everything). {card:itnear} itself is never filtered; beside the map it scrolls, and the count below says how many systems are out of view. A kill badge there shows its kills' value together. The radar icon beside it in {card:itnear} sends its pilots and ships to the {card:sysan}; Restore my paste puts yours back.",
   "[Privacy and the folder] Nothing from your logs leaves the browser except the words looked up on ESI, and nothing is kept after you close the page. Chrome or Edge read the folder once you choose it (after a browser restart, turning Intel on asks once more); the logs are read every 2 seconds, also in a hidden tab."
  ],
+ "intel#game": [
+  "Use my game location asks EVE which system your character is in, every few seconds while Intel runs, so jumps count from where you are even before your Local log says so.",
+  "It needs your EVE login in the tab running Intel, as the character you picked as You, and EVE's OK to read your location (EVE's page asks once). Logins are per tab, so a new tab asks you to log in again.",
+  "Whichever is newer wins: EVE's answer or your Local log's last system change. When they differ, the line under the box shows both, in amber.",
+  "The page asks no sooner than EVE says its answer is fresh (about 5 seconds), and slower when EVE says the app's share is running low. Your location is kept in this tab's memory only.",
+  "Turning it off stops the checks. Log out turns it off and ends the permission with EVE."
+ ],
  "onscan": [
   "The ships your D-Scan sees, by hull and by role. D-Scan shows hulls, not fits or pilots, so nothing here is tied to a name in Local.",
   "[Roles] From each hull's group: Logistics, Tackle (interceptors, interdictors, heavy interdictors), EWAR (recons, electronic attack ships), Command, Bombers, Capitals, DPS for every other combat hull, Cyno Capable, Non-combat (mining, hauling, freighters, shuttles, capsules, rookie ships).",
@@ -3500,7 +3519,7 @@ function ctxHtml(text, extraCls = '', full = ''){
 // user to confirm"; "Don't ask again" per site, as recommended): every zKillboard link is this icon, and every link that leaves the page
 // asks first (leaveAsk), unless the person said not to for that site (localStorage LEAVE_KEY; "Ask again" under Intel's gear).
 const FLEET_ICON = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.5l2.2 4H5.8z"/><path d="M3.2 7.5l2.2 4H1z"/><path d="M12.8 7.5l2.2 4h-4.4z"/><rect x="3" y="13" width="10" height="1.2" rx=".6"/></svg>';   // three ships: a fleet
-const LEAVE_KEY = 'dscanLeaveOk', LEAVE_NAMES = {'zkillboard.com': 'zKillboard'};
+const LEAVE_KEY = 'dscanLeaveOk', LEAVE_NAMES = {'zkillboard.com': 'zKillboard', 'developers.eveonline.com': "EVE's developer site"};
 function zkLinkHtml(url, what, text){   // text (v2026.11.02.3): a number to show in place of the icon, e.g. "▲ 12 kills · 3.4B"
   const t = `${what} on zKillboard (outside this site)`;
   return `<a class="${text ? 'zk-t' : 'zk-ic'}" href="${escapeHtml(url)}" target="_blank" rel="noopener" title="${escapeHtml(t)}"${text ? '' : ` aria-label="${escapeHtml(t)}"`}>${text ? escapeHtml(text) : 'zK'}</a>`;
@@ -3558,7 +3577,7 @@ function numBoxStyle(widest){ return `min-width:${String(widest).length}ch;`; }
 const INFO_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6"></path><path d="M12 7.5v.5"></path></svg>';
 // v2026.10.14.49: a key may name a variant of a card's text, "<card key>#<variant>" (the Anhinga's Mode text is
 // "tdmode#primary"), and the text names other cards as {card:key} (filled from CARD_NAMES, like ERROR_CODES).
-const INFO_TITLE = {'fit#charges': 'How the Charges list works', 'side#sso': 'How logging in with EVE works'};   // v2026.10.14.77: a panel about part of a card
+const INFO_TITLE = {'fit#charges': 'How the Charges list works', 'side#sso': 'How logging in with EVE works', 'intel#game': 'How Use my game location works'};   // v2026.10.14.77: a panel about part of a card
 // v2026.10.30.2 (a user: "Bro you gotta find a way to condense this"): a paragraph "**Lead:** text" starts with its lead in bold; a
 // paragraph "[Heading] text" is folded under its heading (Intel's few lines on top, the rest a click away). Plain text otherwise.
 function infoParaHtml(s){
@@ -4112,6 +4131,33 @@ const ERROR_CODES = {
   "why": "Each login code works once and only for a short time.",
   "since": "v2026.11.08.1",
   "doc": "2026-11-08_log-in-with-eve.html"
+ },
+ "SSO-06": {
+  "title": "EVE ended the login",
+  "where": "Your profile, Pilot; Intel's settings, Use my game location",
+  "trigger": "Renewing the login, CCP's token endpoint answered invalid_grant (the refresh token was revoked, for example by removing Threat Vector on EVE's site or logging out in another tab), or the renewed token didn't check out or was for another character.",
+  "check": "Log in again (the EVE button, or Log in again under Use my game location).",
+  "why": "A login lasts only as long as EVE keeps renewing it; the page says so instead of failing quietly.",
+  "since": "v2026.11.08.4",
+  "doc": "2026-11-08_sso-game-location.html"
+ },
+ "SSO-07": {
+  "title": "EVE didn't give the permission",
+  "where": "Intel's settings, Use my game location",
+  "trigger": "The token from EVE doesn't list the permission the switch needs (its scp claim), or ESI answered 403 for it (the permission was taken back). The switch turns off.",
+  "check": "Turn the switch on again and agree on EVE's page; on EVE's site, check that Threat Vector still has the permission.",
+  "why": "A switch works only with the permission EVE gave; the page never asks ESI for something it wasn't allowed.",
+  "since": "v2026.11.08.4",
+  "doc": "2026-11-08_sso-game-location.html"
+ },
+ "SSO-08": {
+  "title": "ESI refused the login",
+  "where": "Intel's settings, Use my game location",
+  "trigger": "ESI answered 401 to a call made with the login. That feature stops and isn't asked again until you log in again.",
+  "check": "Log in again. If it keeps happening, EVE's login may be having trouble.",
+  "why": "Every refused call counts against ESI's error limit for everyone on this address (100 a minute), so a refused login is never retried by itself.",
+  "since": "v2026.11.08.4",
+  "doc": "2026-11-08_sso-game-location.html"
  }
 };
 function withCode(text, code){ return code ? `${text} (${code})` : text; }
@@ -4371,7 +4417,7 @@ function zkbRetryStep(now){   // one step of every Retry countdown; true while o
 // the panel is open, never in a hidden tab; the zKillboard count ages out on one timeout set for the next expiry (bgAgeArm).
 // ESI is counted by kind of lookup, not by feature (the owner 2026-11-04, "let's go with your recommendation"): the calls sit in
 // helpers that every feature and Intel's background lookups share, so only the kind is known where the request is made.
-const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status'};
+const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location'};
 const ESI_USE_KEY = 'dscanEsiUse', ESI_USE_MIN = 15, ESI_ERR_LIMIT = 100, ESI_ERR_WARN = 50, ESI_GROUP_WARN = 0.2;
 const ZKB_WHO_KEY = 'dscanZkbWho', ZKB_WARN_AT = 80;   // amber from 80 of 100 (the planner's default, kept by the owner 2026-11-04)
 let bgEsiPend = null, bgEsiFlushT = 0, bgOpen = false, bgTimer = 0, bgAgeT = 0, bgRaf = 0, bgLastSegs = '', bgLastBody = '', bgR2Times = [];
@@ -4437,7 +4483,15 @@ function bgEsiUse(){   // what the gauge and panel show: stored plus this tab's 
           by: [...by.entries()].sort((x, y) => y[1] - x[1]), wait: Math.max(0, (u.wait || 0) - now)};
 }
 // The page's one way to ESI (v2026.11.04.4): the same request as before (no added headers, no cache-busting), its answer noted.
-async function esiFetch(url, init, kind){
+// auth (v2026.11.08.4, 028): {scope}: a feature's own call with the EVE login, to ESI only. Only here are the token, the compatibility
+// date and X-User-Agent added (tools/check_request_gates.py); ssoAccess renews the token first when under a minute is left.
+async function esiFetch(url, init, kind, auth){
+  if(auth){
+    if(typeof url !== 'string' || !url.startsWith(ESI + '/') || !auth.scope) throw new Error('The EVE login goes to ESI only.');
+    const tok = await ssoAccess();
+    init = Object.assign({}, init, {credentials: 'omit', referrerPolicy: 'no-referrer',
+      headers: Object.assign({}, init && init.headers, {'Authorization': 'Bearer ' + tok, 'X-Compatibility-Date': ESI_COMPAT, 'X-User-Agent': ESI_UA})});
+  }
   let r;
   try{ r = await fetch(url, init); }
   catch(e){ esiNote(kind, null); esiFailed(); throw e; }
@@ -23900,8 +23954,19 @@ const SSO_APPS = {'https://threatvector.space': 'eff6eec96b2e44cbb6a594f5e160a2e
 const SSO_HOST = 'https://login.eveonline.com', SSO_ISS = ['https://login.eveonline.com', 'login.eveonline.com'];
 const SSO_PENDING = 'tvSsoPending', SSO_WHO = 'tvSsoWho', SSO_REFRESH = 'tvSsoRefresh';   // sessionStorage: this tab only
 const SSO_STATE_MS = 600000;   // a login answer older than 10 minutes is refused (SSO-02)
+// v2026.11.08.4 (build queue 028, SSO Phase 2; Project doc roadmap/sso-phase2-plan.md): permissions, one per feature, asked for when the
+// feature is turned on (D3). SSO_TAB: a random id per login, so a duplicated tab (which may get a copy of sessionStorage) drops its copy.
+const SSO_TAB = 'tvSsoTab', SSO_BC = 'tv-sso';
+const SSO_LOC = 'esi-location.read_location.v1';   // Use my game location (registered on both apps); no ship scope (the owner: no Match my ship)
+const SSO_SCOPE_NAMES = {[SSO_LOC]: 'Location'};
+const SSO_EARLY_MS = 60000, SSO_BACKOFF_S = [30, 60, 120, 300], SSO_BACK_MS = 30000;
+const SSO_APPS_URL = 'https://developers.eveonline.com/authorized-apps';
 const SSO_BTN_IMG = 'data:image/png;base64,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';   // CCP's "Log in with EVE Online", black, large (DLA 7.2, unaltered)
-const sso = {who: null, access: null, busy: false, note: null, meta: null};
+const sso = {who: null, access: null, busy: false, note: null, meta: null,
+  // 028: starting (the press, until the page leaves), leaving (when it left for EVE: the Back-button fix), exp / scp (from the access
+  // token; scp null = no token read since this load), renewP (the one renewal), renewAt / fails / renewErr (waiting after a failure),
+  // from ('loc' when Use my game location asked), dupAsk (when this tab asked whether it is a copy)
+  starting: false, leaving: 0, exp: 0, scp: null, renewP: null, renewAt: 0, fails: 0, renewErr: '', from: '', dupAsk: 0, bc: null};
 function ssoClientId(){ try{ return Object.prototype.hasOwnProperty.call(SSO_APPS, location.origin) ? SSO_APPS[location.origin] : null; }catch(e){ return null; } }
 function ssoGet(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
 function ssoSet(k, v){ try{ sessionStorage.setItem(k, v); return true; }catch(e){ return false; } }
@@ -23929,19 +23994,51 @@ async function ssoMeta(){
   if(typeof m.revocation_endpoint !== 'string' || !m.revocation_endpoint.startsWith(SSO_HOST + '/')) m.revocation_endpoint = null;
   return (sso.meta = m);
 }
-async function ssoStart(){
+// The permissions of the features turned on in this browser (a setting in localStorage): a new login asks for them again (D3)
+function ssoWant(){ try{ return it.set.gameLoc ? [SSO_LOC] : []; }catch(e){ return []; } }
+function ssoHeld(scope){ return !!(sso.scp && sso.scp.includes(scope)); }
+function ssoScp(c){ const v = c && c.scp; return Array.isArray(v) ? v.filter(x => typeof x === 'string') : typeof v === 'string' && v ? v.split(/\s+/) : []; }   // an array per CCP's docs; one scope comes as a string (the owner's hand test, 2026-11-08)
+// A line for whoever asked: Use my game location's line under Intel's settings, or the Pilot section
+function ssoMsg(from, text, err){
+  if(from === 'loc'){ itGl.msg = text ? {text, err: !!err} : null; itRender(true); }
+  else { side.msg.pilot = text ? {text, err: !!err} : null; renderSidePanel(); }
+}
+// want: the permissions a feature needs; the request asks for those, the ones this tab holds and the ones of the features that are on,
+// because EVE gives a later login only what it asks for (the owner's hand test, 2026-11-08: a login asking for nothing came back with no scp)
+async function ssoStart(want, from){
   const cid = ssoClientId();
-  if(!cid || sso.busy) return;
-  sso.busy = true; sso.note = null; side.msg.pilot = {text: "Opening EVE's login…"}; renderSidePanel();
+  if(!cid || sso.busy || sso.starting) return;
+  const scopes = [...new Set([...ssoWant(), ...(sso.scp || []), ...(want || [])])].filter(x => SSO_SCOPE_NAMES[x]);
+  sso.starting = true; sso.leaving = 0; sso.note = null; sso.from = from === 'loc' ? 'loc' : '';
+  ssoMsg(sso.from, "Opening EVE's login…");
   try{
     const m = await ssoMeta();
     const verifier = ssoB64u(crypto.getRandomValues(new Uint8Array(32)));
     const challenge = ssoB64u(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))));
     const state = ssoB64u(crypto.getRandomValues(new Uint8Array(16)));
-    if(!ssoSet(SSO_PENDING, JSON.stringify({verifier, state, at: Date.now()}))) throw codedError('SSO-02', "This browser won't keep the login's check for this tab (its session storage is off).");
+    let intelWasOn = false; try{ intelWasOn = !!it.on; }catch(e){ }
+    if(!ssoSet(SSO_PENDING, JSON.stringify({verifier, state, at: Date.now(), want: (want || []).filter(x => SSO_SCOPE_NAMES[x]), from: sso.from, intelWasOn})))
+      throw codedError('SSO-02', "This browser won't keep the login's check for this tab (its session storage is off).");
     const q = new URLSearchParams({response_type: 'code', redirect_uri: location.origin + '/', client_id: cid, code_challenge: challenge, code_challenge_method: 'S256', state});
-    location.assign(m.authorization_endpoint + '?' + q.toString());   // no scope: the login asks for nothing (D3)
-  }catch(e){ sso.busy = false; side.msg.pilot = {text: withCode(e.message, errorCodeOf(e)), err: true}; renderSidePanel(); }
+    if(scopes.length) q.set('scope', scopes.join(' '));   // none: the login asks for nothing (D3)
+    sso.starting = false; sso.leaving = Date.now();
+    // other tabs hear "away" now, while this page is still running: a message posted from pagehide wasn't delivered in Chrome (the
+    // owner's hand test, 2026-11-08: the other tab said "closed")
+    try{ if(it.on) itLockPost({on: false, why: 'away'}); }catch(e){ }
+    location.assign(m.authorization_endpoint + '?' + q.toString());
+    // a backstop: the page never left (the address refused): the button comes back after 30 s
+    setTimeout(() => { if(sso.leaving && Date.now() - sso.leaving >= SSO_BACK_MS && !(typeof document !== 'undefined' && document.hidden)) ssoCameBack(); }, SSO_BACK_MS);
+  }catch(e){ sso.starting = false; sso.leaving = 0; ssoMsg(sso.from, withCode(e.message, errorCodeOf(e)), true); }
+}
+// The Back-button bug ([stated] 2026-11-07, "stuck in an evaluating login result state"): Back on EVE's page may bring this page back from
+// the browser's back/forward cache as it was when it left (pageshow, persisted). Nothing is checked then, so the press is undone.
+function ssoCameBack(){   // LESSON #150
+  if(!sso.leaving && !sso.starting) return;
+  const from = sso.from;
+  sso.leaving = 0; sso.starting = false; sso.from = '';
+  ssoDel(SSO_PENDING);
+  try{ if(it.on){ itLk.last = ''; itLockState(); } else itLockPost({back: true}); }catch(e){ }   // other tabs were told "away": still running, or not away after all
+  ssoMsg(from, "You came back from EVE's page without logging in, so nothing changed.");
 }
 // The access token (a JWT) checked against CCP's published keys: the key its kid names, RS256 with the RSA key or ES256 with the
 // P-256 key and nothing else; issuer, audience (this app and "EVE Online"), expiry, and a character. Returns {id, name}.
@@ -23976,22 +24073,83 @@ async function ssoVerify(jwt, m, cid){
   const sm = /^CHARACTER:EVE:(\d{1,12})$/.exec(typeof c.sub === 'string' ? c.sub : '');   // CCP's form, e.g. CHARACTER:EVE:2112345678 (docs.esi.evetech.net, validating EVE JWTs; LESSON #147)
   const name = typeof c.name === 'string' ? c.name.trim() : '';
   if(!sm || !name || name.length > EVE_NAME_MAX) throw bad('character');
-  return {id: Number(sm[1]), name};
+  return {id: Number(sm[1]), name, scp: ssoScp(c), exp: c.exp * 1000};
+}
+// A checked token kept: the access token in memory (with its expiry and permissions), the refresh token and who in sessionStorage
+function ssoKeep(t, v){
+  const old = ssoGet(SSO_REFRESH), oldWho = sso.who;
+  sso.access = t.access_token; sso.exp = v.exp; sso.scp = v.scp; sso.fails = 0; sso.renewAt = 0; sso.renewErr = '';
+  ssoSet(SSO_REFRESH, t.refresh_token); ssoSet(SSO_WHO, JSON.stringify({id: v.id, name: v.name}));
+  ssoSet(SSO_TAB, ssoB64u(crypto.getRandomValues(new Uint8Array(12))));
+  sso.who = {id: v.id, name: v.name};
+  if(old && oldWho && oldWho.id !== v.id && old !== t.refresh_token) ssoRevoke(old);   // another character came back: the old login ends
+}
+// v2026.11.08.4 (028): a token with at least a minute left, renewed first when not; one renewal at a time in this tab. Lazy: only a
+// feature that needs ESI asks, so a reload still fetches nothing. CCP (apps without a secret): grant_type=refresh_token, the refresh
+// token and the Client ID, form-encoded; a new refresh token replaces the stored one before anything else ("may not be the same").
+function ssoAccess(){
+  if(!sso.who) return Promise.reject(codedError('SSO-06', 'This tab isn\u2019t logged in with EVE. Log in again to go on.'));
+  if(sso.access && sso.exp - Date.now() > SSO_EARLY_MS) return Promise.resolve(sso.access);
+  if(sso.renewP) return sso.renewP;
+  if(Date.now() < sso.renewAt) return Promise.reject(codedError('SSO-03', sso.renewErr || "CCP's login couldn't renew the login."));
+  sso.renewP = ssoRenew().finally(() => { sso.renewP = null; });
+  return sso.renewP;
+}
+function ssoWait(ms, why){   // after a failure: 30 s, 60 s, 120 s, then every 5 minutes (429: CCP's Retry-After); never a tight loop
+  if(!(ms > 0)){ sso.fails++; ms = 1000 * SSO_BACKOFF_S[Math.min(sso.fails, SSO_BACKOFF_S.length) - 1]; }
+  sso.renewAt = Date.now() + ms;
+  sso.renewErr = `${why} The page tries again in ${Math.ceil(ms / 1000)} s.`;
+  return codedError('SSO-03', sso.renewErr);
+}
+function ssoLost(text){   // EVE ended the login: the keys go; the pilot stays
+  ssoEnd();
+  sso.note = {text: withCode(text || 'EVE ended this login (its renewal was refused). Log in again to go on.', 'SSO-06'), err: true};
+  renderSidePanel();
+  return codedError('SSO-06', text || 'EVE ended this login (its renewal was refused). Log in again to go on.');
+}
+async function ssoRenew(){
+  const cid = ssoClientId(), rt = ssoGet(SSO_REFRESH), who = sso.who;
+  if(!cid || !rt) throw ssoLost();
+  let m, r, t;
+  try{
+    m = await ssoMeta();
+    r = await ssoFetch(m.token_endpoint, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({grant_type: 'refresh_token', refresh_token: rt, client_id: cid}).toString()});
+  }catch(e){ throw ssoWait(0, "CCP's login couldn't be reached to renew the login."); }
+  if(sso.who !== who) throw codedError('SSO-06', 'This tab logged out meanwhile.');
+  if(r.status === 429){ const ra = Number(r.headers.get('retry-after')); throw ssoWait(1000 * (ra > 0 ? ra : 60), "CCP's login asked the page to wait before renewing the login."); }
+  try{ t = await ssoJson(r); }catch(e){ throw ssoWait(0, `CCP's login answered ${Number(r.status)} to the renewal.`); }
+  if(!r.ok){
+    if(t && t.error === 'invalid_grant') throw ssoLost();
+    throw ssoWait(0, `CCP's login answered ${Number(r.status)} to the renewal.`);
+  }
+  if(!t || typeof t.access_token !== 'string') throw ssoWait(0, `CCP's login answered ${Number(r.status)} without a token.`);
+  if(typeof t.refresh_token === 'string' && t.refresh_token) ssoSet(SSO_REFRESH, t.refresh_token);   // first, before anything can fail
+  let v;
+  try{ v = await ssoVerify(t.access_token, m, cid); }
+  catch(e){ if(errorCodeOf(e) === 'SSO-04') throw ssoLost("The renewed login from EVE didn't check out. Log in again to go on."); throw ssoWait(0, "CCP's login keys couldn't be read to check the renewal."); }
+  if(sso.who !== who || v.id !== who.id) throw ssoLost('EVE renewed the login for another character. Log in again to go on.');
+  sso.access = t.access_token; sso.exp = v.exp; sso.scp = v.scp; sso.fails = 0; sso.renewAt = 0; sso.renewErr = '';
+  renderSidePanel();
+  return sso.access;
 }
 // Back from EVE (SSO_RET): the state this tab sent, then the code for tokens, then the token checked, then the pilot set by id.
 async function ssoFinish(ret){
   let pend = null;
   try{ pend = JSON.parse(ssoGet(SSO_PENDING) || 'null'); }catch(e){ pend = null; }
   ssoDel(SSO_PENDING);   // used once, whatever happens next
-  openProfile('.pp-sec[data-k="pilot"]');
+  // 028: what the press asked for, trusted only from this tab's own pending entry (SSO-02's checks)
+  const pendOk = !!(pend && typeof pend.state === 'string' && pend.state === ret.state && typeof pend.at === 'number' && Date.now() - pend.at >= 0 && Date.now() - pend.at < SSO_STATE_MS);
+  const from = pendOk && pend.from === 'loc' ? 'loc' : '', want = pendOk && Array.isArray(pend.want) ? pend.want.filter(x => SSO_SCOPE_NAMES[x]) : [];
+  const had = sso.who;   // logged in already (a permission asked for): a refused answer leaves that login as it was
+  if(from === 'loc') itShowGame(); else openProfile('.pp-sec[data-k="pilot"]');
   try{
-    if(ret.error === 'access_denied') throw codedError('SSO-01', "You cancelled EVE's login, so nothing changed." + ssoAgain);
+    if(ret.error === 'access_denied') throw codedError('SSO-01', "You cancelled EVE's login, so nothing changed." + (from ? '' : ssoAgain));
     if(ret.error) throw codedError('SSO-03', "EVE's login came back with an error." + ssoAgain);
     const cid = ssoClientId();
-    if(!pend || typeof pend.state !== 'string' || typeof pend.verifier !== 'string' || pend.state !== ret.state || !ret.code || !cid
-       || !(typeof pend.at === 'number' && Date.now() - pend.at >= 0 && Date.now() - pend.at < SSO_STATE_MS))
+    if(!pendOk || typeof pend.verifier !== 'string' || !ret.code || !cid)
       throw codedError('SSO-02', "That login answer didn't come from this tab, or is more than 10 minutes old." + ssoAgain);
-    sso.busy = true; side.msg.pilot = null; renderSidePanel();
+    sso.busy = true; ssoMsg(from, '');
     const m = await ssoMeta();
     const r = await ssoFetch(m.token_endpoint, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: new URLSearchParams({grant_type: 'authorization_code', code: ret.code, client_id: cid, code_verifier: pend.verifier}).toString()});
@@ -24002,23 +24160,23 @@ async function ssoFinish(ret){
     }
     if(!t || typeof t.access_token !== 'string' || typeof t.refresh_token !== 'string') throw codedError('SSO-03', `CCP's login answered ${Number(r.status)} without a token.` + ssoAgain);
     const who = await ssoVerify(t.access_token, m, cid);
-    sso.access = t.access_token;   // memory only; Phase 1 sends it nowhere
-    ssoSet(SSO_REFRESH, t.refresh_token); ssoSet(SSO_WHO, JSON.stringify(who));
-    sso.who = who;
-    side.msg.pilot = {text: 'Looking up your pilot…'}; renderSidePanel();
-    await sideSetPilotId(who.id, who.name);
-    sso.busy = false; renderSidePanel();
+    ssoKeep(t, who);   // the access token in memory only; sent only to ESI, by esiFetch
+    if(!had || had.id !== who.id){ side.msg.pilot = {text: 'Looking up your pilot…'}; renderSidePanel(); await sideSetPilotId(who.id, who.name); }
+    sso.busy = false;
+    if(want.includes(SSO_LOC)) itGlGranted();   // the switch turns on only when its permission came back (else SSO-07)
+    renderSidePanel();
   }catch(e){
-    ssoEnd();
-    side.msg.pilot = {text: withCode(e.message, errorCodeOf(e)), err: true}; renderSidePanel();
+    if(!had) ssoEnd(); else sso.busy = false;
+    ssoMsg(from, withCode(e.message, errorCodeOf(e)), true);
   }
+  if(pendOk && pend.intelWasOn) itResumeAfterEve();   // Intel was running when the player left for EVE (the owner's decision)
 }
 // Ends the login in this tab: the keys go, the refresh token is revoked at CCP (its answer is 200 even for an unknown token, so
 // nothing is claimed). The pilot stays; Log out clears it (the owner's choice).
 function ssoEnd(){
   const rt = ssoGet(SSO_REFRESH);
-  ssoDel(SSO_WHO, SSO_REFRESH);
-  sso.who = null; sso.access = null; sso.busy = false;
+  ssoDel(SSO_WHO, SSO_REFRESH, SSO_TAB);
+  sso.who = null; sso.access = null; sso.busy = false; sso.exp = 0; sso.scp = null; sso.fails = 0; sso.renewAt = 0; sso.renewErr = '';
   if(rt) ssoRevoke(rt);
 }
 async function ssoRevoke(rt){
@@ -24034,8 +24192,11 @@ async function ssoRevoke(rt){
 // No link to EVE's authorized apps: a login that asks for no permissions isn't listed there (developers.eveonline.com/authorized-apps,
 // the owner's hand test 2026-11-08), so there's nothing to remove. Phase 2's first permission brings the link back, checked then.
 function ssoLogout(){
+  const gave = !!((sso.scp && sso.scp.length) || ssoWant().length);
   ssoEnd();
-  sso.note = {text: 'Logged out of this tab, and Your pilot is cleared.'};
+  itGlLogout();   // 028: Log out turns Use my game location off
+  // revoking ends the grant: EVE drops the app from the character's list (the owner's hand test, 2026-11-08)
+  sso.note = {text: 'Logged out of this tab, and Your pilot is cleared.' + (gave ? ' The permissions you gave EVE ended with it.' : '')};
   sideSetPilot('');
 }
 function ssoBtnStateHtml(){
@@ -24047,13 +24208,22 @@ function ssoTopHtml(){
   if(sso.who) return '';
   if(sso.busy && !side.msg.pilot) return '<div class="sso-box"><div class="status">Checking your login with EVE…</div></div>';
   return `<div class="sso-box"><button type="button" class="sso-btn" data-sso="login"${ssoBtnStateHtml()}><img src="${SSO_BTN_IMG}" alt="Log in with EVE Online" width="270" height="45"></button>
-      <div class="sso-sub">${ctxHtml('Only says who you are, for this tab')}${infoBtnHtml('side#sso')}</div>
+      <div class="sso-sub">${ctxHtml(ssoAlsoText())}${infoBtnHtml('side#sso')}</div>
       <div class="sso-or">or type it</div></div>`;
 }
+// The button's line: what this login asks EVE for (the features on in this browser, D3)
+function ssoAlsoText(){ const w = ssoWant(); return w.length ? `Also asks for: ${w.map(x => SSO_SCOPE_NAMES[x]).join(', ')}` : 'Only says who you are, for this tab'; }
+// Logged in with permissions: a tag for each and the way to take them back (EVE's page, through the outside-link gate)
+function ssoPermsHtml(){
+  const s = (sso.scp || []).filter(x => SSO_SCOPE_NAMES[x]);
+  if(!s.length) return '';
+  return `<div class="sso-perms"><span class="sso-pl">EVE permissions:</span>${ssoTagsHtml(s)}<a href="${escapeHtml(SSO_APPS_URL)}">Manage on EVE's site ↗</a></div>`;
+}
+function ssoTagsHtml(s){ return s.map(x => `<span class="sso-tag">${escapeHtml(SSO_SCOPE_NAMES[x])}</span>`).join(''); }
+function ssoNoteHtml(){ return sso.note && sso.note.text ? `<div class="status side-msg${itOnHtml(sso.note.err, 'err')}">${escapeHtml(sso.note.text)}</div>` : ''; }
 function ssoFootHtml(){
-  if(sso.who) return `<div class="sso-sub">${ctxHtml('Logged in for this tab')}${infoBtnHtml('side#sso')}</div>`;
-  if(sso.note && sso.note.text) return `<div class="status side-msg">${escapeHtml(sso.note.text)}</div>`;
-  return '';
+  if(sso.who) return `<div class="sso-sub">${ctxHtml('Logged in for this tab')}${infoBtnHtml('side#sso')}</div>${ssoPermsHtml()}${ssoNoteHtml()}`;
+  return ssoNoteHtml();
 }
 // "Your pilot": the typed field, or (logged in) the name, the EVE login tag and Log out. To pick another pilot you log out first.
 function sidePilotFieldHtml(r){
@@ -24067,12 +24237,28 @@ function ssoInit(panel){
   try{ who = JSON.parse(ssoGet(SSO_WHO) || 'null'); }catch(e){ who = null; }
   // a reload keeps the login when the saved pilot is still that character; nothing is fetched
   if(who && Number.isInteger(who.id) && typeof who.name === 'string' && side.rec.pilot && side.rec.pilot.id === who.id && ssoClientId()) sso.who = {id: who.id, name: who.name};
-  else ssoDel(SSO_WHO, SSO_REFRESH);
+  else ssoDel(SSO_WHO, SSO_REFRESH, SSO_TAB);
+  if(!SSO_RET){   // 028: an abandoned trip to EVE's page can never act on a later, unrelated load
+    let p = null; try{ p = JSON.parse(ssoGet(SSO_PENDING) || 'null'); }catch(e){ p = null; }
+    ssoDel(SSO_PENDING);
+    // Back on EVE's page when Chrome couldn't keep this page (it reloads): the same as Cancel there (the owner, 2026-11-08: "i agree"):
+    // the "nothing changed" line, and Intel again if it was running. Only a load from the Back button within 10 minutes of leaving;
+    // any other load starts nothing, as before.
+    let nav = '';
+    try{ const e = performance.getEntriesByType('navigation')[0]; nav = e ? e.type : ''; }catch(e){ nav = ''; }
+    const back = !!(p && nav === 'back_forward' && typeof p.at === 'number' && Date.now() - p.at >= 0 && Date.now() - p.at < SSO_STATE_MS);
+    if(back) Promise.resolve().then(() => { ssoMsg(p.from === 'loc' ? 'loc' : '', "You came back from EVE's page without logging in, so nothing changed."); if(p.from !== 'loc') openProfile('.pp-sec[data-k="pilot"]'); });
+    if(back && p.intelWasOn) Promise.resolve().then(() => itResumeAfterEve());   // it tells the other tabs either way
+    else if(p && p.intelWasOn) Promise.resolve().then(() => itLockPost({back: true}));   // other tabs: no longer "paused while the other tab logs in"
+  }
+  ssoTabInit();
+  // 028, the Back-button bug: a page brought back from the back/forward cache after leaving for EVE
+  if(typeof window !== 'undefined' && window.addEventListener) window.addEventListener('pageshow', (e) => { if(e.persisted) ssoCameBack(); });
   panel.addEventListener('click', (e) => {
     const b = e.target.closest('[data-sso]');
     if(!b || b.disabled) return;
     e.preventDefault();
-    if(b.dataset.sso === 'login') ssoStart(); else if(b.dataset.sso === 'logout') ssoLogout();
+    if(b.dataset.sso === 'login') ssoStart([], ''); else if(b.dataset.sso === 'logout') ssoLogout();
   });
   // Another tab typed or cleared the pilot (side.rec is shared): this tab's login ends; the pilots aren't fought over.
   window.addEventListener('storage', (e) => {
@@ -24085,6 +24271,26 @@ function ssoInit(panel){
     renderSideChip(); renderSidePanel(); if(typeof renderProfile === 'function' && profileIsOpen()) renderProfile(); if(sa.last) saRender();
   });
   if(SSO_RET) Promise.resolve().then(() => ssoFinish(SSO_RET));   // after the rest of the script has started
+}
+// 028: a duplicated tab may start with a copy of this tab's sessionStorage, and with it the same refresh token (one copy would fail
+// when CCP hands out a new one). A tab holding a login asks once on load whether a live tab has its id; one that has it answers, and the
+// copy drops its login (no revoke: the token is the other tab's).
+function ssoTabInit(){
+  if(typeof BroadcastChannel !== 'function') return;
+  try{ sso.bc = new BroadcastChannel(SSO_BC); }catch(e){ return; }
+  sso.bc.onmessage = (e) => {
+    const m = e && e.data, id = ssoGet(SSO_TAB);
+    if(!m || typeof m !== 'object' || !sso.who || !id) return;
+    if(m.q === id){ try{ sso.bc.postMessage({dup: id}); }catch(err){ } }
+    else if(m.dup === id && sso.dupAsk && Date.now() - sso.dupAsk < 5000){
+      sso.dupAsk = 0; ssoDel(SSO_WHO, SSO_REFRESH, SSO_TAB);
+      sso.who = null; sso.access = null; sso.exp = 0; sso.scp = null;
+      sso.note = {text: "This tab was copied from another, so it's logged out here."};
+      renderSidePanel();
+    }
+  };
+  const id = ssoGet(SSO_TAB);
+  if(sso.who && id){ sso.dupAsk = Date.now(); try{ sso.bc.postMessage({q: id}); }catch(e){ } }
 }
 // Adds alliances / corporations by name to one list (and takes them off the other). Lines may carry a ticker.
 async function sideAddNames(which, lines){
@@ -25172,7 +25378,9 @@ const it = {
   gateDest: new Map(), gateAsk: new Map()   // v2026.10.31.5: stargate id -> the system it leads to (itGateDest)
 };
 function itKfNew(){ return {seq: null, busy: false, waitUntil: 0, head: false, fails: 0, blk: 0, seen: new Set(), reqs: 0, lastGot: 0, target: 0, seqAt: 0, halt: false, skipped: 0, allSkip: 0, ups: [], behind: false, behindOk: 0, skipMode: false, retrying: false}; }   // blk (v2026.11.06.1): counted reads in a row with nothing the browser may read (itFeedDown)   // seq = the next number to read; head = at the live end; lastGot = when a kill was last read; target = sequence.json's newest number (every one up to it is published); seqAt = when sequence.json was last read (v2026.10.29.8)
-function itDefaults(){ return {channels: [], me: null, range: 3, killRange: IT_KILL_RANGE_DEFAULT, nearRange: null, mapReach: null, nearView: 'list', sound: true, notify: true, volume: IT_VOL_DEFAULT, soundNear: 'chime', soundHere: 'klaxon', sndPrev: {near: 'chime', here: 'klaxon'}, forget: 15, hideFriendly: true, feed: {types: 'all', dist: 0, sort: 'new'}, alias: ''}; }
+// v2026.11.08.4 (028; the owner: "have desktop notifications unchecked by default ... same with sounds"): sound and notify start off; a
+// saved setting keeps its value (itReadSet), so nobody's choice changes. gameLoc: Use my game location (box 3).
+function itDefaults(){ return {channels: [], me: null, range: 3, killRange: IT_KILL_RANGE_DEFAULT, nearRange: null, mapReach: null, nearView: 'list', sound: false, notify: false, gameLoc: false, volume: IT_VOL_DEFAULT, soundNear: 'chime', soundHere: 'klaxon', sndPrev: {near: 'chime', here: 'klaxon'}, forget: 15, hideFriendly: true, feed: {types: 'all', dist: 0, sort: 'new'}, alias: ''}; }
 function itReadSet(){
   const d = itDefaults();
   try{
@@ -25186,7 +25394,7 @@ function itReadSet(){
       for(const k of ['nearRange', 'mapReach']) if(Number.isInteger(r[k]) && r[k] >= 1 && r[k] <= IT_MAP_MAX) d[k] = r[k];
       if(r.nearView === 'map') d.nearView = 'map';
       if(IT_FORGET.includes(Number(r.forget))) d.forget = Number(r.forget);
-      for(const k of ['sound', 'notify', 'hideFriendly']) if(typeof r[k] === 'boolean') d[k] = r[k];
+      for(const k of ['sound', 'notify', 'hideFriendly', 'gameLoc']) if(typeof r[k] === 'boolean') d[k] = r[k];
       // v2026.11.01.8: the alert sounds; a saved setting without them gets the defaults
       if(Number.isFinite(Number(r.volume)) && r.volume !== null && r.volume !== '') d.volume = Math.max(0, Math.min(100, Math.round(Number(r.volume))));
       const ok = (v) => v === 'file' || IT_SOUNDS.some(x => x[0] === v);
@@ -25754,6 +25962,7 @@ async function itAllowRead(){
   if(p === 'granted'){
     it.err = '';
     try{ await itScan(); }catch(e){ it.err = withCode(`The page can't read “${it.dirName}” (${e.message}).`, 'INTEL-02'); }
+    if(it.resume && !it.err){ it.resume = false; await itStart(); return; }   // 028: back from EVE with Intel running before: this press starts it
   }
   itRender(true);
 }
@@ -25768,7 +25977,7 @@ async function itLookAgain(){
     const k0 = itFoundKey();
     await itPermRead();
     if(it.on){
-      if(it.perm !== 'granted' && !it.err) it.err = itPermLostText();   // reading was taken back while the tab was away
+      if(it.perm !== 'granted' && !it.err){ it.err = itPermLostText(); itLostSound(); }   // reading was taken back while the tab was away
     }else if(it.perm === 'granted' && (!itReady() || !it.feed.length)){
       try{ await itScan(); }catch(e){ if(e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) it.perm = 'prompt'; }
     }
@@ -25776,11 +25985,13 @@ async function itLookAgain(){
   }finally{ itLookBusy = false; }
 }
 function itPermLostText(){ return withCode(`The page can't read “${it.dirName}” any more: the browser took back the permission. Press Allow reading (in Chrome's box, Allow on every visit keeps it).`, 'INTEL-02'); }
-function itMySys(){ const s = it.me && it.me.sys; return s && it.names ? it.names.byLower.get(s.toLowerCase()) || null : null; }
+function itMySys(){ return itGlSys() || itLogSys(); }
+function itLogSys(){ const s = it.me && it.me.sys; return s && it.names ? it.names.byLower.get(s.toLowerCase()) || null : null; }
 
 // ---- each tick: new lines -> reports ----
 async function itTick(){
   if(!it.on || it.busy) return;
+  itGameLoc();   // v2026.11.08.4 (028): Use my game location rides this tick; it waits for its own Expires
   it.busy = true;
   const gen = it.gen;
   try{
@@ -25791,7 +26002,7 @@ async function itTick(){
       try{
         for(const l of await itReadFile(it.me.st, false)){
           const m = /Channel changed to Local\s*:\s*(.+?)\s*$/.exec(l.msg);
-          if(l.who === 'EVE System' && m){ const s = m[1].replace(/\*$/, ''); if(s !== it.me.sys) it.me.sysAt = itShown() ? Date.now() : 0; it.me.sys = s; }   // sysAt: a jump read while Intel was in front, for the map's beacon (v2026.11.04.1); 0 = seen by nobody, no beacon later
+          if(l.who === 'EVE System' && m){ const s = m[1].replace(/\*$/, ''); if(s !== it.me.sys) it.me.sysAt = itShown() ? Date.now() : 0; it.me.sys = s; it.me.logAt = l.t; }   // sysAt: a jump read while Intel was in front, for the map's beacon (v2026.11.04.1); 0 = seen by nobody, no beacon later
         }
       }catch(e){ /* the file went away: the next scan finds the new one */ }
     }
@@ -25811,11 +26022,11 @@ async function itTick(){
       const take = fresh.filter(l => !l.history || l.t >= keep).sort((a, b) => a.t - b.t);
       await itReports(take, gen);
     }
-    it.err = '';
+    it.err = ''; it.lostSnd = false;
   }catch(e){
     if(e && e.code) it.err = withCode(e.message, e.code);
-    else if(e && (e.name === 'NotAllowedError' || e.name === 'SecurityError') && it.dir){ it.perm = 'prompt'; it.err = itPermLostText(); }   // v2026.11.08.2 (025)
-    else if(e && (e.name === 'NotAllowedError' || e.name === 'NotFoundError' || e.name === 'SecurityError')){ it.err = withCode(`The page can't read “${it.dirName}” any more (${e.name === 'NotFoundError' ? 'the folder was moved or deleted' : 'the browser took back its permission'}). Choose the folder again under the gear.`, 'INTEL-02'); itStop(); }
+    else if(e && (e.name === 'NotAllowedError' || e.name === 'SecurityError') && it.dir){ it.perm = 'prompt'; it.err = itPermLostText(); itLostSound(); }   // v2026.11.08.2 (025)
+    else if(e && (e.name === 'NotAllowedError' || e.name === 'NotFoundError' || e.name === 'SecurityError')){ it.err = withCode(`The page can't read “${it.dirName}” any more (${e.name === 'NotFoundError' ? 'the folder was moved or deleted' : 'the browser took back its permission'}). Choose the folder again under the gear.`, 'INTEL-02'); itLostSound(); itStop(); }
     else { it.err = withCode(`Intel stopped reading: ${e && e.message || e}`, 'APP-01'); }
   }finally{
     it.busy = false;
@@ -26460,6 +26671,18 @@ function itPlaySound(slot){
   }catch(e){ return false; /* no audio: the row still turns red */ }
 }
 function itBeep(){ return itPlaySound('near'); }   // the old name
+// v2026.11.08.4 (028, section 6; the owner: "intel stopped reading can go in this build if it's small enough"): Intel was running and the
+// page can no longer read the folder: one built-in sound, once per stop, only with sound on. Triple beep, unless Near You or In system uses
+// it (then the first built-in neither uses). Never on a stop by hand, a reload, a move to another tab or a failed start.
+function itLostSound(){
+  if(it.lostSnd || !it.on) return;
+  it.lostSnd = true;
+  if(!it.set.sound || itVolGain() <= 0) return;
+  const used = new Set([it.set.soundNear, it.set.soundHere]);
+  const k = !used.has('triple') ? 'triple' : (IT_SOUNDS.find(x => !used.has(x[0])) || IT_SOUNDS[0])[0];
+  it.lostKey = k;   // for the page check
+  try{ const ac = itAudioCtx(); if(ac.state === 'suspended' && ac.resume) ac.resume().catch(() => {}); IT_SYNTH[k](ac, itMaster(ac), ac.currentTime); }catch(e){ /* no audio */ }
+}
 // ---- your own file: its own IndexedDB database (one store, keys near / here: the file and its name); never leaves the browser ----
 let itSndDbP = null;
 function itSndDb(){
@@ -26581,7 +26804,7 @@ async function itStart(move){   // move (v2026.11.08.3, 026): Move Intel here ta
   else it.lockWhy = '';
   // the browser asks for notifications only after a press: this one (the slider)
   if(it.set.notify && typeof Notification !== 'undefined' && Notification.permission === 'default'){ try{ Notification.requestPermission().then(() => itRender()).catch(() => {}); }catch(e){} }
-  it.on = true; it.gen++; bgPaint();   // v2026.11.04.4: the gauge shows Intel's live kills only while Intel is on
+  it.on = true; it.gen++; bgPaint(); it.lostSnd = false; it.resume = false; itGlReset();   // v2026.11.04.4: the gauge shows Intel's live kills only while Intel is on
   it.feed = []; it.near = new Map(); it.alerted = new Map(); it.lastLine = 0; it.files = new Map(); it.lastScan = 0;
   it.kf = itKfNew(); it.kfNote = '';   // v.99
   itRender();
@@ -26612,7 +26835,7 @@ function itStop(moved){   // moved (026): another tab took Intel over; it says s
 // A BroadcastChannel (same name) carries the running tab's mark (state, count) only when it changes, "stopped" / "closed", and asks;
 // a crashed tab is noticed by locks.query() when a tab is shown. No navigator.locks: Intel runs as before, with no line.
 const IT_LOCK = 'tv-intel', IT_LOCK_HERE_MS = 6000;
-const itLk = {ok: typeof navigator !== 'undefined' && !!navigator.locks && typeof navigator.locks.request === 'function', release: null, bc: null, last: '', hereT: 0};
+const itLk = {ok: typeof navigator !== 'undefined' && !!navigator.locks && typeof navigator.locks.request === 'function', release: null, bc: null, last: '', hereT: 0, awayAt: 0};
 function itLockTake(steal){
   if(!itLk.ok) return Promise.resolve(true);
   return new Promise((res) => {
@@ -26647,11 +26870,12 @@ function itLockHear(m){
   if(m.on === true){
     const st = ['off', 'clear', 'near', 'in', 'broken'].includes(m.s) ? m.s : 'clear', n = Number.isFinite(m.n) ? m.n : 0;
     it.other = true; it.remote = {s: st, n};
-    if(it.lockWhy === 'closed') it.lockWhy = '';
+    if(it.lockWhy === 'closed' || it.lockWhy === 'away') it.lockWhy = '';
   } else if(m.on === false && it.other){
     it.other = false; it.remote = null;
-    it.lockWhy = m.why === 'closed' ? 'closed' : '';
-  }
+    it.lockWhy = m.why === 'closed' ? 'closed' : m.why === 'away' ? 'away' : '';   // away (028): the running tab went to EVE's login page
+    if(it.lockWhy === 'away') itLk.awayAt = Date.now();
+  } else if(m.back && it.lockWhy === 'away'){ it.lockWhy = ''; }   // back from EVE without running Intel again
   if(JSON.stringify([it.other, it.lockWhy, it.remote]) !== before){ itRender(true); itSwSync(); }   // drawn only when it changed (LESSON #120)
 }
 async function itLockCheck(){   // a tab opened or shown again: ask, and see whether a tab still holds Intel (one may have crashed)
@@ -26660,8 +26884,11 @@ async function itLockCheck(){   // a tab opened or shown again: ask, and see whe
   let held = false;
   try{ held = (await navigator.locks.query()).held.some(l => l.name === IT_LOCK); }catch(e){ return; }
   if(it.on) return;
-  if(held && !it.other){ it.other = true; it.lockWhy = ''; itRender(true); itSwSync(); }
+  // away (028): Chrome can keep the tab that left for EVE's page in its back/forward cache with the lock still held (the owner's hand
+  // test, 2026-11-08): held then isn't "running"; the tab says so itself when it is back (on, or back)
+  if(held && !it.other && it.lockWhy !== 'away'){ it.other = true; it.lockWhy = ''; itRender(true); itSwSync(); }
   else if(!held && it.other){ it.other = false; it.remote = null; it.lockWhy = 'closed'; itRender(true); itSwSync(); }
+  else if(!held && it.lockWhy === 'away' && Date.now() - (itLk.awayAt || 0) > SSO_STATE_MS){ it.lockWhy = 'closed'; itRender(true); }   // never came back
 }
 // Move Intel here (its own press): the folder permission first, as the first thing awaited (025), then the lock taken over
 async function itMoveHere(){
@@ -26683,6 +26910,8 @@ function itLockHtml(){   // the card's line about the other tab (in #itNotes)
     const back = it.lockWhy === 'moved';
     return `<div class="pr-msg it-lock">${escapeHtml(back ? 'Intel moved to another tab.' : 'Intel is on in another tab.')} <button type="button" data-it-act="move">${escapeHtml(back ? 'Move Intel back here' : 'Move Intel here')}</button></div>`;
   }
+  // 028 (the owner's choice b); Move Intel here too, in case that tab never comes back
+  if(!it.on && it.lockWhy === 'away') return '<div class="pr-msg it-lock">Intel is paused while the other tab logs in with EVE. <button type="button" data-it-act="move">Move Intel here</button></div>';
   if(!it.on && it.lockWhy === 'closed') return '<div class="pr-msg it-lock">The tab running Intel was closed, so Intel is off.</div>';
   if(it.on && it.lockWhy === 'here') return '<div class="pr-msg it-lock">Intel moved here. The other tab stopped it.</div>';
   return '';
@@ -26691,9 +26920,134 @@ function itLockInit(){
   if(!itLk.ok || typeof BroadcastChannel !== 'function') return;
   try{ itLk.bc = new BroadcastChannel(IT_LOCK); }catch(e){ return; }
   itLk.bc.onmessage = (e) => itLockHear(e.data);
-  if(typeof window !== 'undefined' && window.addEventListener) window.addEventListener('pagehide', () => { if(it.on) itLockPost({on: false, why: 'closed'}); });
+  if(typeof window !== 'undefined' && window.addEventListener){
+    window.addEventListener('pagehide', () => { if(it.on) itLockPost({on: false, why: sso.leaving ? 'away' : 'closed'}); });   // 028: away while it logs in with EVE
+    window.addEventListener('pageshow', (e) => { if(e.persisted && it.on){ itLk.last = ''; itLockState(); } });   // back from the cache, still running
+  }
   if(typeof document !== 'undefined' && document.addEventListener) document.addEventListener('visibilitychange', () => { if(!document.hidden) itLockCheck(); });
   itLockCheck();
+}
+// ---- v2026.11.08.4 (build queue 028, SSO Phase 2; Project doc roadmap/sso-phase2-plan.md section 4): Use my game location ----
+// Only in the tab running Intel (the lock), only while it runs, only when the login's character is Intel's You. On Intel's tick, never a
+// timer of its own: the next check at the answer's Expires plus up to a second (CCP: "You should not update before that"), 5 s at least,
+// twice as long while under a quarter of the route group's tokens are left, Retry-After after a 420 / 429. 401: SSO-08, never asked
+// again; 403: SSO-07, the switch off. Newer wins: the game's answer or the Local log's last "Channel changed to Local". The answers stay
+// in memory (DLA 9.5).
+const IT_GL_MIN_MS = 5000, IT_GL_MAX_MS = 300000, IT_GL_LOW = 0.25, IT_GL_RETRY_MS = 30000;
+const IT_WAKE_NOTE = 'Intel is running again. Click anywhere on the page to turn its sound back on.';
+const itGl = {next: 0, busy: false, sys: 0, at: 0, stop: '', msg: null, ask: false};
+let itLoadedRes = () => {};
+const itLoadedP = new Promise((r) => { itLoadedRes = r; });
+function itGlReset(){ itGl.next = 0; itGl.sys = 0; itGl.at = 0; itGl.stop = ''; }
+function itGlWho(){ return !!(it.set.gameLoc && sso.who && it.me && Number(it.me.id) === sso.who.id); }
+function itGlSys(){ return it.on && itGl.sys && itGlWho() && itGl.at > (it.me.logAt || 0) ? itGl.sys : null; }
+function itGlKey(){ return [it.set.gameLoc, itGl.sys, itGl.stop, itGl.ask, itGl.msg ? itGl.msg.text : '', sso.who ? sso.who.id : 0, ssoHeld(SSO_LOC), it.me ? it.me.id : 0, itLogSys()].join(','); }
+function itGlOff(text){ it.set.gameLoc = false; itWriteSet(); itGlReset(); itGl.msg = {text, err: true}; itRender(true); }
+async function itGameLoc(){
+  if(!it.on || itGl.busy || itGl.stop || !itGlWho() || Date.now() < itGl.next) return;
+  if(sso.scp && !sso.scp.includes(SSO_LOC)){ itGlOff(withCode("Your EVE login doesn't have the location permission, so Use my game location is off.", 'SSO-07')); return; }
+  itGl.busy = true;
+  const gen = it.gen, id = sso.who.id, k0 = itGlKey();
+  try{
+    let r;
+    try{ r = await esiFetch(`${ESI}/characters/${id}/location/`, {}, 'location', {scope: SSO_LOC}); }
+    catch(e){
+      const c = errorCodeOf(e);
+      if(c === 'SSO-06'){ itGl.stop = c; itGl.msg = {text: withCode(e.message, c), err: true, again: true}; }
+      else if(c === 'SSO-03'){ itGl.next = Math.max(Date.now() + IT_GL_RETRY_MS, sso.renewAt); itGl.msg = {text: withCode(e.message, c), err: true}; }
+      else itGl.next = Date.now() + IT_GL_RETRY_MS;   // ESI not reached: tried again in 30 s
+      return;
+    }
+    if(gen !== it.gen || !itGlWho() || !sso.who || sso.who.id !== id) return;
+    const now = Date.now(), h = r.headers;
+    if(sso.scp && !sso.scp.includes(SSO_LOC)){ itGlOff(withCode("Your EVE login doesn't have the location permission, so Use my game location is off.", 'SSO-07')); return; }
+    if(r.status === 401){ itGl.stop = 'SSO-08'; itGl.msg = {text: withCode('EVE refused the login for Use my game location, so it stopped. Log in again to go on.', 'SSO-08'), err: true, again: true}; return; }
+    if(r.status === 403){ itGlOff(withCode("EVE didn't allow reading your location (the permission is missing or was taken back), so Use my game location is off.", 'SSO-07')); return; }
+    if(r.status === 420 || r.status === 429){ const ra = Number(h.get('retry-after')); itGl.next = now + 1000 * (ra > 0 ? ra : 60); return; }
+    if(!r.ok){ itGl.next = now + IT_GL_RETRY_MS; return; }
+    let j = null;
+    try{ j = await r.json(); }catch(e){ j = null; }
+    const ex = Date.parse(h.get('expires') || '');
+    let next = Math.max(Number.isFinite(ex) ? ex + Math.random() * 1000 : 0, now + IT_GL_MIN_MS);
+    const lim = /^(\d+)\//.exec(h.get('x-ratelimit-limit') || ''), remT = h.get('x-ratelimit-remaining');
+    if(lim && remT !== null && remT !== '' && Number(remT) < Number(lim[1]) * IT_GL_LOW) next = now + 2 * (next - now);
+    itGl.next = Math.min(next, now + IT_GL_MAX_MS);
+    const sys = Number(j && j.solar_system_id);
+    if(!(sys > 0)) return;
+    const was = itMySys();
+    itGl.sys = sys; itGl.at = now; if(itGl.msg && !itGl.msg.again) itGl.msg = null;
+    if(itMySys() !== was && it.me) it.me.sysAt = itShown() ? now : 0;   // a jump seen through the game: the map's beacon, as from the log
+  }finally{
+    itGl.busy = false;
+    if(itGlKey() !== k0) itRender(); else itGlTimePaint();   // redrawn only when what it shows changed (LESSON #120)
+  }
+}
+function itGlClock(t){ return new Date(t).toISOString().slice(11, 19); }
+function itGlTimePaint(){   // only the "checked" time moves; written into its own span
+  if(typeof document === 'undefined' || !document.querySelectorAll) return;
+  for(const x of document.querySelectorAll('[data-it-glat]')) if(itGl.at) x.textContent = itGlClock(itGl.at);
+}
+function itGlLineHtml(){
+  if(!it.on || !itGl.sys) return '';
+  const g = itSysName(itGl.sys), logId = itLogSys();
+  if(logId === itGl.sys) return `<div class="c it-gl-l">Game: ${escapeHtml(g)}, the same as your Local log · checked <span data-it-glat>${escapeHtml(itGlClock(itGl.at))}</span> UTC</div>`;
+  if(!logId) return `<div class="c it-gl-l">Game: ${escapeHtml(g)} · checked <span data-it-glat>${escapeHtml(itGlClock(itGl.at))}</span> UTC</div>`;
+  const used = itGlSys() === itGl.sys;
+  return `<div class="c it-gl-l it-warn">Game: ${escapeHtml(g + (used ? ' (newer, used)' : ''))} · your Local log ${escapeHtml(used ? 'still says' : 'says')} ${escapeHtml(itSysName(logId))}</div>`;
+}
+function itGlBoxHtml(){ return `<label><input type="checkbox" data-it-gl${itOnHtml(!!it.set.gameLoc, 'checked')}${itOnHtml(!ssoClientId(), 'disabled')}> Use my game location</label>`; }
+function itGlMsgHtml(){ return itGl.msg ? `<div class="pr-msg${itOnHtml(itGl.msg.err, 'err')}">${escapeHtml(itGl.msg.text)}${itGlAgainHtml()}</div>` : ''; }
+function itGlAgainHtml(){ return itGl.msg && itGl.msg.again ? ' <button type="button" data-it-act="gl-again">Log in again</button>' : ''; }
+function itGlCtxHtml(t){ return `<div class="it-gl-sub">${ctxHtml(t)}${infoBtnHtml('intel#game')}</div>`; }
+function itGlHtml(){
+  if(itGl.ask) return `${itGlBoxHtml()}<div class="it-gl-ask"><div class="c">EVE's page will ask you to let Threat Vector read your character's location. This page goes there and comes back.</div><div class="it-btns"><button type="button" class="mys-primary" data-it-act="gl-go">Continue to EVE</button><button type="button" class="mys-quiet" data-it-act="gl-no">Cancel</button></div></div>`;
+  return itGlBoxHtml() + itGlSubHtml() + itGlMsgHtml();
+}
+function itGlSubHtml(){
+  if(!ssoClientId()) return itGlCtxHtml('Works on threatvector.space');
+  if(!it.set.gameLoc) return itGlCtxHtml('Needs your EVE login and its OK');
+  if(!sso.who) return itGl.msg && itGl.msg.again ? itGlCtxHtml('From your EVE login') : `<div class="c">Log in with EVE in this tab to use it. ${infoBtnHtml('intel#game')}</div><div class="it-btns"><button type="button" data-it-act="gl-again">Log in with EVE</button></div>`;
+  if(it.me && Number(it.me.id) !== sso.who.id) return `<div class="c it-warn">${escapeHtml(`Your EVE login is ${sso.who.name}, not ${it.me.name}: log in as ${it.me.name}, or pick ${sso.who.name} as You.`)} ${infoBtnHtml('intel#game')}</div>`;
+  if(!it.on && it.other) return itGlCtxHtml('Intel is on in another tab');
+  return itGlCtxHtml('From your EVE login') + itGlLineHtml();
+}
+// The checkbox: off is off; on without the permission opens the box above (Continue to EVE / Cancel); on with it, on.
+function itGlToggle(t){
+  if(!t.checked){ it.set.gameLoc = false; itWriteSet(); itGl.ask = false; itGl.msg = null; itGlReset(); itRender(true); return; }
+  t.checked = false;
+  // logged in with the permission, or after a reload (permissions are known only from a new token: the first check renews it, and a
+  // missing one turns the switch off with SSO-07)
+  if(sso.who && (sso.scp === null || ssoHeld(SSO_LOC))){ it.set.gameLoc = true; itWriteSet(); itGl.msg = null; itGlReset(); itRender(true); return; }
+  itGl.ask = true; itGl.msg = null; itRender(true);
+  const go = document.querySelector('#intelPanel [data-it-act="gl-go"]'); if(go) go.focus({preventScroll: true});
+}
+// Back from EVE (ssoFinish): the switch on only with its permission
+function itGlGranted(){
+  if(ssoHeld(SSO_LOC)){ it.set.gameLoc = true; itWriteSet(); itGl.msg = null; itGlReset(); }
+  else itGl.msg = {text: withCode("EVE didn't give the location permission, so Use my game location stays off.", 'SSO-07'), err: true};
+  itRender(true);
+}
+function itGlLogout(){ if(it.set.gameLoc){ it.set.gameLoc = false; itWriteSet(); } itGlReset(); itGl.msg = null; itGl.ask = false; itRender(true); }
+// Back from EVE for Use my game location: Intel's tab, its settings in view (the setup card, or the gear while Intel runs)
+function itShowGame(){ it.pop = true; try{ switchTab('intel'); }catch(e){ } itRender(true); }
+// Back from EVE with Intel running before the trip (the owner: restart "only if it was running"): as if its switch were pressed, unless
+// another tab took Intel meanwhile or the folder needs a click again (025's Allow reading shows, and that press starts Intel)
+async function itResumeAfterEve(){
+  await itLoadedP;
+  if(!it.on && !it.other && itReady()){
+    await itPermRead();
+    if(it.perm === 'granted'){
+      await itStart();
+      if(it.on && it.set.sound){ it.note = IT_WAKE_NOTE; itWakeArm(); }   // the browser may want a press before a sound plays
+    } else it.resume = true;
+  }
+  if(!it.on) itLockPost({back: true});   // other tabs: no longer "paused while the other tab logs in"
+  itRender(true); itSwSync();
+}
+function itWakeArm(){
+  if(typeof document === 'undefined' || !document.addEventListener) return;
+  const go = () => { document.removeEventListener('pointerdown', go, true); document.removeEventListener('keydown', go, true); itAudioWake(); if(it.note === IT_WAKE_NOTE){ it.note = ''; itRender(true); } };
+  document.addEventListener('pointerdown', go, true); document.addEventListener('keydown', go, true);
 }
 // v2026.10.29.5 (the owner: "Eve deploys patches very often. is there a way to automate the update so the user never has to see
 // it?"): the page no longer compares EVE's build with the table's and warns after every patch (patches seldom touch gates).
@@ -27177,7 +27531,14 @@ function itFeedListHtml(){ itAnCan = new Map(); const feed = itFeedShown(), why 
 function itNearListHtml(){ const near = itNearList(); return near.length ? near.map(itNearRowHtml).join('') : `<div class="pr-msg">${it.on ? 'Nothing reported in the last ' + it.set.forget + ' minutes.' : 'Nothing yet.'}</div>`; }
 // Redraw only the two lists (the filter bar in use keeps its focus and caret)
 function itAllowNoteHtml(){ return it.dir && it.perm === 'prompt' ? ' <button type="button" data-it-act="allow">Allow reading</button>' : ''; }   // v2026.11.08.2 (025)
-function itNotesHtml(){ return `${itLockHtml()}${it.err ? `<div class="pr-msg err">${escapeHtml(it.err)}${itAllowNoteHtml()}</div>` : ''}${it.note ? `<div class="pr-msg">${escapeHtml(it.note)}</div>` : ''}${it.on && it.kfNote ? `<div class="pr-msg" data-it-kfnote>${escapeHtml(it.kfNote)}</div>` : ''}`; }
+// v2026.11.08.4 (028; the owner: "the line telling the user to click anywhere does NOT stand out at all"): the wake line is a callout in
+// amber with its own button, so it is seen before an alert comes in silent; any press on the page still does the same
+function itNoteHtml(){
+  if(!it.note) return '';
+  if(it.note === IT_WAKE_NOTE) return `<div class="pr-msg it-wake" role="status"><span class="it-wake-t">${escapeHtml(it.note)}</span><button type="button" class="mys-primary" data-it-act="wake">Turn sound on</button></div>`;
+  return `<div class="pr-msg">${escapeHtml(it.note)}</div>`;
+}
+function itNotesHtml(){ return `${itLockHtml()}${it.err ? `<div class="pr-msg err">${escapeHtml(it.err)}${itAllowNoteHtml()}</div>` : ''}${itNoteHtml()}${it.on && it.kfNote ? `<div class="pr-msg" data-it-kfnote>${escapeHtml(it.kfNote)}</div>` : ''}`; }
 function itRenderLists(){
   itHeaderSync();
   const el = typeof document !== 'undefined' && document.getElementById && document.getElementById('intelPanel');
@@ -27347,7 +27708,7 @@ function itSettingsHtml(numbered){
   return `<div class="it-setup">
     <div class="it-box">${n(1, 'Chat logs folder')}<div class="v">${it.dir ? escapeHtml(it.dirName) : 'not chosen'}</div>${itFolderStateHtml()}</div>
     <div class="it-box${itWaitHtml('cls')}">${n(2, 'Intel channels')}${itWaitHtml('note')}${itChansHtml(chans)}</div>
-    <div class="it-box">${n(3, 'You')}${itCharsHtml(chars)}</div>
+    <div class="it-box">${n(3, 'You')}${itCharsHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
     <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
     ${numbered ? '' : itAliasBoxHtml()}
     ${leaveHosts().length ? `<div class="it-box">${n(5, 'Links outside this site')}<div class="c">${escapeHtml(leaveHosts().map(leaveName).join(', '))} open${leaveHosts().length === 1 ? 's' : ''} without asking (you chose “Don't ask again”).</div><button type="button" data-it-act="leaveask">Ask again</button></div>` : ''}
@@ -27376,7 +27737,7 @@ function itKillStatus(){
 }
 function itStatusLine(){
   if(!it.on) return '';
-  const me = it.me ? `${it.me.name} in ${it.me.sys || 'an unknown system'}` : 'choose which character is you';
+  const me = it.me ? `${it.me.name} in ${(itGlSys() ? itSysName(itGlSys()) : it.me.sys) || 'an unknown system'}` : 'choose which character is you';
   // v2026.10.30.1 (the owner: "do not include the intel channel name in any of the output for now. security reasons"): the channels
   // are named only under the gear, where they are chosen; elsewhere their count
   const n = it.set.channels.length, ch = `${n} channel${n === 1 ? '' : 's'}`;
@@ -27700,7 +28061,7 @@ function itQuickKey(){
   const f = it.feed[0], sz = (m) => m ? m.size : 0;
   return [it.on, it.other, it.lockWhy, it.dirName, it.perm, it.read, it.err, it.note, it.pop, it.kfNote, it.q, JSON.stringify(it.fl), it.feed.length, f ? f.id : 0, it.near.size, it.me && it.me.sys, sz(it.chars), sz(it.files),
     it.chans.length, it.names ? it.names.list.length : 0, sz(it.pilots), sz(it.aff), sz(it.charNames), sz(it.sec), sz(it.gateDest), sz(orgCache),
-    sz(it.rawOpen), sz(it.nearOpen), it.shape ? it.shape.id : 0, JSON.stringify(it.set), itR2Stopped(), it.sndRev || 0, itFeedDown() ? itR2EverRead + 1 : 0, itFeedWhy()].join('|');   // v2026.11.06.6: the Feed note's reason   // v2026.11.06.1   // v2026.11.01.8: your sound files
+    sz(it.rawOpen), sz(it.nearOpen), it.shape ? it.shape.id : 0, JSON.stringify(it.set), itGlKey(), itR2Stopped(), it.sndRev || 0, itFeedDown() ? itR2EverRead + 1 : 0, itFeedWhy()].join('|');   // v2026.11.06.6: the Feed note's reason   // v2026.11.06.1   // v2026.11.01.8: your sound files
 }
 function itBuildAt(now, make){ itFrozenNow = now; try{ return make(); }finally{ itFrozenNow = null; } }
 // the status line ("last line 2 min ago · last kill read 3 s ago") is kept out of that comparison and written on its own, when its text changes
@@ -28288,6 +28649,7 @@ function rsBind(root){
       const ul = t.parentNode && t.parentNode.querySelector('ul'); if(ul) ul.innerHTML = itAliasRowsHtml();
       return;
     }
+    if(t.dataset.itGl !== undefined){ itGlToggle(t); return; }   // 028: Use my game location
     if(t.dataset.itMe !== undefined){ it.set.me = Number(t.dataset.itMe); itWriteSet(); it.me = it.chars.get(it.set.me) || null; it.lastScan = 0; it.alerted = new Map(); itRender(); return; }
     if(t.dataset.itF){   // v.99: the Feed's filters, kept in this browser
       it.set.feed[t.dataset.itF] = t.dataset.itF === 'dist' ? Number(t.value) : t.value;
@@ -28375,6 +28737,9 @@ function rsBind(root){
     if(rw){ const id = Number(rw.dataset.itRaw); if(it.rawOpen.has(id)) it.rawOpen.delete(id); else it.rawOpen.add(id); itRenderLists(); const b = el.querySelector(`[data-it-raw="${id}"]`); if(b) b.focus(); return; }
     const a = e.target.closest('[data-it-act]');
     if(!a) return;
+    if(a.dataset.itAct === 'gl-go' || a.dataset.itAct === 'gl-again'){ itGl.ask = false; ssoStart([SSO_LOC], 'loc'); return; }   // 028: to EVE's page
+    if(a.dataset.itAct === 'wake'){ itAudioWake(); if(it.note === IT_WAKE_NOTE){ it.note = ''; itRender(true); } return; }   // the press itself wakes the audio
+    if(a.dataset.itAct === 'gl-no'){ itGl.ask = false; itGl.msg = null; itRender(true); const c = el.querySelector('[data-it-gl]'); if(c) c.focus({preventScroll: true}); return; }
     if(a.dataset.itAct === 'gear'){ it.pop = !it.pop; itRender(true); if(!it.pop) itGearFocus(); return; }   // v2026.11.01.3: closed: the focus back on the gear
     if(a.dataset.itAct === 'leaveask'){ leaveSave([]); itRender(true); return; }   // v2026.10.31.3: links outside the site ask again
     if(a.dataset.itAct === 'example' || a.dataset.itAct === 'exclose'){ itExOpen(a.dataset.itAct === 'example'); return; }   // v2026.11.07.7
@@ -28400,7 +28765,7 @@ function rsBind(root){
       // v2026.11.08.2 (025): remember what the browser says; "prompt" shows Allow reading in step 1 (the page can't ask without a click)
       try{ if(await itPermRead() === 'granted') await itScan(); }catch(e){ it.perm = 'prompt'; }
     }
-    it.loaded = true; itRender();
+    it.loaded = true; itRender(); itLoadedRes();
   });
   itRender();
 })();

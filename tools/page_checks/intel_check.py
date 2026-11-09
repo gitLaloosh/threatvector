@@ -181,7 +181,7 @@ with sync_playwright() as p:
         ctx.add_init_script(FS); route(ctx); return ctx
     ctx = new_ctx(1440)
     pg = ctx.new_page(); pg.goto('file://' + HTML)
-    pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.removeItem('dscanIntel'); }", SIDE); pg.reload(); pg.wait_for_timeout(400)
+    pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true})); }", SIDE); pg.reload(); pg.wait_for_timeout(400)   # v2026.11.08.4 (028): a new user's alerts start off; these cases are a player who turned them on
     tabs = pg.evaluate("() => [...document.querySelectorAll('.tabs .tab-btn')].filter(b => b.checkVisibility()).map(b => b.textContent)")
     check(tabs == ['Intel', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs in the order of use, Intel first (v2026.10.30.1, the owner: "intel > system > pilot > fit") {tabs}')
     hdr = pg.evaluate("() => { const b = document.querySelector('#intelNear'); return [b.closest('#profile') ? 'profile' : '', b.hidden, document.querySelectorAll('#myShipBar input[aria-label=\"Watch the intel channels\"]').length, document.querySelector('#profile').dataset.s]; }")
