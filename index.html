@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-/sBaw1VYIiUBnTjE+E4Xqbw5cyEe3A1wpBBfOGzcfQ8='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-QkRPbnBvbfNIxQfoZQ30dmKhpcKxvXn0iFtf4XLt0fQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -24241,7 +24241,15 @@ function ssoInit(panel){
   if(!SSO_RET){   // 028: an abandoned trip to EVE's page can never act on a later, unrelated load
     let p = null; try{ p = JSON.parse(ssoGet(SSO_PENDING) || 'null'); }catch(e){ p = null; }
     ssoDel(SSO_PENDING);
-    if(p && p.intelWasOn) Promise.resolve().then(() => itLockPost({back: true}));   // other tabs: no longer "paused while the other tab logs in"
+    // Back on EVE's page when Chrome couldn't keep this page (it reloads): the same as Cancel there (the owner, 2026-11-08: "i agree"):
+    // the "nothing changed" line, and Intel again if it was running. Only a load from the Back button within 10 minutes of leaving;
+    // any other load starts nothing, as before.
+    let nav = '';
+    try{ const e = performance.getEntriesByType('navigation')[0]; nav = e ? e.type : ''; }catch(e){ nav = ''; }
+    const back = !!(p && nav === 'back_forward' && typeof p.at === 'number' && Date.now() - p.at >= 0 && Date.now() - p.at < SSO_STATE_MS);
+    if(back) Promise.resolve().then(() => { ssoMsg(p.from === 'loc' ? 'loc' : '', "You came back from EVE's page without logging in, so nothing changed."); if(p.from !== 'loc') openProfile('.pp-sec[data-k="pilot"]'); });
+    if(back && p.intelWasOn) Promise.resolve().then(() => itResumeAfterEve());   // it tells the other tabs either way
+    else if(p && p.intelWasOn) Promise.resolve().then(() => itLockPost({back: true}));   // other tabs: no longer "paused while the other tab logs in"
   }
   ssoTabInit();
   // 028, the Back-button bug: a page brought back from the back/forward cache after leaving for EVE

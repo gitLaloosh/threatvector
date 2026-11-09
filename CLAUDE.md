@@ -177,7 +177,9 @@ asks for its own when it is turned on; Phase 2 below). So:
     (SSO-08), 403 turns it off (SSO-07). Newer wins (`itMySys` = `itGlSys` or the log's, `it.me.logAt`); amber when they differ; kept in
     memory only (DLA 9.5); redrawn only when `itGlKey` changes (the checked time is its own span).
   - **The trip to EVE:** `sso.starting` / `sso.leaving` (never `busy`, which is only the return being checked); `pageshow` persisted
-    undoes it ("nothing changed"); a normal load drops `tvSsoPending`. `intelWasOn` in the pending entry restarts Intel after the return
+    undoes it ("nothing changed"); a load from the Back button within 10 minutes (Chrome couldn't keep the page) counts as Cancel at
+    EVE (the owner: "i agree"); any other load drops `tvSsoPending` and starts nothing. Other tabs hear "away" before the page leaves,
+    never only from pagehide, and a lock still held by a cached page doesn't turn "paused" into "on in another tab" (the hand test). `intelWasOn` in the pending entry restarts Intel after the return
     (Authorize or Cancel), never otherwise; a folder needing a click shows Allow reading, which then starts it; sound on adds "Click
     anywhere…" (`IT_WAKE_NOTE`). Other tabs say "Intel is paused while the other tab logs in with EVE." (`why: 'away'`, cleared by
     `{back: true}` or the tab running again).

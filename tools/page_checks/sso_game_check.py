@@ -405,7 +405,9 @@ with sync_playwright() as p:
     sB = st(B)
     check('Intel is paused while the other tab logs in with EVE.' in sB['notes'], f"B shown again while A, away, still holds the lock: still paused ({sB['notes'][:80]!r})")
     S['nav'] = True; A.go_back(); ready(A); A.wait_for_timeout(800); sB = st(B)
-    check('paused' not in sB['notes'], f"A back without logging in: the other tab's \"paused\" line goes ({sB['notes'][:60]!r})")
+    sA = st(A)
+    check('paused' not in sB['notes'] and sA['on'] and 'Intel is on in another tab.' in sB['notes'] and "nothing changed" in (A.evaluate("() => itGl.msg ? itGl.msg.text : ''") or ''),
+          f"A back without logging in (a fresh load from the Back button): Intel runs again in A, the line says nothing changed, B says it's on in another tab ({sB["notes"][:60]!r}; A on {sA["on"]}; {sA["side"][-60:]!r}; {sA["box"][-60:]!r})")
     A.close(); B.close(); c.close()
 
     # ---- Intel stopped reading ----
