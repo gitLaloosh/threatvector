@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-oTBmzUKk/aHJatubsH1EYc7df+ipGi3Sf+5AfxiAnVE='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-3nfhnMi2DySLE1hLJ7nAnGVs/1DkalboMovkt1xH+dw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2563,6 +2563,9 @@
   button.it-gear:hover, button.it-gear[aria-expanded="true"]{color:var(--heading); border-color:var(--text-dim);}
   .it-sub{color:var(--text-dim); font:400 12.5px var(--sans); margin-top:8px;} .it-sub b{color:var(--text); font-weight:600;}
   .it-warn{color:var(--amber);}
+  .pr-msg.it-wake{padding:8px 10px; border-radius:4px; border:1px solid var(--amber); background:color-mix(in srgb, var(--amber) 12%, transparent); color:var(--amber); font:600 13px var(--sans); flex-wrap:wrap;}
+  .it-wake-t{flex:1 1 220px;}
+  @media (max-width:599px){ .pr-msg.it-wake button{min-height:44px;} }
   /* v2026.11.07.7 (build queue 017; roadmap/intel-example-plan.md): a browser without the folder picker is told before the steps */
   .it-nofs{margin-top:12px; padding:8px 12px; border-left:3px solid var(--amber); border-radius:0 4px 4px 0; background:rgba(217,154,60,.07); font:400 12.5px var(--sans); color:var(--text);}
   .it-nofs b{color:var(--amber); font-weight:600;} .it-nofs code{font:500 12px var(--mono); color:var(--heading); overflow-wrap:anywhere; user-select:all;}
@@ -27513,7 +27516,14 @@ function itFeedListHtml(){ itAnCan = new Map(); const feed = itFeedShown(), why 
 function itNearListHtml(){ const near = itNearList(); return near.length ? near.map(itNearRowHtml).join('') : `<div class="pr-msg">${it.on ? 'Nothing reported in the last ' + it.set.forget + ' minutes.' : 'Nothing yet.'}</div>`; }
 // Redraw only the two lists (the filter bar in use keeps its focus and caret)
 function itAllowNoteHtml(){ return it.dir && it.perm === 'prompt' ? ' <button type="button" data-it-act="allow">Allow reading</button>' : ''; }   // v2026.11.08.2 (025)
-function itNotesHtml(){ return `${itLockHtml()}${it.err ? `<div class="pr-msg err">${escapeHtml(it.err)}${itAllowNoteHtml()}</div>` : ''}${it.note ? `<div class="pr-msg">${escapeHtml(it.note)}</div>` : ''}${it.on && it.kfNote ? `<div class="pr-msg" data-it-kfnote>${escapeHtml(it.kfNote)}</div>` : ''}`; }
+// v2026.11.08.4 (028; the owner: "the line telling the user to click anywhere does NOT stand out at all"): the wake line is a callout in
+// amber with its own button, so it is seen before an alert comes in silent; any press on the page still does the same
+function itNoteHtml(){
+  if(!it.note) return '';
+  if(it.note === IT_WAKE_NOTE) return `<div class="pr-msg it-wake" role="status"><span class="it-wake-t">${escapeHtml(it.note)}</span><button type="button" class="mys-primary" data-it-act="wake">Turn sound on</button></div>`;
+  return `<div class="pr-msg">${escapeHtml(it.note)}</div>`;
+}
+function itNotesHtml(){ return `${itLockHtml()}${it.err ? `<div class="pr-msg err">${escapeHtml(it.err)}${itAllowNoteHtml()}</div>` : ''}${itNoteHtml()}${it.on && it.kfNote ? `<div class="pr-msg" data-it-kfnote>${escapeHtml(it.kfNote)}</div>` : ''}`; }
 function itRenderLists(){
   itHeaderSync();
   const el = typeof document !== 'undefined' && document.getElementById && document.getElementById('intelPanel');
@@ -28713,6 +28723,7 @@ function rsBind(root){
     const a = e.target.closest('[data-it-act]');
     if(!a) return;
     if(a.dataset.itAct === 'gl-go' || a.dataset.itAct === 'gl-again'){ itGl.ask = false; ssoStart([SSO_LOC], 'loc'); return; }   // 028: to EVE's page
+    if(a.dataset.itAct === 'wake'){ itAudioWake(); if(it.note === IT_WAKE_NOTE){ it.note = ''; itRender(true); } return; }   // the press itself wakes the audio
     if(a.dataset.itAct === 'gl-no'){ itGl.ask = false; itGl.msg = null; itRender(true); const c = el.querySelector('[data-it-gl]'); if(c) c.focus({preventScroll: true}); return; }
     if(a.dataset.itAct === 'gear'){ it.pop = !it.pop; itRender(true); if(!it.pop) itGearFocus(); return; }   // v2026.11.01.3: closed: the focus back on the gear
     if(a.dataset.itAct === 'leaveask'){ leaveSave([]); itRender(true); return; }   // v2026.10.31.3: links outside the site ask again
