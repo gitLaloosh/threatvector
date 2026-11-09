@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-QkRPbnBvbfNIxQfoZQ30dmKhpcKxvXn0iFtf4XLt0fQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-YOPziZYm6csih9EPtCUzUdyoaHqShNOj9Bcu7oGHPLo='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2921,6 +2921,7 @@
 
   /* ---- v2026.11.01.1: the profile (one control at the top right) and its panel; profile_mockup_5.html ---- */
   :root{--st-clear:var(--cyan); --st-near:var(--amber); --st-in:var(--danger);}   /* Intel's states (the owner: cyan, amber, A = the Hostile red) */
+  :root{--st-online:var(--cap-good);}   /* v2026.11.09.1 (029): online in EVE; logged off is --text-faint */
   .pf-bar{gap:10px;}
   .pf{position:relative; display:inline-flex; border-radius:4px;}
   .pf-main{position:relative; display:inline-flex; align-items:center; gap:10px; min-height:48px; padding:5px 10px 5px 6px; border-radius:4px; border:1px solid transparent; background:var(--tag-fill); color:var(--text); max-width:340px; box-sizing:border-box;}
@@ -2929,6 +2930,11 @@
   button.pf-hit:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
   .pf-av{position:relative; width:36px; height:36px; border-radius:4px; overflow:hidden; flex:none; display:block; background:#1a2128;}
   .pf-av > img, .pf-av > svg{display:block; width:100%; height:100%;}
+  /* v2026.11.09.1 (build queue 029; the owner: "A and C"): online in EVE, a dot on the portrait's top-right corner, drawn in the profile's
+     own layer (the portrait clips), and the portrait greyed out while logged off; Intel's square stays on the bottom-right */
+  .pf-on{position:absolute; left:33px; top:calc(50% - 21px); z-index:2; width:10px; height:10px; box-sizing:content-box; border-radius:50%; border:2px solid var(--panel-2); background:var(--st-online); pointer-events:none;}
+  .pf-on[hidden]{display:none;} .pf-on.off{background:var(--text-faint);}
+  .pf[data-on="off"] #profileAv{filter:grayscale(1); opacity:.45;}
   .pf-ini{display:flex; width:100%; height:100%; align-items:center; justify-content:center; font:700 13px var(--sans); color:var(--heading); background:#22323c;}
   .pf-txt{display:flex; flex-direction:column; gap:3px; min-width:210px;}
   .pf-l1, .pf-l2{display:flex; align-items:center; gap:6px; white-space:nowrap; min-width:0;}
@@ -3025,6 +3031,14 @@
   .sso-perms a{margin-left:4px;}
   .it-gl{margin-top:8px;} .it-gl-sub{display:flex; align-items:center; gap:6px; margin-top:2px;} .it-gl-l{margin-top:4px;} .it-gl-ask{margin:6px 0 2px; padding:8px; border-radius:4px; background:var(--tag-fill);}
   @media (max-width:599px){ .it-gl-ask button, .it-gl button[data-it-act]{min-height:44px;} }
+  /* v2026.11.09.1 (029): Show when I'm online in EVE, under the login in the Pilot section; Intel's logged-off line */
+  .sso-on{margin-top:8px; padding-top:8px; border-top:1px solid var(--line);}
+  .sso-on label{display:flex; align-items:center; gap:8px; font-weight:600; color:var(--heading); cursor:pointer;}
+  .sso-on .sso-sub{margin-top:2px;} .sso-on-st{margin-top:6px; font-size:12px; color:var(--text-dim);}
+  .sso-on-ask{margin:6px 0 2px; padding:8px; border-radius:4px; background:var(--tag-fill);}
+  .sso-on button{padding:6px 12px;}
+  .it-offl{display:flex; align-items:center; gap:10px; flex-wrap:wrap;} .it-offl button{padding:6px 12px;}
+  @media (max-width:599px){ .sso-on button, .it-offl button{min-height:44px;} }
   .sso-tag{flex:none; padding:1px 6px; border-radius:3px; background:var(--tag-fill); color:var(--text-dim); font:600 11px var(--sans);}
   .sso-in button{padding:6px 12px; flex:none;}
   .side-msg a{color:var(--cyan);}
@@ -3055,7 +3069,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.08.4</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.09.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3103,7 +3117,7 @@
         <button type="button" class="pf-intel" id="intelNear" hidden><span class="pf-k">Intel</span><span class="pf-iv" id="intelNearN"></span></button>
         <div class="pf-main">
           <button type="button" class="pf-hit" id="profileBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="profilePanel" aria-label="Your profile"></button>
-          <span class="pf-av" id="profileAv"></span>
+          <span class="pf-av" id="profileAv"></span><span class="pf-on" id="profileOn" aria-hidden="true" hidden></span>
           <span class="pf-txt"><span class="pf-l1" id="profileL1"></span>
             <span class="pf-l2"><label class="pf-fsw" id="myShipUseLabel"><input type="checkbox" class="pf-fsw-in" id="myShipUse" role="switch" disabled aria-label="Use my fit in assessments"><span class="pf-fsw-track"><span class="pf-fsw-knob"></span><span class="pf-fsw-txt" id="myShipUseTxt"></span></span></label><button type="button" class="pf-nofit" id="profileAddFit" title="Paste a fit you fly">+ Add a fit</button></span></span>
           <svg class="pf-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -3399,10 +3413,15 @@ const CARD_INFO = {
  ],
  "side#sso": [
   "Logging in with EVE Online tells Threat Vector which character you are. On its own it asks EVE for no permissions. It fills Your pilot, the same as typing the name.",
-  "Features that need more from EVE ask for their own permission when you turn them on: Use my game location (Intel's settings, You) asks to read your character's location. EVE's page lists exactly what is asked before you agree. A later login asks again for the features you have on (the button's line says which).",
+  "Features that need more from EVE ask for their own permission when you turn them on: Use my game location (Intel's settings, You) asks to read your character's location, and Show when I'm online in EVE (here, under the login) whether it is in the game. EVE's page lists exactly what is asked before you agree. A later login asks again for the features you have on (the button's line says which).",
   "Log out ends the login and its permissions with EVE: Threat Vector leaves your list of apps on EVE's site. You can also remove it there (Manage on EVE's site, under EVE permissions). While a feature uses the login, it is renewed in this tab about every 20 minutes.",
   "The login lasts for this tab: reloading keeps it, a new tab asks again (usually one click, as EVE remembers you), and closing the tab forgets it. Nothing is sent to or kept on a Threat Vector server; there isn't one.",
   "Log out ends it in this tab and clears Your pilot. It doesn't sign you out of EVE's own website."
+ ],
+ "side#online": [
+  "Show when I'm online in EVE asks EVE, about once a minute, whether your logged-in character is in the game, and shows it on your portrait at the top: a green dot when online; a grey dot and a greyed portrait when logged off. EVE asks for its permission the first time you turn it on.",
+  "When Intel is running for that character and it logs off, Intel says so, with a button to stop it. Intel never stops by itself.",
+  "Only one Threat Vector tab asks for each character; the others show what it found. A tab in the background asks only while it runs Intel. Log out turns it off. What EVE answers is kept in memory only."
  ],
  "side": [
   "Your pilot sets your corporation and alliance; they're looked up again each time you analyze Local, so a change of corporation is picked up.",
@@ -3577,7 +3596,7 @@ function numBoxStyle(widest){ return `min-width:${String(widest).length}ch;`; }
 const INFO_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6"></path><path d="M12 7.5v.5"></path></svg>';
 // v2026.10.14.49: a key may name a variant of a card's text, "<card key>#<variant>" (the Anhinga's Mode text is
 // "tdmode#primary"), and the text names other cards as {card:key} (filled from CARD_NAMES, like ERROR_CODES).
-const INFO_TITLE = {'fit#charges': 'How the Charges list works', 'side#sso': 'How logging in with EVE works', 'intel#game': 'How Use my game location works'};   // v2026.10.14.77: a panel about part of a card
+const INFO_TITLE = {'fit#charges': 'How the Charges list works', 'side#sso': 'How logging in with EVE works', 'intel#game': 'How Use my game location works', 'side#online': 'How online status works'};   // v2026.10.14.77: a panel about part of a card
 // v2026.10.30.2 (a user: "Bro you gotta find a way to condense this"): a paragraph "**Lead:** text" starts with its lead in bold; a
 // paragraph "[Heading] text" is folded under its heading (Intel's few lines on top, the rest a click away). Plain text otherwise.
 function infoParaHtml(s){
@@ -4134,7 +4153,7 @@ const ERROR_CODES = {
  },
  "SSO-06": {
   "title": "EVE ended the login",
-  "where": "Your profile, Pilot; Intel's settings, Use my game location",
+  "where": "Your profile, Pilot (and Show when I'm online in EVE there); Intel's settings, Use my game location",
   "trigger": "Renewing the login, CCP's token endpoint answered invalid_grant (the refresh token was revoked, for example by removing Threat Vector on EVE's site or logging out in another tab), or the renewed token didn't check out or was for another character.",
   "check": "Log in again (the EVE button, or Log in again under Use my game location).",
   "why": "A login lasts only as long as EVE keeps renewing it; the page says so instead of failing quietly.",
@@ -4143,7 +4162,7 @@ const ERROR_CODES = {
  },
  "SSO-07": {
   "title": "EVE didn't give the permission",
-  "where": "Intel's settings, Use my game location",
+  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1)",
   "trigger": "The token from EVE doesn't list the permission the switch needs (its scp claim), or ESI answered 403 for it (the permission was taken back). The switch turns off.",
   "check": "Turn the switch on again and agree on EVE's page; on EVE's site, check that Threat Vector still has the permission.",
   "why": "A switch works only with the permission EVE gave; the page never asks ESI for something it wasn't allowed.",
@@ -4152,7 +4171,7 @@ const ERROR_CODES = {
  },
  "SSO-08": {
   "title": "ESI refused the login",
-  "where": "Intel's settings, Use my game location",
+  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1)",
   "trigger": "ESI answered 401 to a call made with the login. That feature stops and isn't asked again until you log in again.",
   "check": "Log in again. If it keeps happening, EVE's login may be having trouble.",
   "why": "Every refused call counts against ESI's error limit for everyone on this address (100 a minute), so a refused login is never retried by itself.",
@@ -4417,7 +4436,7 @@ function zkbRetryStep(now){   // one step of every Retry countdown; true while o
 // the panel is open, never in a hidden tab; the zKillboard count ages out on one timeout set for the next expiry (bgAgeArm).
 // ESI is counted by kind of lookup, not by feature (the owner 2026-11-04, "let's go with your recommendation"): the calls sit in
 // helpers that every feature and Intel's background lookups share, so only the kind is known where the request is made.
-const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location'};
+const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location', online: 'Your online status'};
 const ESI_USE_KEY = 'dscanEsiUse', ESI_USE_MIN = 15, ESI_ERR_LIMIT = 100, ESI_ERR_WARN = 50, ESI_GROUP_WARN = 0.2;
 const ZKB_WHO_KEY = 'dscanZkbWho', ZKB_WARN_AT = 80;   // amber from 80 of 100 (the planner's default, kept by the owner 2026-11-04)
 let bgEsiPend = null, bgEsiFlushT = 0, bgOpen = false, bgTimer = 0, bgAgeT = 0, bgRaf = 0, bgLastSegs = '', bgLastBody = '', bgR2Times = [];
@@ -21811,8 +21830,13 @@ function renderProfile(){
   document.getElementById('myShipUseTxt').innerHTML = f ? `${f.shipTypeId ? `<img src="https://images.evetech.net/types/${Number(f.shipTypeId)}/icon?size=32" alt="" width="16" height="16" data-imgfail="remove">` : ''}<b>${escapeHtml(f.shipName)}</b>${f.fitName ? `<span class="pf-fsw-fit">· ${escapeHtml(f.fitName)}</span>` : ''}` : '';
   use.setAttribute('aria-label', f ? `Use ${myShipLabel()} in assessments` : 'Use my fit in assessments');
   lab.title = !f ? '' : f.use ? `On: the Pilot and Fit Analyzers show the ${cardName('board')} with ${myShipLabel()}, to switch between the ${cardName('perspective.threat')} and the ${cardName('perspective.mine')}` : `Off: assessments leave ${myShipLabel()} out`;
+  // v2026.11.09.1 (029): online in EVE on the portrait (a dot; greyed while logged off), nothing when off, logged out or not allowed
+  const onl = ssoOnPortrait();
+  if(onl === null){ if(box.dataset.on) delete box.dataset.on; } else box.dataset.on = onl ? 'on' : 'off';
+  const dot = document.getElementById('profileOn');
+  if(dot){ dot.hidden = onl === null; dot.classList.toggle('off', onl === false); }
   const btn = document.getElementById('profileBtn');
-  btn.setAttribute('aria-label', `Your profile: ${r && r.pilot ? r.pilot.name : 'not set up'}${st.n < 3 ? `, ${st.n} of 3 set up` : ''}. Open it`);
+  btn.setAttribute('aria-label', `Your profile: ${r && r.pilot ? r.pilot.name : 'not set up'}${onl === null ? '' : onl ? ', online in EVE' : ', logged off in EVE'}${st.n < 3 ? `, ${st.n} of 3 set up` : ''}. Open it`);
   btn.title = r && r.pilot ? `${r.pilot.name}: your pilot, ${cardName('side')} and My Fits` : 'Set up your profile: your pilot, Standings and a fit you fly';
   const p = profileEl();
   if(p){
@@ -23958,7 +23982,8 @@ const SSO_STATE_MS = 600000;   // a login answer older than 10 minutes is refuse
 // feature is turned on (D3). SSO_TAB: a random id per login, so a duplicated tab (which may get a copy of sessionStorage) drops its copy.
 const SSO_TAB = 'tvSsoTab', SSO_BC = 'tv-sso';
 const SSO_LOC = 'esi-location.read_location.v1';   // Use my game location (registered on both apps); no ship scope (the owner: no Match my ship)
-const SSO_SCOPE_NAMES = {[SSO_LOC]: 'Location'};
+const SSO_ON = 'esi-location.read_online.v1';   // v2026.11.09.1 (029): Show when I'm online in EVE (registered on both apps)
+const SSO_SCOPE_NAMES = {[SSO_LOC]: 'Location', [SSO_ON]: 'Online status'};
 const SSO_EARLY_MS = 60000, SSO_BACKOFF_S = [30, 60, 120, 300], SSO_BACK_MS = 30000;
 const SSO_APPS_URL = 'https://developers.eveonline.com/authorized-apps';
 const SSO_BTN_IMG = 'data:image/png;base64,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';   // CCP's "Log in with EVE Online", black, large (DLA 7.2, unaltered)
@@ -23967,6 +23992,11 @@ const sso = {who: null, access: null, busy: false, note: null, meta: null,
   // token; scp null = no token read since this load), renewP (the one renewal), renewAt / fails / renewErr (waiting after a failure),
   // from ('loc' when Use my game location asked), dupAsk (when this tab asked whether it is a copy)
   starting: false, leaving: 0, exp: 0, scp: null, renewP: null, renewAt: 0, fails: 0, renewErr: '', from: '', dupAsk: 0, bc: null};
+// v2026.11.09.1 (029): Show when I'm online in EVE. show: the setting (localStorage tvOnlineShow, this browser); st: the last answer
+// {id, online, at} (from this tab or the one asking, memory only, DLA 9.5); held / req: this tab's Web Lock for the character, or its
+// place in the queue; next: the next check (the answer's Expires, 60 s at least); stop: 'SSO-06' / 'SSO-08' (never asked again).
+const SSO_ON_KEY = 'tvOnlineShow', SSO_ON_LOCK = 'tv-online', SSO_ON_MIN_MS = 60000, SSO_ON_MAX_MS = 300000, SSO_ON_RETRY_MS = 30000, SSO_ON_STALE_MS = 180000;
+const ssoOn = {show: false, ask: false, msg: null, st: null, next: 0, busy: false, stop: '', held: null, req: null, timer: 0, bc: null, heard: 0, waitAt: 0, painted: undefined, intel: ''};
 function ssoClientId(){ try{ return Object.prototype.hasOwnProperty.call(SSO_APPS, location.origin) ? SSO_APPS[location.origin] : null; }catch(e){ return null; } }
 function ssoGet(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
 function ssoSet(k, v){ try{ sessionStorage.setItem(k, v); return true; }catch(e){ return false; } }
@@ -23995,12 +24025,18 @@ async function ssoMeta(){
   return (sso.meta = m);
 }
 // The permissions of the features turned on in this browser (a setting in localStorage): a new login asks for them again (D3)
-function ssoWant(){ try{ return it.set.gameLoc ? [SSO_LOC] : []; }catch(e){ return []; } }
+function ssoWant(){
+  let w = [];
+  try{ if(it.set.gameLoc) w.push(SSO_LOC); }catch(e){ }
+  try{ if(ssoOn.show) w.push(SSO_ON); }catch(e){ }
+  return w;
+}
 function ssoHeld(scope){ return !!(sso.scp && sso.scp.includes(scope)); }
 function ssoScp(c){ const v = c && c.scp; return Array.isArray(v) ? v.filter(x => typeof x === 'string') : typeof v === 'string' && v ? v.split(/\s+/) : []; }   // an array per CCP's docs; one scope comes as a string (the owner's hand test, 2026-11-08)
 // A line for whoever asked: Use my game location's line under Intel's settings, or the Pilot section
 function ssoMsg(from, text, err){
   if(from === 'loc'){ itGl.msg = text ? {text, err: !!err} : null; itRender(true); }
+  else if(from === 'online' && sso.who){ ssoOn.msg = text ? {text, err: !!err} : null; ssoOnRedraw(); }
   else { side.msg.pilot = text ? {text, err: !!err} : null; renderSidePanel(); }
 }
 // want: the permissions a feature needs; the request asks for those, the ones this tab holds and the ones of the features that are on,
@@ -24009,7 +24045,8 @@ async function ssoStart(want, from){
   const cid = ssoClientId();
   if(!cid || sso.busy || sso.starting) return;
   const scopes = [...new Set([...ssoWant(), ...(sso.scp || []), ...(want || [])])].filter(x => SSO_SCOPE_NAMES[x]);
-  sso.starting = true; sso.leaving = 0; sso.note = null; sso.from = from === 'loc' ? 'loc' : '';
+  sso.starting = true; sso.leaving = 0; sso.note = null; sso.from = from === 'loc' || from === 'online' ? from : '';
+  ssoOnPump();   // 029: the online check stops while the tab is away (a page kept in the browser's cache would still hold its lock)
   ssoMsg(sso.from, "Opening EVE's login…");
   try{
     const m = await ssoMeta();
@@ -24028,7 +24065,7 @@ async function ssoStart(want, from){
     location.assign(m.authorization_endpoint + '?' + q.toString());
     // a backstop: the page never left (the address refused): the button comes back after 30 s
     setTimeout(() => { if(sso.leaving && Date.now() - sso.leaving >= SSO_BACK_MS && !(typeof document !== 'undefined' && document.hidden)) ssoCameBack(); }, SSO_BACK_MS);
-  }catch(e){ sso.starting = false; sso.leaving = 0; ssoMsg(sso.from, withCode(e.message, errorCodeOf(e)), true); }
+  }catch(e){ sso.starting = false; sso.leaving = 0; ssoMsg(sso.from, withCode(e.message, errorCodeOf(e)), true); ssoOnPump(); }
 }
 // The Back-button bug ([stated] 2026-11-07, "stuck in an evaluating login result state"): Back on EVE's page may bring this page back from
 // the browser's back/forward cache as it was when it left (pageshow, persisted). Nothing is checked then, so the press is undone.
@@ -24039,6 +24076,7 @@ function ssoCameBack(){   // LESSON #150
   ssoDel(SSO_PENDING);
   try{ if(it.on){ itLk.last = ''; itLockState(); } else itLockPost({back: true}); }catch(e){ }   // other tabs were told "away": still running, or not away after all
   ssoMsg(from, "You came back from EVE's page without logging in, so nothing changed.");
+  ssoOnPump();
 }
 // The access token (a JWT) checked against CCP's published keys: the key its kid names, RS256 with the RSA key or ES256 with the
 // P-256 key and nothing else; issuer, audience (this app and "EVE Online"), expiry, and a character. Returns {id, name}.
@@ -24140,7 +24178,7 @@ async function ssoFinish(ret){
   ssoDel(SSO_PENDING);   // used once, whatever happens next
   // 028: what the press asked for, trusted only from this tab's own pending entry (SSO-02's checks)
   const pendOk = !!(pend && typeof pend.state === 'string' && pend.state === ret.state && typeof pend.at === 'number' && Date.now() - pend.at >= 0 && Date.now() - pend.at < SSO_STATE_MS);
-  const from = pendOk && pend.from === 'loc' ? 'loc' : '', want = pendOk && Array.isArray(pend.want) ? pend.want.filter(x => SSO_SCOPE_NAMES[x]) : [];
+  const from = pendOk && (pend.from === 'loc' || pend.from === 'online') ? pend.from : '', want = pendOk && Array.isArray(pend.want) ? pend.want.filter(x => SSO_SCOPE_NAMES[x]) : [];
   const had = sso.who;   // logged in already (a permission asked for): a refused answer leaves that login as it was
   if(from === 'loc') itShowGame(); else openProfile('.pp-sec[data-k="pilot"]');
   try{
@@ -24164,7 +24202,9 @@ async function ssoFinish(ret){
     if(!had || had.id !== who.id){ side.msg.pilot = {text: 'Looking up your pilot…'}; renderSidePanel(); await sideSetPilotId(who.id, who.name); }
     sso.busy = false;
     if(want.includes(SSO_LOC)) itGlGranted();   // the switch turns on only when its permission came back (else SSO-07)
-    renderSidePanel();
+    ssoOn.stop = ''; ssoOn.next = 0;   // 029: a new login: the online check starts again
+    if(want.includes(SSO_ON)) ssoOnGranted();
+    renderSidePanel(); ssoOnPump(); ssoOnHello();
   }catch(e){
     if(!had) ssoEnd(); else sso.busy = false;
     ssoMsg(from, withCode(e.message, errorCodeOf(e)), true);
@@ -24178,6 +24218,7 @@ function ssoEnd(){
   ssoDel(SSO_WHO, SSO_REFRESH, SSO_TAB);
   sso.who = null; sso.access = null; sso.busy = false; sso.exp = 0; sso.scp = null; sso.fails = 0; sso.renewAt = 0; sso.renewErr = '';
   if(rt) ssoRevoke(rt);
+  ssoOnPump(); ssoOnPaint();   // 029: no login, no online check and nothing on the portrait
 }
 async function ssoRevoke(rt){
   try{
@@ -24195,6 +24236,7 @@ function ssoLogout(){
   const gave = !!((sso.scp && sso.scp.length) || ssoWant().length);
   ssoEnd();
   itGlLogout();   // 028: Log out turns Use my game location off
+  ssoOnLogout();   // 029: and Show when I'm online in EVE (the owner, at the review: "yes")
   // revoking ends the grant: EVE drops the app from the character's list (the owner's hand test, 2026-11-08)
   sso.note = {text: 'Logged out of this tab, and Your pilot is cleared.' + (gave ? ' The permissions you gave EVE ended with it.' : '')};
   sideSetPilot('');
@@ -24222,7 +24264,7 @@ function ssoPermsHtml(){
 function ssoTagsHtml(s){ return s.map(x => `<span class="sso-tag">${escapeHtml(SSO_SCOPE_NAMES[x])}</span>`).join(''); }
 function ssoNoteHtml(){ return sso.note && sso.note.text ? `<div class="status side-msg${itOnHtml(sso.note.err, 'err')}">${escapeHtml(sso.note.text)}</div>` : ''; }
 function ssoFootHtml(){
-  if(sso.who) return `<div class="sso-sub">${ctxHtml('Logged in for this tab')}${infoBtnHtml('side#sso')}</div>${ssoPermsHtml()}${ssoNoteHtml()}`;
+  if(sso.who) return `<div class="sso-sub">${ctxHtml('Logged in for this tab')}${infoBtnHtml('side#sso')}</div>${ssoPermsHtml()}${ssoNoteHtml()}${ssoOnRowHtml()}`;
   return ssoNoteHtml();
 }
 // "Your pilot": the typed field, or (logged in) the name, the EVE login tag and Log out. To pick another pilot you log out first.
@@ -24247,7 +24289,7 @@ function ssoInit(panel){
     let nav = '';
     try{ const e = performance.getEntriesByType('navigation')[0]; nav = e ? e.type : ''; }catch(e){ nav = ''; }
     const back = !!(p && nav === 'back_forward' && typeof p.at === 'number' && Date.now() - p.at >= 0 && Date.now() - p.at < SSO_STATE_MS);
-    if(back) Promise.resolve().then(() => { ssoMsg(p.from === 'loc' ? 'loc' : '', "You came back from EVE's page without logging in, so nothing changed."); if(p.from !== 'loc') openProfile('.pp-sec[data-k="pilot"]'); });
+    if(back) Promise.resolve().then(() => { ssoMsg(p.from === 'loc' || p.from === 'online' ? p.from : '', "You came back from EVE's page without logging in, so nothing changed."); if(p.from !== 'loc') openProfile('.pp-sec[data-k="pilot"]'); });
     if(back && p.intelWasOn) Promise.resolve().then(() => itResumeAfterEve());   // it tells the other tabs either way
     else if(p && p.intelWasOn) Promise.resolve().then(() => itLockPost({back: true}));   // other tabs: no longer "paused while the other tab logs in"
   }
@@ -24257,9 +24299,14 @@ function ssoInit(panel){
   panel.addEventListener('click', (e) => {
     const b = e.target.closest('[data-sso]');
     if(!b || b.disabled) return;
+    const k = b.dataset.sso, now = !!b.checked;   // a checkbox has already changed when its click arrives
     e.preventDefault();
-    if(b.dataset.sso === 'login') ssoStart([], ''); else if(b.dataset.sso === 'logout') ssoLogout();
+    if(k === 'login') ssoStart([], ''); else if(k === 'logout') ssoLogout();
+    else if(k === 'online') ssoOnToggle(now);   // 029
+    else if(k === 'on-go' || k === 'on-again'){ ssoOn.ask = false; ssoStart([SSO_ON], 'online'); }
+    else if(k === 'on-no'){ ssoOn.ask = false; ssoOnRedraw(); }
   });
+  ssoOnInit();
   // Another tab typed or cleared the pilot (side.rec is shared): this tab's login ends; the pilots aren't fought over.
   window.addEventListener('storage', (e) => {
     if(!sso.who || (e.key !== SIDE_KEY && e.key !== null)) return;
@@ -24286,12 +24333,206 @@ function ssoTabInit(){
       sso.dupAsk = 0; ssoDel(SSO_WHO, SSO_REFRESH, SSO_TAB);
       sso.who = null; sso.access = null; sso.exp = 0; sso.scp = null;
       sso.note = {text: "This tab was copied from another, so it's logged out here."};
-      renderSidePanel();
+      renderSidePanel(); ssoOnPump(); ssoOnPaint();
     }
   };
   const id = ssoGet(SSO_TAB);
   if(sso.who && id){ sso.dupAsk = Date.now(); try{ sso.bc.postMessage({q: id}); }catch(e){ } }
 }
+// ---- v2026.11.09.1 (build queue 029; Project doc roadmap/sso-online-status-plan.md): Show when I'm online in EVE ----
+// The logged-in character's own status (DLA 2.3(c)), with its permission from EVE's page (Phase 2's step). One tab asks per character:
+// a Web Lock per character id (first in the queue; the tab running Intel takes it over and asks on Intel's tick); the others hear the
+// answer on a BroadcastChannel. Never before the answer's Expires and 60 s at least (CCP's rate-limit post: one of /location, /online and
+// /ship has a 1-minute cache); a tab in the background without Intel asks nothing and leaves the queue (LESSON #120). The lock is let go
+// before the page leaves for EVE's page and on pagehide (Phase 2's hand test: a page kept in the browser's cache still held Intel's lock),
+// and a tab waiting 3 minutes without hearing an answer takes it over. 401: SSO-08, never asked again; 403: SSO-07, the setting off.
+// Intel never stops by itself (the owner: "there is a switch for a reason"): a line and Stop Intel.
+const SSO_ON_LOW = 0.25;
+function ssoOnRead(){ try{ return JSON.parse(localStorage.getItem(SSO_ON_KEY) || 'false') === true; }catch(e){ return false; } }
+function ssoOnSave(v){ ssoOn.show = !!v; try{ localStorage.setItem(SSO_ON_KEY, JSON.stringify(!!v)); }catch(e){ /* this visit only */ } }
+function ssoOnHere(){ try{ return !!it.on; }catch(e){ return false; } }   // this tab runs Intel
+function ssoOnHidden(){ return typeof document !== 'undefined' && !!document.hidden; }
+function ssoOnHas(){ return sso.scp === null ? true : ssoHeld(SSO_ON); }   // after a reload unknown until the first check renews the token
+function ssoOnCan(){ return !!(ssoOn.show && sso.who && !ssoOn.stop && ssoOnHas() && !sso.leaving && !sso.starting && (ssoOnHere() || !ssoOnHidden())); }
+// what this tab shows: true online, false logged off, null nothing (off, logged out, no permission, not checked yet)
+function ssoOnShown(){ const s = ssoOn.st; return ssoOn.show && sso.who && ssoOnHas() && s && s.id === sso.who.id ? s.online : null; }
+function ssoOnPortrait(){ try{ return ssoOnShown(); }catch(e){ return null; } }   // renderProfile may run before this part of the script has
+function ssoOnKey(){ return [ssoOn.show, ssoOn.ask, ssoOn.msg ? ssoOn.msg.text : '', ssoOn.stop, sso.who ? sso.who.id : 0, ssoOnHas(), ssoOnShown()].join(','); }
+function ssoOnLockName(id){ return `${SSO_ON_LOCK}:${Number(id)}`; }
+// After anything that changes who may ask: in the queue, holding the lock (its one timer), or neither
+function ssoOnPump(){
+  if(ssoOn.held && (!sso.who || ssoOn.held.id !== sso.who.id)) ssoOnFree();
+  if(!ssoOnCan()){ ssoOnFree(); return; }
+  if(!ssoOn.held) ssoOnTake(false);
+  ssoOnArm();
+}
+function ssoOnTake(force){
+  const L = typeof navigator !== 'undefined' && navigator.locks && typeof navigator.locks.request === 'function' ? navigator.locks : null;
+  if(!L){ ssoOn.held = {id: sso.who.id, rel: null}; return; }   // no Web Locks: this tab asks on its own
+  const steal = !!force || ssoOnHere();   // the tab running Intel asks for everyone, on Intel's tick
+  if(ssoOn.req && (!steal || ssoOn.req.steal)) return;   // already asked
+  if(ssoOn.req && ssoOn.req.ac){ try{ ssoOn.req.ac.abort(); }catch(e){ } }
+  const req = {id: sso.who.id, steal, ac: !steal && typeof AbortController === 'function' ? new AbortController() : null, rel: null};
+  ssoOn.req = req; ssoOn.waitAt = Date.now();
+  L.request(ssoOnLockName(req.id), steal ? {steal: true} : req.ac ? {signal: req.ac.signal} : {}, () => {
+    if(ssoOn.req !== req) return null;   // no longer wanted: let go at once
+    return new Promise((res) => { req.rel = res; ssoOn.req = null; ssoOn.held = req; ssoOnPump(); });
+  }).catch(() => {
+    if(ssoOn.req === req) ssoOn.req = null;
+    if(ssoOn.held === req){ ssoOn.held = null; ssoOnUnarm(); ssoOnPump(); }   // taken over (the tab running Intel): back in the queue
+  });
+}
+function ssoOnFree(){
+  const q = ssoOn.req, h = ssoOn.held;
+  ssoOn.req = null; ssoOn.held = null; ssoOnUnarm();
+  if(q && q.ac){ try{ q.ac.abort(); }catch(e){ } }
+  if(h && h.rel) h.rel();
+}
+function ssoOnUnarm(){ if(ssoOn.timer){ clearTimeout(ssoOn.timer); ssoOn.timer = 0; } }
+// One timer at a time: the next check, or (in the queue) a look whether the tab asking went quiet; none while Intel's tick runs here
+function ssoOnArm(){
+  ssoOnUnarm();
+  if(ssoOnHere()) return;
+  const at = ssoOn.held ? Math.max(ssoOn.next, 1) : ssoOn.req ? Math.max(ssoOn.heard, ssoOn.waitAt) + SSO_ON_STALE_MS : 0;
+  if(!at) return;
+  ssoOn.timer = setTimeout(() => { ssoOn.timer = 0; ssoOnTick(); }, Math.max(0, at - Date.now()) + 50);
+}
+function ssoOnTick(){
+  if(ssoOn.busy) return;
+  if(!ssoOn.held){
+    if(ssoOn.req && !ssoOn.req.steal && ssoOnCan() && Date.now() - Math.max(ssoOn.heard, ssoOn.waitAt) >= SSO_ON_STALE_MS) ssoOnTake(true);
+    else ssoOnArm();
+    return;
+  }
+  if(Date.now() < ssoOn.next){ ssoOnArm(); return; }
+  ssoOnCheck();
+}
+async function ssoOnCheck(){
+  if(!ssoOnCan()){ ssoOnPump(); return; }
+  ssoOn.busy = true;
+  const id = sso.who.id, k0 = ssoOnKey();
+  try{
+    let r;
+    try{ r = await esiFetch(`${ESI}/characters/${id}/online/`, {}, 'online', {scope: SSO_ON}); }
+    catch(e){
+      const c = errorCodeOf(e);
+      if(c === 'SSO-06') ssoOn.stop = c;   // the login ended; ssoLost says so in the Pilot section
+      else if(c === 'SSO-03'){ ssoOn.next = Math.max(Date.now() + SSO_ON_RETRY_MS, sso.renewAt); ssoOn.msg = {text: withCode(e.message, c), err: true}; }
+      else ssoOn.next = Date.now() + SSO_ON_RETRY_MS;   // ESI not reached: again in 30 s
+      return;
+    }
+    if(!sso.who || sso.who.id !== id || !ssoOn.show) return;
+    const now = Date.now(), h = r.headers;
+    if(!ssoOnHas()) return;   // the renewed token hasn't the permission: the row says so, with Continue to EVE
+    if(r.status === 401){ ssoOn.stop = 'SSO-08'; ssoOn.msg = {text: withCode("EVE refused the login for Show when I'm online in EVE, so it stopped. Log in again to go on.", 'SSO-08'), err: true, again: true}; return; }
+    if(r.status === 403){ ssoOnSave(false); ssoOn.msg = {text: withCode("EVE didn't allow reading whether you're online (the permission is missing or was taken back), so Show when I'm online in EVE is off.", 'SSO-07'), err: true}; return; }
+    if(r.status === 420 || r.status === 429){ const ra = Number(h.get('retry-after')); ssoOn.next = now + 1000 * (ra > 0 ? ra : 60); return; }
+    if(!r.ok){ ssoOn.next = now + SSO_ON_RETRY_MS; return; }
+    let j = null;
+    try{ j = await r.json(); }catch(e){ j = null; }
+    const ex = Date.parse(h.get('expires') || '');
+    let next = Math.max(Number.isFinite(ex) ? ex + Math.random() * 1000 : 0, now + SSO_ON_MIN_MS);
+    const lim = /^(\d+)\//.exec(h.get('x-ratelimit-limit') || ''), remT = h.get('x-ratelimit-remaining');
+    if(lim && remT !== null && remT !== '' && Number(remT) < Number(lim[1]) * SSO_ON_LOW) next = now + 2 * (next - now);
+    ssoOn.next = Math.min(next, now + SSO_ON_MAX_MS);
+    if(!j || typeof j.online !== 'boolean') return;
+    if(ssoOn.msg && !ssoOn.msg.again) ssoOn.msg = null;
+    ssoOnSeen({id, online: j.online, at: now}, true);
+  }finally{
+    ssoOn.busy = false;
+    if(ssoOnKey() !== k0) ssoOnRedraw(); else ssoOnTimePaint();   // drawn only when what it shows changed (LESSON #120)
+    ssoOnPump();
+  }
+}
+// An answer, this tab's own (posted to the others) or heard; kept only for this tab's character
+function ssoOnSeen(m, mine){
+  if(!m || !Number.isInteger(m.id) || typeof m.online !== 'boolean' || !(m.at > 0) || !sso.who || m.id !== sso.who.id) return;
+  ssoOn.heard = Date.now();
+  // the owner's hand test (2026-11-09): with Intel off, the tab in view takes the check over from the one hidden, and it asked at once
+  // (a request seconds after the other tab's). It waits for the next check the tab that asked had set (its Expires, 60 s at least).
+  if(!mine && Number.isFinite(m.next) && m.next > ssoOn.next) ssoOn.next = Math.min(m.next, Date.now() + SSO_ON_MAX_MS);
+  const o = ssoOn.st;
+  if(o && o.id === m.id && o.at >= m.at) return;
+  const k0 = ssoOnKey();
+  ssoOn.st = {id: m.id, online: m.online, at: m.at};
+  if(mine){ ssoOnPost(); return; }   // ssoOnCheck draws
+  if(ssoOnKey() !== k0) ssoOnRedraw(); else ssoOnTimePaint();
+}
+function ssoOnHear(m){
+  if(!m || typeof m !== 'object') return;
+  if('ask' in m){ if(ssoOn.held && ssoOn.st && ssoOn.st.id === m.ask) ssoOnPost(); return; }   // a tab that just opened
+  ssoOnSeen(m, false);
+}
+function ssoOnPost(){ if(ssoOn.bc && ssoOn.st){ try{ ssoOn.bc.postMessage(Object.assign({}, ssoOn.st, {next: ssoOn.next})); }catch(e){ } } }   // the answer and when it may be asked again
+function ssoOnHello(){ if(ssoOn.bc && sso.who && ssoOn.show){ try{ ssoOn.bc.postMessage({ask: sso.who.id}); }catch(e){ } } }
+function ssoOnInit(){
+  ssoOn.show = ssoOnRead();
+  if(typeof BroadcastChannel === 'function'){ try{ ssoOn.bc = new BroadcastChannel(SSO_ON_LOCK); ssoOn.bc.onmessage = (e) => ssoOnHear(e && e.data); }catch(e){ ssoOn.bc = null; } }
+  if(typeof window !== 'undefined' && window.addEventListener){
+    window.addEventListener('storage', (e) => {   // another tab turned it on or off (or logged out)
+      if(e.key !== SSO_ON_KEY && e.key !== null) return;
+      const v = ssoOnRead();
+      if(v === ssoOn.show) return;
+      ssoOn.show = v; ssoOn.ask = false; ssoOn.stop = ''; ssoOn.next = 0;
+      ssoOnPump(); ssoOnRedraw(); ssoOnHello();
+    });
+    window.addEventListener('pagehide', () => ssoOnFree());   // a page kept in the browser's cache mustn't keep the lock
+    window.addEventListener('pageshow', (e) => { if(e.persisted) ssoOnPump(); });
+  }
+  if(typeof document !== 'undefined' && document.addEventListener) document.addEventListener('visibilitychange', () => { ssoOnPump(); if(!document.hidden) ssoOnHello(); });
+  Promise.resolve().then(() => { ssoOnPump(); ssoOnHello(); });
+}
+// What it shows: the portrait (renderProfile), the row in the Pilot section, Intel's line; each only when it changed
+function ssoOnRedraw(){
+  ssoOnPaint();
+  const row = typeof document !== 'undefined' && document.querySelector ? document.querySelector('#sidePanel [data-sso-onrow]') : null;
+  if(row) row.innerHTML = ssoOnRowInHtml();
+  ssoOnIntelPaint();
+}
+function ssoOnPaint(){ const v = ssoOnPortrait(); if(v === ssoOn.painted) return; ssoOn.painted = v; if(typeof renderProfile === 'function') renderProfile(); }
+function ssoOnIntelHtml(){
+  if(!ssoOnHere() || ssoOnShown() !== false || !it.me || Number(it.me.id) !== sso.who.id) return '';
+  return '<div class="pr-msg it-offl" data-it-offl role="status"><span>Your character is logged off in EVE.</span><button type="button" data-it-act="on-stop">Stop Intel</button></div>';
+}
+function ssoOnNoteHtml(){ return (ssoOn.intel = ssoOnIntelHtml()); }   // Intel's line, kept to compare (ssoOnIntelPaint)
+function ssoOnIntelPaint(){ let h = ''; try{ h = ssoOnIntelHtml(); }catch(e){ h = ''; } if(h !== ssoOn.intel){ try{ itRender(true); }catch(e){ } } }   // ssoOnNoteHtml keeps ssoOn.intel
+function ssoOnRowHtml(){ return `<div class="sso-on" data-sso-onrow>${ssoOnRowInHtml()}</div>`; }
+function ssoOnBoxHtml(){ return `<label><input type="checkbox" data-sso="online"${itOnHtml(ssoOn.show, 'checked')}${itOnHtml(ssoOn.ask, 'disabled')}> Show when I'm online in EVE</label>`; }
+function ssoOnRowInHtml(){
+  if(ssoOn.ask) return ssoOnBoxHtml() + `<div class="sso-on-ask"><div class="c">EVE's page will ask you to let Threat Vector read whether your character is online. This page goes there and comes back.</div><div class="it-btns"><button type="button" class="mys-primary" data-sso="on-go">Continue to EVE</button><button type="button" class="mys-quiet" data-sso="on-no">Cancel</button></div></div>`;
+  return `${ssoOnBoxHtml()}<div class="sso-sub">${ctxHtml(ssoOn.show && ssoOnHas() ? 'From your EVE login' : 'Needs its OK from EVE')}${infoBtnHtml('side#online')}</div>${ssoOnStHtml()}${ssoOnMsgHtml()}`;
+}
+function ssoOnStHtml(){
+  if(!ssoOn.show || ssoOn.stop) return '';
+  if(!ssoOnHas()) return '<div class="sso-on-st">This tab\'s EVE login doesn\'t have its OK yet.</div><div class="it-btns"><button type="button" data-sso="on-go">Continue to EVE</button></div>';
+  const v = ssoOnShown();
+  if(v === null) return '<div class="sso-on-st">Not checked yet</div>';
+  return `<div class="sso-on-st">${escapeHtml(v ? 'Online in EVE' : 'Logged off in EVE')} · checked <span data-sso-onat>${escapeHtml(ssoOnClock(ssoOn.st.at))}</span> UTC</div>`;
+}
+function ssoOnClock(t){ return new Date(t).toISOString().slice(11, 16); }
+function ssoOnTimePaint(){   // only the "checked" time moves; written into its own span
+  if(typeof document === 'undefined' || !document.querySelectorAll || !ssoOn.st) return;
+  const t = ssoOnClock(ssoOn.st.at);
+  for(const x of document.querySelectorAll('[data-sso-onat]')) if(x.textContent !== t) x.textContent = t;
+}
+function ssoOnMsgHtml(){ return ssoOn.msg ? `<div class="status side-msg${itOnHtml(ssoOn.msg.err, 'err')}">${escapeHtml(ssoOn.msg.text)}${ssoOnAgainHtml()}</div>` : ''; }
+function ssoOnAgainHtml(){ return ssoOn.msg && ssoOn.msg.again ? ' <button type="button" data-sso="on-again">Log in again</button>' : ''; }
+// The checkbox: off is off; on without the permission opens the box (Continue to EVE / Cancel); on with it (or after a reload), on
+function ssoOnToggle(on){
+  ssoOn.msg = null; ssoOn.stop = '';
+  if(!on){ ssoOnSave(false); ssoOn.ask = false; ssoOnPump(); ssoOnRedraw(); return; }
+  if(sso.scp === null || ssoHeld(SSO_ON)){ ssoOnSave(true); ssoOn.ask = false; ssoOn.next = 0; ssoOnPump(); ssoOnRedraw(); ssoOnHello(); return; }
+  ssoOn.ask = true; ssoOnRedraw();
+  const go = typeof document !== 'undefined' && document.querySelector ? document.querySelector('#sidePanel [data-sso="on-go"]') : null;
+  if(go) go.focus({preventScroll: true});
+}
+// Back from EVE (ssoFinish): on only with its permission
+function ssoOnGranted(){
+  if(ssoHeld(SSO_ON)){ ssoOnSave(true); ssoOn.msg = null; ssoOn.stop = ''; ssoOn.next = 0; }
+  else ssoOn.msg = {text: withCode(ssoOn.show ? "EVE didn't give the online permission, so this tab can't show it." : "EVE didn't give the online permission, so Show when I'm online in EVE stays off.", 'SSO-07'), err: true};
+  ssoOnRedraw();
+}
+function ssoOnLogout(){ if(ssoOn.show) ssoOnSave(false); ssoOn.ask = false; ssoOn.msg = null; ssoOn.stop = ''; ssoOn.st = null; ssoOnFree(); ssoOnPaint(); ssoOnIntelPaint(); }
 // Adds alliances / corporations by name to one list (and takes them off the other). Lines may carry a ticker.
 async function sideAddNames(which, lines){
   const names = [...new Set(lines.map(l => String(l).replace(/[<\[][^>\]]*[>\]]/g, ' ').replace(/\s+/g, ' ').trim()).filter(n => n && n.length <= 60))];
@@ -25992,6 +26233,7 @@ function itLogSys(){ const s = it.me && it.me.sys; return s && it.names ? it.nam
 async function itTick(){
   if(!it.on || it.busy) return;
   itGameLoc();   // v2026.11.08.4 (028): Use my game location rides this tick; it waits for its own Expires
+  ssoOnTick();   // v2026.11.09.1 (029): so does the online check, in the tab holding its lock
   it.busy = true;
   const gen = it.gen;
   try{
@@ -26814,6 +27056,7 @@ async function itStart(move){   // move (v2026.11.08.3, 026): Move Intel here ta
   try{ it.lastScan = Date.now(); await itScan(); }catch(e){ if(gen !== it.gen) return; it.err = withCode(`The page can't read “${it.dirName}” (${e.message}). Choose the folder again under the gear.`, 'INTEL-02'); itStop(); return; }
   if(gen !== it.gen) return;
   itTickerStart();
+  ssoOnPump();   // 029: the tab running Intel asks whether you're online, on its tick
   itTick();
   itKillPump();
 }
@@ -26825,6 +27068,7 @@ function itStop(moved){   // moved (026): another tab took Intel over; it says s
   if(was && !moved) itLockPost({on: false, why: 'stopped'});
   if(it.lockWhy === 'here') it.lockWhy = '';
   itRender();
+  ssoOnPump();   // 029: the online check goes back to its own timer, or stops while the tab is hidden
 }
 // ---- v2026.11.08.3 (build queue 026; Project doc roadmap/intel-one-tab-plan.md): Intel in one tab at a time ----
 // The owner: "we really only want users to utilize a single tab to begin with. multiple tabs complicate things like INTEL requests".
@@ -27538,7 +27782,7 @@ function itNoteHtml(){
   if(it.note === IT_WAKE_NOTE) return `<div class="pr-msg it-wake" role="status"><span class="it-wake-t">${escapeHtml(it.note)}</span><button type="button" class="mys-primary" data-it-act="wake">Turn sound on</button></div>`;
   return `<div class="pr-msg">${escapeHtml(it.note)}</div>`;
 }
-function itNotesHtml(){ return `${itLockHtml()}${it.err ? `<div class="pr-msg err">${escapeHtml(it.err)}${itAllowNoteHtml()}</div>` : ''}${itNoteHtml()}${it.on && it.kfNote ? `<div class="pr-msg" data-it-kfnote>${escapeHtml(it.kfNote)}</div>` : ''}`; }
+function itNotesHtml(){ return `${itLockHtml()}${it.err ? `<div class="pr-msg err">${escapeHtml(it.err)}${itAllowNoteHtml()}</div>` : ''}${ssoOnNoteHtml()}${itNoteHtml()}${it.on && it.kfNote ? `<div class="pr-msg" data-it-kfnote>${escapeHtml(it.kfNote)}</div>` : ''}`; }
 function itRenderLists(){
   itHeaderSync();
   const el = typeof document !== 'undefined' && document.getElementById && document.getElementById('intelPanel');
@@ -28738,6 +28982,7 @@ function rsBind(root){
     const a = e.target.closest('[data-it-act]');
     if(!a) return;
     if(a.dataset.itAct === 'gl-go' || a.dataset.itAct === 'gl-again'){ itGl.ask = false; ssoStart([SSO_LOC], 'loc'); return; }   // 028: to EVE's page
+    if(a.dataset.itAct === 'on-stop'){ itToggle(false); return; }   // 029: logged off in EVE; Intel never stops by itself
     if(a.dataset.itAct === 'wake'){ itAudioWake(); if(it.note === IT_WAKE_NOTE){ it.note = ''; itRender(true); } return; }   // the press itself wakes the audio
     if(a.dataset.itAct === 'gl-no'){ itGl.ask = false; itGl.msg = null; itRender(true); const c = el.querySelector('[data-it-gl]'); if(c) c.focus({preventScroll: true}); return; }
     if(a.dataset.itAct === 'gear'){ it.pop = !it.pop; itRender(true); if(!it.pop) itGearFocus(); return; }   // v2026.11.01.3: closed: the focus back on the gear

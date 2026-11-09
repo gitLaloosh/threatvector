@@ -187,6 +187,20 @@ asks for its own when it is turned on; Phase 2 below). So:
   - **Intel's alerts start unchecked** for someone with no saved settings (`itDefaults`; saved values kept). Checks that test alerts seed
     `{sound: true, notify: true}`. **Intel stopped reading** (`itLostSound`): one built-in sound once per stop, sound on only.
   - Checked by `tools/page_checks/sso_game_check.py` (stand-in SSO and ESI location; never live).
+- **Show when I'm online in EVE** (v2026.11.09.1, build queue 029; Project doc roadmap/sso-online-status-plan.md): a checkbox under the
+  login in the profile's Pilot section (`ssoOnRowHtml`), `esi-location.read_online.v1` (`SSO_ON`) through Phase 2's permission step
+  (`ssoStart([SSO_ON], 'online')`; `ssoWant` adds it while `ssoOn.show`), the setting in localStorage `tvOnlineShow` (true/false). So:
+  - **The portrait** (the owner: "A and C"): a dot on its top-right corner (`#profileOn`, `--st-online` / `--text-faint`) and the portrait
+    greyed while logged off (`.pf[data-on="off"]`); Intel's square stays bottom-right; nothing when off, logged out or without the
+    permission (`ssoOnShown`). Log out turns it off (the owner, at the review).
+  - **One tab asks per character:** a Web Lock `tv-online:<id>` (queued; the tab running Intel takes it over with steal and asks on
+    Intel's tick, `ssoOnTick`); every other holder has one timer (`ssoOnArm`). Let go before leaving for EVE's page and on pagehide; a
+    hidden tab without Intel leaves the queue; a tab waiting 3 minutes without an answer takes over. The answer `{id, online, at}` goes out
+    on the `tv-online` BroadcastChannel; a tab that opens asks for the last one (`{ask: id}`). Never before Expires, 60 s at least, twice as
+    long under a quarter of the group's tokens; 420/429 Retry-After; 401 SSO-08 (never again), 403 SSO-07 (off). Memory only.
+  - **Intel**, running as that character and logged off: "Your character is logged off in EVE." with Stop Intel (`ssoOnIntelHtml`), above
+    the amber wake line; Intel never stops by itself. Drawn only when what it shows changes (`ssoOnKey`; the time is its own span).
+  - Checked by `tools/page_checks/sso_online_check.py` (Phase 2's stand-ins plus ESI's /online/; never live).
 
 **My Ship** (v2026.10.14.33, `roadmap/my-ship-plan.md`): the user's own fit, saved in
 the browser (`localStorage` `dscanMyShip`: EFT text, module states, the switch; never the

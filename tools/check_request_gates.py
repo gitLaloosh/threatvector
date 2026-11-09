@@ -54,7 +54,7 @@ SITES = {
 # function -> its esiFetch calls (v2026.11.04.4; before, each of these had its own fetch() to ESI)
 ESI_SITES = {'resolveNamesToIds', 'getType', 'getGroup', 'resolveIdsToNames', 'fetchKillmail',
     'getOrg', 'saAffiliation', 'paAffEsi', 'itSecFetch', 'itGateDest', 'gdServerVersion', 'esiDownCheck',
-    'itGameLoc'}   # v2026.11.08.4 (028): Use my game location, with the login   # v2026.11.06.6: esiDownCheck (ESI /status/ once a minute only while ESI is down, build queue 015)   # v2026.11.04.3: gdServerVersion (ESI /status/ once per load: item data after a patch); v2026.10.31.5: itGateDest (a stargate's destination); v2026.10.29.5: itCheckBuild (ESI /status/) removed
+    'itGameLoc', 'ssoOnCheck'}   # v2026.11.09.1 (029): Show when I'm online in EVE, with the login   # v2026.11.08.4 (028): Use my game location, with the login   # v2026.11.06.6: esiDownCheck (ESI /status/ once a minute only while ESI is down, build queue 015)   # v2026.11.04.3: gdServerVersion (ESI /status/ once per load: item data after a patch); v2026.10.31.5: itGateDest (a stargate's destination); v2026.10.29.5: itCheckBuild (ESI /status/) removed
 HOST_RX = {'zkb': r'\$\{ZKB\}|zkillboard\.com/api', 'r2z2': r'\$\{IT_R2Z2\}|r2z2\.zkillboard\.com', 'esi': r'\$\{ESI\}|esi\.evetech\.net'}
 problems = []
 def code_only(s):   # the script with // and /* */ comments blanked (same length, so positions and lines still match)
