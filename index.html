@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-YOPziZYm6csih9EPtCUzUdyoaHqShNOj9Bcu7oGHPLo='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-3ZnJV44Ia/3mMRzO7dgLM94Yy+LFKUzEugu51K7WUkc='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -1985,6 +1985,11 @@
   .sa-why::before{content:""; flex:none;}
   .sa-why.list::before{width:7px; height:7px; border-radius:2px; background:var(--side-hostile);}
   .sa-why.zkb::before{width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-bottom:7px solid var(--amber);}
+  /* v2026.11.09.2 (030): EVE's standing decided it (its side's colour); corporation and alliance disagree (amber); a neutral with evidence */
+  .sa-why.eve::before{width:7px; height:7px; border-radius:2px; background:var(--side-hostile);} .sa-why.eve.f::before{background:var(--side-friendly);}
+  .sa-why.eve.dis{color:var(--amber);} .sa-why.eve.dis::before{background:var(--amber);}
+  .sa-why.zkbnote{color:var(--text-dim); font-weight:500;}
+  .sa-why.zkbnote::before{width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-bottom:7px solid var(--amber);}
   .sa-gn{font:600 15px var(--mono); color:var(--heading); text-align:right; min-width:3ch;}
   .sa-chev{color:var(--text-dim); font-size:11px; text-align:center; transition:transform .15s;}
   details.sa-g[open] > summary .sa-chev{transform:rotate(90deg);}
@@ -2055,6 +2060,19 @@
   .side-tag.f{border-color:transparent;} .side-tag.h{border-color:transparent;}
   .side-tag .sa-mark{width:14px; height:14px;}
   .side-tag .nm{min-width:0; overflow:hidden; text-overflow:ellipsis;}
+  /* v2026.11.09.2 (030): Standings from EVE: the switch block, its list, the reasons */
+  .side-tag.ev .nm{color:var(--amber);}
+  .side-eve .side-eve-sw{display:flex; align-items:center; gap:8px; font:600 13px/18px var(--sans); color:var(--text);}
+  .side-eve .sso-on-ask{margin:6px 0 2px; padding:8px; border-radius:4px; background:var(--tag-fill);}
+  .side-eve .sso-on-ask .c{font-size:12.5px; line-height:18px; color:var(--text);}
+  .side-eve .sso-on-st{margin-top:4px; font-size:12px; color:var(--text-dim);}
+  .side-eve .side-eve-open{margin-top:4px;}
+  .side-eve-l{margin-top:8px;} .side-eve-l .side-lab{font:600 12px/18px var(--sans); color:var(--text-dim);}
+  .side-eve-r{display:grid; grid-template-columns:14px minmax(0,1fr) auto 36px; gap:6px; align-items:center; min-height:24px; font:500 13px/18px var(--sans);}
+  .side-eve-r .sa-mark{width:14px; height:14px;}
+  .side-eve-r .nm{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .side-eve-v{text-align:right; font:600 12px var(--mono, monospace);} .side-eve-v.f{color:var(--side-friendly);} .side-eve-v.h{color:var(--side-hostile);} .side-eve-v.n{color:var(--text-dim);}
+  @media (max-width:599px){ .side-eve .side-eve-sw, .side-eve [data-sso]{min-height:44px;} .side-eve-r{min-height:32px;} }
   #pilotSideTag:empty{display:none;}
   @media (max-width: 760px){
     .sa-inputs, .sa-cols{grid-template-columns:minmax(0,1fr);}
@@ -3069,7 +3087,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.09.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.09.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3413,7 +3431,7 @@ const CARD_INFO = {
  ],
  "side#sso": [
   "Logging in with EVE Online tells Threat Vector which character you are. On its own it asks EVE for no permissions. It fills Your pilot, the same as typing the name.",
-  "Features that need more from EVE ask for their own permission when you turn them on: Use my game location (Intel's settings, You) asks to read your character's location, and Show when I'm online in EVE (here, under the login) whether it is in the game. EVE's page lists exactly what is asked before you agree. A later login asks again for the features you have on (the button's line says which).",
+  "Features that need more from EVE ask for their own permission when you turn them on: Use my game location (Intel's settings, You) asks to read your character's location, Show when I'm online in EVE (here, under the login) whether it is in the game, and Use my corporation's and alliance's EVE standings (in Standings) your corporation's and alliance's contacts. EVE's page lists exactly what is asked before you agree. A later login asks again for the features you have on (the button's line says which).",
   "Log out ends the login and its permissions with EVE: Threat Vector leaves your list of apps on EVE's site. You can also remove it there (Manage on EVE's site, under EVE permissions). While a feature uses the login, it is renewed in this tab about every 20 minutes.",
   "The login lasts for this tab: reloading keeps it, a new tab asks again (usually one click, as EVE remembers you), and closing the tab forgets it. Nothing is sent to or kept on a Threat Vector server; there isn't one.",
   "Log out ends it in this tab and clears Your pilot. It doesn't sign you out of EVE's own website."
@@ -3423,8 +3441,16 @@ const CARD_INFO = {
   "When Intel is running for that character and it logs off, Intel says so, with a button to stop it. Intel never stops by itself.",
   "Only one Threat Vector tab asks for each character; the others show what it found. A tab in the background asks only while it runs Intel. Log out turns it off. What EVE answers is kept in memory only."
  ],
+ "side#eve": [
+  "Logged in with EVE, turn on Use my corporation's and alliance's EVE standings and the page reads your corporation's and your alliance's contacts from EVE (EVE asks for its OK the first time). They then decide who is friendly and hostile in the System Analyzer, Intel, the Fleet tab and the Pilot Analyzer.",
+  "Above 0 is friendly, below 0 hostile, 0 or no standing neutral. In one list, a standing on a pilot beats one on his corporation, which beats one on his alliance. When your corporation and your alliance disagree, your alliance's standing decides, and the reason says so. Your own corporation and alliance are always friendly.",
+  "Your typed lists are hidden while this is on, and used again when you turn it off or log out. Your personal contacts aren't read.",
+  "zKillboard's evidence (killed N of yours) shows beside neutrals, but doesn't make them hostile while this is on.",
+  "Read again only when something needs sides, at most every 5 minutes, and kept in this tab's memory only."
+ ],
  "side": [
   "Your pilot sets your corporation and alliance; they're looked up again each time you analyze Local, so a change of corporation is picked up.",
+  "Logged in with EVE, your corporation's and alliance's standings in EVE can decide instead of the lists below (How EVE standings work, at the top of this section).",
   "Add other friendly alliances or corporations, such as your coalition: one at a time, or as a pasted list with one name per line. Use the full name; a ticker in < > or [ ] after it is ignored. Hostile works the same way. Adding a group to one list takes it off the other.",
   "A corporation entry beats its alliance's: a hostile corporation inside a friendly alliance shows as hostile.",
   "Suggested friendlies: the alliances and corporations (not already listed) that shot alongside your side on 2 or more of its last 50 kills in the past 7 days on zKillboard. One zKillboard request, kept for an hour. Add only the ones really on your side.",
@@ -3596,7 +3622,7 @@ function numBoxStyle(widest){ return `min-width:${String(widest).length}ch;`; }
 const INFO_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6"></path><path d="M12 7.5v.5"></path></svg>';
 // v2026.10.14.49: a key may name a variant of a card's text, "<card key>#<variant>" (the Anhinga's Mode text is
 // "tdmode#primary"), and the text names other cards as {card:key} (filled from CARD_NAMES, like ERROR_CODES).
-const INFO_TITLE = {'fit#charges': 'How the Charges list works', 'side#sso': 'How logging in with EVE works', 'intel#game': 'How Use my game location works', 'side#online': 'How online status works'};   // v2026.10.14.77: a panel about part of a card
+const INFO_TITLE = {'fit#charges': 'How the Charges list works', 'side#sso': 'How logging in with EVE works', 'intel#game': 'How Use my game location works', 'side#online': 'How online status works', 'side#eve': 'How EVE standings work'};   // v2026.10.14.77: a panel about part of a card
 // v2026.10.30.2 (a user: "Bro you gotta find a way to condense this"): a paragraph "**Lead:** text" starts with its lead in bold; a
 // paragraph "[Heading] text" is folded under its heading (Intel's few lines on top, the rest a click away). Plain text otherwise.
 function infoParaHtml(s){
@@ -4106,6 +4132,24 @@ const ERROR_CODES = {
   "since": "v2026.10.14.81",
   "doc": "2026-10-27_system-analyzer-local-and-your-side.html"
  },
+ "SIDE-03": {
+  "title": "EVE wouldn't give your corporation's or alliance's contacts",
+  "where": "{card:side}, Use my corporation's and alliance's EVE standings",
+  "trigger": "ESI answered 403 to the corporation's or the alliance's contact list although this tab's EVE login holds its permission (a role the character lacks, or EVE changed who may read them). That list is skipped and the other is still used; with neither, your typed lists are used.",
+  "check": "Ask your corporation's directors whether line members can see its contacts in the game; log in with another character to compare.",
+  "why": "One list EVE won't give shouldn't hide the other, and the page says which one is missing instead of colouring pilots from half the picture quietly.",
+  "since": "v2026.11.09.2",
+  "doc": "2026-11-09_standings-from-eve.html"
+ },
+ "SIDE-04": {
+  "title": "Your standings couldn't be read from EVE",
+  "where": "{card:side}, Use my corporation's and alliance's EVE standings",
+  "trigger": "ESI didn't answer the contact lists, or answered with a server error (5xx). The copy already read is used; before the first read, your typed lists are. The page asks again the next time something needs sides, a minute later at the soonest.",
+  "check": "ESI may be down (EVE's daily downtime is 11:00 UTC; the strip under the header says so). Nothing to do: it tries again by itself.",
+  "why": "A failed read shouldn't leave pilots uncoloured or silently use old standings: the line says which standings are in use.",
+  "since": "v2026.11.09.2",
+  "doc": "2026-11-09_standings-from-eve.html"
+ },
  "SSO-01": {
   "title": "EVE's login was cancelled",
   "where": "Your profile, Pilot",
@@ -4162,7 +4206,7 @@ const ERROR_CODES = {
  },
  "SSO-07": {
   "title": "EVE didn't give the permission",
-  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1)",
+  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1); your profile, {card:side}, Use my corporation's and alliance's EVE standings (since v2026.11.09.2)",
   "trigger": "The token from EVE doesn't list the permission the switch needs (its scp claim), or ESI answered 403 for it (the permission was taken back). The switch turns off.",
   "check": "Turn the switch on again and agree on EVE's page; on EVE's site, check that Threat Vector still has the permission.",
   "why": "A switch works only with the permission EVE gave; the page never asks ESI for something it wasn't allowed.",
@@ -4171,7 +4215,7 @@ const ERROR_CODES = {
  },
  "SSO-08": {
   "title": "ESI refused the login",
-  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1)",
+  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1); your profile, {card:side}, Use my corporation's and alliance's EVE standings (since v2026.11.09.2)",
   "trigger": "ESI answered 401 to a call made with the login. That feature stops and isn't asked again until you log in again.",
   "check": "Log in again. If it keeps happening, EVE's login may be having trouble.",
   "why": "Every refused call counts against ESI's error limit for everyone on this address (100 a minute), so a refused login is never retried by itself.",
@@ -4436,7 +4480,7 @@ function zkbRetryStep(now){   // one step of every Retry countdown; true while o
 // the panel is open, never in a hidden tab; the zKillboard count ages out on one timeout set for the next expiry (bgAgeArm).
 // ESI is counted by kind of lookup, not by feature (the owner 2026-11-04, "let's go with your recommendation"): the calls sit in
 // helpers that every feature and Intel's background lookups share, so only the kind is known where the request is made.
-const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location', online: 'Your online status'};
+const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location', online: 'Your online status', contacts: 'Your standings'};
 const ESI_USE_KEY = 'dscanEsiUse', ESI_USE_MIN = 15, ESI_ERR_LIMIT = 100, ESI_ERR_WARN = 50, ESI_GROUP_WARN = 0.2;
 const ZKB_WHO_KEY = 'dscanZkbWho', ZKB_WARN_AT = 80;   // amber from 80 of 100 (the planner's default, kept by the owner 2026-11-04)
 let bgEsiPend = null, bgEsiFlushT = 0, bgOpen = false, bgTimer = 0, bgAgeT = 0, bgRaf = 0, bgLastSegs = '', bgLastBody = '', bgR2Times = [];
@@ -12641,6 +12685,9 @@ const PD_KHEAD = '<div class="pdk pdk-h" aria-hidden="true"><span>When</span><sp
 function pdKlOpenHtml(h, n){ return n > PD_SHOW_STEP ? `<div class="pd-kl" data-pd-kl="${Number(h.id)}">${PD_KHEAD}` : PD_KHEAD; }
 function pdKlCloseHtml(n){ return n > PD_SHOW_STEP ? '</div>' : ''; }
 function pdFewerHtml(h, total){ return pd.shown > PD_SHOW_STEP && total > PD_SHOW_STEP ? `<button type="button" data-pd-fewer="${Number(h.id)}">Show fewer</button>` : ''; }
+function pdVictimHtml(k, who){   // v2026.11.09.2 (030): the victim's name in its standing's colour, the pilot's id passed (EVE's pilot entries)
+  return k.vchar ? standNameHtml(who, sideOf(k.vcorp, k.valliance, sideSets(), sa.evidence, k.vchar).side, k.vcorp, k.valliance) : escapeHtml(who);
+}
 function pdKillsHtml(h){
   const d = pd.d, list = pdKillList(h), shown = list.slice(0, pd.shown);
   const nm = (id) => (d.info.get(id) || {}).name || '', cls = (id) => (d.info.get(id) || {}).cls || '';
@@ -12660,7 +12707,7 @@ function pdKillsHtml(h){
     // every kill, solo too, opens in the Fleet tab from an icon in the gutter; the count alone under "Fleet size"; zKillboard an icon
     const recent = Date.now() - k.t < PD_RECENT_MS ? ' recent' : '';
     return `<div class="pdk${recent}" data-pdk="${k.id}"><button type="button" class="pdk-fb" data-pd-fleet="${k.id}" title="${escapeHtml(fleetT)}" aria-label="${escapeHtml(fleetT)}">${FLEET_ICON}</button><span class="pdk-t"><b>${day}</b><span class="pd-dim">${hm} your time</span></span>
-      <span class="pdk-v"><span><b>${escapeHtml(nm(k.victim) || `type ${k.victim}`)}</b> <span class="pd-dim">${escapeHtml(cls(k.victim))}</span></span><span class="pd-dim">${k.vchar ? standNameHtml(who, sideOf(k.vcorp, k.valliance, sideSets(), sa.evidence).side, k.vcorp, k.valliance) : escapeHtml(who)} ${orgTickerHtml('corporation', k.vcorp)}<span class="pdk-m"> · <span class="pdk-when">${day} ${hm}</span></span></span></span>
+      <span class="pdk-v"><span><b>${escapeHtml(nm(k.victim) || `type ${k.victim}`)}</b> <span class="pd-dim">${escapeHtml(cls(k.victim))}</span></span><span class="pd-dim">${pdVictimHtml(k, who)} ${orgTickerHtml('corporation', k.vcorp)}<span class="pdk-m"> · <span class="pdk-when">${day} ${hm}</span></span></span></span>
       <span class="pdk-g">${fleetSizeMarkHtml(k.n)}<span class="pdk-m pd-dim"> ${k.n === 1 ? 'pilot' : 'pilots'}, ${PD_SIZE_WORD[k.size]} · ${k.sys ? sysNameHtml(k.sys, sys) : ''} · ${isk}</span></span>
       <span class="pdk-s">${k.sys ? sysNameHtml(k.sys, sys) : ''}</span>
       <span class="pdk-w">${escapeHtml(nm(k.weapon) || '—')}<span class="pdk-m">${mates ? ` · with ${escapeHtml(mates)}` : ''}</span></span>
@@ -22726,7 +22773,10 @@ function sideSets(){
 }
 // One pilot's side from their corporation and alliance: corporation entries first, then alliance entries, then the
 // zKillboard evidence (keyed by alliance, or corporation without one), else neutral.
-function sideOf(corpId, allianceId, sets, evidence){
+// v2026.11.09.2 (build queue 030): charId, the pilot (every caller passes it); while your corporation's and alliance's EVE standings
+// are in use (sideEveUse) they decide instead (sideEveSide), and the typed lists and the evidence don't.
+function sideOf(corpId, allianceId, sets, evidence, charId){
+  if(sideEveUse()) return sideEveSide(corpId, allianceId, evidence, charId);
   if(sets.fC.has(corpId)) return {side: 'f'};
   if(sets.hC.has(corpId)) return {side: 'h', why: 'list', corpLevel: true};   // grouped by the corporation, not its alliance
   if(allianceId && sets.fA.has(allianceId)) return {side: 'f'};
@@ -22777,9 +22827,9 @@ async function fillOrgTickers(root){
 const STAND_G = {star: '<path d="M6 1.6l1.25 2.7 2.9.3-2.15 2 .6 2.9L6 8.1 3.4 9.5l.6-2.9-2.15-2 2.9-.3z"/>', plus: '<path d="M5 2.5h2v2.5h2.5v2H7v2.5H5V7H2.5V5H5z"/>',
   minus: '<path d="M2.5 5h7v2h-7z"/>', eq: '<path d="M2.5 3.6h7v1.7h-7zM2.5 6.7h7v1.7h-7z"/>'};
 const STAND = {corp: ['star', 'Your corporation', 'f'], all: ['star', 'Your alliance', 'f'], good: ['plus', 'Friendly', 'f'], neu: ['eq', 'Neutral', 'n'], bad: ['minus', 'Hostile', 'h']};
-function standIcon(k, byWord){   // byWord: the word is written beside it, so the icon is decoration (no title, hidden from readers: no "HostileHostile")
-  const [g, t, s] = STAND[k] || STAND.neu;
-  const a = byWord ? 'aria-hidden="true">' : `role="img" aria-label="${t}"><title>${t}</title>`;
+function standIcon(k, byWord, why){   // byWord: the word is written beside it, so the icon is decoration (no title, hidden from readers: no "HostileHostile")
+  const [g, t, s] = STAND[k] || STAND.neu;   // why (v2026.11.09.2, 030): what decided it ("Your alliance: −10 in EVE"), in the hover
+  const a = byWord ? 'aria-hidden="true">' : `role="img" aria-label="${escapeHtml(why ? `${t}: ${why}` : t)}"><title>${escapeHtml(why ? `${t}: ${why}` : t)}</title>`;
   return `<svg class="it-st ${k} sa-mark ${s}" viewBox="0 0 12 12" ${a}<rect x=".5" y=".5" width="11" height="11" rx="1.5"/><g class="sh" transform="translate(.6 .6)">${STAND_G[g]}</g><g class="gl">${STAND_G[g]}</g></svg>`; }
 function standKind(s, corp, alliance){   // the icon for a side ('f' / 'n' / 'h'): a star when it is your own corporation or alliance
   const r = (typeof side !== 'undefined' && side.rec) || {};
@@ -22787,7 +22837,7 @@ function standKind(s, corp, alliance){   // the icon for a side ('f' / 'n' / 'h'
   if(s === 'f' && r.alliance && alliance && alliance === r.alliance.id) return 'all';
   return s === 'f' ? 'good' : s === 'h' ? 'bad' : 'neu';
 }
-function standMark(s, corp, alliance){ return standIcon(standKind(s, corp, alliance)); }
+function standMark(s, corp, alliance, why){ return standIcon(standKind(s, corp, alliance), false, why); }
 // v2026.10.31.3 (the owner: "victims should also be assessed for standing ... and names should be colored. we're going to be drawn to
 // names of people in our alliance that they kill"): a name in its standing's colour (as in Intel), its icon before it
 function standNameHtml(name, s, corp, alliance){ return `<span class="std-nm">${standMark(s, corp, alliance)}<span class="std-n ${s}">${escapeHtml(name)}</span></span>`; }
@@ -22890,7 +22940,7 @@ async function saSuggestions(force){
     const seen = new Set();
     for(const a of (km.attackers || [])){
       if(!a.character_id || !a.corporation_id || isNpcCorp(a.corporation_id)) continue;
-      if(sideOf(a.corporation_id, a.alliance_id, sets, null).side !== 'n') continue;   // already friendly or listed hostile
+      if(sideOf(a.corporation_id, a.alliance_id, sets, null, a.character_id).side !== 'n') continue;   // already friendly or listed hostile
       const k = attackerKey(a);
       if(seen.has(k)) continue;
       seen.add(k); kind.set(k, a.alliance_id ? 'alliance' : 'corporation');
@@ -22944,6 +22994,7 @@ async function runLocal(text, statusEl, force){
   const affBy = new Map(aff.map(a => [a.character_id, a]));
   // your pilot's corp / alliance, as of now (a corp change is picked up here)
   if(own && affBy.has(own)) await sideUpdateFromAffiliation(affBy.get(own));
+  if(sideEveWanted()){ setStatus(statusEl, 'Reading your standings from EVE…'); await sideEveReady(); }   // v2026.11.09.2 (030): an Analyze needs sides
   const pilots = chars.filter(c => affBy.has(c.id)).map(c => ({id: c.id, name: c.name, corp: affBy.get(c.id).corporation_id, alliance: affBy.get(c.id).alliance_id || null}));
   const orgIds = [...new Set(pilots.flatMap(p => [p.corp, p.alliance]).filter(Boolean))];
   const orgNames = orgIds.length ? await saIdsToNames(orgIds) : new Map();
@@ -22965,17 +23016,18 @@ async function runLocal(text, statusEl, force){
 function saGroups(){
   const L = sa.last, sets = sideSets(), cols = {h: new Map(), n: new Map(), f: new Map()};
   for(const p of L.pilots){
-    const s = sideOf(p.corp, p.alliance, sets, sa.evidence);
+    const s = sideOf(p.corp, p.alliance, sets, sa.evidence, p.id);
     const npc = s.side === 'n' && isNpcCorp(p.corp);
     const byCorp = !p.alliance || s.corpLevel;
     const key = npc ? 'npc' : byCorp ? `c${p.corp}` : `a${p.alliance}`;
     let g = cols[s.side].get(key);
     if(!g){
       g = npc ? {key, npc: true, name: 'NPC corporations', corps: new Map(), n: 0}
-              : {key, kind: byCorp ? 'corporation' : 'alliance', id: byCorp ? p.corp : p.alliance, name: L.orgNames.get(byCorp ? p.corp : p.alliance) || '', corps: new Map(), n: 0, why: s.why, ev: s.n};
+              : {key, kind: byCorp ? 'corporation' : 'alliance', id: byCorp ? p.corp : p.alliance, name: L.orgNames.get(byCorp ? p.corp : p.alliance) || '', corps: new Map(), n: 0, why: s.why, ev: s.n, es: s.why === 'eve' ? s : null};
       cols[s.side].set(key, g);
     }
     if(s.why === 'list') g.why = 'list';
+    if(s.why === 'eve' && g.es && !s.pilotLevel && (g.es.pilotLevel || (g.es.disagree && !s.disagree))) g.es = s;   // 030: the group's own standing, not one pilot's
     let c = g.corps.get(p.corp);
     if(!c){ c = {id: p.corp, name: L.orgNames.get(p.corp) || '', pilots: []}; g.corps.set(p.corp, c); }
     c.pilots.push(p); g.n++;   // v.82: the pilot (id, name, corp, alliance), for the rows
@@ -22999,8 +23051,9 @@ function saGroups(){
 }
 function saWhyText(g){
   if(g.why === 'list') return 'Your hostile list';
+  if(g.why === 'eve' && g.es) return sideWhyText(g.es);   // v2026.11.09.2 (030): what EVE's standings said
   const ev = sa.evidence;
-  if(g.why === 'zkb' && ev) return ev.capped ? `Killed ${g.ev} of your last ${ev.n} losses` : `Killed ${g.ev} of yours in 7 days`;
+  if((g.why === 'zkb' || g.why === 'zkbnote') && ev) return ev.capped ? `Killed ${g.ev} of your last ${ev.n} losses` : `Killed ${g.ev} of yours in 7 days`;
   return '';
 }
 function saPilotsHtml(c, gkey){
@@ -23025,7 +23078,7 @@ function saGroupHtml(g, colKey){
     const k = `${g.kind}:${g.id}`, path = g.kind === 'alliance' ? 'alliances' : 'corporations';
     logo = `<span class="sa-logo${g.kind === 'corporation' ? ' corp' : ''}" aria-hidden="true"><span data-tk-for="${k}"></span><img src="https://images.evetech.net/${path}/${g.id}/logo?size=64" alt="" loading="lazy" data-imgfail="remove"></span>`;
     const why = saWhyText(g);
-    sub = why ? `<span class="sa-why ${g.why}" title="${escapeHtml(why)}">${escapeHtml(why)}</span>`
+    sub = why ? `<span class="sa-why ${escapeHtml(saWhyClass(g))}" title="${escapeHtml(sideWhyHover(g.es) || why)}">${escapeHtml(why)}</span>`
               : ctxHtml(g.kind === 'corporation' ? 'no alliance' : `${g.corps.length} corporation${g.corps.length === 1 ? '' : 's'}`);
   }
   const title = g.npc || g.small ? escapeHtml(g.name) : `${escapeHtml(g.name)} ${orgTickerHtml(g.kind, g.id)}`;
@@ -23923,23 +23976,28 @@ function renderSidePanel(){
     : '';
   const sec = (k, done, head, n, body) => `<div class="pp-sec${done ? ' done' : ''}" data-k="${k}"><div class="pp-sh"><span class="pp-ok" aria-hidden="true"></span>${head}${n ? `<span class="pp-n">${n}</span>` : ''}</div>${body}</div>`;
   const nf = r.friendly.length, nh = r.hostile.length;
+  // v2026.11.09.2 (030): EVE's standings in use: the typed lists and Suggested friendlies are hidden (kept unchanged in dscanSide), the
+  // count is EVE's (the owner: "Hidden while logged in")
+  const eve = sideEveUse(), ec = eve ? sideEveCount() : null;
+  const head = eve ? `from EVE · ${ec.b} blue · ${ec.r} red` : nf || nh ? `${nf} friendly · ${nh} hostile` : '';
   p.innerHTML = sec('pilot', !!r.pilot, 'Pilot', '', `${ssoTopHtml()}
     <div class="side-fld">${sidePilotFieldHtml(r)}
       ${r.corp ? `<div class="side-res">${SIDE_MARK.f}<span>${escapeHtml(r.corp.name)} ${orgTickerHtml('corporation', r.corp.id)}${r.alliance ? ` · ${escapeHtml(r.alliance.name)} ${orgTickerHtml('alliance', r.alliance.id)}` : ' · no alliance'}</span></div>` : ''}
       ${sideMsgHtml('pilot')}</div>${ssoFootHtml()}`)
-    + sec('side', !!(nf || nh), `${escapeHtml(cardName('side'))}<span class="sa-sp"></span>${infoBtnHtml('side')}`, nf || nh ? `${nf} friendly · ${nh} hostile` : '', `
+    + sec('side', !!(nf || nh || eve), `${escapeHtml(cardName('side'))}<span class="sa-sp"></span>${infoBtnHtml('side')}`, head, `
+    ${sideEveHtml()}<div class="side-typed"${itOnHtml(eve, 'hidden')}>
     ${sideListFieldHtml('friendly')}
     ${sideListFieldHtml('hostile')}
     <div class="side-fld"><div class="side-lab">Suggested friendlies</div>
       <button type="button" data-side-act="suggest"${g && !side.sugBusy ? '' : ' disabled'}>${sug ? 'Check again' : 'Find on zKillboard'}</button>
-      <div style="margin-top:6px;">${sugHtml}</div>${sideMsgHtml('sug')}</div>
+      <div style="margin-top:6px;">${sugHtml}</div>${sideMsgHtml('sug')}</div></div>
     <div class="side-fld"><label class="side-lab" for="sideRows">Pilot rows up to</label>
       <div class="side-num"><input type="text" id="sideRows" inputmode="numeric" value="${r.rows}" maxlength="2">${ctxHtml(`hostile + neutral; at most ${SIDE_ROWS_MAX}`)}</div></div>
     <div class="side-foot">${ctxHtml('Saved in this browser only')}</div>`);
   fillOrgTickers(p);
 }
 // After any change: save, redraw the chip, the panel and the analysis on screen (no new lookups).
-function sideChanged(){ sideWrite(); renderSideChip(); renderSidePanel(); if(sa.last) saRender(); }
+function sideChanged(){ sideWrite(); renderSideChip(); renderSidePanel(); if(sa.last) saRender(); itSidesRework(); }   // 030: Intel's stored sides too (the owner: "Re-work + replay")
 async function sideSetPilot(name){
   name = String(name || '').replace(/\s+/g, ' ').trim();
   const r = side.rec;
@@ -23983,7 +24041,10 @@ const SSO_STATE_MS = 600000;   // a login answer older than 10 minutes is refuse
 const SSO_TAB = 'tvSsoTab', SSO_BC = 'tv-sso';
 const SSO_LOC = 'esi-location.read_location.v1';   // Use my game location (registered on both apps); no ship scope (the owner: no Match my ship)
 const SSO_ON = 'esi-location.read_online.v1';   // v2026.11.09.1 (029): Show when I'm online in EVE (registered on both apps)
-const SSO_SCOPE_NAMES = {[SSO_LOC]: 'Location', [SSO_ON]: 'Online status'};
+// v2026.11.09.2 (030): Use my corporation's and alliance's EVE standings (both registered on the dev app; production's alliance scope: the
+// owner's hand test). Personal contacts (esi-characters.read_contacts.v1) are not read (the owner).
+const SSO_SC = 'esi-corporations.read_contacts.v1', SSO_SA = 'esi-alliances.read_contacts.v1';
+const SSO_SCOPE_NAMES = {[SSO_LOC]: 'Location', [SSO_ON]: 'Online status', [SSO_SC]: 'Corporation contacts', [SSO_SA]: 'Alliance contacts'};
 const SSO_EARLY_MS = 60000, SSO_BACKOFF_S = [30, 60, 120, 300], SSO_BACK_MS = 30000;
 const SSO_APPS_URL = 'https://developers.eveonline.com/authorized-apps';
 const SSO_BTN_IMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAAtCAQAAAD1900CAAAIy0lEQVR42u2ca2wcVxXHf7NeUqF2pxRViLKbVhXQeDYIaD7sOlABEXZAiEfkqGoIqpKCUpJSO03tiqeCIiREiCBxohYoSu0UQZGSOOUl0iSEhwR+fCkt9S5IgKBeoyCMGk+CHGi8lw/3zu68d9be9e7E+a+0O3Pm3HPPOffccx8zs9raBF9fNdDBdawECLTQcwvzVxlkSFv71Ts/fzui1VpHgkaCckx0jTeS/JmXt2rvFG/ln63WJSJeyxrO8/pWq7ECoPEGCn9PJrjQak0iQ2aN5cocWlvlqOXVRjALdyTayQG1oNVJXxrayzPLrc0CkCi32uq64K9tMx3XnMCLA8ok2yt5hkOw/Mk+Pt5pNDQSrVbhOtoXyTj1DUF5EZkjTrlx8WiGlUkRI9eJRa1W4mPfUtB4K0XcModYIXmgPZAMWgEsBc1qwDJltCbo2/6Wt8ISSDRjqdY8B7X7INje2tVrS1LEaiUvSMRK3/hCo0nDSrMgt8/jo2/ckQxLhBMRBPyGx3iIbQDs5HlfnnV8C4BjPMEB3hNBah54BzkmecFBvx4YywfRmE2wEWYBeNRXXIIBAGYZrktqmr+iOyhl4jUIxh1JeYvFjeizbsECl3icLwN38RFGPRwf4y0APM5lok7ZFoBpdEyHdoIFNF99JdJ0A+eYsdFydJMBJjiFqWi95NAxmXRp20uKS4ySwwCKTAI5DC75WOWGQR/wkIO2zaONpZNhOzuHTq7CadmQJ2XjOeYq77XJiV5SFJmkD4NzEbT3QiNwWLFTv8OvQ4RcBuBn3EsW2MUZRbGQUg4r8FMbtchXaqr3ex+tRGjuSNMHFG3N0csXbA79DCbQpwZB6CblcHs3OSYZVQ1d5H5ko09GcG+KnDp6ghxHOAYebSxI+VVfSE4Zgt30AaforsgDZ3D42eRGNzmOMIlBLtLkwA+CpAgZxweU8rWf+ChzgGHgFnbwDceVHbwOgAOqxx/lx8Ar/HER6i7U2OcQ6rvK8TBwls9i8H0MNjGCwTbgMCPsp4dtjqFOqNJSjsFtzFRotVBgF3JO5CzhV1bKP6zOplX43EQZ6ASKXEQAM5ys+LcKr03+nhCUGUKntKiZmibvygbjHwDczM0hPJeVaS9wmg8CWzjJ3ypX7+Q+AH5emVi+wqsArAlV7U8B9PrMzKMDo0CRCfLkGSEPwAgwSg86aZ+ebaHH43iDvCrdi47JKLAdOAsYwATbyQB5dQ10+jGYYdhTj122pR1kkLkEoOTT8H429aJTJE0PJqOOTGGgAzO+HNvJAxOMBgxNifDVyjMRGuBXPKqOhtjADXQwyMOVq4N0AFcqvQQGeF8Eqet8qfXuPxrK8Zb7DUUrKsq6kLIzpNns0zj9wFlm+BKoAJCUDP3ACP2AXG3J4PiimlSn2RVSW1FpJ/Ur1GlTD3lMVU+ej9oau4c8h5nw4dhPjzrLB2gmSFgjud8nGizuCypFv4t3K8o9rAdgmAuLlOn8lNVd2XCN3fpXj3UEOmCG2it/SxRJ0+nSp6AaOq3kpckBJqVK3TspAicZUpST3M1hIO+pZ7v6WHL1yryloHjSiqO3hk0yvN7LVkCn02UJPhyd9ABb2Qrk6QzwRnLpT3NXyw+ziTcCg4zzKq9hEIALjDToTqpggbD1TjU4JMoOqtNdm9kIwJCnn1rlz2CwmZJLH9lbBWCi8ybSQNEWmOM8AJQqUscRTLlkyKN+dfYUVq7oxADMStmM4pnghMdG9/c4c8w59Hf/2jnkgFLAGtD8clWNu7L3RGjGq7byVzjIfuAOtvA0H+d2AL7JFRv/50hGkBocHFGyj8WheWRZN/0Fupp9pFyNVnXpCXbTwzA46hwnT4osMMxusoomHBKctbr7sYUhG32aEhmypLHyhgBKakJqesp6bXLWKAJ+7TD4NtYw5e/T0Oc5NgDwPC/XbA4Lp9nC3cCn+R0PqtLPOWp4G7cBs/w2sswqyq6hyT0HcWeOoF4GgqMc5UXwCTaLMscZNqqRucozDWQpAc+xW034pj3u9xsA3OFy1GFFgQwGGeyhVqrweG30frvrDvp12lwA5nxjQJAMm//LvYgfMOlzzWqYf/EHh8D9PIPGTTzNjYDga66KP8EG4C/cQBjOB9BFyJkXckjIUEKuAkpAgS7V32tjnI0e3gKQRc4zTDLohE8ga0MouRvJkK0pTdq0mmmbTYtDQXXfINRYykrIaUsQfsluV5U/YhNwIwDPVpZlTryZQ6F1vj1Q4Xq2z6XjujgBdCHdbgI6XYzTVbP8Gfb6yDRVeRloUFpCA9n9hgrEKMGRZ9pmU/2QXgD4IVkeZNyHR3Pfla3/YRXvJs8helRo/IdDnqvR5JcDqAuhG1JS9pPq7CBHGWM9j5AiSwY4TpnTPALs5Tif8uhv3wQTlLnIce712DjFemCKMlN0qSOrbuvok6Q4WJFfvWbX80WbnjCmzgpcrPB0VXh2VK6/5GOTd9tNBPxaHKfZS5YHkAH5ko9PNSARlqgvR/jMe8TOVprnSf7tuTofSWoQgu+r+GOAMXT28AFM9jEGlNgHZNiDyfGa5ccDaSZWL3b33ROY6JGHrqrnZfOP1eT02iTL1wOTfZjsYQ+wL2ATTKCtEY1/O2EVP2E103xY7YY2CkluZc4nHMOxmgxOp+usJUoztBLhOdxrU/2QXpgKCA2N+eYEB7yfI/TxiwZL7eBWLvLfJugbHdfOU6K17JynYe/KOieK5znU8NCAxT/s07inQNohNJbnmRaBdpeIz+MzHdzCpRZnjnoR10yjcSVur0PWt5RdLoTpFLfQsNsSq79gkG+utB/i5UOJoIC27+PG7o23dn9zJS6I4sWYBcfVFRUcrZ6vxCw4yivqD+NabWms3rIvR7xlHye078sWDXpvZTkVrncDPUhOu6BdQwNiOKw0St/4WN06xOoP40Sb7nPUb0ccUCb5v+9p99f6c+vmjIuLk3ptTEjb3wYBj2mrV3FK+1Djla1vGdbqRdu1j7o9/F12/h8TB8xJk2exoQAAAABJRU5ErkJggg==';   // CCP's "Log in with EVE Online", black, large (DLA 7.2, unaltered)
@@ -24029,6 +24090,7 @@ function ssoWant(){
   let w = [];
   try{ if(it.set.gameLoc) w.push(SSO_LOC); }catch(e){ }
   try{ if(ssoOn.show) w.push(SSO_ON); }catch(e){ }
+  try{ if(sideEve.on) w.push(SSO_SC, SSO_SA); }catch(e){ }   // 030
   return w;
 }
 function ssoHeld(scope){ return !!(sso.scp && sso.scp.includes(scope)); }
@@ -24037,6 +24099,7 @@ function ssoScp(c){ const v = c && c.scp; return Array.isArray(v) ? v.filter(x =
 function ssoMsg(from, text, err){
   if(from === 'loc'){ itGl.msg = text ? {text, err: !!err} : null; itRender(true); }
   else if(from === 'online' && sso.who){ ssoOn.msg = text ? {text, err: !!err} : null; ssoOnRedraw(); }
+  else if(from === 'stand' && sso.who){ sideEve.msg = text ? {text, err: !!err} : null; renderSidePanel(); }   // 030: the Standings section's line
   else { side.msg.pilot = text ? {text, err: !!err} : null; renderSidePanel(); }
 }
 // want: the permissions a feature needs; the request asks for those, the ones this tab holds and the ones of the features that are on,
@@ -24045,7 +24108,7 @@ async function ssoStart(want, from){
   const cid = ssoClientId();
   if(!cid || sso.busy || sso.starting) return;
   const scopes = [...new Set([...ssoWant(), ...(sso.scp || []), ...(want || [])])].filter(x => SSO_SCOPE_NAMES[x]);
-  sso.starting = true; sso.leaving = 0; sso.note = null; sso.from = from === 'loc' || from === 'online' ? from : '';
+  sso.starting = true; sso.leaving = 0; sso.note = null; sso.from = from === 'loc' || from === 'online' || from === 'stand' ? from : '';
   ssoOnPump();   // 029: the online check stops while the tab is away (a page kept in the browser's cache would still hold its lock)
   ssoMsg(sso.from, "Opening EVE's login…");
   try{
@@ -24178,9 +24241,9 @@ async function ssoFinish(ret){
   ssoDel(SSO_PENDING);   // used once, whatever happens next
   // 028: what the press asked for, trusted only from this tab's own pending entry (SSO-02's checks)
   const pendOk = !!(pend && typeof pend.state === 'string' && pend.state === ret.state && typeof pend.at === 'number' && Date.now() - pend.at >= 0 && Date.now() - pend.at < SSO_STATE_MS);
-  const from = pendOk && (pend.from === 'loc' || pend.from === 'online') ? pend.from : '', want = pendOk && Array.isArray(pend.want) ? pend.want.filter(x => SSO_SCOPE_NAMES[x]) : [];
+  const from = pendOk && (pend.from === 'loc' || pend.from === 'online' || pend.from === 'stand') ? pend.from : '', want = pendOk && Array.isArray(pend.want) ? pend.want.filter(x => SSO_SCOPE_NAMES[x]) : [];
   const had = sso.who;   // logged in already (a permission asked for): a refused answer leaves that login as it was
-  if(from === 'loc') itShowGame(); else openProfile('.pp-sec[data-k="pilot"]');
+  if(from === 'loc') itShowGame(); else openProfile(from === 'stand' ? '.pp-sec[data-k="side"]' : '.pp-sec[data-k="pilot"]');
   try{
     if(ret.error === 'access_denied') throw codedError('SSO-01', "You cancelled EVE's login, so nothing changed." + (from ? '' : ssoAgain));
     if(ret.error) throw codedError('SSO-03', "EVE's login came back with an error." + ssoAgain);
@@ -24204,6 +24267,7 @@ async function ssoFinish(ret){
     if(want.includes(SSO_LOC)) itGlGranted();   // the switch turns on only when its permission came back (else SSO-07)
     ssoOn.stop = ''; ssoOn.next = 0;   // 029: a new login: the online check starts again
     if(want.includes(SSO_ON)) ssoOnGranted();
+    if(want.includes(SSO_SC)) sideEveGranted();   // 030: on only with both contacts permissions (else SSO-07)
     renderSidePanel(); ssoOnPump(); ssoOnHello();
   }catch(e){
     if(!had) ssoEnd(); else sso.busy = false;
@@ -24219,6 +24283,7 @@ function ssoEnd(){
   sso.who = null; sso.access = null; sso.busy = false; sso.exp = 0; sso.scp = null; sso.fails = 0; sso.renewAt = 0; sso.renewErr = '';
   if(rt) ssoRevoke(rt);
   ssoOnPump(); ssoOnPaint();   // 029: no login, no online check and nothing on the portrait
+  sideEveDrop();   // 030: no login, no EVE standings: the typed lists again
 }
 async function ssoRevoke(rt){
   try{
@@ -24234,9 +24299,11 @@ async function ssoRevoke(rt){
 // the owner's hand test 2026-11-08), so there's nothing to remove. Phase 2's first permission brings the link back, checked then.
 function ssoLogout(){
   const gave = !!((sso.scp && sso.scp.length) || ssoWant().length);
+  sideEve.quiet = true;   // 030: Log out redraws once, from sideSetPilot('') below
   ssoEnd();
   itGlLogout();   // 028: Log out turns Use my game location off
   ssoOnLogout();   // 029: and Show when I'm online in EVE (the owner, at the review: "yes")
+  sideEveLogout();   // 030: and Use my corporation's and alliance's EVE standings (the typed lists are used again at once)
   // revoking ends the grant: EVE drops the app from the character's list (the owner's hand test, 2026-11-08)
   sso.note = {text: 'Logged out of this tab, and Your pilot is cleared.' + (gave ? ' The permissions you gave EVE ended with it.' : '')};
   sideSetPilot('');
@@ -24289,7 +24356,7 @@ function ssoInit(panel){
     let nav = '';
     try{ const e = performance.getEntriesByType('navigation')[0]; nav = e ? e.type : ''; }catch(e){ nav = ''; }
     const back = !!(p && nav === 'back_forward' && typeof p.at === 'number' && Date.now() - p.at >= 0 && Date.now() - p.at < SSO_STATE_MS);
-    if(back) Promise.resolve().then(() => { ssoMsg(p.from === 'loc' || p.from === 'online' ? p.from : '', "You came back from EVE's page without logging in, so nothing changed."); if(p.from !== 'loc') openProfile('.pp-sec[data-k="pilot"]'); });
+    if(back) Promise.resolve().then(() => { ssoMsg(p.from === 'loc' || p.from === 'online' || p.from === 'stand' ? p.from : '', "You came back from EVE's page without logging in, so nothing changed."); if(p.from !== 'loc') openProfile(p.from === 'stand' ? '.pp-sec[data-k="side"]' : '.pp-sec[data-k="pilot"]'); });
     if(back && p.intelWasOn) Promise.resolve().then(() => itResumeAfterEve());   // it tells the other tabs either way
     else if(p && p.intelWasOn) Promise.resolve().then(() => itLockPost({back: true}));   // other tabs: no longer "paused while the other tab logs in"
   }
@@ -24305,8 +24372,10 @@ function ssoInit(panel){
     else if(k === 'online') ssoOnToggle(now);   // 029
     else if(k === 'on-go' || k === 'on-again'){ ssoOn.ask = false; ssoStart([SSO_ON], 'online'); }
     else if(k === 'on-no'){ ssoOn.ask = false; ssoOnRedraw(); }
+    else if(k.startsWith('st')) sideEveAction(k, b, now);   // 030: Use my corporation's and alliance's EVE standings
   });
   ssoOnInit();
+  sideEveInit();   // 030
   // Another tab typed or cleared the pilot (side.rec is shared): this tab's login ends; the pilots aren't fought over.
   window.addEventListener('storage', (e) => {
     if(!sso.who || (e.key !== SIDE_KEY && e.key !== null)) return;
@@ -24333,7 +24402,7 @@ function ssoTabInit(){
       sso.dupAsk = 0; ssoDel(SSO_WHO, SSO_REFRESH, SSO_TAB);
       sso.who = null; sso.access = null; sso.exp = 0; sso.scp = null;
       sso.note = {text: "This tab was copied from another, so it's logged out here."};
-      renderSidePanel(); ssoOnPump(); ssoOnPaint();
+      renderSidePanel(); ssoOnPump(); ssoOnPaint(); sideEveDrop();
     }
   };
   const id = ssoGet(SSO_TAB);
@@ -24533,6 +24602,295 @@ function ssoOnGranted(){
   ssoOnRedraw();
 }
 function ssoOnLogout(){ if(ssoOn.show) ssoOnSave(false); ssoOn.ask = false; ssoOn.msg = null; ssoOn.stop = ''; ssoOn.st = null; ssoOnFree(); ssoOnPaint(); ssoOnIntelPaint(); }
+// ---- v2026.11.09.2 (build queue 030, SSO Phase 3; Project doc roadmap/sso-phase3-standings-plan.md): Standings from EVE ----
+// The logged-in pilot's corporation's and alliance's contact lists (DLA 2.3(c): his own side's, with his OK on EVE's page) decide friendly
+// and hostile while the switch in Standings is on (the owner: "manual entries should not "win""): above 0 friendly, below 0 hostile, 0 or
+// none neutral; in one list the most specific entry (pilot, corporation, alliance; the owner: "the more specific (pilot level) wins");
+// across the two lists the alliance's (the owner: "for now, alliance wins"), the disagreement said. zKillboard's evidence is a note beside
+// neutrals only. Read only when something needs sides (an Analyze, Intel running, the Fleet tab, the Pilot Analyzer's tag), never before
+// the answers' Expires and at least 5 minutes apart (DLA 2.5; the owner: "When needed, at most every 5 min"); kept in this tab's memory
+// only (DLA 9.5); the setting in localStorage tvEveStand (true/false). 401: SSO-08, never asked again; 403 with the permission: SIDE-03,
+// that list skipped; 403 without it: SSO-07, off; no answer or 5xx: SIDE-04, the copy in hand, again a minute later at the soonest.
+const SIDE_EVE_KEY = 'tvEveStand', SIDE_EVE_MIN_MS = 300000, SIDE_EVE_RETRY_MS = 60000, SIDE_EVE_WAIT_MS = 10000, SIDE_EVE_PAGES = 20, SIDE_EVE_SHOWN = 8;
+const SIDE_EVE_WHO = {corporation: 'Your corporation', alliance: 'Your alliance'};
+// on: the setting; ask: the permission box open; msg: the section's line; stop: 'SSO-08' (never asked again until a new login);
+// L: {corporation, alliance}, each null or {gid, rows: [{type, id, v}] | null, map: Map('p'|'c'|'a' + id -> standing, 0 left out) | null,
+// err}; for: the groups the lists belong to ('corp:alliance'); tried: a read of them ended (the first-read wait is over); next: the next
+// read (Expires, 5 minutes at least; 60 s after a failure; Retry-After); busy: the read under way; at: when read; key: what was last
+// drawn from them (sideEveApplied redraws only when it changes, LESSON #120); open / all: See EVE's standings; names: id -> name.
+const sideEve = {on: false, ask: false, msg: null, stop: '', L: {corporation: null, alliance: null}, for: '', tried: false, next: 0, busy: null, at: 0,
+  key: 'off', open: false, all: {corporation: false, alliance: false}, names: new Map(), namesBusy: false, quiet: false};
+function sideEveRead(){ try{ return JSON.parse(localStorage.getItem(SIDE_EVE_KEY) || 'false') === true; }catch(e){ return false; } }
+function sideEveSave(v){ sideEve.on = !!v; try{ localStorage.setItem(SIDE_EVE_KEY, JSON.stringify(!!v)); }catch(e){ /* this visit only */ } }
+function sideEveHas(){ return sso.scp === null ? true : ssoHeld(SSO_SC) && ssoHeld(SSO_SA); }   // after a reload unknown until the first read renews the token
+// the groups whose lists count: your corporation (never an NPC one: EVE has no contacts for it) and your alliance
+function sideEveGroups(){
+  const r = side.rec || {};
+  return {corporation: r.corp && !isNpcCorp(r.corp.id) ? r.corp.id : null, alliance: r.alliance ? r.alliance.id : null};
+}
+function sideEveFor(g){ return `${g.corporation || 0}:${g.alliance || 0}`; }
+// something may read EVE's lists: logged in as Your pilot, the switch on with its permission, not stopped, a group with contacts
+function sideEveWanted(){
+  if(!sso.who || !sideEve.on || sideEve.stop || !sideEveHas()) return false;
+  const r = side.rec, g = sideEveGroups();
+  return !!(r && r.pilot && r.pilot.id === sso.who.id && (g.corporation || g.alliance));
+}
+// in use: wanted, and at least one list read for these groups. Never inside the Intel example's sandbox (its made-up groups).
+function sideEveUse(){
+  try{ if(itExOrg) return false; }catch(e){ /* before Intel's part of the script has run */ }
+  try{
+    if(!sideEveWanted() || sideEve.for !== sideEveFor(sideEveGroups())) return false;
+    return !!((sideEve.L.corporation && sideEve.L.corporation.map) || (sideEve.L.alliance && sideEve.L.alliance.map));
+  }catch(e){ return false; }
+}
+// The rule (sideOf, while sideEveUse): see the block comment. Returns {side, why: 'eve', hit, other, disagree, corpLevel, pilotLevel}, or
+// for a neutral with zKillboard's evidence {side: 'n', why: 'zkbnote', n}.
+function sideEveSide(corpId, allianceId, evidence, charId){
+  const r = side.rec || {};
+  if((r.corp && corpId === r.corp.id) || (r.alliance && allianceId && allianceId === r.alliance.id)) return {side: 'f'};   // your own: the star
+  const one = (who) => {   // the most specific entry in one list
+    const L = sideEve.L[who];
+    if(!L || !L.map) return null;
+    for(const [k, kind, id] of [['p', 'pilot', charId], ['c', 'corporation', corpId], ['a', 'alliance', allianceId]]) if(id && L.map.has(k + id)) return {who, kind, v: L.map.get(k + id)};
+    return null;
+  };
+  const a = one('alliance'), c = one('corporation'), d = a || c;   // the alliance's list decides when it has an entry
+  if(!d){
+    const n = evidence && !isNpcCorp(corpId) ? evidence.byKey.get(allianceId || corpId) : null;
+    return n ? {side: 'n', why: 'zkbnote', n} : {side: 'n'};
+  }
+  const other = a && c && (a.v > 0) !== (c.v > 0) ? c : null;
+  return {side: d.v > 0 ? 'f' : 'h', why: 'eve', hit: d, other, disagree: !!other, corpLevel: d.kind === 'corporation' && !!allianceId, pilotLevel: d.kind === 'pilot'};
+}
+function sideEveNum(v){ const n = Number(v); return (n > 0 ? '+' : n < 0 ? '−' : '') + (Math.abs(n) % 1 ? Math.abs(n).toFixed(1) : String(Math.abs(n))); }
+// What decided a side, short (the System Analyzer's line, the Pilot Analyzer's tag, the standing icon's hover); '' when nothing to say
+function sideWhyText(s){
+  if(!s || s.why !== 'eve' || !s.hit) return s && s.why === 'zkbnote' ? `killed ${s.n} of yours lately` : '';
+  if(s.disagree) return `Alliance ${sideEveNum(s.hit.v)} (corp ${sideEveNum(s.other.v)})`;   // the alliance's first: it decides
+  return s.pilotLevel ? `${SIDE_EVE_WHO[s.hit.who]} set a pilot here ${sideEveNum(s.hit.v)}` : `${SIDE_EVE_WHO[s.hit.who]}: ${sideEveNum(s.hit.v)} in EVE`;
+}
+function sideWhyHover(s){
+  if(!s || s.why !== 'eve' || !s.hit) return '';
+  if(s.disagree) return `Your alliance ${sideEveNum(s.hit.v)}, your corporation ${sideEveNum(s.other.v)} in EVE: your corporation and your alliance disagree, so your alliance's standing decides`;
+  return sideWhyText(s);
+}
+function saWhyClass(g){ return g.why === 'eve' && g.es ? `eve ${g.es.side}${g.es.disagree ? ' dis' : ''}` : String(g.why || ''); }
+// One list, every page (X-Pages), each page's Last-Modified the same (CCP's best practices: else read once more). Returns {rows, exp} or
+// {fail: 'SSO-08' | 'SSO-07' | 'SIDE-03' | 'wait' | 'SIDE-04', ms, status}.
+async function sideEveFetchList(who, gid){
+  const path = who === 'alliance' ? 'alliances' : 'corporations', scope = who === 'alliance' ? SSO_SA : SSO_SC;
+  for(let attempt = 0; attempt < 2; attempt++){
+    const rows = [];
+    let pages = 1, lm = null, same = true, exp = 0;
+    for(let pg = 1; pg <= pages; pg++){
+      let r;
+      try{ r = await esiFetch(`${ESI}/${path}/${Number(gid)}/contacts/?datasource=tranquility&page=${pg}`, {}, 'contacts', {scope}); }
+      catch(e){ const c = errorCodeOf(e); return {fail: c === 'SSO-06' ? 'SSO-06' : 'SIDE-04', msg: c === 'SSO-03' ? e.message : ''}; }
+      if(r.status === 401){ sideEve.stop = 'SSO-08'; return {fail: 'SSO-08'}; }   // never asked again (check_request_gates)
+      if(r.status === 403) return {fail: sideEveHas() ? 'SIDE-03' : 'SSO-07'};
+      if(r.status === 420 || r.status === 429){ const ra = Number(r.headers.get('retry-after')); return {fail: 'wait', ms: 1000 * (ra > 0 ? ra : 60)}; }
+      if(!r.ok) return {fail: 'SIDE-04', status: r.status};
+      let j = null;
+      try{ j = await r.json(); }catch(e){ j = null; }
+      if(!Array.isArray(j)) return {fail: 'SIDE-04', status: r.status};
+      if(pg === 1){ const xp = Number(r.headers.get('x-pages')); if(xp > 1) pages = Math.min(Math.floor(xp), SIDE_EVE_PAGES); }
+      const m = r.headers.get('last-modified');
+      if(pg === 1) lm = m; else if(m && lm && m !== lm) same = false;
+      const ex = Date.parse(r.headers.get('expires') || '');
+      if(Number.isFinite(ex)) exp = Math.max(exp, ex);
+      for(const x of j){
+        const type = x && x.contact_type, id = Number(x && x.contact_id), v = Number(x && x.standing);
+        if(['character', 'corporation', 'alliance', 'faction'].includes(type) && id > 0 && Number.isFinite(v)) rows.push({type, id, v});
+      }
+    }
+    if(same || attempt) return {rows, exp};   // the pages changed between reads: once more
+  }
+}
+function sideEveMap(rows){
+  const m = new Map(), K = {character: 'p', corporation: 'c', alliance: 'a'};
+  for(const x of rows) if(K[x.type] && x.v !== 0) m.set(K[x.type] + x.id, x.v);   // 0 counts as no entry; factions aren't in the rule
+  return m;
+}
+// Reads EVE's lists when something needs sides and EVE's copy can have changed; returns the read under way (or null)
+function sideEveNeed(){
+  if(!sideEveWanted()) return null;
+  if(sideEve.busy) return sideEve.busy;
+  const g = sideEveGroups(), f = sideEveFor(g);
+  if(sideEve.for === f && Date.now() < sideEve.next) return null;
+  if(sideEve.for !== f){ sideEve.L = {corporation: null, alliance: null}; sideEve.for = f; sideEve.tried = false; sideEve.next = 0; sideEve.names = new Map(); }   // another corporation or alliance
+  sideEve.busy = sideEveFetchAll(g, f).finally(() => { sideEve.busy = null; });
+  if(profileIsOpen()) renderSidePanel();   // "Reading your standings from EVE…"
+  return sideEve.busy;
+}
+// The first read in this tab is waited for (10 s at most; the owner: "Wait up to ~10 s"); after it, the copy in hand is used meanwhile
+async function sideEveReady(){
+  const p = sideEveNeed();
+  if(!p || sideEve.tried) return;
+  let t = 0;
+  await Promise.race([p.catch(() => {}), new Promise(res => { t = setTimeout(res, SIDE_EVE_WAIT_MS); })]);
+  clearTimeout(t);
+}
+async function sideEveFetchAll(g, f){
+  const fails = [], L = {...sideEve.L};   // both lists change together, at the end (never half a read in use; LESSON #151)
+  let exp = 0, wait = 0;
+  try{
+    for(const who of ['corporation', 'alliance']){
+      if(!g[who]){ L[who] = null; continue; }
+      const r = await sideEveFetchList(who, g[who]);
+      if(sideEve.for !== f || (!sideEveWanted() && r.fail !== 'SSO-08' && r.fail !== 'SSO-07')) return;   // logged out, turned off or another pilot meanwhile
+      if(r.rows){ L[who] = {gid: g[who], rows: r.rows, map: sideEveMap(r.rows), err: ''}; exp = Math.max(exp, r.exp || 0); continue; }
+      fails.push({who, ...r});
+      if(r.fail === 'SSO-08' || r.fail === 'SSO-07' || r.fail === 'SSO-06') break;
+      if(r.fail === 'SIDE-03') L[who] = {gid: g[who], rows: null, map: null, err: 'SIDE-03'};   // skipped; the other list still counts
+      if(r.fail === 'wait') wait = Math.max(wait, r.ms);
+      // SIDE-04 / wait: the copy in hand (if any) stays
+    }
+    sideEve.L = L;
+    const now = Date.now(), f0 = fails[0];
+    if(f0 && f0.fail === 'SSO-08'){
+      sideEve.L = {corporation: null, alliance: null};
+      sideEve.msg = {text: withCode("EVE refused the login for your standings, so they stopped and your typed lists are used. Log in again to go on.", 'SSO-08'), err: true, again: true};
+    }else if(f0 && f0.fail === 'SSO-07'){
+      sideEve.L = {corporation: null, alliance: null}; sideEveSave(false);
+      sideEve.msg = {text: withCode("EVE didn't allow reading your corporation's and alliance's contacts (the permission is missing or was taken back), so Use my corporation's and alliance's EVE standings is off and your typed lists are used.", 'SSO-07'), err: true};
+    }else if(f0 && f0.fail === 'SSO-06'){
+      sideEve.msg = null;   // the login ended: ssoLost says so in the Pilot section
+    }else{
+      const s3 = fails.filter(x => x.fail === 'SIDE-03').map(x => x.who), s4 = fails.some(x => x.fail === 'SIDE-04' || x.fail === 'wait'), use = sideEveUse();
+      const nm = (w) => w === 'alliance' ? "your alliance's" : "your corporation's";
+      sideEve.msg = s3.length ? {text: withCode(use ? `EVE wouldn't give this character ${nm(s3[0])} contacts, so only ${nm(s3[0] === 'alliance' ? 'corporation' : 'alliance')} are used.` : `EVE wouldn't give this character ${s3.map(nm).join(' or ')} contacts, so your typed lists are used.`, 'SIDE-03'), err: true}
+        : s4 ? {text: withCode(use ? "Your standings couldn't be read from EVE just now, so the copy read before is used. The page tries again when something needs them." : "Your standings couldn't be read from EVE, so your typed lists are used for now. The page tries again when something needs them.", 'SIDE-04'), err: true}
+        : null;
+      if(!fails.length || fails.every(x => x.fail === 'SIDE-03')) sideEve.at = now;
+    }
+    sideEve.next = fails.length && !fails.every(x => x.fail === 'SIDE-03') ? now + (wait || SIDE_EVE_RETRY_MS) : Math.max(exp, now + SIDE_EVE_MIN_MS);   // 420/429: its Retry-After
+  }finally{
+    if(sideEve.for === f) sideEve.tried = true;
+    sideEveApplied();
+  }
+}
+// What EVE's lists say now, to compare with what was last drawn
+function sideEveKey(){
+  if(!sideEveUse()) return 'off';
+  return sideEve.for + '|' + ['corporation', 'alliance'].map(w => { const L = sideEve.L[w]; return L && L.map ? [...L.map].map(([k, v]) => k + '=' + v).sort().join(',') : '-'; }).join('|');
+}
+// After a read, a change of the switch, Log out: what shows sides is drawn again only when what they say changed (LESSON #120); Intel's
+// stored sides are worked out again once (itSidesRework). The Standings section always (its line and times).
+function sideEveApplied(){
+  const k = sideEveKey();
+  if(k !== sideEve.key){
+    sideEve.key = k;
+    if(!sideEve.quiet){
+      try{ if(sa.last) saRender(); }catch(e){ }
+      try{ if(typeof fk !== 'undefined' && fk.km) fkRender(); }catch(e){ }
+      try{ if(sideTagChar) sideTagForPilot(sideTagChar); }catch(e){ }
+      itSidesRework();
+    }
+  }
+  if(profileIsOpen()) renderSidePanel(); else renderSideChip();
+}
+// Log out and a lost login: the lists go (the setting stays as it is: Log out turns it off itself, sideEveLogout)
+function sideEveDrop(){
+  sideEve.L = {corporation: null, alliance: null}; sideEve.for = ''; sideEve.tried = false; sideEve.next = 0; sideEve.stop = ''; sideEve.names = new Map();
+  sideEveApplied();
+  sideEve.quiet = false;
+}
+function sideEveLogout(){ if(sideEve.on) sideEveSave(false); sideEve.ask = false; sideEve.msg = null; sideEve.open = false; }
+// The checkbox: off is off; on without the permission opens the box (Continue to EVE / Cancel); on with it (or after a reload), on and read
+function sideEveToggle(on){
+  sideEve.msg = null; sideEve.stop = '';
+  if(!on){ sideEveSave(false); sideEve.ask = false; sideEve.open = false; sideEveApplied(); return; }
+  if(sso.scp === null || (ssoHeld(SSO_SC) && ssoHeld(SSO_SA))){ sideEveSave(true); sideEve.ask = false; sideEve.next = 0; renderSidePanel(); sideEveNeed(); return; }
+  sideEve.ask = true; renderSidePanel();
+  const go = typeof document !== 'undefined' && document.querySelector ? document.querySelector('#sidePanel [data-sso="st-go"]') : null;
+  if(go) go.focus({preventScroll: true});
+}
+// Back from EVE (ssoFinish): on only with both permissions
+function sideEveGranted(){
+  if(ssoHeld(SSO_SC) && ssoHeld(SSO_SA)){ sideEveSave(true); sideEve.msg = null; sideEve.stop = ''; sideEve.next = 0; sideEve.for = ''; renderSidePanel(); sideEveNeed(); return; }
+  sideEve.msg = {text: withCode(sideEve.on ? "EVE didn't give the contacts permissions, so this tab can't use your EVE standings." : "EVE didn't give the contacts permissions, so Use my corporation's and alliance's EVE standings stays off.", 'SSO-07'), err: true};
+  renderSidePanel();
+}
+function sideEveAction(k, b, now){
+  if(k === 'stand') return sideEveToggle(now);
+  if(k === 'st-go' || k === 'st-again'){ sideEve.ask = false; return ssoStart([SSO_SC, SSO_SA], 'stand'); }
+  if(k === 'st-no'){ sideEve.ask = false; return renderSidePanel(); }
+  if(k === 'st-refresh'){ sideEveNeed(); return; }
+  if(k === 'st-list'){ sideEve.open = !sideEve.open; renderSidePanel(); if(sideEve.open) sideEveNames(); return; }
+  if(k === 'st-more'){ const w = b.dataset.stWho === 'alliance' ? 'alliance' : 'corporation'; sideEve.all[w] = !sideEve.all[w]; renderSidePanel(); }
+}
+// The names in See EVE's standings, asked once when it opens (ESI /universe/names/, 1000 at a time)
+async function sideEveNames(){
+  if(sideEve.namesBusy) return;
+  const ids = [...new Set(['corporation', 'alliance'].flatMap(w => sideEve.L[w] && sideEve.L[w].rows ? sideEve.L[w].rows.map(x => x.id) : []))].filter(id => !sideEve.names.has(id));
+  if(!ids.length) return;
+  sideEve.namesBusy = true;
+  try{ for(const [id, n] of await saIdsToNames(ids)) sideEve.names.set(id, n); }catch(e){ /* the ids stay, with their kind */ }
+  finally{ sideEve.namesBusy = false; }
+  if(profileIsOpen()) renderSidePanel();
+}
+function sideEveCount(){
+  let b = 0, r = 0;
+  for(const w of ['corporation', 'alliance']){ const L = sideEve.L[w]; if(L && L.rows) for(const x of L.rows) if(x.type !== 'faction'){ if(x.v > 0) b++; else if(x.v < 0) r++; } }   // factions aren't counted (the owner)
+  return {b, r};
+}
+// The switch block at the top of the Standings section (markup glued with +: every ${...} escaped or a builder, check_html_sinks)
+function sideEveBoxHtml(dis){ return '<label class="side-eve-sw"><input type="checkbox" data-sso="stand"' + itOnHtml(sideEve.on && !dis, 'checked') + itOnHtml(sideEve.ask || dis, 'disabled') + "> Use my corporation's and alliance's EVE standings</label>"; }
+function sideEveSubHtml(text){ return `<div class="sso-sub">${ctxHtml(text)}${infoBtnHtml('side#eve')}</div>`; }
+function sideEveHtml(){
+  if(!sso.who) return ssoClientId() ? '<div class="side-fld side-eve">' + sideEveSubHtml("Log in with EVE (Pilot, above) to use your corporation's and alliance's standings instead of typing them") + '</div>' : '';
+  const g = sideEveGroups();
+  if(!g.corporation && !g.alliance) return '<div class="side-fld side-eve">' + sideEveBoxHtml(true) + sideEveSubHtml('Your pilot is in an NPC corporation: EVE has no standings for it, so your typed lists are used') + '</div>';
+  if(sideEve.ask) return '<div class="side-fld side-eve">' + sideEveBoxHtml(false) + `<div class="sso-on-ask"><div class="c">EVE's page will ask you to let Threat Vector read your corporation's and your alliance's contacts. This page goes there and comes back.</div><div class="it-btns"><button type="button" class="mys-primary" data-sso="st-go">Continue to EVE</button><button type="button" class="mys-quiet" data-sso="st-no">Cancel</button></div></div></div>`;
+  const has = sideEveHas();
+  return '<div class="side-fld side-eve">' + sideEveBoxHtml(false) + sideEveSubHtml(sideEve.on && has ? 'From your EVE login' : 'Needs its OK from EVE') + sideEveStHtml(has) + sideEveMsgHtml() + '</div>';
+}
+function sideEveStHtml(has){
+  if(!sideEve.on || sideEve.stop) return '';
+  if(!has) return `<div class="sso-on-st">This tab's EVE login doesn't have its OK yet.</div><div class="it-btns"><button type="button" data-sso="st-go">Continue to EVE</button></div>`;
+  if(!sideEveUse()) return `<div class="sso-on-st">${escapeHtml(sideEve.busy ? 'Reading your standings from EVE…' : 'Not read yet: read when something needs sides')}</div>`;
+  const c = sideEveCount(), wait = sideEve.next > Date.now() ? sideEve.next : 0, off = !!(sideEve.busy || wait);
+  const dis = off ? ` disabled title="${escapeHtml(wait ? `EVE keeps them until ${ssoOnClock(wait)} UTC` : 'Reading…')}"` : '';
+  return `<div class="sso-on-st">From EVE: ${c.b | 0} blue · ${c.r | 0} red · read ${escapeHtml(ssoOnClock(sideEve.at))} UTC <button type="button" class="sa-link" data-sso="st-refresh"` + dis + `>Refresh</button></div>
+      <div class="sso-sub">${ctxHtml('Your typed lists are hidden while this is on')}</div>
+      <button type="button" class="sa-link side-eve-open" data-sso="st-list" aria-expanded="${escapeHtml(String(sideEve.open))}">${escapeHtml(sideEve.open ? "Hide EVE's standings" : "See EVE's standings")}</button>` + (sideEve.open ? sideEveListHtml() : '');
+}
+function sideEveMsgHtml(){
+  const m = sideEve.msg;
+  if(!m) return '';
+  return `<div class="status side-msg${itOnHtml(m.err, 'err')}">${escapeHtml(m.text)}` + (m.again ? ' <button type="button" data-sso="st-again">Log in again</button>' : '') + '</div>';
+}
+const SIDE_EVE_KIND = {character: 'pilot', corporation: 'corporation', alliance: 'alliance', faction: 'faction'};
+function sideEveName(x){ return sideEve.names.get(x.id) || `${SIDE_EVE_KIND[x.type]} ${x.id}`; }
+function sideEveRowHtml(x){
+  const s = x.v > 0 ? 'f' : x.v < 0 ? 'h' : 'n';
+  return `<div class="side-eve-r">${standIcon(s === 'f' ? 'good' : s === 'h' ? 'bad' : 'neu', true)}<span class="nm" title="${escapeHtml(sideEveName(x))}">${escapeHtml(sideEveName(x))}</span><span class="ctx">${escapeHtml(SIDE_EVE_KIND[x.type])}</span><span class="side-eve-v ${escapeHtml(s)}">${escapeHtml(sideEveNum(x.v))}</span></div>`;
+}
+function sideEveRowsHtml(shown){ return shown.length ? shown.map(sideEveRowHtml).join('') : ctxHtml('no contacts'); }
+function sideEveMoreHtml(w, rest, all, n){
+  if(!(rest > 0 || (all && n > SIDE_EVE_SHOWN))) return '';
+  return `<div class="sa-cmore"><button type="button" data-sso="st-more" data-st-who="${escapeHtml(w)}" aria-expanded="${escapeHtml(String(all))}">${escapeHtml(all ? 'Show fewer' : `Show ${rest} more`)}</button></div>`;
+}
+function sideEveListHtml(){
+  return ['corporation', 'alliance'].map(w => {
+    const L = sideEve.L[w];
+    if(!L) return '';
+    if(!L.rows) return `<div class="side-eve-l"><div class="side-lab">${escapeHtml(SIDE_EVE_WHO[w])}</div>${ctxHtml('not given by EVE (SIDE-03)')}</div>`;
+    const sorted = [...L.rows].sort((a, b) => b.v - a.v || sideEveName(a).localeCompare(sideEveName(b))), all = sideEve.all[w];
+    const shown = all ? sorted : sorted.slice(0, SIDE_EVE_SHOWN), rest = sorted.length - shown.length;
+    return `<div class="side-eve-l"><div class="side-lab">${escapeHtml(SIDE_EVE_WHO[w])} · ${L.rows.length}</div>${sideEveRowsHtml(shown)}${sideEveMoreHtml(w, rest, all, sorted.length)}</div>`;
+  }).join('');
+}
+function sideEveInit(){
+  sideEve.on = sideEveRead();
+  if(typeof window !== 'undefined' && window.addEventListener) window.addEventListener('storage', (e) => {   // another tab turned it on or off (or logged out)
+    if(e.key !== SIDE_EVE_KEY && e.key !== null) return;
+    const v = sideEveRead();
+    if(v === sideEve.on) return;
+    sideEve.on = v; sideEve.ask = false; sideEve.msg = null; sideEve.stop = ''; sideEve.next = 0;
+    sideEveApplied();
+  });
+}
 // Adds alliances / corporations by name to one list (and takes them off the other). Lines may carry a ticker.
 async function sideAddNames(which, lines){
   const names = [...new Set(lines.map(l => String(l).replace(/[<\[][^>\]]*[>\]]/g, ' ').replace(/\s+/g, ' ').trim()).filter(n => n && n.length <= 60))];
@@ -24709,24 +25067,27 @@ function paAffRender(){
 }
 
 // ---- the Pilot Analyzer's tag (D2: "a friendly opened in the Pilot Analyzer is tagged") ----
-let sideTagToken = 0;
+let sideTagToken = 0, sideTagChar = null;
 async function sideTagForPilot(charId){
   const el = document.getElementById('pilotSideTag');
   if(!el) return;
   const token = ++sideTagToken;
+  sideTagChar = charId || null;   // v2026.11.09.2 (030): drawn again when EVE's standings change (sideEveApplied)
   el.innerHTML = '';
   if(!sideIsSet() || !charId) return;
   let a;
   try{ [a] = await saAffiliation([charId]); }catch(e){ return; }   // the tag is extra: no tag rather than an error
   if(token !== sideTagToken || !a) return;
-  const s = sideOf(a.corporation_id, a.alliance_id || null, sideSets(), sa.evidence);
-  if(s.side === 'n') return;
+  await sideEveReady();   // 030: the first read of EVE's standings in this tab, 10 s at most
+  if(token !== sideTagToken) return;
+  const s = sideOf(a.corporation_id, a.alliance_id || null, sideSets(), sa.evidence, charId);
+  if(s.side === 'n' && s.why !== 'zkbnote') return;   // 030 (the owner: "Neutral tag note"): a neutral with zKillboard's evidence says so
   const gid = a.alliance_id || a.corporation_id, kind = a.alliance_id ? 'alliance' : 'corporation';
   let name = '';
   try{ name = (await saIdsToNames([gid])).get(gid) || ''; }catch(e){}
   if(token !== sideTagToken) return;
-  const why = s.side === 'h' ? (s.why === 'list' ? 'your hostile list' : `killed ${s.n} of yours lately`) : name;
-  el.innerHTML = `<span class="side-tag ${s.side}" title="${escapeHtml(`${SIDE_WORD[s.side]} (${cardName('side')}): ${name}`)}">${SIDE_MARK_BY_WORD[s.side]}<span class="nm">${SIDE_WORD[s.side]} · ${escapeHtml(why)}</span>${s.side === 'f' ? orgTickerHtml(kind, gid) : ''}</span>`;
+  const why = s.why === 'eve' ? sideWhyText(s) : s.why === 'zkbnote' ? `killed ${s.n} of yours lately` : s.side === 'h' ? (s.why === 'list' ? 'your hostile list' : `killed ${s.n} of yours lately`) : name;
+  el.innerHTML = `<span class="side-tag ${escapeHtml(s.side + (s.why === 'zkbnote' || s.disagree ? ' ev' : ''))}" title="${escapeHtml(s.why === 'eve' ? `${SIDE_WORD[s.side]}: ${sideWhyHover(s)}${name ? ` (${name})` : ''}` : `${SIDE_WORD[s.side]} (${cardName('side')}): ${name}`)}">${SIDE_MARK_BY_WORD[s.side]}<span class="nm">${SIDE_WORD[s.side]} · ${escapeHtml(why)}</span>${s.side === 'f' ? orgTickerHtml(kind, gid) : ''}</span>`;
   fillOrgTickers(el);
 }
 
@@ -24896,6 +25257,7 @@ async function fkOpen(killId, hash, originId, shared, opts = {}){
     from, back: from === 'intel' ? 'intel' : 'pilot', picks: opts.picks && (opts.picks.length > 1 || from === 'intel') ? opts.picks : null, victimF: null,   // v2026.11.04.2: one Intel kill too (the owner: "treating any single killmails being sent from the intel tab the same as we do for multiple")
     mode: null, queue: [], wk: 0, pause: null, pauseT: 0, checking: false, ready: false});
   fkShow(true); switchTab('fleet'); fkRender();
+  sideEveNeed();   // v2026.11.09.2 (030): the Fleet tab shows sides; a changed read redraws it (sideEveApplied)
   const r = opts.km ? {km: opts.km} : await fetchKillmail({killmail_id: killId, zkb: {hash}});
   if(gen !== fk.gen) return;
   if(r.error || !r.km){ fk.err = withCode(`Couldn't read killmail ${killId}: ${r.error || 'no killmail'}.`, r.code || 'ESI-05'); fkRender(); return; }
@@ -25174,9 +25536,9 @@ function fkAgo(t){ return t ? saAgoShort(t) : ''; }
 // v2026.11.02.1: a row is the row button (opens the Pilot Analyzer) and, beside it, the Fit cell with its own buttons (no button in a button)
 function fkRowHtml(m){
   const nm = fk.info.get(m.id) || `character ${m.id}`, hull = fk.info.get(m.hull) || `type ${m.hull}`;
-  const s = sideOf(m.corp, m.alliance, sideSets(), sa.evidence).side;
+  const sr = sideOf(m.corp, m.alliance, sideSets(), sa.evidence, m.id), s = sr.side;
   const ally = m.alliance ? orgTickerHtml('alliance', m.alliance) : '';
-  const pilot = `<span class="pr-pilot">${standMark(s, m.corp, m.alliance)}<span class="pr-pn"><span class="nm std-n ${s}" title="${escapeHtml(nm)}">${escapeHtml(nm)}${m.id === fk.origin ? '<span class="fk-you">dossier</span>' : ''}</span><span class="ctx">${ally} ${escapeHtml(fk.info.get(m.corp) || '')}</span></span></span>`;
+  const pilot = `<span class="pr-pilot">${standMark(s, m.corp, m.alliance, sideWhyText(sr))}<span class="pr-pn"><span class="nm std-n ${s}" title="${escapeHtml(nm)}">${escapeHtml(nm)}${m.id === fk.origin ? '<span class="fk-you">dossier</span>' : ''}</span><span class="ctx">${ally} ${escapeHtml(fk.info.get(m.corp) || '')}</span></span></span>`;
   const open = `data-fk-pilot="${escapeHtml(nm)}" data-fk-type="${m.hull}" title="${escapeHtml(`${nm}: open in the Pilot Analyzer, on the ${hull}`)}"`;
   const weapon = m.weapon ? (fk.info.get(m.weapon) || `type ${m.weapon}`) : '';
   const hullCell = (src) => `<span class="pr-hull"><img class="pr-ico" src="https://images.evetech.net/types/${m.hull}/render?size=64" alt="" loading="lazy" data-imgfail="hide"><span class="pr-hn"><span class="nm">${escapeHtml(hull)}${gdHullMarkHtml(m.hull, hull)}<span class="cls">${escapeHtml(m.cls || '')}</span></span>${weapon ? `<span class="fk-w" title="${escapeHtml(`The weapon the killmail credits them with: ${weapon}`)}">on the kill: ${escapeHtml(weapon)}</span>` : ''}${src}</span></span>`;
@@ -25256,8 +25618,8 @@ function fkRender(){
     const from = fk.from === 'intel' ? `From <b>${escapeHtml(cardName('intel'))}</b>` : fk.shared ? 'A shared fleet' : `Chosen from <b>${escapeHtml(fk.info.get(fk.origin) || currentPilotName || '')}</b>'s ${escapeHtml(cardName('dossier'))}`;
     const v = fk.victim || {}, vName = v.id ? (fk.info.get(v.id) || `character ${v.id}`) : '';
     // v2026.10.31.1: the victim, a tag that opens them in the Pilot Analyzer on the ship they lost (the owner: "include victims")
-    const vs = v.id ? sideOf(v.corp, v.alliance, sideSets(), sa.evidence).side : 'n';
-    const vBtn = vName ? `<button type="button" class="fk-vbtn" data-fk-pilot="${escapeHtml(vName)}" data-fk-type="${v.type}" title="${escapeHtml(`${vName}: open in the Pilot Analyzer, on the ${v.name}`)}">${standMark(vs, v.corp, v.alliance)}<span class="nm std-n ${vs}">${escapeHtml(vName)}</span><span class="pr-chev" aria-hidden="true">›</span></button>` : '';
+    const vr = v.id ? sideOf(v.corp, v.alliance, sideSets(), sa.evidence, v.id) : {side: 'n'}, vs = vr.side;
+    const vBtn = vName ? `<button type="button" class="fk-vbtn" data-fk-pilot="${escapeHtml(vName)}" data-fk-type="${v.type}" title="${escapeHtml(`${vName}: open in the Pilot Analyzer, on the ${v.name}`)}">${standMark(vs, v.corp, v.alliance, sideWhyText(vr))}<span class="nm std-n ${vs}">${escapeHtml(vName)}</span><span class="pr-chev" aria-hidden="true">›</span></button>` : '';
     sub = `<div class="fk-sub">${from} · killed ${vBtn ? `${vBtn} in a` : 'a'} <b>${escapeHtml(v.name || '')}</b>${v.cls ? ` (${escapeHtml(v.cls)})` : ''} · ${when}${fk.sys ? ` · <b>${sysNameHtml(fk.km.solar_system_id, fk.sys)}</b>` : ''} · <b>${fk.players}</b> pilot${fk.players === 1 ? '' : 's'} on the kill, <b>${fk.members.length}</b> in ships</div>`;
   }
   const head = `<div class="card fk-head"><div class="fk-top"><h2>${escapeHtml(cardName('fleet'))} on a kill</h2>${acts}</div>${sub}${fkPicksHtml()}${fk.err ? `<div class="pr-msg err">${escapeHtml(fk.err)}</div>` : ''}${!fk.km && !fk.err ? `<div class="pr-msg"><span class="busy-spin" aria-hidden="true"></span>Reading killmail ${fk.killId || ''} from ESI…</div>` : ''}</div>`;
@@ -26085,10 +26447,11 @@ async function itAffiliate(ids){
   if(!ask.length) return;
   for(const a of await saAffiliation(ask)) it.aff.set(a.character_id, {corp: a.corporation_id, alliance: a.alliance_id || null});
 }
-function itSide(id){
+function itSide(id){ return itSideRes(id).side; }
+function itSideRes(id){   // v2026.11.09.2 (030): the whole answer, for the reason in a chip's hover
   const a = it.aff.get(id);
-  if(!a) return 'n';
-  return sideOf(a.corp, a.alliance, sideSets(), null).side;
+  if(!a) return {side: 'n'};
+  return sideOf(a.corp, a.alliance, sideSets(), null, id);
 }
 
 // ---- the log files ----
@@ -26234,6 +26597,7 @@ async function itTick(){
   if(!it.on || it.busy) return;
   itGameLoc();   // v2026.11.08.4 (028): Use my game location rides this tick; it waits for its own Expires
   ssoOnTick();   // v2026.11.09.1 (029): so does the online check, in the tab holding its lock
+  sideEveNeed();   // v2026.11.09.2 (030): Intel deciding sides is a need for EVE's standings; nothing is asked before they can change
   it.busy = true;
   const gen = it.gen;
   try{
@@ -26296,6 +26660,7 @@ async function itReports(lines, gen){
   if(!parsed.length) return;
   for(const x of parsed) x.pilots = itPilotsOf(x.p);
   try{ await itAffiliate(parsed.flatMap(x => x.pilots.map(p => p.id))); }catch(e){ it.note = withCode(`Standings: ${e.message}`, e.code || 'SYS-01'); }
+  await sideEveReady();   // v2026.11.09.2 (030): the first read of EVE's standings in this tab, 10 s at most
   if(gen !== it.gen) return;
   for(const x of parsed) itAddReport(x.l, x.p, x.pilots);
 }
@@ -26432,14 +26797,22 @@ function itKind(p, pilots){
 }
 let itEntryId = 0;
 function itAddReport(l, p, pilots){
-  const sides = pilots.map(x => ({...x, side: itSide(x.id)}));
-  const e = {id: ++itEntryId, t: l.t, who: l.who, chan: l.chan, raw: l.msg, p, pilots: sides, kind: itKind(p, sides), history: l.history, pairs: itPairs(p, sides)};
-  e.friendlyOnly = e.kind === 'seen' && sides.length && sides.every(x => x.side === 'f') && !p.ships.length && !p.extra && !p.count;
+  const e = {id: ++itEntryId, t: l.t, who: l.who, chan: l.chan, raw: l.msg, p, pilots, history: l.history};
+  itReportSides(e);
   it.lastLine = Math.max(it.lastLine, l.t);
   it.feed.unshift(e);
   const old = Date.now() - it.set.forget * 60000;   // v.98: lines older than the time set go (kept to IT_FEED_MAX meanwhile)
   if(it.feed.length > IT_FEED_MAX || it.feed.some(x => x.t < old)) it.feed = it.feed.filter(x => x.t >= old).slice(0, IT_FEED_MAX);
-  const sys = p.sys[0] && p.sys[0].id;
+  itReportNear(e);
+}
+// v2026.11.09.2 (build queue 030): a report's sides and what follows from them, worked out again by itSidesRework when Standings change
+function itReportSides(e){
+  const p = e.p, sides = e.pilots.map(x => { const r = itSideRes(x.id); return {...x, side: r.side, sw: sideWhyText(r)}; });
+  e.pilots = sides; e.kind = itKind(p, sides); e.pairs = itPairs(p, sides);
+  e.friendlyOnly = e.kind === 'seen' && sides.length && sides.every(x => x.side === 'f') && !p.ships.length && !p.extra && !p.count;
+}
+function itReportNear(e){
+  const p = e.p, sys = p.sys[0] && p.sys[0].id;
   if(!sys || e.kind === 'status' || e.kind === 'info') return;
   // v2026.10.30.2 (the owner: "if it's not inside the ring, dont consider it a valid report" -> "fair"): a report outside the ring stays
   // in the Feed and is left out of Near You (so it never alerts); with Distance "any" there is no ring
@@ -26476,7 +26849,7 @@ function itNearAdd(e, sys){
     if(e.kind === 'kill') st.kills.push({t: e.t, id: e.kill.id, v: e.kill.victim.side || 'n', isk: e.kill.value || 0});   // v.100: the victim's standing, for the badges; v2026.11.07.1: its value
   }
   it.near.set(sys, st);
-  if(!e.history) itAlert(st, e);
+  if(!e.history && !it.replay) itAlert(st, e);   // 030: a re-work after Standings changed replays history, never an alert
 }
 // What a system has within the time set now: its pilots, ships and +N (the largest +N reported).
 function itLive(st, now = Date.now()){
@@ -26767,32 +27140,20 @@ async function itKills(got, gen){
   const need = [...ids].filter(id => !it.charNames.has(id));
   try{ for(let i = 0; i < need.length; i += 1000) for(const x of await resolveIdsToNames(need.slice(i, i + 1000))) it.charNames.set(x.id, x.name); }
   catch(e){ it.note = withCode(`Names on kills: ${e.message}`, e.code || 'ESI-04'); }
+  await sideEveReady();   // v2026.11.09.2 (030)
   if(gen !== it.gen) return;
   for(const r of recs.sort((a, b) => a.t - b.t)) itAddKill(r);
 }
 function itAddKill({km, z, t, history}){
-  const sets = sideSets();
   const ent = (o) => ({id: o.character_id || null, name: o.character_id ? it.charNames.get(o.character_id) || `pilot ${o.character_id}` : '', corp: o.corporation_id || null,
-    alliance: o.alliance_id || null, side: o.corporation_id ? sideOf(o.corporation_id, o.alliance_id || null, sets, null).side : 'n', ship: itShipOf(o.ship_type_id)});
+    alliance: o.alliance_id || null, side: 'n', ship: itShipOf(o.ship_type_id)});
   const att = (km.attackers || []).filter(a => a.character_id).sort((a, b) => (b.final_blow ? 1 : 0) - (a.final_blow ? 1 : 0) || (b.damage_done || 0) - (a.damage_done || 0)).map(ent);
-  const ships = [], pairs = new Map();
-  for(const a of att){
-    if(!a.ship) continue;
-    pairs.set(a.id, a.ship);   // a killmail names each attacker's ship: the surest pairing there is
-    if(a.side === 'f') continue;   // a friendly's ship isn't a threat (a kill by friendlies only stays friendly-only)
-    const s = ships.find(x => x.id === a.ship.typeId);
-    if(s) s.n++; else ships.push({id: a.ship.typeId, name: a.ship.name, n: 1});
-  }
   const victim = ent(km.victim || {});
-  const e = {id: ++itEntryId, kind: 'kill', t, who: 'zKillboard', chan: '', raw: '', history, pilots: att, pairs,
-    p: {sys: [{id: km.solar_system_id, at: 0, k: 1}], ships, kw: new Set(), extra: 0, W: [], used: []},
+  const e = {id: ++itEntryId, kind: 'kill', t, who: 'zKillboard', chan: '', raw: '', history, pilots: att, pairs: new Map(),
+    p: {sys: [{id: km.solar_system_id, at: 0, k: 1}], ships: [], kw: new Set(), extra: 0, W: [], used: []},
     kill: {id: km.killmail_id, victim, value: Number(z.totalValue) || 0, solo: !!z.solo, n: Number(z.attackerCount) || (km.attackers || []).length, href: `https://zkillboard.com/kill/${km.killmail_id}/`,
       hash: z.hash || null, km, ships: att.filter(a => a.ship).length, players: att.length}};   // v2026.10.31.6: players: the fleet size   // v2026.10.30.4: for the Fleet tab (pilots in ships on it)
-  e.friendlyOnly = !!att.length && att.every(x => x.side === 'f');
-  // v2026.10.30.1 (the owner: "even if a hostile is killed by a friendly, it means there are potentially MORE hostiles there and maybe
-  // they head my way"): a kill by friendlies only of a victim who wasn't friendly is a sighting of the victim's side in Near You
-  // (counted, coloured and alerting like a report), the victim named with what they lost and your pilots after "by".
-  e.sighting = e.friendlyOnly && victim.side !== 'f' && !!victim.id;
+  itKillSides(e);
   // v2026.10.31.5 (the owner: a camp from kills, told apart from one a report names): zKillboard's locationID is the nearest
   // celestial; a stargate's (50,000,000 to 59,999,999) names the gate the kill was at. Which system that gate leads to: ESI, once
   // per gate, kept (itGateDest)
@@ -26807,6 +27168,39 @@ function itAddKill({km, z, t, history}){
     if(st && st.kills.some(k => k.id === e.kill.id) && !st.gates.some(g => g.id === e.kill.id)) st.gates.push({t: e.t, gate: d, camp: false, src: 'kill', id: e.kill.id});
     itRenderLists();
   }).catch(() => {});
+}
+// v2026.11.09.2 (build queue 030): a kill's sides and what follows from them (its threat ships, friendlies only, the sighting), from the
+// pilots' corporation, alliance and id kept on the entry; itSidesRework runs it again when Standings change
+function itKillSides(e){
+  const sets = sideSets(), one = (x) => { const r = x.corp ? sideOf(x.corp, x.alliance, sets, null, x.id) : {side: 'n'}; x.side = r.side; x.sw = sideWhyText(r); };
+  for(const a of e.pilots) one(a);
+  const victim = e.kill.victim; one(victim);
+  const ships = [], pairs = new Map();
+  for(const a of e.pilots){
+    if(!a.ship) continue;
+    pairs.set(a.id, a.ship);   // a killmail names each attacker's ship: the surest pairing there is
+    if(a.side === 'f') continue;   // a friendly's ship isn't a threat (a kill by friendlies only stays friendly-only)
+    const s = ships.find(x => x.id === a.ship.typeId);
+    if(s) s.n++; else ships.push({id: a.ship.typeId, name: a.ship.name, n: 1});
+  }
+  e.pairs = pairs; e.p.ships = ships;
+  e.friendlyOnly = !!e.pilots.length && e.pilots.every(x => x.side === 'f');
+  // v2026.10.30.1 (the owner: "even if a hostile is killed by a friendly, it means there are potentially MORE hostiles there and maybe
+  // they head my way"): a kill by friendlies only of a victim who wasn't friendly is a sighting of the victim's side in Near You
+  // (counted, coloured and alerting like a report), the victim named with what they lost and your pilots after "by".
+  e.sighting = e.friendlyOnly && victim.side !== 'f' && !!victim.id;
+}
+// v2026.11.09.2 (build queue 030; the owner picked "Re-work + replay"): Standings changed (EVE's lists read, turned on or off, Log out, a
+// typed-list edit): every Feed entry's sides are worked out again and Near You is built again by replaying the Feed in the order it
+// came in, with no alerts (those entries are history), then Intel is drawn once. Never on a tick (LESSON #120).
+function itSidesRework(){
+  try{ if(!it.feed || !it.feed.length || itExOrg) return false; }catch(e){ return false; }   // not before Intel's part of the script has run, nor inside the example's sandbox
+  for(const e of it.feed){ if(e.kind === 'kill') itKillSides(e); else itReportSides(e); }
+  it.near = new Map(); it.replay = true;
+  try{ for(let i = it.feed.length - 1; i >= 0; i--){ const e = it.feed[i]; if(e.kind === 'kill'){ if(e.pilots.length) itNearAdd(e, e.p.sys[0].id); } else itReportNear(e); } }
+  finally{ it.replay = false; }
+  itRender(true);
+  return true;
 }
 // v2026.10.31.5: the system a stargate leads to (ESI /universe/stargates/{id}/: destination.system_id), asked once per gate and kept
 async function itGateDest(id){
@@ -27334,7 +27728,7 @@ function itNearList(){
 // You hid every system with friendlies only. Now such a kill is a sighting of the victim's side (itAddKill: e.sighting, itNearAdd).
 function itNearCount(){ return it.on ? itNearList().filter(x => x.j !== null && x.j <= it.set.range && itThreat(x.st)).length : it.other && it.remote ? it.remote.n : 0; }
 // v.98: a pilot's name opens them in the Pilot Analyzer (in the ship the line pairs them with, the owner: "Paired ship")
-function itPilotTitle(x, pair){ return `${SIDE_WORD[x.side]} (${cardName('side')}). Open ${x.name} in the Pilot Analyzer${pair ? `, in the ${pair.name} reported with them` : ''}`; }
+function itPilotTitle(x, pair){ return `${SIDE_WORD[x.side]} (${x.sw || cardName('side')}). Open ${x.name} in the Pilot Analyzer${pair ? `, in the ${pair.name} reported with them` : ''}`; }
 // v.99 (the owner: "As drawn"): who's who: a standing mark, the corporation and alliance logos, the name coloured by standing, then
 // [CORP] <ALLIANCE>. That order was this tool's own v.99 mockup (an earlier comment here said it was how EVE's intel tools show it;
 // nothing backed that: the owner's reference screenshot was RIFT's Intel Feed, a third-party app). Logos from CCP's image server

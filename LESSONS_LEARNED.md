@@ -149,6 +149,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #135 Saving a growing list to localStorage on every event rewrites it all each time: keep a small fixed shape and save on a timer (at most once a second, and on page close).
 - #137 A control put where a sheet's backdrop is pressed gets that tap's click when the sheet closes on the press. See also #117.
 - #150 A page that leaves for another site can come back from the back/forward cache exactly as it left: undo "in progress" on pageshow, and drop what was kept for the return on a normal load.
+- #151 Data read in several requests must change all at once: build the new copy aside and swap it in at the end, or whatever reads it meanwhile uses half of it.
 
 **Checks and test machinery**
 
@@ -1057,6 +1058,19 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 151. Data read in several requests must change all at once: build the new copy aside and swap it in at the end, or whatever reads it meanwhile uses half of it
+
+- **What happened (v2026.11.09.2, build queue 030, caught before delivery):** EVE's standings are two lists (your corporation's, then
+  your alliance's, each maybe several pages). The first build stored each list as it arrived, so while the alliance's list was still
+  being read the rule was already in use with the corporation's alone: for those seconds a group the alliance sets blue and the
+  corporation red was coloured hostile, and anything that drew then (an Analyze, Intel's tick) showed it.
+- **How it was caught:** the new check's slow-read case (`sso_standings_check.py`, 13 s per list): it waited for "in use" and found the
+  re-draw count wrong, because "in use" came true halfway through the read.
+- **Do this instead:** read into a local copy and assign it once, after the last request (`sideEveFetchAll`'s `L`); a failure keeps the
+  copy in hand whole. In a check, wait for the read to be over (`tried && !busy`), not for the first sign of new data. And make a slow
+  answer slow in the page (a wrapped `fetch` with a timer), not in a Playwright route handler: a handler that sleeps holds up every other
+  answer the page is waiting for.
 
 ## 150. A page that leaves for another site can come back from the back/forward cache exactly as it left: undo "in progress" on pageshow, and drop what was kept for the return on a normal load
 

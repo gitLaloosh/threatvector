@@ -201,6 +201,24 @@ asks for its own when it is turned on; Phase 2 below). So:
   - **Intel**, running as that character and logged off: "Your character is logged off in EVE." with Stop Intel (`ssoOnIntelHtml`), above
     the amber wake line; Intel never stops by itself. Drawn only when what it shows changes (`ssoOnKey`; the time is its own span).
   - Checked by `tools/page_checks/sso_online_check.py` (Phase 2's stand-ins plus ESI's /online/; never live).
+- **Standings from EVE** (v2026.11.09.2, build queue 030, SSO Phase 3; Project doc roadmap/sso-phase3-standings-plan.md; LESSON #151): a
+  checkbox at the top of the profile's Standings section, "Use my corporation's and alliance's EVE standings" (`sideEveHtml`), its two
+  scopes (`SSO_SC`, `SSO_SA`; personal contacts are not read, the owner) through Phase 2's permission step (`ssoStart([SSO_SC, SSO_SA],
+  'stand')`), the setting in localStorage `tvEveStand` (true/false). So:
+  - **EVE decides while it's on** (`sideEveUse`, `sideEveSide` inside `sideOf`): your own groups friendly; above 0 friendly, below 0 hostile,
+    0 or none neutral; in one list the pilot's entry, else his corporation's, else his alliance's; across the two lists **the alliance's**
+    (the owner: "for now, alliance wins"), the disagreement said (amber, "Alliance +10 (corp −10)"). zKillboard's evidence is only a note
+    beside neutrals. The typed lists are hidden (`.side-typed`) and unchanged in `dscanSide`; an NPC corporation, the switch off, not
+    logged in or nothing read: today's `sideOf` exactly. Every `sideOf` caller passes the pilot's id (5th argument).
+  - **Reads** (`sideEveNeed`, `sideEveFetchList` with esiFetch's auth branch): only when something needs sides (an Analyze, Intel's tick,
+    the Fleet tab, the Pilot Analyzer's tag), never before Expires and 5 minutes apart; every X-Pages page, the pages read once more when
+    their Last-Modified differ; both lists swapped in together. The first read in a tab is waited for, 10 s at most (`sideEveReady`).
+    401 SSO-08 (never again), 403 with the permission SIDE-03 (that list skipped), without it SSO-07 (off), no answer or 5xx SIDE-04 (the
+    copy in hand); 420/429 Retry-After. Memory only (DLA 9.5).
+  - **A change redraws once** (`sideEveApplied`, by `sideEveKey`): the System Analyzer, the Fleet tab, the Pilot Analyzer's tag, and Intel's
+    stored sides worked out again with Near You replayed from the Feed, no alert (`itSidesRework`, the owner: "Re-work + replay"; a typed-list
+    edit does it too). Inside the Intel example's sandbox EVE's standings are never used.
+  - Checked by `tools/page_checks/sso_standings_check.py` (stand-in SSO and ESI contacts routes; made-up groups; mutants).
 
 **My Ship** (v2026.10.14.33, `roadmap/my-ship-plan.md`): the user's own fit, saved in
 the browser (`localStorage` `dscanMyShip`: EFT text, module states, the switch; never the
