@@ -394,6 +394,9 @@ with sync_playwright() as p:
         c.close()
     # the other tab while this one is at EVE's page
     reset(nav=False); lreset(); c = ctx_new(); A = page(c); B = page(c, first=False); login(A); on(A); B.wait_for_timeout(600)
+    # a message posted from pagehide may never arrive (the owner's Chrome, 2026-11-08): drop A's, so the line must come from before leaving
+    # (the page's own pagehide listener runs before any added here, so the check drops what is posted while a pagehide is being handled)
+    A.evaluate("() => { const f = itLockPost; itLockPost = function(m){ if(window.event && window.event.type === 'pagehide') return; return f.apply(this, arguments); }; }")
     A.click('#tabBtnIntel'); A.evaluate("() => { it.pop = true; itGl.ask = true; itRender(true); }"); A.click('#intelPanel [data-it-act="gl-go"]'); A.wait_for_url('https://login.eveonline.com/**', timeout=8000)
     B.wait_for_timeout(800); sB = st(B)
     check('Intel is paused while the other tab logs in with EVE.' in sB['notes'], f"the other tab: \"Intel is paused while the other tab logs in with EVE.\" ({sB['notes'][:80]!r})")

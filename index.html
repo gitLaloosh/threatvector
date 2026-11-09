@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-3nfhnMi2DySLE1hLJ7nAnGVs/1DkalboMovkt1xH+dw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sFcVonNU/nkfavNU7AoBD3xB9WvN2Y9TnCdzX4D8Y/Q='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -24022,6 +24022,9 @@ async function ssoStart(want, from){
     const q = new URLSearchParams({response_type: 'code', redirect_uri: location.origin + '/', client_id: cid, code_challenge: challenge, code_challenge_method: 'S256', state});
     if(scopes.length) q.set('scope', scopes.join(' '));   // none: the login asks for nothing (D3)
     sso.starting = false; sso.leaving = Date.now();
+    // other tabs hear "away" now, while this page is still running: a message posted from pagehide wasn't delivered in Chrome (the
+    // owner's hand test, 2026-11-08: the other tab said "closed")
+    try{ if(it.on) itLockPost({on: false, why: 'away'}); }catch(e){ }
     location.assign(m.authorization_endpoint + '?' + q.toString());
     // a backstop: the page never left (the address refused): the button comes back after 30 s
     setTimeout(() => { if(sso.leaving && Date.now() - sso.leaving >= SSO_BACK_MS && !(typeof document !== 'undefined' && document.hidden)) ssoCameBack(); }, SSO_BACK_MS);
@@ -24034,6 +24037,7 @@ function ssoCameBack(){   // LESSON #150
   const from = sso.from;
   sso.leaving = 0; sso.starting = false; sso.from = '';
   ssoDel(SSO_PENDING);
+  try{ if(it.on){ itLk.last = ''; itLockState(); } else itLockPost({back: true}); }catch(e){ }   // other tabs were told "away": still running, or not away after all
   ssoMsg(from, "You came back from EVE's page without logging in, so nothing changed.");
 }
 // The access token (a JWT) checked against CCP's published keys: the key its kid names, RS256 with the RSA key or ES256 with the

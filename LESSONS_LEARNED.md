@@ -1071,6 +1071,10 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - **Do this instead:** keep "leaving" (set just before the page goes) apart from "busy" (only while a real return is checked); on
   `pageshow` with `persisted`, undo "leaving" and say nothing changed; on a normal load without a return, drop what was kept for it and
   undo what was announced for it (here: tell the other tabs the trip is over); and test both the cache and the fresh load.
+- **And announce before leaving, not in pagehide:** the "away" message to the other tabs was first sent from `pagehide`. It arrived in
+  the headless check but not in the owner's Chrome, which keeps the page in its back/forward cache (the other tab learned only from the
+  lock coming free, and said Intel was closed). Send what other tabs must hear just before the page goes; pagehide is a second chance.
+  The check now drops pagehide's message, as that Chrome did.
 
 ## 149. A check runner that compares with the wrong starting point passes by testing nothing: compare with where the branch left main, and say what was compared
 
