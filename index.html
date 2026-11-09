@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sFcVonNU/nkfavNU7AoBD3xB9WvN2Y9TnCdzX4D8Y/Q='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-/sBaw1VYIiUBnTjE+E4Xqbw5cyEe3A1wpBBfOGzcfQ8='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -26876,7 +26876,9 @@ async function itLockCheck(){   // a tab opened or shown again: ask, and see whe
   let held = false;
   try{ held = (await navigator.locks.query()).held.some(l => l.name === IT_LOCK); }catch(e){ return; }
   if(it.on) return;
-  if(held && !it.other){ it.other = true; it.lockWhy = ''; itRender(true); itSwSync(); }
+  // away (028): Chrome can keep the tab that left for EVE's page in its back/forward cache with the lock still held (the owner's hand
+  // test, 2026-11-08): held then isn't "running"; the tab says so itself when it is back (on, or back)
+  if(held && !it.other && it.lockWhy !== 'away'){ it.other = true; it.lockWhy = ''; itRender(true); itSwSync(); }
   else if(!held && it.other){ it.other = false; it.remote = null; it.lockWhy = 'closed'; itRender(true); itSwSync(); }
   else if(!held && it.lockWhy === 'away' && Date.now() - (itLk.awayAt || 0) > SSO_STATE_MS){ it.lockWhy = 'closed'; itRender(true); }   // never came back
 }
@@ -26900,7 +26902,8 @@ function itLockHtml(){   // the card's line about the other tab (in #itNotes)
     const back = it.lockWhy === 'moved';
     return `<div class="pr-msg it-lock">${escapeHtml(back ? 'Intel moved to another tab.' : 'Intel is on in another tab.')} <button type="button" data-it-act="move">${escapeHtml(back ? 'Move Intel back here' : 'Move Intel here')}</button></div>`;
   }
-  if(!it.on && it.lockWhy === 'away') return '<div class="pr-msg it-lock">Intel is paused while the other tab logs in with EVE.</div>';   // 028 (the owner's choice b)
+  // 028 (the owner's choice b); Move Intel here too, in case that tab never comes back
+  if(!it.on && it.lockWhy === 'away') return '<div class="pr-msg it-lock">Intel is paused while the other tab logs in with EVE. <button type="button" data-it-act="move">Move Intel here</button></div>';
   if(!it.on && it.lockWhy === 'closed') return '<div class="pr-msg it-lock">The tab running Intel was closed, so Intel is off.</div>';
   if(it.on && it.lockWhy === 'here') return '<div class="pr-msg it-lock">Intel moved here. The other tab stopped it.</div>';
   return '';

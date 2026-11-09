@@ -400,6 +400,10 @@ with sync_playwright() as p:
     A.click('#tabBtnIntel'); A.evaluate("() => { it.pop = true; itGl.ask = true; itRender(true); }"); A.click('#intelPanel [data-it-act="gl-go"]'); A.wait_for_url('https://login.eveonline.com/**', timeout=8000)
     B.wait_for_timeout(800); sB = st(B)
     check('Intel is paused while the other tab logs in with EVE.' in sB['notes'], f"the other tab: \"Intel is paused while the other tab logs in with EVE.\" ({sB['notes'][:80]!r})")
+    # Chrome may keep A in its back/forward cache still holding the lock (the owner's Chrome): B shown again must stay "paused"
+    B.evaluate("() => { const q = navigator.locks.query.bind(navigator.locks); navigator.locks.query = async () => ({held: [{name: IT_LOCK, mode: 'exclusive'}], pending: []}); return itLockCheck().then(() => { navigator.locks.query = q; }); }")
+    sB = st(B)
+    check('Intel is paused while the other tab logs in with EVE.' in sB['notes'], f"B shown again while A, away, still holds the lock: still paused ({sB['notes'][:80]!r})")
     S['nav'] = True; A.go_back(); ready(A); A.wait_for_timeout(800); sB = st(B)
     check('paused' not in sB['notes'], f"A back without logging in: the other tab's \"paused\" line goes ({sB['notes'][:60]!r})")
     A.close(); B.close(); c.close()
