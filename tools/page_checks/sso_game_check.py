@@ -13,7 +13,7 @@ own IndexedDB store is a stand-in, as in intel_folder_check.py). Made-up charact
     without a login opens Continue to EVE / Cancel; Cancel closes it; Continue asks EVE for the location scope only (never a ship scope);
   * back from EVE: the scope as an array and as a string turns the switch on; without it, SSO-07 and the switch stays off; the profile:
     "EVE permissions:" with a Location tag and Manage on EVE's site (through the outside-link gate); the profile's button says "Also asks
-    for: Location" and asks for it; Log out turns the switch off and says EVE keeps the permissions;
+    for: Location" and asks for it; Log out turns the switch off and says the permissions ended with it;
   * Intel running, logged in as You: every location request has the token, X-Compatibility-Date and X-User-Agent; the game's system,
     when it differs from the Local log, is used (the status line, the amber line); the log catching up: "the same as your Local log";
     the next check never before Expires; twice as long under a quarter of the group's tokens; a 429 waits its Retry-After; a 401: SSO-08
@@ -235,8 +235,8 @@ with sync_playwright() as p:
     check("EVE's developer site" in lv, f"Manage on EVE's site asks first (the outside-link gate) ({lv[:40]!r})")
     pg.keyboard.press('Escape')
     prof(pg); pg.click('[data-sso="logout"]'); pg.wait_for_timeout(400); s = st(pg)
-    check(not s['who'] and not s['gl'] and "EVE keeps the permissions you gave until you remove Threat Vector on EVE's site." in s['side'],
-          f"Log out: the switch off, and EVE keeps the permissions ({s['side'][-120:]!r})")
+    check(not s['who'] and not s['gl'] and "The permissions you gave EVE ended with it." in s['side'] and any(x[0] == '/v2/oauth/revoke' for x in LOG),
+          f"Log out: the switch off, the token revoked, the permissions ended ({s['side'][-120:]!r})")
     # the profile's button asks for the features that are on
     gl_on(pg); pg.evaluate("() => { renderSidePanel(); }"); pg.wait_for_timeout(100)
     sub = pg.evaluate("() => [...document.querySelectorAll('#sidePanel .sso-sub .ctx')].map(x => x.textContent)")

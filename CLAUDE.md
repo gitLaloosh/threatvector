@@ -149,9 +149,10 @@ asks for its own when it is turned on; Phase 2 below). So:
   hard-coded.
 - **Tokens:** the access token in memory only, sent only to ESI by esiFetch's auth branch (Phase 2); the refresh token and `{id,
   name}` in sessionStorage (`tvSsoRefresh`, `tvSsoWho`; `tvSsoPending` for the press; `tvSsoTab` since Phase 2), never localStorage.
-  Log out revokes it and clears the pilot. The link to EVE's authorized apps (developers.eveonline.com/authorized-apps, through
-  `leaveAsk`) shows only with a permission held ("EVE permissions:"): a login with none isn't listed there (the owner's hand test,
-  2026-11-08). CCP has no logout page for apps: the player stays signed in on EVE's own site, so nothing may promise more. Another tab changing the pilot logs this tab out.
+  Log out revokes it and clears the pilot; the revoke takes the app off EVE's authorized-apps list for that character (the owner's
+  hand test, 2026-11-08: the list shows live logins only, the dev and live apps separately), so never say EVE "keeps" a permission
+  after Log out. The link there (developers.eveonline.com/authorized-apps, through `leaveAsk`) shows only with a permission held
+  ("EVE permissions:"). CCP has no logout page for apps: the player stays signed in on EVE's own site, so nothing may promise more. Another tab changing the pilot logs this tab out.
 - **CCP's button image stays as CCP made it** (DLA 7.2; one of its four images, black large here): hover and focus are drawn on the
   `<button>` around it, never a filter, opacity or resize on the image.
 - **The token is checked** (`ssoVerify`): the JWKS key its kid names, RS256 + RSA or ES256 + P-256 only; iss, aud (the Client ID and
@@ -161,7 +162,8 @@ asks for its own when it is turned on; Phase 2 below). So:
   made per run; made-up tokens in the `madeUp…` form. The only live login is the owner's hand test on the dev app.
 - **Phase 2, Use my game location** (v2026.11.08.4, build queue 028; Project doc roadmap/sso-phase2-plan.md; LESSON #150): a checkbox in
   Intel's box 3 (`itGlHtml`, `it.set.gameLoc` in `dscanIntel`). Turned on without the permission it shows Continue to EVE / Cancel;
-  `ssoStart(want, from)` asks for `esi-location.read_location.v1` plus what the tab holds and what's on (`ssoWant`), never a ship scope
+  `ssoStart(want, from)` asks for `esi-location.read_location.v1` plus what the tab holds and what's on (`ssoWant`; EVE gives a later
+  login only what it asks for, the owner's hand test 2026-11-08, so never drop "Also asks for"), never a ship scope
   (the owner: no feature may suggest the page knows the fit you fly unless it reads ship and fit from the game). The switch turns on only
   when the token's `scp` has it (else SSO-07). So:
   - **The token goes out only through `esiFetch(url, init, kind, {scope})`:** ESI URLs only, checked before `ssoAccess()`; only there

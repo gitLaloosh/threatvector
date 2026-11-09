@@ -21,12 +21,23 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <ul>
 <li><b>Use my game location</b> (Intel's settings, box 3 "You"): a checkbox. Without EVE's permission it shows a short box, <b>Continue to EVE</b> / <b>Cancel</b>. Back from EVE it turns on only if EVE gave the location permission (else SSO-07). While Intel runs, in the tab running it, as the character picked as You, the page asks EVE where that character is, no sooner than EVE's answer says it is fresh (about 5 s), slower when the app's share runs low, waiting when ESI says so. The newer of EVE's answer and the Local log wins; when they differ, an amber line shows both. Nothing about your location is kept: memory only.</li>
 <li><b>The login is renewed</b> in the tab while a feature needs it (about every 20 minutes). EVE refusing a renewal ends the login (SSO-06, Log in again); a refused call to ESI stops that feature and is never repeated by itself (SSO-08), since every refusal counts against ESI's error limit for everyone on the address.</li>
-<li><b>The profile:</b> "EVE permissions:" with a tag per permission and <b>Manage on EVE's site ↗</b> (through the outside-link question). The button's line says "Also asks for: Location" when the switch is on. Log out turns the switch off and says EVE keeps the permissions until you remove Threat Vector there.</li>
+<li><b>The profile:</b> "EVE permissions:" with a tag per permission and <b>Manage on EVE's site ↗</b> (through the outside-link question). The button's line says "Also asks for: Location" when the switch is on. Log out turns the switch off and says the permissions ended with it: revoking the login takes Threat Vector off EVE's list of apps for the character (the owner's hand test).</li>
 <li><b>Back from EVE's page without logging in</b> (the owner's bug from 2026-11-07, "stuck in an evaluating login result state"): the EVE button is back at once, with "You came back from EVE's page without logging in, so nothing changed." LESSON #150.</li>
 <li><b>Intel after the trip:</b> if Intel was running when you left for EVE's page, it starts again when you come back (Authorize or Cancel); otherwise it stays as it was (the owner: "there is a switch for a reason"). If the folder needs your OK again, Allow reading shows and starts it. With sound on, a line asks for one click so the browser lets the sound play. Other tabs say "Intel is paused while the other tab logs in with EVE."</li>
 <li><b>Alerts start unchecked</b> for someone new (the owner: "if people dont notice that it's an option they might stop using the site just for peppering them with notifications. same with sounds"). Saved settings keep what they had.</li>
 <li><b>Intel stopped reading:</b> when the page loses the folder while Intel runs, one sound (Triple beep, or another built-in sound if yours use it), once, with sound on only.</li>
 <li>A tab duplicated from a logged-in tab drops its copy of the login ("This tab was copied from another, so it's logged out here.").</li>
+</ul>
+
+<h2>The owner's hand test (dev app, 2026-11-08)</h2>
+<ul>
+<li>One permission comes back as a single string in <code>scp</code>, not a list (the page reads both). <code>/location/</code> answered 200, then 304s while nothing changed.</li>
+<li>A later login asking for nothing came back with no permissions: EVE gives a login only what it asks for, so the page asks for the features that are on every time.</li>
+<li>Tokens last 20 minutes (<code>expires_in</code> 1199). <code>/location/</code>: Expires 5 s after Date; <code>X-Ratelimit-Group</code> char-location; <code>X-Ratelimit-Limit</code> 1200/15m; <code>X-Compatibility-Date</code> answered 2020-01-01 (the route's version; ours, 2025-08-26, accepted).</li>
+<li>A forced renewal sent only grant_type, refresh_token and client_id, and EVE answered with the same refresh token; the checks carried on.</li>
+<li>Duplicating a tab copies its sessionStorage; the copy said it was logged out and the original kept going.</li>
+<li>Logging out in another tab logs this tab out through Phase 1's pilot rule, before any renewal.</li>
+<li>EVE's authorized-apps list shows live logins only: Log out (the revoke) takes the app off it. The text that said EVE keeps the permissions was wrong and is corrected. The dev app and the live app are listed separately.</li>
 </ul>
 
 <h2>Kept in the browser</h2>

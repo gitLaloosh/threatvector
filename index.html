@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XaW1Vl41sMaKNGK0dDq/G3IOYvpqGDftfhv2wNZph1Q='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-oTBmzUKk/aHJatubsH1EYc7df+ipGi3Sf+5AfxiAnVE='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3397,7 +3397,7 @@ const CARD_INFO = {
  "side#sso": [
   "Logging in with EVE Online tells Threat Vector which character you are. On its own it asks EVE for no permissions. It fills Your pilot, the same as typing the name.",
   "Features that need more from EVE ask for their own permission when you turn them on: Use my game location (Intel's settings, You) asks to read your character's location. EVE's page lists exactly what is asked before you agree. A later login asks again for the features you have on (the button's line says which).",
-  "EVE keeps a permission until you remove Threat Vector on EVE's site (Manage on EVE's site, under EVE permissions). While a feature uses it, the login is renewed in this tab about every 20 minutes.",
+  "Log out ends the login and its permissions with EVE: Threat Vector leaves your list of apps on EVE's site. You can also remove it there (Manage on EVE's site, under EVE permissions). While a feature uses the login, it is renewed in this tab about every 20 minutes.",
   "The login lasts for this tab: reloading keeps it, a new tab asks again (usually one click, as EVE remembers you), and closing the tab forgets it. Nothing is sent to or kept on a Threat Vector server; there isn't one.",
   "Log out ends it in this tab and clears Your pilot. It doesn't sign you out of EVE's own website."
  ],
@@ -3470,7 +3470,7 @@ const CARD_INFO = {
   "It needs your EVE login in the tab running Intel, as the character you picked as You, and EVE's OK to read your location (EVE's page asks once). Logins are per tab, so a new tab asks you to log in again.",
   "Whichever is newer wins: EVE's answer or your Local log's last system change. When they differ, the line under the box shows both, in amber.",
   "The page asks no sooner than EVE says its answer is fresh (about 5 seconds), and slower when EVE says the app's share is running low. Your location is kept in this tab's memory only.",
-  "Turning it off stops the checks, and Log out turns it off. EVE keeps the permission until you remove Threat Vector on EVE's site."
+  "Turning it off stops the checks. Log out turns it off and ends the permission with EVE."
  ],
  "onscan": [
   "The ships your D-Scan sees, by hull and by role. D-Scan shows hulls, not fits or pilots, so nothing here is tied to a name in Local.",
@@ -23994,14 +23994,14 @@ async function ssoMeta(){
 // The permissions of the features turned on in this browser (a setting in localStorage): a new login asks for them again (D3)
 function ssoWant(){ try{ return it.set.gameLoc ? [SSO_LOC] : []; }catch(e){ return []; } }
 function ssoHeld(scope){ return !!(sso.scp && sso.scp.includes(scope)); }
-function ssoScp(c){ const v = c && c.scp; return Array.isArray(v) ? v.filter(x => typeof x === 'string') : typeof v === 'string' && v ? v.split(/\s+/) : []; }   // an array per CCP; one scope may come as a string
+function ssoScp(c){ const v = c && c.scp; return Array.isArray(v) ? v.filter(x => typeof x === 'string') : typeof v === 'string' && v ? v.split(/\s+/) : []; }   // an array per CCP's docs; one scope comes as a string (the owner's hand test, 2026-11-08)
 // A line for whoever asked: Use my game location's line under Intel's settings, or the Pilot section
 function ssoMsg(from, text, err){
   if(from === 'loc'){ itGl.msg = text ? {text, err: !!err} : null; itRender(true); }
   else { side.msg.pilot = text ? {text, err: !!err} : null; renderSidePanel(); }
 }
 // want: the permissions a feature needs; the request asks for those, the ones this tab holds and the ones of the features that are on,
-// so the answer is the same whether or not EVE keeps earlier permissions on a second login (the plan's Sources: UNVERIFIED)
+// because EVE gives a later login only what it asks for (the owner's hand test, 2026-11-08: a login asking for nothing came back with no scp)
 async function ssoStart(want, from){
   const cid = ssoClientId();
   if(!cid || sso.busy || sso.starting) return;
@@ -24188,7 +24188,8 @@ function ssoLogout(){
   const gave = !!((sso.scp && sso.scp.length) || ssoWant().length);
   ssoEnd();
   itGlLogout();   // 028: Log out turns Use my game location off
-  sso.note = {text: 'Logged out of this tab, and Your pilot is cleared.' + (gave ? " EVE keeps the permissions you gave until you remove Threat Vector on EVE's site." : '')};
+  // revoking ends the grant: EVE drops the app from the character's list (the owner's hand test, 2026-11-08)
+  sso.note = {text: 'Logged out of this tab, and Your pilot is cleared.' + (gave ? ' The permissions you gave EVE ended with it.' : '')};
   sideSetPilot('');
 }
 function ssoBtnStateHtml(){
