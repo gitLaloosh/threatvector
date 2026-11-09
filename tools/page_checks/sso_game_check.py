@@ -373,6 +373,8 @@ with sync_playwright() as p:
     c.close()
     c, pg = trip(True, sound=True); s = st(pg)
     check(s['on'] and 'Intel is running again. Click anywhere on the page to turn its sound back on.' in s['notes'], f"sound on: the \"click anywhere\" line ({s['notes'][:80]!r})")
+    wk = pg.evaluate("() => { const b = document.querySelector('#itNotes .it-wake [data-it-act=\"wake\"]'); return b ? [b.textContent, getComputedStyle(b.closest('.it-wake')).borderTopStyle] : null; }")
+    check(wk and wk[0] == 'Turn sound on' and wk[1] == 'solid', f'the line is the amber callout with Turn sound on (the owner: it has to stand out) {wk}')
     pg.mouse.click(5, 300); pg.wait_for_timeout(300)
     check('Click anywhere' not in st(pg)['notes'], 'gone after the first click')
     c.close()
