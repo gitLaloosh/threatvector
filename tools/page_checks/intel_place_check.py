@@ -162,8 +162,9 @@ _tail = r'''
     check(ids == 1, f'... in the one /universe/ids/ batch for the lines written at once ({ids})')
     # ---- the switch ----
     SW = """() => { const s = document.querySelector('#intelSw'), c = getComputedStyle(s), k = getComputedStyle(s, '::after'), l = getComputedStyle(s.nextElementSibling);
-      const u = document.querySelector('#myShipUse'), cu = getComputedStyle(u);
-      return {on: s.checked, edge: c.borderTopColor, knob: k.backgroundColor, label: l.color, anim: getComputedStyle(s, '::before').animationName, use: [cu.borderTopColor, cu.animationName]}; }"""
+      // 032: "Use in assessments" is drawn with the profile's Fits tab; any other switch of the one switch style stands in for it
+      const u = document.body.appendChild(Object.assign(document.createElement('input'), {type: 'checkbox', className: 'mys-sw'})), cu = getComputedStyle(u), use = [cu.borderTopColor, cu.animationName]; u.remove();
+      return {on: s.checked, edge: c.borderTopColor, knob: k.backgroundColor, label: l.color, anim: getComputedStyle(s, '::before').animationName, use}; }"""
     on = pg.evaluate(SW)
     check(on['on'] and on['edge'] == 'rgb(31, 111, 128)' and on['anim'] == 'none', f'the Intel switch on: the usual teal, still {on}')
     pg.click('#intelSwLabel'); pg.wait_for_timeout(400)

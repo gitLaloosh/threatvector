@@ -43,10 +43,10 @@ with sync_playwright() as p:
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
 
     # tags
-    for sel in ('.pf-main',):   # v2026.11.01.1: the profile (was the My Ship and Standings chips)
-        rad, bst, bc, bg = cs(pg, sel, 'border-top-left-radius', 'border-top-style', 'border-top-color', 'background-color')
-        check(rad == '4px' and bst != 'dashed' and bc in ('rgba(0, 0, 0, 0)', 'transparent') and bg == 'rgb(26, 33, 40)',
-              f'{sel}: a tag (4px corners, no dashed or visible border, the tag fill) ({rad}, {bst}, {bc}, {bg})')
+    # 032: the profile is an annunciator (the owner's pick from the mockups): a 4px face of lamps with 3px corners, never round
+    rad, bg = cs(pg, '#profile', 'border-top-left-radius', 'background-color')
+    lr = [cs(pg, '#' + i, 'border-top-left-radius')[0] for i in ('profileEve', 'profileBtn', 'profileFitL', 'intelNear')]
+    check(rad == '4px' and bg == 'rgb(20, 24, 27)' and lr == ['3px'] * 4, f'the profile: a 4px face (--pf-face), lamps with 3px corners ({rad}, {bg}, {lr})')
 
     # text field: the fit box
     pg.click('#tabBtnFit')
@@ -60,18 +60,18 @@ with sync_playwright() as p:
     check(foc == 'rgb(79, 195, 217)' and ('rgba(79, 195, 217' in ring or 'srgb 0.309804 0.764706 0.85098' in ring) and ring.endswith(' 2px'), f'focused: the cyan border and the ring, never amber ({foc}; {ring})')
 
     pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
-    pg.click('#profileBtn', position={'x': 12, 'y': 14}); pg.fill('#myShipEft', VEXOR); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles'); pg.keyboard.press('Escape')
+    pg.click('#profileFitL'); pg.fill('#myShipEft', VEXOR); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles'); pg.keyboard.press('Escape')
     pg.wait_for_function(f"() => {{ const b = document.querySelector('{R} .mys-board'); return b && !/…/.test(b.textContent); }}", timeout=60000); settle(pg, 600)
 
     # switch
-    # v2026.11.01.1: "Use in assessments" is the profile's wide switch with the fit inside (decided 2026-10-29, "pass 3"): the same
-    # 3px corners, square knob and #1f6f80 when on, 22 px tall
-    bx = pg.locator('#myShipUseLabel .pf-fsw-track').bounding_box()
-    rad, on = cs(pg, '#myShipUseLabel .pf-fsw-track', 'border-top-left-radius', 'background-color')
-    krad = cs(pg, '#myShipUseLabel .pf-fsw-knob', 'border-top-left-radius')[0]
+    # 032: "Use in assessments" is in the profile's Fits tab, the one switch (36x20, 3px corners, a square knob, #1f6f80 when on)
+    pg.click('#profileFitL'); pg.wait_for_selector('#myShipUse')
+    bx = pg.locator('#myShipUse').bounding_box()
+    rad, on = cs(pg, '#myShipUse', 'border-top-left-radius', 'background-color')
     checked = pg.evaluate("() => document.querySelector('#myShipUse').checked")
-    check(round(bx['height']) == 22 and bx['width'] > 120 and rad == '3px' and krad == '2px' and (not checked or on == 'rgb(31, 111, 128)'),
-          f'"Use in assessments": the wide switch, 22 px, 3px corners, a square knob, #1f6f80 on ({bx["width"]:.0f}x{bx["height"]:.0f}, {rad}, {krad}, {on}, on={checked})')
+    pg.keyboard.press('Escape')
+    check(round(bx['width']) == 36 and round(bx['height']) == 20 and rad == '3px' and (not checked or on == 'rgb(31, 111, 128)'),
+          f'"Use in assessments": the one switch, 36x20, 3px corners, #1f6f80 on ({bx["width"]:.0f}x{bx["height"]:.0f}, {rad}, {on}, on={checked})')
 
     # sliders
     pg.wait_for_timeout(200); fills_ok(pg, 'the fit rendered')

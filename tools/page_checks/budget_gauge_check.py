@@ -227,7 +227,7 @@ with sync_playwright() as p:
             if W < 600:
                 # the profile's sheet closes on the press: that tap's click must not open the panel under it (the gauge sits there on a phone)
                 pg.evaluate("() => { localStorage.removeItem('dscanZkbPause'); localStorage.removeItem('dscanR2Stop'); }"); pg.reload(); pg.wait_for_timeout(400)
-                pg.tap('#profileBtn', position={'x': 12, 'y': 14}); pg.wait_for_timeout(300)
+                pg.tap('#profileBtn'); pg.tap('#ppTab-fit'); pg.wait_for_timeout(300)
                 gb = pg.evaluate("() => { const r = document.getElementById('bgGauge').getBoundingClientRect(); return [r.left + 10, r.top + r.height / 2]; }")
                 pg.tap('#sideBackdrop', position={'x': gb[0], 'y': gb[1]}); pg.wait_for_timeout(300)
                 st = pg.evaluate("() => [document.getElementById('profilePanel').hidden, document.getElementById('bgPop').hidden]")

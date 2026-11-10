@@ -33,14 +33,18 @@ def check(ok, msg):
     print(('OK   ' if ok else 'FAIL ') + msg); fails += not ok
 
 def side_text(pg):
-    return pg.evaluate("() => { const c = document.querySelector('#profileL1'); return c ? c.innerText.replace(/\\s+/g, ' ').trim() : null; }")   # v2026.11.01.1: the profile (was the Standings chip)
+    return pg.evaluate("() => document.getElementById('profileName').textContent + ' · ' + document.getElementById('profileSub').textContent")   # 032: the pilot lamp (was the Standings chip, then #profileL1)
 def open_side(pg):
-    if pg.evaluate("() => document.querySelector('#profilePanel').hidden"): pg.click('#profileBtn', position={'x': 12, 'y': 14})
+    if pg.evaluate("() => document.querySelector('#profilePanel').hidden"): pg.click('#profileBtn')   # 032: the Pilot tab
     pg.wait_for_selector('#profilePanel:not([hidden])')
 def panel_msg(pg, which):
     return pg.evaluate(f"""() => {{ const f = document.querySelector('#sidePanel [data-side-list="{which}"]'); const m = f && f.querySelector('.side-msg'); return m ? m.textContent : ''; }}""")
 def chips(pg, which):
     return pg.evaluate(f"""() => [...document.querySelectorAll('#sidePanel [data-side-list="{which}"] .side-chips > span .nm')].map(e => e.textContent)""")
+def rows_set(pg, v):   # 032: "Pilot rows up to" is in the System Analyzer's gear (the owner)
+    pg.evaluate("() => { closeProfile(false); switchTab('dscan'); if(!sa.setOpen) saSetToggle(true); }"); pg.wait_for_timeout(150)
+    if v is not None: pg.fill('#sideRows', v); pg.press('#sideRows', 'Enter'); pg.wait_for_timeout(200)
+    out = pg.input_value('#sideRows'); pg.evaluate("() => saSetToggle(false)"); return out
 def wait_idle(pg):
     pg.wait_for_function("() => document.querySelector('#saBusy').hidden && !document.querySelector('#analyzeBtn').disabled", timeout=60000); pg.wait_for_timeout(300)
 def analyze(pg, local, scan=''):
@@ -98,7 +102,7 @@ with sync_playwright() as p:
     check(r['total'] == E['found'] and r['h']['n'] == 0 and r['f'] == 0 and r['n']['n'] == E['found'] and any('Set your Standings' in w for w in r['warns']) and not M.ZKB_CALLS,
           f"Standings not set: all {E['found']} found pilots neutral, a note to set it, no zKillboard request ({r['keys']}, {r['warns']}, {len(M.ZKB_CALLS)})")
     # --- Standings ---
-    check(side_text(pg) == 'Set up your profile 0 of 3' and pg.evaluate("() => document.querySelector('#profile').dataset.p") == 'empty', f'the profile, not set up: "Set up your profile", 0 of 3 ({side_text(pg)!r})')
+    check(side_text(pg) == 'Set up your profile · Log in with EVE' and pg.evaluate("() => document.querySelector('#profile').dataset.p") is None, f'the profile, not set up: "Set up your profile", "Log in with EVE", no count (031) ({side_text(pg)!r})')
     for t in ('#tabBtnPilot', '#tabBtnFit'):
         pg.click(t); check(pg.is_visible('#profile'), f'the profile shows on {t}')
     open_side(pg)
@@ -106,7 +110,7 @@ with sync_playwright() as p:
     m = pg.evaluate("() => (document.querySelector('#sidePanel .side-msg') || {}).textContent || ''")
     check('(SIDE-01)' in m, f'an unknown pilot: SIDE-01 ({m!r})')
     pg.fill('#sidePilot', 'Test Pilot'); pg.press('#sidePilot', 'Enter'); pg.wait_for_timeout(800)
-    res = pg.evaluate("() => (document.querySelector('#sidePanel .side-res') || {}).textContent || ''")
+    res = pg.evaluate("() => (document.querySelector('#profileHead') || {}).textContent || ''")   # 032: on the profile's card
     check('Example Corp' in res and '[EXMPL]' in res and 'Example Alliance' in res and '<EXA>' in res, f'your pilot sets corp + alliance with tickers ({res.strip()!r})')
     # one friendly by name, then a pasted list (tickers ignored, one not found, one already hostile-listed moves)
     pg.fill('[data-side-add="hostile"]', 'Crimson Tide Syndicate'); pg.click('[data-side-act="add:hostile"]'); pg.wait_for_timeout(500)
@@ -122,9 +126,8 @@ with sync_playwright() as p:
     pg.click('[data-side-rm="friendly:alliance:%d"]' % M.ALLIED); pg.wait_for_timeout(200)
     check(chips(pg, 'friendly') == ['Blue Coalition Member'], f"× removes a group ({chips(pg, 'friendly')})")
     # pilot rows clamped
-    pg.fill('#sideRows', '99'); pg.press('#sideRows', 'Enter'); pg.wait_for_timeout(200)
-    v1 = pg.input_value('#sideRows'); pg.fill('#sideRows', '20'); pg.press('#sideRows', 'Enter'); pg.wait_for_timeout(200)
-    check(v1 == '30' and pg.input_value('#sideRows') == '20', f'pilot rows: 99 becomes 30 (the most); 20 kept ({v1}, {pg.input_value("#sideRows")})')
+    v1 = rows_set(pg, '99'); v2 = rows_set(pg, '20'); open_side(pg)
+    check(v1 == '30' and v2 == '20' and pg.evaluate("() => !document.querySelector('#sidePanel #sideRows')"), f'pilot rows, in the System Analyzer\'s gear: 99 becomes 30 (the most); 20 kept; gone from the profile ({v1}, {v2})')
     # suggestions: co-attackers on 2+ of your kills, not listed
     M.ZKB_CALLS.clear()
     pg.click('[data-side-act="suggest"]'); pg.wait_for_function("() => !document.querySelector('#sidePanel .status') || !/Checking/.test(document.querySelector('#sidePanel').textContent)", timeout=30000); pg.wait_for_timeout(500)
@@ -133,21 +136,21 @@ with sync_playwright() as p:
           f"suggested friendlies = co-attackers on 2+ kills, not listed ({sug} vs {E['suggest']}; {[c[0] for c in M.ZKB_CALLS]})")
     pg.click('[data-side-act="sugadd:alliance:%d"]' % M.ALLIED); pg.wait_for_timeout(300)
     check(chips(pg, 'friendly') == ['Blue Coalition Member', 'Allied Wing'], f"Add puts a suggestion on the friendly list ({chips(pg, 'friendly')})")
-    nsec = pg.evaluate("() => [(document.querySelector('#sidePanel .pp-sec[data-k=\"side\"] .pp-n') || {}).textContent, document.querySelector('#sidePanel .pp-sec[data-k=\"side\"]').classList.contains('done'), document.querySelector('#sidePanel .pp-sec[data-k=\"pilot\"]').classList.contains('done')]")
-    check(nsec == ['2 friendly · 2 hostile', True, True], f'the panel: Pilot and Standings ticked, "2 friendly · 2 hostile" {nsec}')
+    nsec = pg.evaluate("() => [(document.querySelector('#sidePanel .pp-sec[data-k=\"side\"] .pp-n') || {}).textContent, (document.querySelector('#ppTab-pilot .pp-tw') || {}).textContent]")
+    check(nsec == ['2 friendly · 2 hostile', 'typed pilot'], f'the panel: "2 friendly · 2 hostile"; the Pilot tab says "typed pilot" {nsec}')
     pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
     check(pg.evaluate("() => document.querySelector('#profilePanel').hidden"), 'Escape closes the panel')
-    chip = side_text(pg)
-    check(chip.startswith('Test Pilot') and '[EXMPL]' in chip and '<EXA>' in chip and chip.endswith('2 of 3'), f'the profile: your pilot with the tickers, 2 of 3 set up (no fit yet) ({chip!r})')
+    chip = side_text(pg); card = pg.evaluate("() => document.getElementById('profileHead').textContent + document.getElementById('profile').textContent")
+    check(chip == 'Test Pilot · Typed · log in for more' and '[EXMPL]' in card and '<EXA>' in card and 'of 3' not in card, f'the profile: your pilot and its line, the tickers on the card, no count (031) ({chip!r})')
     # reload: all kept
     pg.reload(); pg.wait_for_timeout(500)
     pg.evaluate(GROUPS_VIEW)
     open_side(pg)
-    kept = (chips(pg, 'friendly'), chips(pg, 'hostile'), pg.input_value('#sideRows'), pg.input_value('#sidePilot'))
+    kept = (chips(pg, 'friendly'), chips(pg, 'hostile'), rows_set(pg, None), (open_side(pg), pg.input_value('#sidePilot'))[1])
     check(kept == (['Blue Coalition Member', 'Allied Wing'], ['Crimson Tide Syndicate', 'Turncoat Corp'], '20', 'Test Pilot'), f'everything kept after a reload {kept}')
     pg.keyboard.press('Escape')
     # set the D3 threshold back to 15 for the fleet check
-    open_side(pg); pg.fill('#sideRows', '15'); pg.press('#sideRows', 'Enter'); pg.keyboard.press('Escape')
+    rows_set(pg, '15')
     # --- Local with Standings ---
     M.ZKB_CALLS.clear()
     analyze(pg, M.LOCAL, M.SCAN)

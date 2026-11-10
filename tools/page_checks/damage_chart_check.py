@@ -248,25 +248,25 @@ def desktop(b):
     pg.click(f'{R} .fl-dmg .cc-toggle[data-card="dmg"]'); ready(pg)
     check(pg.is_visible(f'{C} .dmg-svg'), 'opened again')
     # my ship replaces the preset
-    pg.click('#profileBtn', position={'x': 12, 'y': 14}); pg.fill('#myShipEft', VEXOR); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles')
+    pg.click('#profileFitL'); pg.fill('#myShipEft', VEXOR); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles')
     pg.keyboard.press('Escape')
     pg.wait_for_function(f"() => /your Vexor/.test((document.querySelector('{C} .dmg-vs') || {{}}).textContent || '')", timeout=60000); ready(pg)
     check(pg.locator(f'{C} .dmg-presets').count() == 0 and head(pg) == pg.evaluate(EXPECT, C) and '50MN Microwarpdrive II' in pg.inner_text(f'{C} .dmg-controls'),
           f'my ship saved: applied to your Vexor, no preset picker ({head(pg)} DPS)')
-    pg.click('#myShipUseLabel'); pg.wait_for_function(f"() => /typical battleship/.test(document.querySelector('{C} .dmg-vs').textContent)", timeout=60000)
+    pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape'); pg.wait_for_function(f"() => /typical battleship/.test(document.querySelector('{C} .dmg-vs').textContent)", timeout=60000)
     check(True, '"Use in assessments" off: back to the preset')
-    pg.click('#myShipUseLabel'); pg.wait_for_function(f"() => /your Vexor/.test(document.querySelector('{C} .dmg-vs').textContent)", timeout=60000)
+    pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape'); pg.wait_for_function(f"() => /your Vexor/.test(document.querySelector('{C} .dmg-vs').textContent)", timeout=60000)
     # v2026.10.14.47 (bug list #1, the owner via the inbox): with the card collapsed, switching "Use in assessments" off
     # and on must update the collapsed row too (it kept the old "DPS applied to you ..." text)
     ready(pg); mine_head = head(pg)
     pg.click(f'{C} .cc-toggle[data-card="dmg"]'); pg.wait_for_timeout(100)
     ROW = f"(document.querySelector('{R} .fl-dmg .cc-closed .cc-sum') || {{}}).textContent || ''"
     check(f'{mine_head} DPS applied to you' in pg.evaluate(ROW), f'collapsed, my ship in use: the row reads {pg.evaluate(ROW)!r}')
-    pg.click('#myShipUseLabel')
+    pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape')
     try: pg.wait_for_function(f"() => /typical battleship/.test({ROW})", timeout=20000); ok = True
     except Exception: ok = False
     check(ok, f'collapsed, "Use in assessments" off: the row follows the preset ({pg.evaluate(ROW)!r})')
-    pg.click('#myShipUseLabel')
+    pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape')
     try: pg.wait_for_function(f"() => /DPS applied to you/.test({ROW})", timeout=20000); ok = True
     except Exception: ok = False
     check(ok and f'{mine_head} DPS applied to you' in pg.evaluate(ROW), f'collapsed, back on: the row follows my ship again ({pg.evaluate(ROW)!r})')
@@ -310,11 +310,11 @@ def desktop(b):
     pg.click(f'{P} .cc-toggle[data-card="dmg"]'); pg.wait_for_timeout(150)
     PROW = f"(document.querySelector('{P} .cc-sum') || {{}}).textContent || ''"
     before = pg.evaluate(PROW)
-    pg.click('#myShipUseLabel')
+    pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape')
     try: pg.wait_for_function(f"() => /typical/.test({PROW})", timeout=20000); ok = True
     except Exception: ok = False
     check(ok and 'DPS applied to you' in before, f'Pilot loss, collapsed: "Use in assessments" off updates the row ({before!r} -> {pg.evaluate(PROW)!r})')
-    pg.click('#myShipUseLabel')
+    pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape')
     check(not errs, f'desktop: no page errors {errs}')
     pg.screenshot(path=os.path.join(os.environ.get('SHOTS', '/tmp'), 'dmg_desktop.png'), full_page=True)
     ctx.close()

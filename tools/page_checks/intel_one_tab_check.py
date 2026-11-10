@@ -85,11 +85,11 @@ with sync_playwright() as p:
 
     # the same mark twice redraws nothing; a new count is drawn
     B.evaluate("() => { window.__draws = 0; const r = itRender; itRender = function(){ window.__draws++; return r.apply(this, arguments); }; }")
-    B.evaluate("() => { itLockHear({on: true, s: it.remote.s, n: it.remote.n}); itLockHear({on: true, s: it.remote.s, n: it.remote.n}); }"); B.wait_for_timeout(200)
+    B.evaluate("() => { const m = Object.assign({}, it.remote, {on: true}); itLockHear(m); itLockHear(m); }"); B.wait_for_timeout(200)
     same = B.evaluate("() => window.__draws")
-    B.evaluate("() => itLockHear({on: true, s: 'near', n: 4})"); B.wait_for_timeout(200)
+    B.evaluate("() => itLockHear({on: true, s: 'near', n: 2, h: 4, j: 2, i: 0})"); B.wait_for_timeout(200)   # 032: the lamp counts people (h), the closest jump (j)
     nb = st(B)
-    check(same == 0 and nb['mark'] == 'near' and nb['near'] == '4 near', f'the same mark posted twice draws nothing ({same} redraws asked); a new one is drawn {nb["mark"]} {nb["near"]!r}')
+    check(same == 0 and nb['mark'] == 'near' and nb['near'].startswith('4 near · 2j'), f'the same mark posted twice draws nothing ({same} redraws asked); a new one is drawn {nb["mark"]} {nb["near"]!r}')
     A.evaluate("() => { itLk.last = ''; itLockState(); }"); B.wait_for_timeout(300)   # back to A's real mark
 
     # Move Intel here (B)

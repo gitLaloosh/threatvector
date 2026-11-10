@@ -7,8 +7,9 @@ Never a live login and never live ESI (CLAUDE.md): sso_game_check.py's stand-ins
 made-up Chatlogs folder and sa_mocks.py's made-up Local), plus a stand-in for ESI's /corporations/<id>/contacts/ and
 /alliances/<id>/contacts/ that records each request and answers with pages (X-Pages, Last-Modified), Expires, 401, 403, 429 or 503 as a
 case sets. Made-up characters, groups, standings and tokens only. Checks:
-  * the Standings section: logged out, one line and its info panel (shared close button); logged in, the switch unchecked; ticked without
-    the permission: Continue to EVE / Cancel; Continue asks EVE for both contacts scopes; back with both: on, tvEveStand true, both lists
+  * the switch on the profile's EVE tab (032), the lists on its Pilot tab: logged out, "Not asked for" and its info panel (shared close
+    button); logged in, unchecked; ticked without the permission it waits ("Needs EVE's OK", one Continue to EVE); Continue asks EVE for
+    both contacts scopes; back with both: on, tvEveStand true, both lists
     read with the token, X-Compatibility-Date and X-User-Agent, "From EVE: 5 blue · 6 red", the typed lists and Suggested friendlies hidden
     (dscanSide unchanged), the profile's tags; back with one: SSO-07, off; an NPC corporation: the switch disabled, no request;
   * the rule, in the System Analyzer: your own groups friendly; an alliance entry; a corporation entry inside a listed alliance (grouped by
@@ -24,8 +25,8 @@ case sets. Made-up characters, groups, standings and tokens only. Checks:
   * Intel: a report and a kill made while the typed lists said friendly are worked out again when EVE's standings come in (sides, friendlies
     only, the kill's threat ships, Near You), with no alert; a typed-list edit re-works them too;
   * the first read after a reload is waited for (Analyze draws once, with EVE's sides); over 10 s: the typed lists, then a redraw;
-  * a new tab with the setting on: the login's button says "Also asks for: Corporation contacts, Alliance contacts"; Log out: off, the typed
-    lists back;
+  * a new tab with the setting on: the login says "EVE will ask for 2 permissions"; Log out keeps the pick (the owner: "keep the picks"),
+    the typed lists back;
   * 390 px: Continue to EVE 44 px tall, no sideways scroll; no page errors;
   * mutants (the page with one rule broken) each fail the rule cases: typed lists winning, evidence deciding, the corporation winning,
     hostile winning across lists, an alliance entry over a pilot entry, a 0 entry deciding, a read before Expires, a 401 retried, the
@@ -103,8 +104,8 @@ reqs = lambda who=None: [x for x in CREQ if who is None or x['who'] == who]
 GROUPS = """() => { const out = {}; for(const d of document.querySelectorAll('#saResults details[data-sa-g]')){ const w = d.querySelector('.sa-why');
   out[d.dataset.saG] = {n: Number((d.querySelector('.sa-gn') || {}).textContent || 0), why: w ? w.textContent : '', cls: w ? w.className : '', title: w ? w.title : ''}; } return out; }"""
 SEC = """() => { const q = (s) => document.querySelector(s), t = (x) => x ? x.textContent.replace(/\\s+/g, ' ').trim() : '';
-  const sec = q('#sidePanel .pp-sec[data-k="side"]'), cb = q('#sidePanel [data-sso="stand"]'), typed = q('#sidePanel .side-typed');
-  return {sec: t(sec), cb: cb ? cb.checked : null, dis: cb ? cb.disabled : null, ask: !!q('#sidePanel [data-sso="st-go"]'), on: sideEve.on, use: sideEveUse(),
+  const sec = q('#sidePanel .pp-sec[data-k="side"]'), cb = q('#ppSw-stand'), typed = q('#sidePanel .side-typed');
+  return {sec: t(q('#eveTab [data-feat="stand"]')) + ' ‖ ' + t(sec), cb: cb ? cb.checked : null, dis: cb ? cb.disabled : null, ask: !!q('#eveTab [data-sso="eve-go"]'), on: sideEve.on, use: sideEveUse(),
     ls: localStorage.getItem('tvEveStand'), typedHidden: typed ? typed.hidden : null, n: t(q('#sidePanel .pp-sec[data-k="side"] .pp-n')),
     side: localStorage.getItem('dscanSide'), sw: document.documentElement.scrollWidth, vw: innerWidth}; }"""
 
@@ -153,7 +154,10 @@ with sync_playwright() as p:
     def login(pg, scp=(SC, SA_), tab='madeUpTabId0030', tok='madeUpAccessToken'):
         pg.evaluate("([id, scp, tab, rt, tok]) => { sso.who = {id, name: 'Your Main'}; sso.access = tok; sso.exp = Date.now() + 1200000; sso.scp = scp;"
                     " ssoSet(SSO_REFRESH, rt); ssoSet(SSO_WHO, JSON.stringify(sso.who)); ssoSet(SSO_TAB, tab); sideEve.stop = ''; renderSidePanel(); }", [MAIN, list(scp), tab, REFRESH, tok])
-    def prof(pg): pg.evaluate("() => { if(!profileIsOpen()) openProfile(); renderSidePanel(); }"); pg.wait_for_timeout(150)
+    def prof(pg): pg.evaluate("() => { openProfile('pilot'); renderSidePanel(); }"); pg.wait_for_timeout(150)   # 032: Standings on the Pilot tab
+    def evetab(pg): pg.evaluate("() => { openProfile('eve'); renderSidePanel(); }"); pg.wait_for_timeout(150)   # the switch on the EVE tab
+    def tick(pg): evetab(pg); pg.click('#ppSw-stand'); pg.wait_for_timeout(150)
+    def go(pg): evetab(pg); pg.click('#eveTab [data-sso="eve-go"]')
     def on(pg): pg.evaluate("() => { sideEveToggle(true); }"); pg.wait_for_function("() => !sideEve.busy && sideEve.tried", timeout=8000); pg.wait_for_timeout(200)
     def due(pg): pg.evaluate("() => { sideEve.next = 0; }")
     def need(pg): pg.evaluate("() => sideEveNeed()"); pg.wait_for_function("() => !sideEve.busy", timeout=8000); pg.wait_for_timeout(150)
@@ -193,20 +197,20 @@ with sync_playwright() as p:
 
     # ---- the Standings section; the permission step ----
     c = ctx_new(); pg = page(c); prof(pg); s = sec(pg)
-    check(s['cb'] is None and 'Log in with EVE to use your EVE standings' in s['sec'] and s['typedHidden'] is False,
-          f"logged out: one line, the typed lists shown ({s['sec'][:120]!r})")
-    pg.click('#sidePanel .side-eve summary.info-btn'); pg.wait_for_timeout(200)
+    check(s['cb'] is False and 'Not asked for' in s['sec'] and s['typedHidden'] is False,
+          f"logged out: the switch, \"Not asked for\" (picked before you go), the typed lists shown ({s['sec'][:120]!r})")
+    evetab(pg); pg.click('#eveTab [data-feat="stand"] summary.info-btn'); pg.wait_for_timeout(200)
     ip = pg.evaluate("() => { const d = [...document.querySelectorAll('[role=dialog]')].find(x => x.offsetParent && /How EVE standings work/.test(x.textContent)); return d ? [!!d.querySelector('button.x-close'), /alliance's standing decides/.test(d.textContent)] : null; }")
     check(ip == [True, True], f'its info panel: "How EVE standings work", the alliance deciding, the shared close button ({ip})')
     pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
     login(pg, scp=()); prof(pg); s = sec(pg)
-    check(s['cb'] is False and 'Needs its OK from EVE' in s['sec'] and not s['on'], f"logged in: the switch, unchecked ({s['sec'][:90]!r})")
-    pg.click('#sidePanel [data-sso="stand"]'); pg.wait_for_timeout(200); s = sec(pg)
-    check(s['ask'] and not s['on'] and 'Continue to EVE' in s['sec'] and "read your corporation's and your alliance's contacts" in s['sec'], 'ticked without the permission: Continue to EVE / Cancel, still off')
-    pg.click('#sidePanel [data-sso="st-no"]'); pg.wait_for_timeout(150); s = sec(pg)
-    check(not s['ask'] and not s['on'], 'Cancel closes it; still off')
-    reset(scp=[SC, SA_]); creset(); pg.click('#sidePanel [data-sso="stand"]'); pg.wait_for_timeout(150)
-    pg.click('#sidePanel [data-sso="st-go"]'); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(1500)
+    check(s['cb'] is False and 'Off: your typed lists are used' in s['sec'] and not s['on'], f"logged in: the switch, unchecked ({s['sec'][:90]!r})")
+    tick(pg); s = sec(pg)
+    check(s['ask'] and s['on'] and not s['use'] and "Needs EVE's OK" in s['sec'] and not CREQ, f"ticked without the permission: it waits, Continue to EVE, nothing read ({s['sec'][:90]!r})")
+    tick(pg); s = sec(pg)
+    check(not s['ask'] and not s['on'], 'unticked: off, nothing waiting')
+    reset(scp=[SC, SA_]); creset(); tick(pg)
+    go(pg); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(1500)
     auth = [x for x in LOG if x[0] == '/v2/oauth/authorize']; q = auth[0][2] if auth else {}
     check(set((q.get('scope') or '').split()) == {SC, SA_}, f"Continue to EVE: EVE is asked for both contacts scopes ({q.get('scope')!r})")
     pg.wait_for_function("() => sideEve.tried", timeout=8000); prof(pg); s = sec(pg)
@@ -218,7 +222,7 @@ with sync_playwright() as p:
           f"\"From EVE: 5 blue · 6 red\" (factions and 0 not counted); the typed lists and Suggested friendlies hidden, kept in dscanSide ({s['n']!r})")
     vis = pg.evaluate("() => { const t = document.querySelector('#sidePanel .side-typed'); return t && t.getBoundingClientRect().height; }")
     check(vis == 0, f'the typed lists take no room ({vis})')
-    tg = pg.evaluate("() => [...document.querySelectorAll('#sidePanel .sso-perms .sso-tag')].map(x => x.textContent)")
+    tg = pg.evaluate("() => [...document.querySelectorAll('#eveTab .sso-perms .sso-tag')].map(x => x.textContent)")
     check(set(tg) == {'Corporation contacts', 'Alliance contacts'}, f'the profile: Corporation contacts and Alliance contacts tags {tg}')
     pg.click('#sidePanel [data-sso="st-list"]'); pg.wait_for_timeout(600)
     lst = pg.evaluate("() => [...document.querySelectorAll('#sidePanel .side-eve-l')].map(l => [l.querySelector('.side-lab').textContent, [...l.querySelectorAll('.side-eve-r')].map(r => r.textContent)])")
@@ -230,8 +234,8 @@ with sync_playwright() as p:
     pg.close(); c.close()
     # back with one scope only
     c = ctx_new(); pg = page(c); login(pg, scp=()); prof(pg); reset(scp=[SC]); creset()
-    pg.click('#sidePanel [data-sso="stand"]'); pg.wait_for_timeout(150); pg.click('#sidePanel [data-sso="st-go"]'); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(1200); prof(pg); s = sec(pg)
-    check(not s['on'] and '(SSO-07)' in s['sec'] and not CREQ, f"back with one of the two: SSO-07, still off, nothing read ({s['sec'][-120:]!r})")
+    tick(pg); go(pg); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(1200); prof(pg); s = sec(pg)
+    check(not s['on'] and '(SSO-07)' in s['sec'] and not CREQ, f"back with one of the two: SSO-07, off, nothing read ({s['sec'][-120:]!r})")
     pg.close(); c.close()
     # an NPC corporation, no alliance: disabled, nothing asked
     me_npc = dict(ME, corp={'id': 1000167, 'name': 'State War Academy', 'kind': 'corporation'}, alliance=None)
@@ -349,17 +353,17 @@ with sync_playwright() as p:
 
     # ---- a new tab; Log out ----
     c = ctx_new(); pg = page(c, stand=True); prof(pg)
-    sub = pg.evaluate("() => [...document.querySelectorAll('#sidePanel .sso-box .sso-sub .ctx')].map(x => x.textContent)")
-    check(sub == ['Also asks for: Corporation contacts, Alliance contacts'], f'logged out with it on: the button asks for both ({sub})')
-    login(pg); on(pg); prof(pg); pg.click('[data-sso="logout"]'); pg.wait_for_timeout(500); prof(pg); s = sec(pg)
-    check(not s['on'] and s['ls'] == 'false' and not s['use'] and s['typedHidden'] is False, f"Log out: off, the typed lists back ({s['ls']})")
+    evetab(pg); sub = pg.evaluate("() => [...document.querySelectorAll('#eveTab .sso-box .sso-sub .ctx')].map(x => x.textContent)")
+    check(sub == ['EVE will ask for 2 permissions'], f'logged out with it on: the login asks for both ({sub})')
+    login(pg); on(pg); evetab(pg); pg.click('[data-sso="logout"]'); pg.wait_for_timeout(500); prof(pg); s = sec(pg)
+    check(s['on'] and s['ls'] == 'true' and not s['use'] and s['typedHidden'] is False, f"Log out: the pick kept (the owner: \"keep the picks\"), the typed lists back ({s['ls']})")
     pg.close(); c.close()
 
     # ---- 390 px ----
-    c = ctx_new(390); pg = page(c); login(pg, scp=()); prof(pg); pg.click('#sidePanel [data-sso="stand"]'); pg.wait_for_timeout(200)
-    hh = pg.evaluate("() => document.querySelector('#sidePanel [data-sso=\"st-go\"]').getBoundingClientRect().height"); s = sec(pg)
+    c = ctx_new(390); pg = page(c); login(pg, scp=()); tick(pg)
+    hh = pg.evaluate("() => document.querySelector('#eveTab [data-sso=\"eve-go\"]').getBoundingClientRect().height"); s = sec(pg)
     check(hh >= 44 and s['sw'] <= s['vw'], f'390 px: Continue to EVE {hh:.0f} px tall, no sideways scroll')
-    pg.click('#sidePanel [data-sso="st-no"]'); login(pg); on(pg); prof(pg); pg.click('#sidePanel [data-sso="st-list"]'); pg.wait_for_timeout(500); s = sec(pg)
+    tick(pg); login(pg); on(pg); prof(pg); pg.click('#sidePanel [data-sso="st-list"]'); pg.wait_for_timeout(500); s = sec(pg)
     check(s['sw'] <= s['vw'], f"390 px: See EVE's standings open, no sideways scroll ({s['sw']} / {s['vw']})")
     pg.close(); c.close()
 

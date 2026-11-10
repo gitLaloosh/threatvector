@@ -78,7 +78,7 @@ def desktop(b):
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.removeItem('dscanMyShip')"); pg.reload()
     pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
     check(pg.is_hidden(f'{R} .mys-switch-host') and pg.locator(f'{R} .mys-board').count() == 0, 'no ship saved: no scoreboard')
-    pg.click('#profileBtn', position={'x': 12, 'y': 14}); pg.fill('#myShipEft', VEXOR); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles'); pg.keyboard.press('Escape')
+    pg.click('#profileFitL'); pg.fill('#myShipEft', VEXOR); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles'); pg.keyboard.press('Escape')
     pg.wait_for_function(f"() => {{ const b = document.querySelector('{R} .mys-board'); return b && !/…/.test(b.textContent); }}", timeout=60000); settle(pg, 600)
     c = cells(pg)
     check(list(c) == ORDER, f'six values in board order: {c}')
@@ -119,9 +119,9 @@ def desktop(b):
     check(pg.locator(f'{R} .is-changed').count() == 0 and cells(pg) == c2, 'reset: numbers back, no amber')
     pg.click(f'{R} .mys-sw-btn.is-threat'); settle(pg)
     # Use in assessments off -> no strip
-    pg.click('#myShipUseLabel'); pg.wait_for_timeout(300)
+    pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape'); pg.wait_for_timeout(300)
     check(pg.is_hidden(f'{R} .mys-switch-host'), '"Use in assessments" off: no scoreboard')
-    pg.click('#myShipUseLabel'); pg.wait_for_selector(f'{R} .mys-board', timeout=60000)
+    pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape'); pg.wait_for_selector(f'{R} .mys-board', timeout=60000)
     # Pilot losses: the strip follows the visible tab
     pg.click('#tabBtnPilot')
     run_async(pg, """async ([a, b]) => { const mk = async (text, day) => { const parsed = await parseEftFit(text);
@@ -150,7 +150,7 @@ def phone(b):
     ctx = b.new_context(bypass_csp=True, viewport={'width': W, 'height': 740}, is_mobile=True, has_touch=True); pg = ctx.new_page()
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.removeItem('dscanMyShip')"); pg.reload()
-    pg.tap('#profileBtn', position={'x': 12, 'y': 14}); pg.fill('#myShipEft', VEXOR); pg.tap('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles')
+    pg.tap('#profileBtn'); pg.tap('#ppTab-fit'); pg.fill('#myShipEft', VEXOR); pg.tap('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles')
     pg.touchscreen.tap(W // 2, 40); pg.wait_for_timeout(200)
     pg.tap('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .mys-board', timeout=60000); settle(pg)
     pg.wait_for_function(f"() => {{ const b = document.querySelector('{R} .mys-board'); return b && !/…/.test(b.textContent); }}", timeout=60000)

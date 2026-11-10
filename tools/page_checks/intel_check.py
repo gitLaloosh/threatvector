@@ -184,8 +184,8 @@ with sync_playwright() as p:
     pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true})); }", SIDE); pg.reload(); pg.wait_for_timeout(400)   # v2026.11.08.4 (028): a new user's alerts start off; these cases are a player who turned them on
     tabs = pg.evaluate("() => [...document.querySelectorAll('.tabs .tab-btn')].filter(b => b.checkVisibility()).map(b => b.textContent)")
     check(tabs == ['Intel', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs in the order of use, Intel first (v2026.10.30.1, the owner: "intel > system > pilot > fit") {tabs}')
-    hdr = pg.evaluate("() => { const b = document.querySelector('#intelNear'); return [b.closest('#profile') ? 'profile' : '', b.hidden, document.querySelectorAll('#myShipBar input[aria-label=\"Watch the intel channels\"]').length, document.querySelector('#profile').dataset.s]; }")
-    check(hdr == ['profile', True, 0, 'off'], f'v2026.10.29.1: no Intel switch in the header; v2026.11.01.1: Intel\'s mark on the profile, hidden while Intel is off {hdr}')
+    hdr = pg.evaluate("() => { const b = document.querySelector('#intelNear'); return [b.closest('#profile') ? 'profile' : '', b.hidden, document.querySelectorAll('#myShipBar input[aria-label=\"Watch the intel channels\"]').length, document.querySelector('#profile').dataset.s, b.querySelector('.pf-vw').textContent]; }")
+    check(hdr == ['profile', False, 0, 'off', 'Off'], f'v2026.10.29.1: no Intel switch in the header; 032: Intel\'s lamp on the profile, "Off" while Intel is off {hdr}')
     pg.click('#tabBtnIntel'); pg.wait_for_timeout(200)
     box = pg.evaluate("() => [...document.querySelectorAll('#intelPanel .it-setup .it-box .k')].map(k => k.textContent)")
     check(box == ['1 · Chat logs folder', '2 · Intel channels', '3 · You', '4 · Range and alerts'], f'the card: four setup boxes {box}')
@@ -287,12 +287,15 @@ with sync_playwright() as p:
     check(not pg.evaluate("() => !!document.querySelector('.it-pop:not([hidden])')") and leak == [], f'no intel channel name shown outside the gear (text or hover) {leak}')
     al = pg.evaluate("() => [__fs.beeps, __fs.notes.map(n => n[0])]")
     check(al == [3, ['8WA-Z6 · 1 jump', 'Y-OMTZ · 3 jumps', 'D-W7F0 · 2 jumps']], f'alerts: sound and notification for hostile/neutral within 3 jumps, not 4, not friendlies {al}')
-    badge = pg.evaluate("() => [document.querySelector('#intelNear').hidden, document.querySelector('#intelNearN').textContent, document.querySelector('#profile').dataset.s, document.querySelector('#tabBtnIntel').dataset.s]")
-    check(badge == [False, '4 near', 'near', 'near'], f'the header: Intel\'s mark on the profile says "4 near", the Intel tab\'s dot too {badge}')
-    pg.click('#tabBtnPilot'); pg.click('#intelNear'); pg.wait_for_timeout(300)   # v.97: the pill opens Intel and doesn't switch it off
-    pill = pg.evaluate("() => [it.on, document.querySelector('#intelSw').checked, getComputedStyle(document.querySelector('#tabIntel')).display, document.querySelector('#intelNear').title]")
-    check(pill[:3] == [True, True, 'block'] and pill[3] == 'Intel: 4 systems with a hostile or neutral report within 3 jumps. Open Intel',
-          f'pressing "4 near" opens the Intel tab and leaves Intel on (v.96: it turned Intel off) {pill}')
+    # 032: the lamp counts people (hostiles and neutrals) and says the closest jump; the systems are in its hover
+    hn = pg.evaluate("() => itNearSum().h")
+    badge = pg.evaluate("() => [document.querySelector('#intelNear').hidden, document.querySelector('#intelNear .pf-vw').textContent, document.querySelector('#profile').dataset.s, document.querySelector('#tabBtnIntel').dataset.s]")
+    check(hn >= 4 and badge == [False, f'{hn} near · 1j', 'near', 'near'], f'the header: Intel\'s lamp on the profile says "{hn} near · 1j", the Intel tab\'s dot too {badge}')
+    pg.click('#tabBtnPilot'); pg.click('#intelNear'); pg.wait_for_timeout(300)   # v.97: the lamp doesn't switch Intel off; 032: it opens the profile's Intel tab
+    pill = pg.evaluate("() => [it.on, document.querySelector('#intelSw').checked, !document.querySelector('#profilePanel').hidden && document.querySelector('#ppTab-intel').getAttribute('aria-selected'), document.querySelector('#intelNear').title]")
+    check(pill[:3] == [True, True, 'true'] and pill[3] == f'Intel: {hn} hostiles and neutrals in 4 systems within 3 jumps, the closest 1 jump away (8WA-Z6). Open the Intel tab of your profile',
+          f'pressing the Intel lamp opens the profile\'s Intel tab and leaves Intel on (v.96: it turned Intel off) {pill}')
+    pg.keyboard.press('Escape'); pg.click('#tabBtnIntel'); pg.wait_for_timeout(200)
     W(pg, F_INTEL, line(time.time(), 'Scout Alt', '8WA-Z6 Marrek Ketter still'))
     tick(pg)
     check(pg.evaluate("() => __fs.beeps") == 3, 'one alert per system per 30 s')
@@ -341,9 +344,9 @@ with sync_playwright() as p:
     check(pg.evaluate("() => !document.querySelector('.it-pop')"), 'Escape closes the settings')
     # ---- off ----
     pg.click('#intelSwLabel'); pg.wait_for_timeout(300)
-    off = pg.evaluate("() => [document.querySelector('#intelSw').checked, it.on, it.ticker, document.querySelector('#intelNear').hidden]")
+    off = pg.evaluate("() => [document.querySelector('#intelSw').checked, it.on, it.ticker, document.querySelector('#intelNear .pf-vw').textContent]")   # 032: the lamp stays, saying Off
     stopped = pg.inner_text('#intelPanel .it-sub')
-    check(off == [False, False, None, True] and stopped == 'Stopped. The switch beside the gear starts it again.', f'the switch on the card turns it off; the pill goes {off} ({stopped!r})')
+    check(off == [False, False, None, 'Off'] and stopped == 'Stopped. The switch beside the gear starts it again.', f'the switch on the card turns it off; the pill goes {off} ({stopped!r})')
     n0 = len(pg.evaluate(FEED))
     W(pg, F2, line(time.time(), 'Scout Alt', '4X0-8B Marrek Ketter')); tick(pg)
     check(len(pg.evaluate(FEED)) == n0, 'off: no more reading')
@@ -389,8 +392,8 @@ with sync_playwright() as p:
     W(pg, F_INTEL, line(time.time(), 'Scout Alt', '8WA-Z6 Marrek Ketter sabre')); tick(pg)
     over = pg.evaluate("() => [document.documentElement.scrollWidth, [...document.querySelectorAll('#intelPanel *, .tabs *')].filter(e => { const r = e.getBoundingClientRect(); return r.width && (r.right > innerWidth + 1 || r.left < -1); }).map(e => e.className || e.tagName).slice(0, 5)]")
     check(over[0] <= 390 and not over[1], f'390 px: nothing off the page {over}')
-    pill = pg.evaluate("() => { const r = document.querySelector('#intelNearN').getBoundingClientRect(), b = document.querySelector('#intelNear').getBoundingClientRect(); return [document.querySelector('#intelNearN').textContent, Math.round(r.height), Math.round(b.height)]; }")
-    check(pill[0].endswith(' near') and pill[1] <= 20 and pill[2] >= 44, f'390 px: the pill on one line, its button 44 px tall {pill}')
+    pill = pg.evaluate("() => { const r = document.querySelector('#intelNearN').getBoundingClientRect(), b = document.querySelector('#intelNear').getBoundingClientRect(); return [document.querySelector('#intelNearN').innerText, Math.round(r.height), Math.round(b.height)]; }")
+    check(pill[0].isdigit() and pill[1] <= 20 and pill[2] >= 44, f'390 px: the pill on one line, its button 44 px tall {pill}')
     gear = pg.evaluate("() => { const r = document.querySelector('[data-it-act=gear]').getBoundingClientRect(); return [r.width, r.height]; }")
     check(gear[0] >= 44 and gear[1] >= 44, f'390 px: the gear 44 px {gear}')
     pg.screenshot(path='/tmp/intel_390.png', full_page=True)
