@@ -138,9 +138,12 @@ workers: blob:); `<meta name="referrer" content="no-referrer">`. So:
   uses `bypass_csp=True` too; never turn the policy off in csp_check.
 
 **Log in with EVE** (v2026.11.08.1, build queue 024, SSO Phase 1; Project docs roadmap/sso-phase1-plan.md and roadmap/eve-sso-plan.md;
-LESSON #147): the profile's Pilot section has CCP's black button above the typed name ("or type it"); logged in, the field is the name,
-an "EVE login" tag and Log out. CCP's PKCE recipe, no server: no client secret anywhere, **no scope** at login on its own (a feature
-asks for its own when it is turned on; Phase 2 below). So:
+LESSON #147): CCP's black button is on the profile's EVE tab (since v2026.11.10.1, build queue 032), under the features' switches:
+**choose before you go**, the one trip to EVE asks for exactly what's on (`ssoStart(ssoWant(), 'eve')`; EVE's page is all or cancel);
+logged in, the tab shows the name, an "EVE login" tag and Log out; the typed pilot stays on the Pilot tab. CCP's PKCE recipe, no
+server: no client secret anywhere, **no scope** at login with nothing picked. A switch turned on while logged in without its permission
+waits ("Needs EVE's OK", the EVE lamp amber) for one Continue to EVE (`data-sso="eve-go"`); it turns off with SSO-07 only when a
+trip comes back without it or ESI answers 403 (the owner, 032). So:
 - **The login is optional.** Nothing may require it: typing a pilot, hand-kept Standings and EFT pastes all stay.
 - **The address is cleaned before any request:** `SSO_RET` at the top of the script takes code/state/error out of the address
   (keeping other parameters and the hash) before `gdVersionCheck` or anything else asks anything; `ssoFinish` uses it after start-up.
@@ -150,7 +153,7 @@ asks for its own when it is turned on; Phase 2 below). So:
   hard-coded.
 - **Tokens:** the access token in memory only, sent only to ESI by esiFetch's auth branch (Phase 2); the refresh token and `{id,
   name}` in sessionStorage (`tvSsoRefresh`, `tvSsoWho`; `tvSsoPending` for the press; `tvSsoTab` since Phase 2), never localStorage.
-  Log out revokes it and clears the pilot; the revoke takes the app off EVE's authorized-apps list for that character (the owner's
+  Log out revokes it and clears the pilot, and keeps the picks (`tvOnlineShow`, `tvEveStand`, `gameLoc`; the owner, 032); the revoke takes the app off EVE's authorized-apps list for that character (the owner's
   hand test, 2026-11-08: the list shows live logins only, the dev and live apps separately), so never say EVE "keeps" a permission
   after Log out. The link there (developers.eveonline.com/authorized-apps, through `leaveAsk`) shows only with a permission held
   ("EVE permissions:"). CCP has no logout page for apps: the player stays signed in on EVE's own site, so nothing may promise more. Another tab changing the pilot logs this tab out.
@@ -161,12 +164,13 @@ asks for its own when it is turned on; Phase 2 below). So:
   http://localhost:8000); any other origin shows the button disabled. Errors SSO-01..08 (06-08 Phase 2).
 - **Never a live login in a check:** `tools/page_checks/sso_check.py` serves the page at both origins and answers for CCP with keys
   made per run; made-up tokens in the `madeUp…` form. The only live login is the owner's hand test on the dev app.
-- **Phase 2, Use my game location** (v2026.11.08.4, build queue 028; Project doc roadmap/sso-phase2-plan.md; LESSON #150): a checkbox in
-  Intel's box 3 (`itGlHtml`, `it.set.gameLoc` in `dscanIntel`). Turned on without the permission it shows Continue to EVE / Cancel;
+- **Phase 2, Use my game location** (v2026.11.08.4, build queue 028; Project doc roadmap/sso-phase2-plan.md; LESSON #150): a switch on
+  the profile's EVE tab (`#ppSw-loc`, `it.set.gameLoc` in `dscanIntel`; Intel's box 3, `itGlHtml`, says whether it's on and opens the
+  EVE tab). Without the permission it waits (above);
   `ssoStart(want, from)` asks for `esi-location.read_location.v1` plus what the tab holds and what's on (`ssoWant`; EVE gives a later
-  login only what it asks for, the owner's hand test 2026-11-08, so never drop "Also asks for"), never a ship scope
-  (the owner: no feature may suggest the page knows the fit you fly unless it reads ship and fit from the game). The switch turns on only
-  when the token's `scp` has it (else SSO-07). So:
+  login only what it asks for, the owner's hand test 2026-11-08, so every trip asks for all of `ssoWant()`, and the EVE tab says how many),
+  never a ship scope (the owner: no feature may suggest the page knows the fit you fly unless it reads ship and fit from the game). The
+  checks run only when the token's `scp` has it (a trip back without it: SSO-07, off). So:
   - **The token goes out only through `esiFetch(url, init, kind, {scope})`:** ESI URLs only, checked before `ssoAccess()`; only there
     Authorization, `X-Compatibility-Date: ESI_COMPAT` (a date ESI answered, never a future one) and `X-User-Agent` (`ESI_UA`). Outside
     that branch esiFetch still sends what it is given. `ssoAccess` is called only from esiFetch (check_request_gates).
@@ -187,12 +191,12 @@ asks for its own when it is turned on; Phase 2 below). So:
   - **Intel's alerts start unchecked** for someone with no saved settings (`itDefaults`; saved values kept). Checks that test alerts seed
     `{sound: true, notify: true}`. **Intel stopped reading** (`itLostSound`): one built-in sound once per stop, sound on only.
   - Checked by `tools/page_checks/sso_game_check.py` (stand-in SSO and ESI location; never live).
-- **Show when I'm online in EVE** (v2026.11.09.1, build queue 029; Project doc roadmap/sso-online-status-plan.md): a checkbox under the
-  login in the profile's Pilot section (`ssoOnRowHtml`), `esi-location.read_online.v1` (`SSO_ON`) through Phase 2's permission step
-  (`ssoStart([SSO_ON], 'online')`; `ssoWant` adds it while `ssoOn.show`), the setting in localStorage `tvOnlineShow` (true/false). So:
+- **Show when I'm online in EVE** (v2026.11.09.1, build queue 029; Project doc roadmap/sso-online-status-plan.md): a switch on the
+  profile's EVE tab (`#ppSw-online`), `esi-location.read_online.v1` (`SSO_ON`) through the EVE tab's permission step
+  (`ssoWant` adds it while `ssoOn.show`), the setting in localStorage `tvOnlineShow` (true/false). So:
   - **The portrait** (the owner: "A and C"): a dot on its top-right corner (`#profileOn`, `--st-online` / `--text-faint`) and the portrait
-    greyed while logged off (`.pf[data-on="off"]`); Intel's square stays bottom-right; nothing when off, logged out or without the
-    permission (`ssoOnShown`). Log out turns it off (the owner, at the review).
+    greyed while logged off (`.pf[data-on="off"]`); nothing when off, logged out or without the permission (`ssoOnShown`). Log out
+    stops the checks and keeps the switch (032; was "turns it off").
   - **One tab asks per character:** a Web Lock `tv-online:<id>` (queued; the tab running Intel takes it over with steal and asks on
     Intel's tick, `ssoOnTick`); every other holder has one timer (`ssoOnArm`). Let go before leaving for EVE's page and on pagehide; a
     hidden tab without Intel leaves the queue; a tab waiting 3 minutes without an answer takes over. The answer `{id, online, at}` goes out
@@ -202,9 +206,9 @@ asks for its own when it is turned on; Phase 2 below). So:
     the amber wake line; Intel never stops by itself. Drawn only when what it shows changes (`ssoOnKey`; the time is its own span).
   - Checked by `tools/page_checks/sso_online_check.py` (Phase 2's stand-ins plus ESI's /online/; never live).
 - **Standings from EVE** (v2026.11.09.2, build queue 030, SSO Phase 3; Project doc roadmap/sso-phase3-standings-plan.md; LESSON #151): a
-  checkbox at the top of the profile's Standings section, "Use my corporation's and alliance's EVE standings" (`sideEveHtml`), its two
-  scopes (`SSO_SC`, `SSO_SA`; personal contacts are not read, the owner) through Phase 2's permission step (`ssoStart([SSO_SC, SSO_SA],
-  'stand')`), the setting in localStorage `tvEveStand` (true/false). So:
+  switch on the profile's EVE tab, "Use my corporation's and alliance's EVE standings" (`#ppSw-stand`; what was read shows in the
+  Pilot tab's Standings, `sideEveStHtml`), its two scopes (`SSO_SC`, `SSO_SA`; personal contacts are not read, the owner) through the
+  EVE tab's permission step, the setting in localStorage `tvEveStand` (true/false). So:
   - **EVE decides while it's on** (`sideEveUse`, `sideEveSide` inside `sideOf`): your own groups friendly; above 0 friendly, below 0 hostile,
     0 or none neutral; in one list the pilot's entry, else his corporation's, else his alliance's; across the two lists **the alliance's**
     (the owner: "for now, alliance wins"), the disagreement said (amber, "Alliance +10 (corp −10)"). zKillboard's evidence is only a note
@@ -242,10 +246,16 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   (amber); no background highlighting; standing colours on words and names (neutral a bright grey). Intel channel names are
   shown only under the gear, never elsewhere (the owner: "security reasons"). `tools/page_checks/intel_layout_check.py`.
   A line naming several systems is placed after the name lookups, never before (LESSON #105; `intel_place_check.py`).
-  Your profile (v2026.11.01.1; roadmap/my-ship-plan.md "Your profile"): one control at the top right (portrait, name, the fit
-  in use inside the "Use in assessments" switch) and its panel (Pilot, Standings, My Fits; the shared close button). Intel's
-  mark lives on it (off, clear cyan, not working hollow, near amber, in system the Hostile red + pulse); the tokens --st-clear,
-  --st-near, --st-in. "My Fit", never "My Ship", in what users read. `profile_check.py`.
+  Your profile (v2026.11.10.1, build queue 032; Project doc roadmap/profile-redesign-plan.md, mockup `Claude outputs/
+  profile_redesign_mockup.html`, the owner's annunciator): one strip at the top right of four lamps, EVE, Pilot (portrait, name,
+  its line), Fit and Intel (`PF_LAMP`), each a button opening its own tab of one panel (EVE, Pilot, Fits, Intel; `openProfile(tab)`,
+  roving tabindex, the shared close button, focus back on the lamp); a lamp lights cyan when set, amber when it needs you, dark when
+  off. "Use in assessments" is in the Fits tab (`#myShipUse`, the one switch). The Intel lamp: Off, Clear (cyan), "N near · Jj"
+  (amber), "In system · N" (the Hostile red + pulse), Stopped (amber); N counts hostiles and neutrals (`itNearSum`, uncapped, "999+"
+  above `PF_NUM_MAX`), the full sentence in its hover; the radar sweep runs only while Intel watches (transform only, none with reduced
+  motion); the tokens --st-clear, --st-near, --st-in, the face --pf-*. The panel's banner says the one thing that needs doing.
+  Writes only on change (`pfSame`). "Pilot rows up to" is in the System Analyzer's ⚙ (Local's results). "My Fit", never "My Ship",
+  in what users read. `profile_check.py`.
   Intel's pilot chip (v2026.11.01.2, the owner's B2): standing (a tip only: standings aren't changed from a chip), name (Pilot
   Analyzer), corporation (logo + [TICKER]) and alliance (logo + <TICKER>) as separate parts; a group pressed filters the Feed by it
   (a filter chip since v2026.11.07.1; the search box stays the user's); hover: outline + dividers, the part under the pointer filled

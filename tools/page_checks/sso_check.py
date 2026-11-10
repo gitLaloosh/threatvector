@@ -7,13 +7,14 @@ Never a live login (CLAUDE.md): login.eveonline.com is a stand-in here, with mad
 (an RSA key and a P-256 key), JWTs signed in the test, a revoke that records what it got. The page is served at the dev app's
 address (http://localhost:8000/) and at threatvector.space by routes, so its origin picks the Client ID as it does for real.
 Made-up pilot (sa_mocks.py) and made-up tokens only. Checks:
-  * logged out: CCP's black image (270 x 45) in a button, its line with an info button ("How logging in with EVE works", the shared
-    close button), "or type it", then the typed field and Set; on a file:// copy the button is disabled with its title;
+  * logged out: the profile's EVE tab (032): the three switches, then CCP's black image (270 x 45) in a button, its line ("Logs in only
+    (no features picked)") with an info button ("How logging in with EVE works", the shared close button); the typed field on the Pilot
+    tab; on a file:// copy the button is disabled with its title;
   * the press: the authorize address has response_type, redirect_uri (the origin + /), the origin's client_id, the S256 challenge
     of the verifier the token request sends, a state, and no scope; threatvector.space uses the production Client ID;
   * the return: the code and state are gone from the address before the page asks anything of anyone (every fetch() recorded with
-    the address at that moment); the token request's body; the logged-in row (name, "EVE login" tag, Log out), the corp line,
-    "Logged in for this tab"; the refresh token in sessionStorage only, the access token in neither storage; the profile shows the pilot;
+    the address at that moment); the token request's body; the EVE tab's logged-in row (name, "EVE login" tag, "this tab", Log out),
+    the corp on the profile's card; the refresh token in sessionStorage only, the access token in neither storage; the profile shows the pilot;
   * reload: still logged in, nothing asked of CCP; a new tab: the button again, the pilot as saved;
   * another tab clears the pilot: this tab is logged out with its line, the refresh token revoked;
   * Log out: revoke gets the refresh token, its hint and the Client ID; the keys go; the pilot is cleared; its one line, no
@@ -117,8 +118,8 @@ ST = """() => { const p = document.getElementById('sidePanel') || document; cons
     bh: btn ? btn.getBoundingClientRect().height : 0, or: !!q('.sso-or'), sub: [...document.querySelectorAll('.sso-sub .ctx')].map(x => x.textContent),
     field: !!q('#sidePilot'), fieldVal: q('#sidePilot') ? q('#sidePilot').value : null, inRow: !!q('.sso-in'), name: q('.sso-who b') ? q('.sso-who b').textContent : '',
     tag: q('.sso-tag') ? q('.sso-tag').textContent : '', lo: !!lo, loh: lo ? lo.getBoundingClientRect().height : 0,
-    corp: q('#sidePanel .side-res') ? q('#sidePanel .side-res').textContent : '', msg: [...document.querySelectorAll('#sidePanel .side-msg')].map(x => x.textContent).join(' | '),
-    apps: q('#sidePanel .side-msg a') ? q('#sidePanel .side-msg a').href : '', search: location.search, hash: location.hash,
+    corp: q('#profileHead') ? q('#profileHead').textContent : '', msg: [...document.querySelectorAll('#profilePanel .side-msg')].map(x => x.textContent).join(' | '),
+    apps: q('#profilePanel .side-msg a') ? q('#profilePanel .side-msg a').href : '', inSub: q('.sso-in .ctx') ? q('.sso-in .ctx').textContent : '', search: location.search, hash: location.hash,
     rec: localStorage.getItem('dscanSide'), pilot: side.rec.pilot, ls, ss, mem: !!sso.access, fl: window.__fl || [],
     sw: document.documentElement.scrollWidth, vw: innerWidth, chip: (document.getElementById('profileBtn') || {getAttribute: () => ''}).getAttribute('aria-label') || ''}; }"""
 
@@ -135,8 +136,8 @@ with sync_playwright() as p:
         c.route(re.compile(r'^https://threatvector\.space/.*'), serve)
         return c
     def open_panel(pg):
-        if not pg.evaluate('profileIsOpen()'): pg.evaluate('openProfile()'); pg.wait_for_timeout(150)
-    def login(pg, wait='.sso-in, #sidePanel .side-msg.err'):
+        pg.evaluate("openProfile('eve')"); pg.wait_for_timeout(150)   # 032: the login is on the profile's EVE tab
+    def login(pg, wait='.sso-in, #profilePanel .side-msg.err'):
         open_panel(pg)
         pg.click('button.sso-btn')
         try: pg.wait_for_selector(wait, timeout=8000)
@@ -150,10 +151,10 @@ with sync_playwright() as p:
     open_panel(pg); s = pg.evaluate(ST)
     check(s['btn'] and not s['dis'] and s['img'] and s['img'][:3] == [270, 45, 'Log in with EVE Online'] and s['img'][3:] == [270, 45],
           f"logged out: CCP's black image, 270 x 45, in an enabled button {s['img']}")
-    check(s['or'] and s['sub'] == ['Only says who you are, for this tab'] and s['field'] and not s['inRow'],
-          f"logged out: its one line, \"or type it\", then the typed field ({s['sub']})")
-    order = pg.evaluate("() => { const a = document.querySelector('button.sso-btn'), f = document.getElementById('sidePilot'); return !!(a.compareDocumentPosition(f) & Node.DOCUMENT_POSITION_FOLLOWING); }")
-    check(order, 'the button is above the typed name')
+    check('Logs in only (no features picked)' in s['sub'] and s['field'] and not s['inRow'],
+          f"logged out: its one line, \"Logs in only (no features picked)\"; the typed field on the Pilot tab ({s['sub']})")
+    order = pg.evaluate("() => { const a = document.querySelector('#eveTab button.sso-btn'), f = document.querySelector('#eveTab [data-sso=\"stand\"]'); return !!(a && f && (f.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING)); }")
+    check(order, 'the EVE tab: the switches, then the button (pick, then log in once)')
     pg.click('.sso-sub summary.info-btn'); pg.wait_for_timeout(200)
     ip = pg.evaluate("() => { const d = [...document.querySelectorAll('[role=dialog]')].find(x => x.offsetParent && /logging in with EVE/.test(x.textContent)); return d ? [d.querySelector('button.x-close') ? 1 : 0, (d.textContent.match(/asks EVE for no permissions/) || []).length] : null; }")
     check(ip == [1, 1], f"its info panel: \"How logging in with EVE works\", the shared close button, the no-permissions text {ip}")
@@ -177,7 +178,7 @@ with sync_playwright() as p:
     dirty = [x for x in s['fl'] if re.search(r'[?&](code|state)=', x[1])]
     check(not re.search(r'code|state', s['search']) and not dirty and s['fl'], f"the address cleaned before any request ({len(s['fl'])} recorded; {dirty[:2]})")
     check(s['inRow'] and s['name'] == 'Test Pilot' and s['tag'] == 'EVE login' and s['lo'] and not s['field'] and not s['btn'] and 'Example Corp' in s['corp']
-          and 'Logged in for this tab' in s['sub'], f"logged in: the name, the EVE login tag, Log out, the corp line, its line {s['name'], s['tag'], s['corp'][:40], s['sub']}")
+          and s['inSub'] == 'this tab', f"logged in: the name, the EVE login tag, \"this tab\", Log out; the corp on the card {s['name'], s['tag'], s['corp'][:40], s['inSub']}")
     check(s['ss'].get('tvSsoRefresh') == REFRESH and REFRESH not in s['ls'] and 'eyJ' not in s['ls'] and not any('eyJ' in (v or '') for v in s['ss'].values())
           and json.loads(s['ss'].get('tvSsoWho') or '{}') == {'id': PILOT, 'name': 'Test Pilot'} and 'tvSsoPending' not in s['ss'] and s['mem'],
           f"the refresh token in sessionStorage only, the access token in memory only, tvSsoPending used up {sorted(s['ss'])}")
@@ -214,7 +215,7 @@ with sync_playwright() as p:
         pg.evaluate("(r) => localStorage.setItem('dscanSide', JSON.stringify(r))", dict(TYPED, pilot={'id': 90000002, 'name': 'Someone Else Typed'}) if False else TYPED)
         pg.reload(); pg.wait_for_timeout(400)
         before = pg.evaluate("localStorage.getItem('dscanSide')")
-        if start: pg.goto(DEV_ORIGIN + start); pg.wait_for_selector('#sidePanel .side-msg.err', timeout=8000); pg.wait_for_timeout(200); s = pg.evaluate(ST)
+        if start: pg.goto(DEV_ORIGIN + start); pg.wait_for_selector('#profilePanel .side-msg.err', timeout=8000); pg.wait_for_timeout(200); s = pg.evaluate(ST)
         else:
             try: s = login(pg)
             except Exception as e:   # the page left for somewhere else (an address CCP's metadata shouldn't have been trusted with)
@@ -245,14 +246,14 @@ with sync_playwright() as p:
     reset(nav=False)
     c = ctx_new(); pg = c.new_page(); pg.goto(DEV_ORIGIN + '/'); pg.wait_for_timeout(300)
     pg.evaluate("() => sessionStorage.setItem('tvSsoPending', JSON.stringify({verifier: 'madeUpVerifier', state: 'madeUpOldState', at: Date.now() - 11 * 60000}))")
-    pg.goto(DEV_ORIGIN + '/?code=madeUpCode0024&state=madeUpOldState'); pg.wait_for_selector('#sidePanel .side-msg.err', timeout=8000); s = pg.evaluate(ST)
+    pg.goto(DEV_ORIGIN + '/?code=madeUpCode0024&state=madeUpOldState'); pg.wait_for_selector('#profilePanel .side-msg.err', timeout=8000); s = pg.evaluate(ST)
     check('(SSO-02)' in s['msg'] and not [x for x in LOG if x[0] == '/v2/oauth/token'], f"a state more than 10 minutes old: SSO-02, no token request ({s['msg'][:60]!r})")
     pg.evaluate("() => sessionStorage.setItem('tvSsoPending', JSON.stringify({verifier: 'madeUpVerifier', state: 'madeUpThisTabState', at: Date.now()}))")
-    LOG.clear(); pg.goto(DEV_ORIGIN + '/?code=madeUpCode0024&state=madeUpOtherState'); pg.wait_for_selector('#sidePanel .side-msg.err', timeout=8000); s = pg.evaluate(ST)
+    LOG.clear(); pg.goto(DEV_ORIGIN + '/?code=madeUpCode0024&state=madeUpOtherState'); pg.wait_for_selector('#profilePanel .side-msg.err', timeout=8000); s = pg.evaluate(ST)
     check('(SSO-02)' in s['msg'] and not [x for x in LOG if x[0] == '/v2/oauth/token'], f"a state other than the one this tab sent (one is pending): SSO-02, no token request ({s['msg'][:60]!r})")
     pg.evaluate("() => sessionStorage.setItem('tvSsoPending', JSON.stringify({verifier: 'madeUpVerifier', state: 'madeUpOnceState', at: Date.now()}))")
     LOG.clear(); pg.goto(DEV_ORIGIN + '/?code=madeUpCode0024&state=madeUpOnceState'); pg.wait_for_timeout(1200)
-    pg.goto(DEV_ORIGIN + '/?code=madeUpCode0024&state=madeUpOnceState'); pg.wait_for_selector('#sidePanel .side-msg.err', timeout=8000); s = pg.evaluate(ST)
+    pg.goto(DEV_ORIGIN + '/?code=madeUpCode0024&state=madeUpOnceState'); pg.wait_for_selector('#profilePanel .side-msg.err', timeout=8000); s = pg.evaluate(ST)
     check('(SSO-02)' in s['msg'] and len([x for x in LOG if x[0] == '/v2/oauth/token']) == 1, f"a state used twice: SSO-02 the second time ({len([x for x in LOG if x[0] == '/v2/oauth/token'])} token requests)")
     c.close()
     # ES256 with the P-256 key logs in

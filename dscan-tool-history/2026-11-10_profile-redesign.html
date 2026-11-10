@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-10 — The profile, redesigned</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The profile, redesigned: four lamps, four tabs, choose before you log in</h1>
+<p><span class="tag">Page</span> 2026-11-10 &middot; <code>v2026.11.10.1</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>Build queue 032, Project doc <code>roadmap/profile-redesign-plan.md</code> (research <code>roadmap/profile-redesign-research.md</code>, eight mockup rounds); clickable mockup <code>Claude outputs/profile_redesign_mockup.html</code>, the owner's pick: the annunciator.</li>
+<li>The profile had grown one feature at a time (Pilot, Standings, My Fits, then three EVE features in three different places, each with its own trip to EVE). A player could not see at a glance what was set up, what needed him, or what Intel was doing; and every EVE feature turned on later meant one more trip to EVE's page.</li>
+<li>Decided at the build review (2026-11-10): one branch and one pull request; a switch on without its permission <b>waits</b> ("Needs EVE's OK", one Continue to EVE) and turns off with SSO-07 only when a trip to EVE comes back without it or ESI answers 403; Log out <b>keeps the picks</b> (the permissions still end with the revoke); the Intel tab's "nearest three systems" list left out for now; the count sentence says "hostiles and neutrals".</li>
+<li>Checked at the review: EVE's consent page is all or cancel (CCP's SSO documentation: the user consents to all the requested scopes, or cancels), so "choose before you go" is the only way to ask once.</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The header:</b> one strip of four lamps (EVE, Pilot with the portrait and name, Fit, Intel), each a button opening its own tab of the panel. A lamp is lit cyan when set, amber when it needs you, dark when off. Under 600 px only the portrait and the Intel lamp show; between 600 and 1100 px the Pilot line is hidden, and the Fit value under 860 px.</li>
+<li><b>The Intel lamp:</b> Off, Clear, "N near · Jj", "In system · N", Stopped. N counts hostiles and neutrals (not systems), uncapped, "999+" above 999; the full sentence ("14 hostiles and neutrals in 3 systems within 5 jumps, the closest 3 jumps away (Tama)") is its hover and label. A radar sweep turns while Intel watches (transform only; none with reduced motion). The other tabs' copy reads the new count from the lock message (<code>h</code>, <code>j</code>, <code>i</code>; an older page sends none and still shows "N near").</li>
+<li><b>The panel:</b> a head (who you are, chips for what's set), one banner saying the one thing that needs doing, and four tabs (EVE, Pilot, Fits, Intel) with arrow keys and the shared close button; focus goes back to the lamp that opened it.</li>
+<li><b>EVE tab:</b> the three features (Show when I'm online, Use my game location, Use my corporation's and alliance's EVE standings) as switches, then CCP's button: pick first, log in once, EVE asks for exactly those ("EVE will ask for N permissions"). Logged in, a feature turned on later waits for one Continue to EVE, which asks for everything on. Log out keeps the switches.</li>
+<li><b>Pilot tab:</b> the typed pilot ("Log in on the EVE tab" when not logged in), location and status rows, the Standings (what EVE gave, or the typed lists). "Pilot rows up to" moved to the System Analyzer's ⚙ (Local's results).</li>
+<li><b>Fits tab:</b> My Fits, with "Use in assessments" as the one switch at its top.</li>
+<li><b>Intel tab:</b> what Intel is doing, and Turn on / Allow reading / Open Intel / Intel's settings. Intel's settings box 3 now says whether game location is on and opens the EVE tab.</li>
+<li>Info panels (How logging in with EVE works, online status, EVE standings, game location, the System Analyzer's rows) rewritten for the new places and the kept picks.</li>
+<li>Nothing kept in the browser changed form: <code>tvOnlineShow</code>, <code>tvEveStand</code> and <code>dscanIntel.gameLoc</code> are read and written as before (Log out no longer clears them); the session keys are unchanged.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li><code>tools/page_checks/profile_check.py</code> rewritten for the lamps and tabs (states, 999+, the sweep and reduced motion, long names at 1440/1024/768/390 px, 20 fits, roving tabindex, close and focus), with 10 mutants.</li>
+<li>The SSO checks (<code>sso_check</code>, <code>sso_game_check</code>, <code>sso_online_check</code>, <code>sso_standings_check</code>) moved to the EVE tab: choose before login, the waiting switch, one Continue for several features, Cancel keeps the pick, Log out keeps the picks.</li>
+<li>The card, Intel and System Analyzer checks that opened My Fits or read the old mark now use the Fit and Intel lamps.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>No new lesson. Two reminders from the build: a header lamp's text node holds both the wide and the phone word, so a check reads <code>.pf-vw</code>, not the lamp's whole <code>textContent</code>; and after a reload the token's scopes are unknown until it is renewed, so "has the permission" there means "not refused", never "proved".</li>
+</ul>
+</body>
+</html>

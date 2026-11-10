@@ -5,10 +5,10 @@
 Never a live login and never live ESI (CLAUDE.md): sso_game_check.py's stand-ins (CCP's login with keys made per run, intel_check.py's
 made-up Chatlogs folder, quiet R2Z2), plus a stand-in for ESI's /characters/<id>/online/ that records each request's headers and answers
 {"online": true|false} with Expires, X-Ratelimit-*, 401, 403 or 429 as a case sets. Made-up characters and tokens only. Checks:
-  * the Pilot section: no row without a login; logged in: "Show when I'm online in EVE", unchecked, "Needs its OK from EVE", its info
-    panel with the shared close button; ticked without the permission: Continue to EVE / Cancel; Cancel closes it; Continue asks EVE for
-    the online scope (and nothing for a feature that is off); back with it: on, tvOnlineShow true, an "Online status" tag; back without:
-    SSO-07, still off;
+  * the profile's EVE tab (032): the row before a login too ("Not asked for"); logged in: "Show when I'm online in EVE", unchecked, "Off",
+    its info panel with the shared close button; ticked without the permission it waits ("Needs EVE's OK", one Continue to EVE); unticked,
+    off; Continue asks EVE for the online scope (and nothing for a feature that is off); back with it: on, tvOnlineShow true, an "Online
+    status" tag; Log out keeps the pick (the owner: "keep the picks"), nothing on the portrait; back without the permission: SSO-07, off;
   * one tab, no Intel: one /online/ request with the token, X-Compatibility-Date and X-User-Agent; "Online in EVE · checked hh:mm UTC";
     the portrait's dot (online colour) on its top-right corner, the button's label; the next check at Expires and never under 60 s; no
     request before; logged off: the grey dot, the portrait greyed, "Logged off in EVE"; the same answer again redraws nothing; twice as
@@ -49,11 +49,11 @@ def esi_on(route):
 toks = lambda: [x['h'].get('authorization', '') for x in OREQ]
 
 STO = """() => { const q = (s) => document.querySelector(s), t = (x) => x ? x.textContent.replace(/\\s+/g, ' ').trim() : '';
-  const row = q('#sidePanel [data-sso-onrow]'), cb = q('#sidePanel [data-sso="online"]'), dot = q('#profileOn'), pf = q('#profile');
-  return {row: row ? t(row) : null, cb: cb ? cb.checked : null, ask: !!q('#sidePanel [data-sso="on-go"]'), show: ssoOn.show, held: !!ssoOn.held,
+  const row = q('#eveTab [data-feat="online"]'), cb = q('#ppSw-online'), dot = q('#profileOn'), pf = q('#profile');
+  return {row: row ? t(row) : null, cb: cb ? cb.checked : null, ask: !!q('#eveTab [data-sso="eve-go"]'), show: ssoOn.show, held: !!ssoOn.held,
     queued: !!ssoOn.req, stop: ssoOn.stop, st: ssoOn.st, ls: localStorage.getItem('tvOnlineShow'), on: pf.dataset.on || null,
     dot: dot && !dot.hidden ? (dot.classList.contains('off') ? 'off' : 'on') : null, lbl: q('#profileBtn').getAttribute('aria-label'),
-    av: getComputedStyle(q('#profileAv')).filter, notes: t(q('#itNotes')), it: it.on, timer: ssoOn.timer, who: sso.who, side: t(q('#sidePanel')),
+    av: getComputedStyle(q('#profileAv')).filter, notes: t(q('#itNotes')), it: it.on, timer: ssoOn.timer, who: sso.who, side: t(q('#profilePanel')),
     sw: document.documentElement.scrollWidth, vw: innerWidth}; }"""
 
 from playwright.sync_api import sync_playwright
@@ -88,7 +88,7 @@ with sync_playwright() as p:
     def show_on(pg): pg.evaluate("() => { ssoOnSave(true); ssoOn.next = 0; ssoOnPump(); ssoOnRedraw(); }")
     def now(pg): pg.evaluate("() => { ssoOn.next = 0; ssoOnArm(); }")   # the next check is due
     def gear(pg): pg.evaluate("() => { switchTab('intel'); it.pop = true; itRender(true); }"); pg.wait_for_timeout(100)
-    def prof(pg): pg.evaluate("() => { if(!profileIsOpen()) openProfile(); renderSidePanel(); }"); pg.wait_for_timeout(150)
+    def prof(pg): pg.evaluate("() => { openProfile('eve'); renderSidePanel(); }"); pg.wait_for_timeout(150)   # 032: the switch is on the profile's EVE tab
     def intel_on(pg): pg.click('#intelSwLabel'); pg.wait_for_function("it.on", timeout=8000); pg.wait_for_timeout(300)
     def hide(pg, h):
         pg.evaluate("(h) => { Object.defineProperty(document, 'hidden', {value: h, configurable: true}); Object.defineProperty(document, 'visibilityState', {value: h ? 'hidden' : 'visible', configurable: true}); document.dispatchEvent(new Event('visibilitychange')); }", h)
@@ -96,34 +96,33 @@ with sync_playwright() as p:
 
     # ---- the Pilot section; the permission step ----
     c = ctx_new(); pg = page(c); prof(pg); s = sto(pg)
-    check(s['row'] is None and not s['show'], 'no login: no "Show when I\'m online in EVE" row')
+    check(s['row'] and 'Not asked for' in s['row'] and s['cb'] is False and not s['show'], f'no login: the row, unchecked, "Not asked for" (picked before you go) ({s["row"]!r})')
     login(pg, scp=()); prof(pg); s = sto(pg)
-    check(s['row'] and "Show when I'm online in EVE" in s['row'] and 'Needs its OK from EVE' in s['row'] and s['cb'] is False, f"logged in: the row, unchecked, its line ({s['row']!r})")
-    pg.click('#sidePanel [data-sso-onrow] summary.info-btn'); pg.wait_for_timeout(200)
+    check(s['row'] and "Show when I'm online in EVE" in s['row'] and 'Off' in s['row'] and s['cb'] is False, f"logged in: the row, unchecked, its line ({s['row']!r})")
+    pg.click('#eveTab [data-feat="online"] summary.info-btn'); pg.wait_for_timeout(200)
     ip = pg.evaluate("() => { const d = [...document.querySelectorAll('[role=dialog]')].find(x => x.offsetParent && /How online status works/.test(x.textContent)); return d ? [!!d.querySelector('button.x-close'), d.textContent.length] : null; }")
     check(ip and ip[0], f'its info panel: "How online status works", the shared close button ({ip})')
     pg.keyboard.press('Escape'); pg.wait_for_timeout(100); prof(pg)
-    pg.click('#sidePanel [data-sso="online"]'); pg.wait_for_timeout(200); s = sto(pg)
-    check(s['ask'] and not s['show'] and 'Continue to EVE' in s['row'] and 'Cancel' in s['row'], f"ticked without the permission: Continue to EVE / Cancel, still off ({s['row'][:90]!r})")
-    pg.click('#sidePanel [data-sso="on-no"]'); pg.wait_for_timeout(150); s = sto(pg)
-    check(not s['ask'] and not s['show'] and s['ls'] in (None, 'false'), 'Cancel closes it; still off')
-    reset(scp=[ON]); pg.click('#sidePanel [data-sso="online"]'); pg.wait_for_timeout(150)
-    pg.click('#sidePanel [data-sso="on-go"]'); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(900)
+    pg.click('#ppSw-online'); pg.wait_for_timeout(200); s = sto(pg)
+    check(s['ask'] and s['show'] and "Needs EVE's OK" in s['row'] and not s['held'] and not OREQ, f"ticked without the permission: it waits, Continue to EVE, nothing asked ({s['row'][:90]!r})")
+    pg.click('#ppSw-online'); pg.wait_for_timeout(150); s = sto(pg)
+    check(not s['ask'] and not s['show'] and s['ls'] == 'false', 'unticked: off, nothing waiting')
+    reset(scp=[ON]); pg.click('#ppSw-online'); pg.wait_for_timeout(150)
+    pg.click('#eveTab [data-sso="eve-go"]'); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(900)
     auth = [x for x in LOG if x[0] == '/v2/oauth/authorize']; q = auth[0][2] if auth else {}
     check(q.get('scope') == ON, f"Continue to EVE: EVE is asked for the online scope (nothing for a feature that's off) ({q.get('scope')!r})")
     prof(pg); s = sto(pg)
-    check(s['show'] and s['ls'] == 'true' and s['cb'] is True and 'From your EVE login' in s['row'], f"back with it: on, tvOnlineShow true ({s['ls']}; {s['row'][:80]!r})")
-    tg = pg.evaluate("() => [...document.querySelectorAll('#sidePanel .sso-perms .sso-tag')].map(x => x.textContent)")
+    check(s['show'] and s['ls'] == 'true' and s['cb'] is True and "Needs EVE's OK" not in s['row'], f"back with it: on, tvOnlineShow true ({s['ls']}; {s['row'][:80]!r})")
+    tg = pg.evaluate("() => [...document.querySelectorAll('#eveTab .sso-perms .sso-tag')].map(x => x.textContent)")
     check(tg == ['Online status'], f'the profile: an "Online status" tag {tg}')
     prof(pg); pg.click('[data-sso="logout"]'); pg.wait_for_timeout(400); s = sto(pg)
-    check(not s['show'] and s['ls'] == 'false' and s['dot'] is None and s['on'] is None, f'Log out turns it off; nothing on the portrait ({s["ls"]}, {s["dot"]})')
+    check(s['show'] and s['ls'] == 'true' and s['dot'] is None and s['on'] is None, f'Log out keeps the pick (the owner: "keep the picks"); nothing on the portrait ({s["ls"]}, {s["dot"]})')
     oreset()
-    sub = pg.evaluate("() => { ssoOnSave(true); renderSidePanel(); return [...document.querySelectorAll('#sidePanel .sso-sub .ctx')].map(x => x.textContent); }")
-    check(sub == ['Also asks for: Online status'], f'logged out with it on: the button says "Also asks for: Online status" ({sub})')
-    pg.evaluate("() => ssoOnSave(false)")
-    login(pg, scp=()); prof(pg); reset(scp=[]); pg.click('#sidePanel [data-sso="online"]'); pg.wait_for_timeout(150)
-    pg.click('#sidePanel [data-sso="on-go"]'); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(900); prof(pg); s = sto(pg)
-    check(not s['show'] and '(SSO-07)' in s['row'], f"back without the permission: SSO-07, still off ({s['row'][-100:]!r})")
+    sub = pg.evaluate("() => { renderSidePanel(); return [...document.querySelectorAll('#eveTab .sso-sub .ctx')].map(x => x.textContent); }")
+    check(sub == ['EVE will ask for 1 permission'], f'logged out with it on: the login says "EVE will ask for 1 permission" ({sub})')
+    login(pg, scp=()); prof(pg); reset(scp=[])
+    pg.click('#eveTab [data-sso="eve-go"]'); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(900); prof(pg); s = sto(pg)
+    check(not s['show'] and '(SSO-07)' in s['row'], f"back without the permission: SSO-07, off ({s['row'][-100:]!r})")
     check(not OREQ, f'no /online/ request after Log out, while it was off ({len(OREQ)})')
     pg.close(); c.close()
 
@@ -151,7 +150,7 @@ with sync_playwright() as p:
     check(s['dot'] == 'off' and s['on'] == 'off' and 'grayscale(1)' in s['av'] and 'Logged off in EVE · checked' in s['row'] and 'logged off in EVE' in s['lbl'],
           f"logged off: the grey dot, the portrait greyed, the line ({s['av']}; {s['row'][-45:]!r})")
     pg.evaluate("() => { window.__d = 0; const r = renderProfile; renderProfile = function(){ window.__d++; return r.apply(this, arguments); }; const rs = renderSidePanel; renderSidePanel = function(){ window.__d++; return rs.apply(this, arguments); };"
-                " new MutationObserver((ms) => { for(const m of ms) if(!(m.target.closest && m.target.closest('[data-sso-onat]'))) window.__d++; }).observe(document.querySelector('#sidePanel [data-sso-onrow]'), {childList: true, subtree: true, characterData: true}); }")
+                " new MutationObserver((ms) => { for(const m of ms) if(!(m.target.closest && m.target.closest('[data-sso-onat]'))) window.__d++; }).observe(document.querySelector('#eveTab [data-feat=\"online\"]'), {childList: true, subtree: true, characterData: true}); }")
     n0 = len(OREQ); now(pg); pg.wait_for_timeout(1200); now(pg); pg.wait_for_timeout(1200)
     check(len(OREQ) == n0 + 2 and pg.evaluate("window.__d") == 0, f'the same answer again draws nothing ({len(OREQ) - n0} answers, {pg.evaluate("window.__d")} redraws)')
     O['rem'] = 100; now(pg); pg.wait_for_timeout(1200); nx = pg.evaluate("() => ssoOn.next - Date.now()")
@@ -166,7 +165,7 @@ with sync_playwright() as p:
     check(len(OREQ) == n0 and not sto(pg)['held'], 'off: no request, no lock')
     # on in this browser (another tab turned it on), this tab's login without the permission, an answer heard from another tab: nothing shown
     pg.evaluate("(id) => { sso.scp = []; ssoOnSave(true); ssoOnPump(); ssoOnSeen({id, online: true, at: Date.now() + 1000}, false); ssoOnRedraw(); }", MAIN); prof(pg); s = sto(pg)
-    check(s['dot'] is None and s['on'] is None and "doesn't have its OK yet" in s['row'] and 'Continue to EVE' in s['row'] and not s['held'],
+    check(s['dot'] is None and s['on'] is None and "Needs EVE's OK" in s['row'] and s['ask'] and not s['held'],
           f"this tab's login without the permission: nothing on the portrait, Continue to EVE ({s['dot']}; {s['row'][-80:]!r})")
     pg.close(); c.close()
 
@@ -227,7 +226,7 @@ with sync_playwright() as p:
     reset(nav=False); A.evaluate("() => { ssoOn.held || ssoOnTake(false); }"); A.wait_for_timeout(300)
     # let go before the page leaves (a page kept in the browser's cache may keep its lock): noted only when not from pagehide
     A.evaluate("() => { const f = ssoOnFree; ssoOnFree = function(){ if(ssoOn.held && (sso.leaving || sso.starting) && !(window.event && window.event.type === 'pagehide')) __tS('freed', 1); return f.apply(this, arguments); }; }")
-    hA = sto(A)['held']; prof(A); A.evaluate("() => { ssoOn.ask = true; ssoOnRedraw(); }"); A.click('#sidePanel [data-sso="on-go"]'); A.wait_for_url('https://login.eveonline.com/**', timeout=8000)
+    hA = sto(A)['held']; A.evaluate("() => { it.set.gameLoc = true; renderSidePanel(); }"); prof(A); A.click('#eveTab [data-sso="eve-go"]'); A.wait_for_url('https://login.eveonline.com/**', timeout=8000)
     B.wait_for_timeout(800); hB = sto(B)['held']
     S['nav'] = True; A.go_back(); ready(A); fr = A.evaluate("() => __tS('freed')")
     check(hA and fr == 1 and hB, f'a tab leaving for EVE\'s page lets go first: the other takes over ({hA}, let go before leaving {fr}, {hB})')
@@ -251,8 +250,8 @@ with sync_playwright() as p:
         s = sto(pg)
         check(s['sw'] <= s['vw'], f'{w} px: no sideways scroll')
         if w == 390:
-            pg.evaluate("() => { ssoOnSave(false); sso.scp = []; ssoOnRedraw(); }"); prof(pg); pg.click('#sidePanel [data-sso="online"]'); pg.wait_for_timeout(200)
-            hh = pg.evaluate("() => document.querySelector('#sidePanel [data-sso=\"on-go\"]').getBoundingClientRect().height"); s = sto(pg)
+            pg.evaluate("() => { ssoOnSave(false); sso.scp = []; ssoOnRedraw(); }"); prof(pg); pg.click('#ppSw-online'); pg.wait_for_timeout(200)
+            hh = pg.evaluate("() => document.querySelector('#eveTab [data-sso=\"eve-go\"]').getBoundingClientRect().height"); s = sto(pg)
             check(hh >= 44 and s['sw'] <= s['vw'], f'390 px: Continue to EVE {hh:.0f} px tall, no sideways scroll')
         c.close()
     check(not errs, f'no page errors {errs[:3]}')
