@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-09 — Standings from EVE</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Standings from your corporation's and alliance's EVE contacts</h1>
+<p><span class="tag">Page</span> 2026-11-09 &middot; <code>v2026.11.09.2</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>Build queue 030, SSO Phase 3, Project doc <code>roadmap/sso-phase3-standings-plan.md</code>; clickable prototype <code>Claude outputs/standings_from_eve_mockup.html</code>. The owner: "my top priority right now is for users' standings to be driven by EVE SSO rather than manual inputs", and "the organizations set standing for their line members and those are what members see when someone enters a system and pops up in local."</li>
+<li>Decided at planning: corporation and alliance contacts only (personal contacts not read); above 0 / 0 / below 0; pilot entries count; the typed lists hidden while logged in; zKillboard's evidence a note, never deciding; reads when needed, at most every 5 minutes.</li>
+<li>Changed at the build review: when your corporation and your alliance disagree, <b>the alliance decides</b> (the owner: "for now, alliance wins"; planned as "hostile wins"), even against a corporation's entry on the pilot ("alliance still wins unless i find evidence to the contrary"). Confirmed there: in one list the most specific entry decides ("the more specific (pilot level) wins"). Also picked there: Intel's stored sides re-worked with Near You replayed, the first read waited for (10 s at most), the Pilot Analyzer's neutral note, factions not counted.</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The profile, Standings:</b> a checkbox at the top, "Use my corporation's and alliance's EVE standings", with ⓘ (How EVE standings work). Without EVE's permission it shows Continue to EVE / Cancel, asking for <code>esi-corporations.read_contacts.v1</code> and <code>esi-alliances.read_contacts.v1</code> plus what the tab holds. On: "From EVE: N blue · M red · read hh:mm UTC" with Refresh (disabled until EVE's copy can change), "Your typed lists are hidden while this is on" and See EVE's standings (both lists, 8 each, then Show N more). The section's count reads "from EVE · N blue · M red". Logged out: one line saying the login can do this; an NPC corporation: the box disabled with why.</li>
+<li><b>The rule</b> (<code>sideEveSide</code>, inside <code>sideOf</code>): your own corporation and alliance friendly; above 0 friendly, below 0 hostile, 0 or none neutral; in one list the pilot's entry, else his corporation's, else his alliance's; across the two lists the alliance's when it has one, else the corporation's. A disagreement is amber, "Alliance +10 (corp −10)", the hover saying the alliance decides. zKillboard's evidence: "Killed N of yours in 7 days" beside neutrals only.</li>
+<li><b>Every <code>sideOf</code> caller passes the pilot's id</b> (the System Analyzer, Intel's reports and kills, the Fleet tab, the Pilot Analyzer's tag, the dossier's kill list, Suggested friendlies), so a pilot entry counts everywhere. The standing icon's hover says what decided it in the Fleet tab; Intel's chips' titles too; the Pilot Analyzer's tag shows EVE's reason, and a neutral with evidence ("Neutral · killed N of yours lately").</li>
+<li><b>Reads</b> (<code>sideEveNeed</code>): when something needs sides, never before Expires and 5 minutes apart; every page; pages whose Last-Modified differ read once more; both lists swapped in together (LESSON #151). 401 SSO-08 (never again), 403 with the permission SIDE-03 (new: that list skipped), without it SSO-07 (off), no answer or 5xx SIDE-04 (new: the copy in hand), 420/429 Retry-After.</li>
+<li><b>A change redraws once</b> (<code>sideEveApplied</code>): the System Analyzer, the Fleet tab, the Pilot Analyzer's tag and Intel: every Feed entry's sides and what follows from them (friendlies only, the kill sighting, a kill's threat ships) worked out again and Near You rebuilt by replaying the Feed, with no alert (<code>itSidesRework</code>). A typed-list edit re-works Intel too (before, it didn't).</li>
+<li><b>Log out</b> turns it off; the typed lists are used again at once.</li>
+</ul>
+
+<h2>Kept in the browser</h2>
+<ul>
+<li>localStorage <code>tvEveStand</code> (new, true/false): an older page ignores it; reverting leaves it unused. <code>dscanSide</code> unchanged in form and content. The lists themselves: this tab's memory only (DLA 9.5).</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li><code>tools/page_checks/sso_standings_check.py</code> (new): the section, the permission step, the rule in the System Analyzer (every case above, both directions of a disagreement), the switch off against main's <code>sideOf</code> for every pilot, the reads (Expires, 5 minutes, pages, Last-Modified, 401/403/429/503, nothing stored), Intel's re-work without alerts, the first-read wait and its 10 s limit, Log out, 390 px, and 12 mutants.</li>
+<li><code>tools/check_request_gates.py</code>: <code>sideEveFetchList</code> listed (the login, a 401 stops it). <code>tools/html_sinks_baseline.json</code> shrank (escaped or built now).</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #151: data read in several requests must change all at once. The first build stored each list as it came, so for the seconds between them sides came from half the picture. Build the new copy aside and assign it once; in a check, wait for the read to end, and make a slow answer slow in the page, not in a route handler that blocks every other answer.</li>
+</ul>
+</body>
+</html>
