@@ -35,6 +35,7 @@ import sys, os, re, io, json, zlib, struct, zipfile, urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from check_game_data_pending import RX, decode, line as pending_line
+from csp_hash import write as csp_write   # build queue 035: the page's CSP names the script by hash, so a rewrite refreshes it
 
 args = [a for a in sys.argv[1:] if not a.startswith('--')]
 def opt(name):
@@ -316,7 +317,7 @@ def main():
     print(f'\npending list: {len(want)} item(s)' + (' (the page lists the same)' if not changed else f' (the page lists {len(page_ids)})'))
     if WRITE and changed:
         new_line = pending_line(verified, new_build if want else 0, want)
-        open(HTML, 'w', encoding='utf-8', newline='').write(src[:m.start()] + new_line + src[m.end():])
+        open(HTML, 'w', encoding='utf-8', newline='').write(csp_write(src[:m.start()] + new_line + src[m.end():])[0])   # the CSP hash follows the new script
         print('written: GAME_DATA_PENDING')
     if OPTS['--body'] and changed:
         if len(text) > 60000:   # GitHub's limit for a pull request's text is 65,536 characters

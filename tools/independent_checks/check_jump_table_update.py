@@ -22,6 +22,8 @@ metres), made here from the page's own INTEL_MAP.p3 with CCP's light-year (9.46e
   * one system moved in space only (position2D unchanged): changed=true, only that system's x, y, z rewritten (3 values);
   * a page from before (INTEL_MAP without p3): changed=true, the positions added, every other value of INTEL_MAP unchanged;
   * a system with no position in CCP's data: the script stops (exit not 0) and the page is untouched.
+Build queue 035 (main's CSP hash went stale after a "Game data" pull request): every page the script rewrites passes
+tools/csp_hash.py --check (the CSP names the script by hash); a copy of the script without that refresh fails here.
 """
 import sys, os, re, json, base64, struct, subprocess, tempfile, shutil
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HERE, '..', '..')
@@ -32,6 +34,9 @@ def check(ok, msg):
     print(('OK   ' if ok else 'FAIL ') + msg)
     if not ok: problems.append(msg)
 
+CSP = os.path.join(ROOT, 'tools', 'csp_hash.py')
+def csp_ok(path):   # the page's CSP hash fits its script (build queue 035)
+    return subprocess.run([sys.executable, '-I', CSP, '--check', path], capture_output=True, text=True).returncode == 0
 def table(path):
     s = open(path, encoding='utf-8').read()
     return json.loads(re.search(r'^const INTEL_JUMPS = (.*);$', s, re.M).group(1))
@@ -108,7 +113,8 @@ try:
     check(C1r == C1 and J1['build'] == J0['build'] + 5100 and J1['n'] == len(C1) and J1['systems'] == len({s for c in C1 for s in c}),
           f"the page's table rewritten: exactly the new connections, the new build ({J1['n']} connections, {J1['systems']} systems, build {J1['build']})")
     after = open(page, encoding='utf-8').read()
-    strip = lambda s: re.sub(r'^const INTEL_(JUMPS|MAP) = .*;$', '', s, flags=re.M)
+    strip = lambda s: re.sub(r'<meta http-equiv="Content-Security-Policy" content="[^"]*">', '', re.sub(r'^const INTEL_(JUMPS|MAP) = .*;$', '', s, flags=re.M))
+    check(csp_ok(page), 'a gate changed: the rewritten page\'s CSP hash fits its script (csp_hash --check)')
     M1 = mtable(page); S1 = conns_of(J1)[1]; R1 = m_rows(M1, S1)
     check(strip(after) == strip(before) and M1['jumps'] == J1['md5'] and M1['systems'] == J1['systems'] and R1[new_sys] == R0.get(new_sys, (0, 0, 50, 0, (0, 0, 0))) and all(R1[s] == R0[s] for s in S0 if s in R1),
           'only INTEL_JUMPS and INTEL_MAP changed in the page; the map re-aligned to the new table (every system keeps its own place)')
@@ -123,7 +129,9 @@ try:
     a2 = open(page2, encoding='utf-8').read(); M2 = mtable(page2); R2r = m_rows(M2, S0)
     check(rc6 == 1 and rc7 == 0 and 'changed=true' in outs and 'map table: 2 value(s) differ' in txt and 'map' in txt.splitlines()[0],
           f'a system moved on the map, no gate changed: --check exits 1, changed=true, the pull request says the map changed ({rc6}, {outs.split()}, {[l for l in txt.splitlines() if "map" in l][:2]})')
-    check(re.sub(r'^const INTEL_MAP = .*;$', '', a2, flags=re.M) == re.sub(r'^const INTEL_MAP = .*;$', '', open(HTML, encoding='utf-8').read(), flags=re.M) and R2r == R2,
+    nomap = lambda t: re.sub(r'<meta http-equiv="Content-Security-Policy" content="[^"]*">', '', re.sub(r'^const INTEL_MAP = .*;$', '', t, flags=re.M))
+    check(csp_ok(page2), 'a system moved: the rewritten page\'s CSP hash fits its script (csp_hash --check)')
+    check(nomap(a2) == nomap(open(HTML, encoding='utf-8').read()) and R2r == R2,
           'only INTEL_MAP rewritten: that system moved, nothing else')
     rc8, o8 = run(page2, moved, '--check')
     check(rc8 == 0, f'the rewritten page against the same data: nothing to do ({rc8})')
@@ -148,6 +156,16 @@ try:
     rc13, o13 = run(page5, nop, '--write')
     check(rc13 != 0 and 'without a position' in o13 and open(page5, encoding='utf-8').read() == open(HTML, encoding='utf-8').read(),
           f'a system without a position in CCP\'s data: the script stops, the page untouched ({rc13})')
+    # the mutant: the script without the CSP refresh (the code before 035), run from a copy beside csp_hash.py
+    mdir = os.path.join(tmp, 'mut'); os.makedirs(mdir); shutil.copy(CSP, mdir)
+    msrc = open(SCRIPT, encoding='utf-8').read(); A = 'write(csp_write(src[:m.start(1)] + blk + src[m.end(1):])[0])'
+    check(A in msrc, 'mutant: the CSP refresh line is in the script (if not, update the mutant)')
+    open(os.path.join(mdir, 'jump_table_update.py'), 'w', encoding='utf-8').write(msrc.replace(A, 'write(src[:m.start(1)] + blk + src[m.end(1):])'))
+    page6 = os.path.join(tmp, 'index6.html'); shutil.copy(HTML, page6)
+    p = subprocess.run([sys.executable, '-I', os.path.join(mdir, 'jump_table_update.py'), page6, '--sde', changed, '--write'], capture_output=True, text=True, timeout=300,
+                       env={k: v for k, v in os.environ.items() if k not in ('GITHUB_OUTPUT', 'GITHUB_STEP_SUMMARY')})
+    check(p.returncode == 0 and table(page6)['build'] == J0['build'] + 5100 and not csp_ok(page6),
+          f'mutant without the CSP refresh: caught (rc {p.returncode}, hash fits: {csp_ok(page6)})')
 finally:
     shutil.rmtree(tmp, ignore_errors=True)
 print(f'JUMP TABLE UPDATE: {len(problems)} problems')

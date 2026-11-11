@@ -39,6 +39,8 @@ Encoding as tools/gen_intel_tables.py: sys = base64 of uint16 LE deltas of the s
 import sys, os, re, io, json, math, base64, struct, hashlib, zipfile, tempfile, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from csp_hash import write as csp_write   # build queue 035: the page's CSP names the script by hash, so a rewrite refreshes it
 args = [a for a in sys.argv[1:] if not a.startswith('--')]
 def opt(name):
     if name in sys.argv:
@@ -194,7 +196,7 @@ if WRITE:
     ml = 'const INTEL_MAP = ' + json.dumps(NM, ensure_ascii=False, separators=(',', ':')) + ';'
     mp2 = re.search(r'^const INTEL_MAP = (.*);$', blk, re.M)
     blk = blk[:mp2.start()] + ml + blk[mp2.end():] if mp2 else blk + '\n' + ml
-    open(HTML, 'w', encoding='utf-8').write(src[:m.start(1)] + blk + src[m.end(1):])
+    open(HTML, 'w', encoding='utf-8').write(csp_write(src[:m.start(1)] + blk + src[m.end(1):])[0])   # the CSP hash follows the new script
     print(f'written: {new["n"]} connections, {new["systems"]} systems' + (f', build {build}' if added or gone else ' (unchanged)') + f'; map table from build {build}')
     if BODY:
         open(BODY, 'w', encoding='utf-8').write(

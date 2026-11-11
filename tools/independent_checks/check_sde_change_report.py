@@ -12,6 +12,9 @@ Build queue 034 (LESSON #153): since CCP's build 3682781 its changes files carry
 two such tables and one id that isn't a number inside `types`: the report must finish with the same list, skip the unused tables
 without a word and warn about the `types` id in its log and its text. Two mutants (the old int() on every table; the tables
 filtered but int() on every id in them) must fail it.
+
+Build queue 035 (main's CSP hash went stale after the first "Game data" pull request): the page --write wrote passes
+tools/csp_hash.py --check (the CSP names the script by hash); a copy of the tool without that refresh fails it.
 """
 import os, sys, io, re, json, shutil, zipfile, tempfile, threading, subprocess, http.server, base64, struct
 
@@ -54,7 +57,7 @@ def files(new): return {'types.jsonl': jl(types(new)), 'groups.jsonl': jl(GROUPS
 
 tmp = tempfile.mkdtemp(prefix='sdecr-')
 TOOLS = os.path.join(tmp, 'tools'); os.makedirs(TOOLS)
-for _f in ('sde_change_report.py', 'check_game_data_pending.py'): shutil.copy(os.path.join(ROOT, 'tools', _f), TOOLS)
+for _f in ('sde_change_report.py', 'check_game_data_pending.py', 'csp_hash.py'): shutil.copy(os.path.join(ROOT, 'tools', _f), TOOLS)
 _man = json.load(open(os.path.join(ROOT, 'tools', 'pyfa_core_manifest.json'), encoding='utf-8')); _man['pyfa']['clientBuild'] = VERIFIED
 json.dump(_man, open(os.path.join(TOOLS, 'pyfa_core_manifest.json'), 'w', encoding='utf-8'))
 TOOL = os.path.join(TOOLS, 'sde_change_report.py')
@@ -126,6 +129,20 @@ try:
     # the list check passes on what --write wrote (a copy beside the tools, for the manifest)
     lint = subprocess.run([sys.executable, '-I', os.path.join(ROOT, 'tools', 'check_game_data_pending.py'), page], capture_output=True, text=True)
     check(lint.stdout.strip().endswith('3 item(s) listed; 0 problems'), f'check_game_data_pending on the written page: {lint.stdout.strip()[-200:]}')
+    CSP = os.path.join(ROOT, 'tools', 'csp_hash.py')
+    csp_ok = lambda pg: subprocess.run([sys.executable, '-I', CSP, '--check', pg], capture_output=True, text=True).returncode == 0
+    check(csp_ok(page), 'local --write: the CSP hash does not fit the rewritten script (csp_hash --check)')
+    # the mutant: the tool without the CSP refresh (the code before 035)
+    cmut = os.path.join(tmp, 'cspmut', 'tools'); os.makedirs(cmut)
+    for f in ('check_game_data_pending.py', 'pyfa_core_manifest.json', 'csp_hash.py'): shutil.copy(os.path.join(TOOLS, f), cmut)
+    A = 'write(csp_write(src[:m.start()] + new_line + src[m.end():])[0])'
+    tsrc = open(TOOL, encoding='utf-8').read(); check(A in tsrc, 'CSP mutant: the refresh line is not in the tool (update the mutant)')
+    open(os.path.join(cmut, 'sde_change_report.py'), 'w', encoding='utf-8').write(tsrc.replace(A, 'write(src[:m.start()] + new_line + src[m.end():])'))
+    page_c = os.path.join(tmp, 'index_cspmut.html'); page_copy(page_c)
+    env_c = {k: v for k, v in os.environ.items() if k not in ('PYFA_SRC', 'GITHUB_OUTPUT')}
+    pc = subprocess.run([sys.executable, '-I', os.path.join(cmut, 'sde_change_report.py'), page_c, '--base', base, *local, '--pyfa', pa, '--write'],
+                        capture_output=True, text=True, env=env_c, timeout=120)
+    check(pc.returncode == 0 and pending(page_c) == (NEW, WANT) and not csp_ok(page_c), f'CSP mutant (no refresh) was not caught (rc {pc.returncode}): {pc.stderr[-300:]}')
 
     # 2. the same again: the page already lists them -> no change, nothing written
     before = open(page, encoding='utf-8').read()
@@ -179,7 +196,7 @@ try:
     check('characterTitles' not in o and 'militaryCampaigns' not in o and '00000000-' not in o, 'text ids: an unused table is named in the output')
     # the mutants: the same case on copies of the tool with the old reading put back
     mut = os.path.join(tmp, 'mut', 'tools'); os.makedirs(mut)
-    for f in ('check_game_data_pending.py', 'pyfa_core_manifest.json'): shutil.copy(os.path.join(TOOLS, f), mut)   # the made-up manifest
+    for f in ('check_game_data_pending.py', 'pyfa_core_manifest.json', 'csp_hash.py'): shutil.copy(os.path.join(TOOLS, f), mut)   # the made-up manifest
     tool_src = open(TOOL, encoding='utf-8').read()
     GUARD = "            if table not in USED: continue"
     for label, swaps in (('int() on every table (the code before 034)', ((GUARD + '   #', '            #'), ('(as_id(table, i) for i in o[k])', '(int(i) for i in o[k])'))),
