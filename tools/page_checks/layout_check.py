@@ -362,6 +362,7 @@ LONG_FIT_NAME = 'Doctrine fit pasted from the corp wiki - Armor HAC v3.2 FINAL (
 UNBROKEN = 'Doctrine_fit_without_any_spaces_' + 'X' * 70
 GARBAGE = 'ThisIsAnUnrecognizedItemNameWithoutAnySpaces' + 'Q' * 76
 def long_eft(fit_name):
+    # build queue 035: CCP renamed type 93145 "Prototype 'Pluto' Ice Harvesting Drone" -> "'Pluto' Ice Harvesting Drone" in build 3682781
     return f"""[Stratios Emergency Responder, {fit_name}]
 Unit P-343554's Modified Omnidirectional Tracking Enhancer
 Drone Damage Amplifier II
@@ -381,7 +382,7 @@ Medium Drone Durability Rig I
 
 
 Mutated 'Excavator' Ice Harvesting Drone x1
-Prototype 'Pluto' Ice Harvesting Drone x2
+'Pluto' Ice Harvesting Drone x2
 Medium Shield Maintenance Bot II x2
 'Augmented' Hammerhead x2
 Hammerhead II x5
