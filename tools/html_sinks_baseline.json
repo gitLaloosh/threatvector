@@ -721,7 +721,6 @@
   "pdInit␟pd.mode": 1,
   "pdMoreHtml␟left": 1,
   "pdMoreHtml␟left === 1 ? '' : 's'": 1,
-  "pdMoreHtml␟pd.mode === 'all' ? 'kills and losses' : 'of these kills'": 1,
   "pdMoreHtml␟what": 1,
   "pdPinHtml␟pd.pin.why": 1,
   "pdPinHtml␟pd.pin.why === 'asked' ? '' : FLEET_ICON": 1,

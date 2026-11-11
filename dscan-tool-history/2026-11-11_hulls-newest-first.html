@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-11 — Hulls newest first; the login survives the return from EVE</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Pilot Dossier and System Analyzer: hulls newest first; the login survives the return from EVE</h1>
+<p><span class="tag">Page</span> 2026-11-11 &middot; <code>v2026.11.11.4</code> &middot; build queue 037</p>
+
+<h2>Why</h2>
+<ul>
+<li>Project doc <code>roadmap/dossier-hull-order-plan.md</code>. The owner: "if a specific hull hasn't been specified when the search was initiated, sort the results by most recent activity. some of the results come back with a hull being shown first that the pilot hasn't used in years in some cases simply because they used to get a lot of kills with it." After a worked example of a 48-hour blend: "we should just list strictly by recency."</li>
+<li>Also in this delivery (flagged for whichever item shipped next): the bug "sso_game_check times out after Continue to EVE (fails on main too)", and the footer's METHODOLOGY.md link that 036 added (the owner: "i dont want that link displayed").</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Hulls newest first</b> (<code>pdRows</code>, <code>pdLast</code>): the dossier's rows run by when each hull was last used, the count only breaking a tie. In All that is the newest kill or loss in it; in Solo, Small gang or Fleet, their newest kill of that size, and the row's last-used column follows the size (a pinned hull with none in that size shows "—"). The dossier opens on the hull used last; a hull asked for (Fleet tab, typed, a System Analyzer row) stays pinned first, its rank now its place by recency.</li>
+<li><b>System Analyzer</b>: a pilot row's possible ship (after Intel's pairing and a ship of theirs on your D-Scan, unchanged) is the hull of their newest kill in their gang size. Its hover: "The hull of their newest … kill: …" / "The hull they used last, all sizes: …". More rows may say fit unknown (a recent hull often has no loss yet): the owner accepted that ("that's fine if it's more accurate to what they're likely flying").</li>
+<li>"Show N more hulls" has no line beside it any more (the owner: "just dont include the extra descriptive text"); "Show fewer" keeps its line.</li>
+<li>Info text: <code>dossier</code> (the order) and <code>pilots</code> (Possible ship); METHODOLOGY.md's Possible ship and Pilot Dossier lines; CLAUDE.md's "8 busiest".</li>
+<li><b>The login after Continue to EVE</b> (LESSON #157): back from EVE while logged in, the online check could renew the old login while the new code was being swapped; the new login then landed and the renewal, seeing another login, ended it and revoked the new refresh token (the user logged out). Now <code>esiFetch</code>'s login branch waits for the return (<code>sso.retP</code>) before asking for the token; a renewal answered after a newer login replaced it is dropped without revoking anything; and <code>esiFetch</code> checks the token's permission again once it has it, so a caller that waited sends nothing it isn't allowed (SSO-07).</li>
+<li>The footer's "How the numbers are worked out" link is gone; METHODOLOGY.md stays in the repo and on the site (the owner: "Just remove the link").</li>
+<li>Nothing else: no new request, no stored data, the kill list under a row, the counts, the Pilot Analyzer's own guess from losses.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li><code>dossier_check.py</code>: expected order worked out from the killmails' times; a new pilot (an old busy Sabre, a Curse used yesterday, a Vedmak) for All, Solo (by the newest solo kill, its last-used column) and Small gang; mutants: the busiest-first sort, the last-used of any size in a gang size.</li>
+<li><code>dossier_pin_check.py</code>: the 8 newest; the Ferox kill moved to 21 days ago so the pinned hull is still outside them (10th of 23); "—" for a pinned hull with no kill in the size; no line beside "Show N more hulls".</li>
+<li><code>sa_size_check.py</code>: the newest solo and fleet hull (the Sabre, newer than the busier Loki and Purifier), the new hover; the D-Scan ship still first; a busiest-first mutant fails.</li>
+<li><code>sso_game_check.py</code>: the stand-in holds the code's answer while the online check asks (no renewal of the old login, the new login stands, nothing revoked); a renewal checked after a newer login replaced it (dropped, nothing revoked); a mutant of each fails. <code>outside_links_check.py</code>: no METHODOLOGY.md link in the footer.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #157: two things that each replace the login (the return from EVE, a renewal) must never run at once. The later one waits for the earlier; a stale answer is dropped, never acted on. Test a race by holding the stand-in's answer, not by timing.</p>
+</body>
+</html>

@@ -269,6 +269,15 @@ BIG_KILL = _fkill([_fatt(ORLA, 'Curse', 'Acolyte II', True)] + [_fatt(i, 'Rifter
 SOLO_KILL = _fkill([_fatt(ORLA, 'Curse', 'Acolyte II', True)], 'Rifter', 4)
 HIST[ORLA] = {'kills': [FLEET_KILL, BIG_KILL, SOLO_KILL], 'losses': [ORLA_LOSS]}
 HIST[THIRD_PILOT] = {'kills': [FLEET_KILL], 'losses': []}   # his dossier: the Loki, never lost (his alliance's fit)
+# build queue 037 (dossier_check): Rhea Recency's hulls newest first. An old busy Sabre (10 solo kills, 90-99 days ago); a Curse with a
+# solo kill 30 days ago and a small-gang kill yesterday; a Vedmak with one solo kill 10 days ago. All: Curse, Vedmak, Sabre (the busiest
+# order was Sabre, Curse, Vedmak); Solo: Vedmak, Curse (by its solo kill, 30 d), Sabre; Small gang: Curse. No losses.
+RHEA = 92000009; PILOTS[RHEA] = ('Rhea Recency', 98000042); NAME_ID['rhea recency'] = RHEA
+_rk = [_fkill([_fatt(RHEA, 'Sabre', '125mm Gatling AutoCannon II', True)], 'Rifter', d) for d in range(99, 89, -1)]   # oldest first: IDs grow with time
+_rk.append(_fkill([_fatt(RHEA, 'Curse', 'Acolyte II', True)], 'Rifter', 30))
+_rk.append(_fkill([_fatt(RHEA, 'Vedmak', 'Heavy Entropic Disintegrator II', True)], 'Rifter', 10))
+_rk.append(_fkill([_fatt(RHEA, 'Curse', 'Acolyte II', True), _fatt(BIG_PILOTS[0], 'Rifter'), _fatt(BIG_PILOTS[1], 'Rifter')], 'Stabber', 1))
+HIST[RHEA] = {'kills': _rk, 'losses': []}
 
 def expected_fleet():
     """The fleet view worked out here: shares from the kills (each attacker of the group counts its hull; capsules

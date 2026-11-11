@@ -26,6 +26,9 @@ own IndexedDB store is a stand-in, as in intel_folder_check.py). Made-up charact
     waits its Retry-After; an HTML 500: 30 s;
   * the login's character not You: one amber line, no request; Intel off, or the tab without the lock: no request; no /ship/ or /online/;
   * a duplicated tab (the same tvSsoTab answered on the channel) drops its login; the original keeps it;
+  * 037, back from EVE while logged in with the online check asking meanwhile (the stand-in holds the code's answer): the old login
+    isn't renewed, the new login stands, nothing revoked; a renewal checked after a newer login replaced it is dropped, nothing
+    revoked; a mutant of each (no wait for the return; a stale renewal ending the login) fails;
   * the Back-button bug: Back from EVE's page (Playwright go_back) and a synthetic pageshow with persisted: the EVE button, never
     "Checking your login with EVE…", tvSsoPending gone, "nothing changed"; the same for Use my game location's Continue; a normal load
     drops a stale tvSsoPending; the real return still logs in;
@@ -85,13 +88,17 @@ def sso(route):
     if path == '/.well-known/oauth-authorization-server':
         return j({'issuer': H, 'authorization_endpoint': H + '/v2/oauth/authorize', 'token_endpoint': H + '/v2/oauth/token', 'jwks_uri': H + '/oauth/jwks',
                   'revocation_endpoint': H + '/v2/oauth/revoke', 'code_challenge_methods_supported': ['S256']})
-    if path == '/oauth/jwks': return j(JWKS)
+    if path == '/oauth/jwks':
+        if S.get('hold') == 'jwks' and 'held' not in S: S['held'] = lambda: j(JWKS); return   # 037: answered later (the race cases)
+        return j(JWKS)
     if path == '/v2/oauth/authorize':
         S['challenge'] = form.get('code_challenge')
         if not S['nav']: return route.fulfill(status=200, content_type='text/html', body='<!doctype html><p>made-up authorize page</p>')
         back = form.get('redirect_uri', '') + '?' + urllib.parse.urlencode({'error': 'access_denied', 'state': form.get('state', '')} if S['deny'] else {'code': 'madeUpCode0028', 'state': form.get('state', '')})
         return route.fulfill(status=200, content_type='text/html', body=f'<!doctype html><script>location.replace({json.dumps(back)})</script>')
     if path == '/v2/oauth/token':
+        if S.get('hold') == form.get('grant_type') and 'held' not in S:   # 037: this answer waits until the case lets it go
+            S['held'] = lambda: (S.update(hold=None), sso(route)); LOG.pop(); return
         cid = form.get('client_id')
         if form.get('grant_type') == 'refresh_token':
             m = S['refresh']
@@ -169,9 +176,10 @@ from playwright.sync_api import sync_playwright
 with sync_playwright() as p:
     b = p.chromium.launch()
     errs = []
-    def serve(route):
-        return route.fulfill(status=200, content_type='text/html; charset=utf-8', body=PAGE) if urllib.parse.urlsplit(route.request.url).path == '/' else route.fulfill(status=404, body='')
-    def ctx_new(w=1440):
+    def ctx_new(w=1440, html=None):
+        h = html or PAGE
+        def serve(route):   # one argument: Playwright passes the request too to a handler that takes two
+            return route.fulfill(status=200, content_type='text/html; charset=utf-8', body=h) if urllib.parse.urlsplit(route.request.url).path == '/' else route.fulfill(status=404, body='')
         c = b.new_context(bypass_csp=True, viewport={'width': w, 'height': 1000})
         c.on('page', lambda pg: pg.on('pageerror', lambda e: errs.append(str(e))))
         c.add_init_script(FS); c.add_init_script(EXTRA); route(c)
@@ -273,6 +281,57 @@ with sync_playwright() as p:
           f"one Continue to EVE (the tab's and the banner's) asks for every feature on, one trip ({q.get('scope')!r})")
     check(s['gl'] and s['lamp'] == 'lit' and on_[0] is False and '(SSO-07)' in on_[1], f"back: location on with its permission; online without its permission: SSO-07, off ({s['gl']}, {s['lamp']}, {on_})")
     pg.close(); c.close()
+
+    # ---- 037 (the bug "sso_game_check times out after Continue to EVE"): back from EVE while logged in, the reload has the login but
+    # not its access token; the online check asked then and renewed the old login while the new code was being swapped, and the
+    # renewal, seeing the new login land, ended it (revoking the new refresh token). Forced here: the stand-in holds its answer. ----
+    def race_return(html, out):   # the code's answer held: nothing renews the old login meanwhile; the new login stands
+        reset(scp=[LOC], hold='authorization_code'); c = ctx_new(html=html); pg = page(c); login(pg, scp=()); gear(pg); pg.click('#ppSw-loc'); pg.wait_for_timeout(150)
+        pg.evaluate("() => ssoOnToggle(true)"); pg.wait_for_timeout(150)
+        LOG.clear(); go(pg); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg)
+        asked = False
+        for _ in range(40):
+            asked = asked or pg.evaluate("() => !!ssoOn.busy")
+            if 'held' in S and asked: break
+            pg.wait_for_timeout(100)
+        if 'held' not in S: out.append('the code was never swapped'); pg.close(); c.close(); return
+        if any(x[2].get('grant_type') == 'refresh_token' for x in LOG): out.append('the old login renewed during the return')
+        elif not asked: out.append("the online check didn't ask during the return (the case doesn't test the race)")
+        S.pop('held')()
+        try: pg.wait_for_function("() => sso.scp && !ssoOn.show", timeout=8000)
+        except Exception: out.append('the return never finished')
+        s = st(pg)
+        if not (s['who'] and s['scp'] == [LOC]): out.append(f"logged out after the return ({s['who']}, {s['scp']})")
+        if any(x[0] == '/v2/oauth/revoke' for x in LOG): out.append('a token revoked')
+        pg.close(); c.close()
+    def race_stale(html, out):   # a renewal whose answer is checked after a newer login replaced it: dropped, nothing revoked
+        reset(scp=[LOC], hold='jwks'); c = ctx_new(html=html); pg = page(c); login(pg, exp_s=30)   # under a minute left: renews first
+        pg.evaluate("() => { window.__acc = 'pending'; ssoAccess().then(a => { window.__acc = a; }, e => { window.__acc = 'err ' + errorCodeOf(e); }); }")
+        for _ in range(40):
+            if 'held' in S: break
+            pg.wait_for_timeout(100)
+        if 'held' not in S: out.append('the renewal never checked its token'); pg.close(); c.close(); return
+        pg.evaluate("() => { sso.who = {id: sso.who.id, name: sso.who.name}; sso.access = 'madeUpNewerAccess'; sso.exp = Date.now() + 1200e3; ssoSet(SSO_REFRESH, 'madeUpNewerRefresh'); }")
+        S.pop('held')(); pg.wait_for_timeout(800)
+        r = pg.evaluate("() => [window.__acc, !!sso.who, ssoGet(SSO_REFRESH), sso.lost]")
+        if r != ['madeUpNewerAccess', True, 'madeUpNewerRefresh', False]: out.append(f'the newer login not kept {r}')
+        if any(x[0] == '/v2/oauth/revoke' for x in LOG): out.append('a token revoked')
+        pg.close(); c.close()
+    out = []; race_return(PAGE, out)
+    check(not out, f"back from EVE while logged in, the online check asking meanwhile: it waits for the return, the old login isn't renewed, the new login stands, nothing revoked ({out})")
+    out = []; race_stale(PAGE, out)
+    check(not out, f"a renewal answered after a newer login replaced it: dropped; the newer login kept, nothing revoked ({out})")
+    RACE_MUTANTS = [
+        ('no wait for the return', race_return, "    if(sso.retP) await sso.retP.catch(() => {});\n", "\n"),
+        ('a stale renewal ends the login', race_stale, "  if(sso.who !== who){   // 037:", "  if(sso.who !== who) throw ssoLost('x');\n  if(false){   // 037:"),
+    ]
+    for name_, case, a, bb in RACE_MUTANTS:
+        if PAGE.count(a) != 1: check(False, f'mutant "{name_}": its text is in the page'); continue
+        out = []
+        try: case(PAGE.replace(a, bb, 1), out)
+        except Exception as e: out.append(f'error {str(e)[:60]}')
+        check(bool(out), f'mutant "{name_}" fails the case ({out[:1]})')
+    reset()
 
     # ---- Intel running, logged in as You: the location checks ----
     c = ctx_new(); pg = page(c); lreset(); login(pg); gl_on(pg)

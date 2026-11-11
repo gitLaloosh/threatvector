@@ -6,19 +6,21 @@ The owner (backlog bug "Pilot Dossier hides the hull they flew on the kill"): "i
 isn't in their top 15 or whatever, the user wont see that hull in their list. we need to be able to see the reset of the
 hulls". His picks in Claude outputs/dossier_hull_from_kill_mockup.html: A pinned first, all at once, C1 the kill added,
 typed hulls pinned too. The real page with ESI and zKillboard answered from sa_mocks.py plus made-up pilots here:
-"Wren Manyhull" flew 23 hulls in her newest 47 kills and 2 losses (the Ferox, 1 kill, is 13th), "Nell Freshling" has
+"Wren Manyhull" flew 23 hulls in her newest 47 kills and 2 losses (the Ferox, 1 kill 21 days ago, is 10th: hulls are newest
+first since build queue 037), "Nell Freshling" has
 nothing on zKillboard yet. Every expected row is worked out again here, in Python, from the mock:
   * from a kill on the Fleet tab (Wren in the Ferox): the Ferox row first, selected, tagged "On this kill" and
-    "13th of 23 hulls"; the 8 busiest follow (the Ferox not repeated); "Show 14 more hulls" draws all 23, "Show fewer"
-    folds them back, the button keeps focus; the Solo switch keeps the Ferox first ("0 of 1", "no solo kills in it");
+    "10th of 23 hulls"; the 8 newest follow (the Ferox not repeated); "Show 14 more hulls" (no line beside it, 037) draws all 23,
+    "Show fewer" folds them back, the button keeps focus; the Solo switch keeps the Ferox first ("0 of 1", "no solo kills in it",
+    Last "—": its last-used follows the size, 037);
   * a kill zKillboard's list for her doesn't have yet (Wren in a Kikimora): that killmail is added, the Kikimora row first
     with its real numbers (1 kill, usually 4), "not yet in zKillboard's list for them: added", the header "newest 47 kills
     + this one", All 48; the kill under the row opens that fleet on the Fleet tab;
   * a kill she lost (the victim's button): her Curse row first, "Lost on this kill" with its rank; nothing added;
   * a pilot with nothing on zKillboard (Nell, from the Fleet tab): her dossier from that kill alone, no PILOT-03;
   * a hull typed in that isn't among those read (Kikimora): a row of its own, first, "Asked for", "not in their newest 47
-    kills or 2 losses", 0 kills, no ▾, Last "—", not counted among her 23 hulls; a typed hull that is (Ferox): "Asked for", "13th of 23 hulls";
-  * no hull asked for: no tag, the 8 busiest and "Show 15 more hulls";
+    kills or 2 losses", 0 kills, no ▾, Last "—", not counted among her 23 hulls; a typed hull that is (Ferox): "Asked for", "10th of 23 hulls";
+  * no hull asked for: no tag, the 8 newest and "Show 15 more hulls";
   * at 390 px nothing runs off the page; no page errors.
 v2026.11.01.4 fails (no row for the Ferox, a grey "N more hulls with fewer" line, the Kikimora kill not counted).
 """
@@ -54,8 +56,8 @@ for hull, n in SPEC:
     for c in range(n):
         j += 1; players = 1 + (j % 3) * 2; days = 1 + j * 0.7   # 1, 3 or 5 players
         WK.append(kill([(WREN, hull)] + [(MATES[i], 'Rifter') for i in range(players - 1)], days=days)); EXP.setdefault(hull, {'k': [], 'l': []})['k'].append((players, days))
-FK = kill([(WREN, 'Ferox')] + [(MATES[i], 'Rifter') for i in range(13)], 'Megathron', 0.02)   # the fleet kill: 14 players, newest
-EXP['Ferox'] = {'k': [(14, 0.02)], 'l': []}
+FK = kill([(WREN, 'Ferox')] + [(MATES[i], 'Rifter') for i in range(13)], 'Megathron', 21.0)   # the fleet kill: 14 players, 21 days ago (037: below the 8 newest)
+EXP['Ferox'] = {'k': [(14, 21.0)], 'l': []}
 WL = [M._loss(WREN, 'Curse', 9.5), M._loss(WREN, 'Vedmak', 12.5)]
 EXP['Curse'] = {'k': [], 'l': [9.5]}; EXP['Vedmak'] = {'k': [], 'l': [12.5]}
 M.HIST[WREN] = {'kills': WK + [FK], 'losses': WL}
@@ -69,8 +71,8 @@ def order(mode='all'):
     for h, e in EXP.items():
         ks = [k for k in e['k'] if mode == 'all' or size(k[0]) == mode]
         if mode != 'all' and not ks: continue
-        last = min([k[1] for k in e['k']] + e['l'])
-        rows.append((-(len(e['k']) + len(e['l']) if mode == 'all' else len(ks)), last, h))
+        last = min([k[1] for k in e['k']] + e['l']) if mode == 'all' else min(k[1] for k in ks)   # 037: in a size, their newest kill in it
+        rows.append((last, -(len(e['k']) + len(e['l']) if mode == 'all' else len(ks)), h))   # 037: newest first (fewest days ago), the count only breaking a tie
     return [h for _, _, h in sorted(rows)]
 ALL = order()
 ORD = lambda n: f"{n}{'th' if 11 <= n % 100 <= 13 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
@@ -102,7 +104,7 @@ with sync_playwright() as p:
     pg = ctx.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(500)
     if not pg.query_selector('#fleetPanel'):
         check(False, 'the Fleet tab\'s panel is #fleetPanel (update this check)')
-    # 1. from the Fleet tab, Wren in the Ferox (13th of 23)
+    # 1. from the Fleet tab, Wren in the Ferox (10th of 23)
     name = M.PILOTS[WREN][0]
     from_fleet(pg, FK, name)
     r = pg.evaluate(ROWS); mo = pg.evaluate(MORE); ctxt = pg.evaluate(CTX)
@@ -110,8 +112,8 @@ with sync_playwright() as p:
     check(len(ALL) == 23 and FEROX_RANK > 8, f'(the mock: 23 hulls, the Ferox {FEROX_RANK}th)')
     check(r and r[0]['hull'] == 'Ferox' and r[0]['sel'] and r[0]['tag'] == 'On this kill' and r[0]['where'] == f'{ORD(FEROX_RANK)} of 23 hulls',
           f'from a kill on the Fleet tab: the hull she flew on it first, selected, "On this kill · {ORD(FEROX_RANK)} of 23 hulls" {r[:1]}')
-    check([x['hull'] for x in r[1:]] == want_rest and not any(x['tag'] for x in r[1:]), f'the 8 busiest follow, the Ferox not repeated\n      page {[x["hull"] for x in r[1:]]}\n      want {want_rest}')
-    check(mo == ['Show 14 more hulls', 'false', 'with fewer kills and losses'] and ctxt.startswith(f'newest {NK} kills, {NL} losses'), f'"Show 14 more hulls" under them; the header unchanged {mo} {ctxt!r}')
+    check([x['hull'] for x in r[1:]] == want_rest and not any(x['tag'] for x in r[1:]), f'the 8 newest follow, the Ferox not repeated\n      page {[x["hull"] for x in r[1:]]}\n      want {want_rest}')
+    check(mo == ['Show 14 more hulls', 'false', ''] and ctxt.startswith(f'newest {NK} kills, {NL} losses'), f'"Show 14 more hulls" under them, no line beside it (037); the header unchanged {mo} {ctxt!r}')
     st = pg.inner_text('#fitStatus')
     check('Ferox' in st, f'the Ferox is what\'s shown under the dossier ({st!r})')
     pg.click('#pilotDossier [data-pd-allhulls]'); pg.wait_for_timeout(200)
@@ -123,8 +125,8 @@ with sync_playwright() as p:
     check(len(r3) == 9 and mo3 and mo3[0] == 'Show 14 more hulls', f'Show fewer: back to 9 rows {len(r3)} {mo3}')
     pg.click('#pilotDossier [data-pd-mode="solo"]'); pg.wait_for_timeout(200)
     r4 = pg.evaluate(ROWS); solo = order('solo')
-    check(r4[0]['hull'] == 'Ferox' and r4[0]['k'] == '0 of 1' and r4[0]['where'] == 'no solo kills in it' and r4[0]['sel'] and [x['hull'] for x in r4[1:]] == solo[:8],
-          f'Solo: the Ferox still first ("0 of 1", "no solo kills in it"), then the solo busiest {r4[:1]} {[x["hull"] for x in r4[1:]]} (want {solo[:8]})')
+    check(r4[0]['hull'] == 'Ferox' and r4[0]['k'] == '0 of 1' and r4[0]['where'] == 'no solo kills in it' and r4[0]['last'] == '—' and r4[0]['sel'] and [x['hull'] for x in r4[1:]] == solo[:8],
+          f'Solo: the Ferox still first ("0 of 1", "no solo kills in it", Last "—"), then the newest solo hulls {r4[:1]} {[x["hull"] for x in r4[1:]]} (want {solo[:8]})')
     pg.click('#pilotDossier [data-pd-mode="all"]'); pg.wait_for_timeout(200)
     # 2. a kill not in her zKillboard list yet: added
     from_fleet(pg, FK2, name)
@@ -155,7 +157,7 @@ with sync_playwright() as p:
     r = pg.evaluate(ROWS); mo = pg.evaluate(MORE); seg = pg.evaluate("() => document.querySelector('#pilotDossier [data-pd-mode=all] b').textContent")
     check(r and r[0]['hull'] == 'Kikimora' and r[0]['tag'] == 'Asked for' and r[0]['where'] == f'not in their newest {NK} kills or {NL} losses' and r[0]['k'] == '0' and not r[0]['exp'] and r[0]['last'] == '—' and r[0]['sel'],
           f'a typed hull not among those read: a row of its own, first, "Asked for", no numbers, no ▾ {r[:1]}')
-    check([x['hull'] for x in r[1:]] == ALL[:8] and mo and mo[0] == 'Show 15 more hulls' and seg == str(NK), f'it isn\'t counted: the 8 busiest, "Show 15 more hulls", All {NK} ({mo}, {seg})')
+    check([x['hull'] for x in r[1:]] == ALL[:8] and mo and mo[0] == 'Show 15 more hulls' and seg == str(NK), f'it isn\'t counted: the 8 newest, "Show 15 more hulls", All {NK} ({mo}, {seg})')
     pg.click('#pilotDossier [data-pd-allhulls]'); pg.wait_for_timeout(200)
     r2 = pg.evaluate(ROWS); mo2 = pg.evaluate(MORE)
     check(len(r2) == 24 and r2[0]['hull'] == 'Kikimora' and mo2 and mo2[2] == f'all 23 hulls in their newest {NK} kills and {NL} losses', f'opened: hers 23 + the one asked for, "all 23 hulls" {len(r2)} {mo2}')
@@ -166,7 +168,7 @@ with sync_playwright() as p:
     # 7. no hull asked for
     analyze(pg, name)
     r = pg.evaluate(ROWS); mo = pg.evaluate(MORE)
-    check([x['hull'] for x in r] == ALL[:8] and not any(x['tag'] for x in r) and mo and mo[0] == 'Show 15 more hulls' and r[0]['sel'], f'no hull asked for: the 8 busiest, no tag, the busiest selected, "Show 15 more hulls" {[x["hull"] for x in r]} {mo}')
+    check([x['hull'] for x in r] == ALL[:8] and not any(x['tag'] for x in r) and mo and mo[0] == 'Show 15 more hulls' and r[0]['sel'], f'no hull asked for: the 8 newest, no tag, the newest selected, "Show 15 more hulls" {[x["hull"] for x in r]} {mo}')
     ctx.close()
     # phone
     ctx = new_ctx(390); pg = ctx.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(500)
