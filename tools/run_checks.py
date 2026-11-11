@@ -114,6 +114,18 @@ def sh(cmd, timeout):
 
 def last(out): return (out.splitlines() or [''])[-1].strip()
 
+def chain_notices(out):
+    """pyfa_update_check's ATTENTION notices: the indented lines right after its 'ATTENTION:' heading, up to the first step line
+    ('OK' / 'FAIL') or a blank line. Build queue 035: the old slice took the first 4 indented lines, so OK steps printed after
+    two notices were counted as failed steps ('4 steps failed' for 2 notices, 034's run)."""
+    if 'ATTENTION' not in out: return []
+    got = []
+    for l in out.split('ATTENTION', 1)[1].splitlines()[1:]:
+        s = l.strip()
+        if not l.startswith('  ') or not s or s.startswith(('OK ', 'FAIL')): break
+        got.append(l)
+    return got
+
 def check_tags():
     files = {f[:-3] for f in os.listdir(PC) if f.endswith('_check.py')}
     problems = [f'{f}.py: no area in AREAS (tools/run_checks.py)' for f in sorted(files - AREAS.keys())]
@@ -202,10 +214,10 @@ def main(argv):
     if tier in ('calc', 'all'):
         out, dt = sh(f'python3 -I tools/pyfa_update_check.py --run', 3600)
         bad_steps = [l for l in out.splitlines() if l.strip().startswith('FAIL')]
-        if 'ATTENTION' in out: bad_steps = [l for l in out.split('ATTENTION', 1)[1].splitlines()[1:] if l.startswith('  ')][:4] + bad_steps   # what moved
-        good = 'UP TO DATE' in out and not bad_steps and ' OK ' in out
-        lines.append(f'{"OK  " if good else "FAIL"} the pyfa chain ({dt / 60:.0f} min): {len(bad_steps)} steps failed')
-        lines += ['     ' + l.strip()[:200] for l in bad_steps]
+        notices = chain_notices(out)   # what moved (build queue 035: was the first 4 indented lines, OK steps included)
+        good = 'UP TO DATE' in out and not bad_steps and not notices and ' OK ' in out
+        lines.append(f'{"OK  " if good else "FAIL"} the pyfa chain ({dt / 60:.0f} min): {len(bad_steps)} steps failed, {len(notices)} notices')
+        lines += ['     notice: ' + l.strip()[:190] for l in notices] + ['     ' + l.strip()[:200] for l in bad_steps]
         if not good: failed.append('pyfa chain')
     want = sorted(AREAS) if tier == 'all' else sorted(k for k, v in AREAS.items() if set(v) & (set(areas) | ({'calc'} if tier == 'calc' else set())))
     env = '' if os.environ.get('PYFA_SRC') else '(PYFA_SRC not set: page checks that need pyfa will fail) '
