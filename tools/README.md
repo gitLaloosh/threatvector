@@ -10,7 +10,7 @@ Read `../LESSONS_LEARNED.md` first. It explains why these tools exist.
 ## Setup (no pip installs needed)
 
 ```
-git clone https://github.com/pyfa-org/Pyfa  /some/path/Pyfa   # verified with v2.69.3, SDE build 3624425 (2026-10-21)
+git clone https://github.com/pyfa-org/Pyfa  /some/path/Pyfa   # verified with v2.70.0, SDE build 3682781 (2026-11-11; v2.69.3 / 3624425 before)
 export PYFA_SRC=/some/path/Pyfa
 python3 -I tools/gen_weapon_range_table.py index.html
 ```

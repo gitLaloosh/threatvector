@@ -94,7 +94,10 @@ When pyfa or its data moves:
 
 1. Update `PYFA_SRC`.
 2. Run `--run`.
-3. Explain every change, fix what needs fixing, and re-pin with notes.
+3. Explain every change, fix what needs fixing, and re-pin with notes. Refresh the golden fixtures with
+   `OLD_PYFA_SRC=<the previously verified pyfa> PYFA_SRC=<the new one> python3 -I tools/refresh_golden_fixtures.py --write`:
+   an effect CCP removed in the patch is then dropped from the fixtures instead of kept (build queue 035: the Cerberus's
+   Effect899 and the Hawk's 13025 stayed in fixtures and doubled their new bonuses).
 4. Update the manifest's `pyfa` block and fingerprints.
 5. Empty the page's list of changed items in the same delivery (v2026.11.04.3, build queue 008): set
    `GAME_DATA_PENDING` to `{verified: <the new pyfa.clientBuild>, build: 0, types: ''}`. The fits it named are now
@@ -106,7 +109,7 @@ When pyfa or its data moves:
 When comparing with one of the owner's pyfa screenshots, ask for Help → About:
 his pyfa must be the same version and data build (LESSON #10).
 
-## Sections (2026-10-14; re-verified 2026-10-21 against pyfa v2.69.3, data 3624425; 20 sections since v2026.10.14.35)
+## Sections (2026-10-14; re-verified 2026-11-11 against pyfa v2.70.0, data 3682781; 21 sections since build queue 035)
 
 | Section | Kind | Mirrors |
 |---|---|---|
@@ -123,7 +126,8 @@ his pyfa must be the same version and data build (LESSON #10).
 | `cycle-time` | port | `Module.rawCycleTime` / `reactivationDelay` / `getCycleParameters` |
 | `weapon-range-table` | generated | weapon range handlers (`gen_weapon_range_table.py`); since v2026.10.14.34 also turret tracking and missile / Vorton explosion radius and velocity |
 | `hull-damage` | generated | hull and subsystem damage / rate-of-fire handlers + the helpers applying them per weapon, charge, drone and fighter ability (`gen_hull_damage_table.py`, since v2026.10.14.3); `FIGHTER_ABILITY_EFFECTS` + `pyfaDefaultFighterAbilities` = pyfa's default fighter abilities (`Fighter.__init__`, since v2026.10.14.4) |
-| `module-state-tables` | generated | effect types, group limits, activation blocks (`gen_module_state_tables.py`) |
+| `module-state-tables` | generated | effect types, group limits, activation blocks (`gen_module_state_tables.py`, `--write` since build queue 035) |
+| `synchronizer-rigs` | generated + port | pyfa v2.70.0's Synchronizer rig counting effects (Effect12969 ... 13016, runTime early: the matching faction modules online and up are counted and the rig's own attributes raised by +/-count): `SYNC_RIG_EFFECTS` by `gen_sync_table.py` (each handler run with a probe module in every `FittingModuleState`), applied by `pyfaSyncRigTypes` to a copy of the rig's type for that fit only, which the engine reads through `fitType`. Since build queue 035; verified by the Synchronizer goldens against `pyfa_fit_oracle.py` (0 / 1 / 3 matching modules, one offline, a Caldari Navy line) and two mutants. The rigs' ordinary new effects are in the tables they belong to (damage chains, drone range, the audited rows) |
 | `sig-effect-tables`, `cap-rep-effect-tables`, `sensor-effect-table`, `sensor-strength-effect-ids`, `hp-effect-table` | audited | `audit_effect_tables.py` |
 | `cycle-time-tables` | audited | reactivation-delay and burst-duration modifiers |
 

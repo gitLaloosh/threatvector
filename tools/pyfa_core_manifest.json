@@ -1,11 +1,11 @@
 {
   "note": "PYFA CORE lock -- see PYFA_CORE.md. sha256 = SHA-256 of the lines between a section's BEGIN/END markers (LF line endings). Update ONLY with `node tools/check_pyfa_core.mjs --update` after running the section's verify commands; say so in the history doc.",
   "pyfa": {
-    "version": "v2.69.3",
-    "commit": "d2722a4c8b2ec9cdfded5024cb97df362ac513da",
-    "clientBuild": 3624425,
-    "dataDumped": "2026-10-17",
-    "verifiedOn": "2026-10-21",
+    "version": "v2.70.0",
+    "commit": "e5483f8666ed2eda99c98985c59a29b07e3bb844",
+    "clientBuild": 3682781,
+    "dataDumped": "2026-11-10",
+    "verifiedOn": "2026-11-11",
     "ownerPyfa": "v2.69.3 / EVE data 3624425 (the owner updated 2026-10-22; v2.69.3 ships data 3624425)"
   },
   "sections": {
