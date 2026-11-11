@@ -363,6 +363,9 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   kept only in its own IndexedDB database `dscan-intel-sounds`, never the ESI cache); one master gain, loudness (volume/100)²; the
   notification is silent when the page's sound plays. No audio is made before a sound or a press. `alert_sound_check.py` (a stand-in
   AudioContext; generated tones only, never a real recording in the repo).
+  A refused file's warning (INTEL-09/10) goes at the slot's next press (v2026.11.11.1, build queue 033): a built-in chosen, the list
+  pressed or opened from the keys, "Your own file…", ▶ Test; taken off the page in place (`itSndMsgDrop`, `it.lastHtml = null`), never
+  by a redraw, which would replace the list under the pointer (LESSON #152).
 - **Intel map** (v2026.11.02.4, Project doc roadmap/intel-map-plan.md): layout B, the map beside Near You and the Feed below (a
   List | Map switch in Near You on a phone, `it.set.nearView`). `INTEL_MAP` (CCP position2D /1e14, security in hundredths, region)
   comes only from `tools/jump_table_update.py`, aligned to `INTEL_JUMPS` (its `jumps` = the jump table's md5; `gen_intel_tables.py`

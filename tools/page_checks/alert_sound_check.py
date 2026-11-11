@@ -23,8 +23,20 @@ time (files are decoded by the browser's own OfflineAudioContext), and the only 
   * settings saved before this version load with the defaults (70%, Chime, Klaxon);
   * 390 px: the rows inside the box, 44 px controls; no page errors; nothing sent anywhere.
 v2026.11.01.7 fails (one sound, no volume, no slots).
+
+v2026.11.11.1 (build queue 033, Project doc roadmap/intel-sound-warning-plan.md; a user's report: "The warning for a sound file thats
+too large persists after swapping back to a built in one."; the owner's A): a refused file's warning goes at the slot's next press
+(warn_cases, run on the page and on each mutant):
+  * a different built-in chosen: no warning, and the slot plays it; INTEL-10 the same;
+  * the list pressed (pointerdown) or opened from the keys (Enter): gone at once, the same list still on the page (never a redraw: the
+    press must open it), still gone after a redraw; Tab doesn't clear it, and nor does the focus the page puts back after a refusal;
+  * the same refusal again right after: shown again (the card's last build forgotten);
+  * ▶ Test: gone, the focus still on ▶ Test, the sound played;
+  * "Your own file…" then cancel: gone, the file input the same one (no redraw while the picker is open), and a pick after it works;
+  * a kept file + a refused second file: the file kept, the warning shown; a built-in: both go;
+  * 390 px: the box's height back where it was once the warning goes.
 """
-import sys, os, re, io, json, math, struct
+import sys, os, re, io, json, math, struct, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, '..'))
 from playwright.sync_api import sync_playwright
@@ -67,6 +79,86 @@ FAKE_ALERT = """([j, kill]) => { window.__j = j; window.itThreat = () => true; w
   it.alerted = new Map(); it.set.range = 3;
   const e = kill ? {kind: 'kill', kill: {victim: {name: 'Made Up', ship: {name: 'Rifter'}}, value: 0}} : {kind: 'line', who: 'Scout', raw: 'made-up report'};
   window.__notes = []; itAlert({sys: 30000100 + j, kind: 'seen'}, e); return window.__notes.map(n => n[1].silent); }"""
+
+def warn_cases(b, out, note=lambda ok, msg: None):
+    """Build queue 033: a refused file's warning goes at the slot's next press. A failure appends to out."""
+    def ck(ok, msg):
+        note(ok, msg)
+        if not ok: out.append(msg)
+    def ctx_at(w, html):
+        c = b.new_context(bypass_csp=True, viewport={'width': w, 'height': 1000}); c.add_init_script(STAND_IN); M.route(c)
+        pg = c.new_page(); pg.on('pageerror', lambda e: ck(False, f'033: page error {str(e)[:80]}')); pg.goto('file://' + html); pg.wait_for_timeout(500)
+        pg.evaluate("() => localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true}))"); pg.reload(); pg.wait_for_timeout(600)
+        pg.click('#tabBtnIntel'); pg.wait_for_timeout(300); return c, pg
+    def pick(pg, slot, name, data, mime):
+        with pg.expect_file_chooser() as fc:
+            pg.select_option(f'#intelPanel [data-it-snd="{slot}"]', 'file')
+        fc.value.set_files(files=[{'name': name, 'mimeType': mime, 'buffer': data}]); pg.wait_for_timeout(900)
+    W = "() => [...document.querySelectorAll('#intelPanel .it-snd-e')].map(x => x.textContent)"
+    SEL = "() => { const s = document.querySelector('#intelPanel [data-it-snd=\"near\"]'); const same = window.__sel === s; window.__sel = s; return same; }"
+    big, notsnd, one = wav(70), b'this is not sound ' * 200, wav(1)
+    c, pg = ctx_at(1480, out.html)
+    pick(pg, 'near', 'big-horn.wav', big, 'audio/wav')
+    w0 = pg.evaluate(W); fz = pg.evaluate("() => document.activeElement && document.activeElement.dataset.itSnd")
+    ck(len(w0) == 1 and 'INTEL-09' in w0[0] and fz == 'near', f'033: over 1 MB: INTEL-09 shown, the focus back on the list, which alone keeps it {w0} {fz}')
+    pg.select_option('#intelPanel [data-it-snd="near"]', 'ping'); pg.wait_for_timeout(200)
+    m = pg.evaluate(MARK); pg.evaluate("() => itPlaySound('near')"); sp = pg.evaluate(SOUND, m); r = pg.evaluate(ROW, 'near')
+    ck(r == ['ping', 'ping', [], []] and pg.evaluate("() => itSnd.near") is None and sp['osc'] and sp['osc'][0]['f'][0][1] == 1320,
+       f'033: a different built-in (Ping): the warning goes, the slot plays Ping {r} {[o["f"] for o in sp["osc"]]}')
+    pick(pg, 'near', 'big-horn.wav', big, 'audio/wav'); pg.evaluate(SEL)
+    pg.dispatch_event('#intelPanel [data-it-snd="near"]', 'keydown', {'key': 'Tab'}); wt = pg.evaluate(W)
+    pg.dispatch_event('#intelPanel [data-it-snd="near"]', 'pointerdown'); wp = pg.evaluate(W); same = pg.evaluate(SEL)
+    pg.evaluate("() => itRender(true)"); wr = pg.evaluate(W)
+    ck(len(wt) == 1 and wp == [] and same and wr == [] and pg.evaluate("() => itSnd.near") is None,
+       f'033: Tab keeps it; the list pressed (the same built-in to choose again): gone at once, the same list on the page, still gone after a redraw {wt} {wp} {same} {wr}')
+    pick(pg, 'near', 'big-horn.wav', big, 'audio/wav')
+    pg.dispatch_event('#intelPanel [data-it-snd="near"]', 'keydown', {'key': 'Enter'}); we = pg.evaluate(W)
+    ck(we == [], f'033: the list opened from the keys (Enter): gone {we}')
+    pick(pg, 'near', 'big-horn.wav', big, 'audio/wav'); wa = pg.evaluate(W)   # no redraw since the drop: the card's last build had this warning
+    ck(len(wa) == 1 and 'INTEL-09' in wa[0], f'033: the same refusal right after: shown again {wa}')
+    m = pg.evaluate(MARK); pg.click('#intelPanel [data-it-test="near"]'); pg.wait_for_timeout(150); st = pg.evaluate(SOUND, m)
+    wt2 = pg.evaluate(W); ft = pg.evaluate("() => document.activeElement && document.activeElement.dataset.itTest")
+    ck(wt2 == [] and ft == 'near' and st['osc'], f'033: ▶ Test: gone, the focus still on ▶ Test, the sound played {wt2} {ft} {len(st["osc"])}')
+    pick(pg, 'near', 'big-horn.wav', big, 'audio/wav')
+    pg.evaluate("() => { window.__fi = document.querySelector('#intelPanel [data-it-sndfile]'); }")
+    with pg.expect_file_chooser():
+        pg.select_option('#intelPanel [data-it-snd="near"]', 'file')
+    pg.wait_for_timeout(200)   # the picker cancelled: no file comes back
+    wc = pg.evaluate(W); fi = pg.evaluate("() => window.__fi === document.querySelector('#intelPanel [data-it-sndfile]')"); vc = pg.evaluate(ROW, 'near')
+    ck(wc == [] and fi and vc[:2] == ['ping', 'ping'], f'033: "Your own file…" then cancel: gone, the same file input (no redraw while the picker is open), still Ping {wc} {fi} {vc}')
+    pick(pg, 'near', 'tone-1s.wav', one, 'audio/wav'); r1 = pg.evaluate(ROW, 'near')
+    ck(r1 == ['file', 'file', ['tone-1s.wav'], []], f'033: a pick after that works {r1}')
+    pick(pg, 'near', 'big-horn.wav', big, 'audio/wav'); rk = pg.evaluate(ROW, 'near')
+    pg.select_option('#intelPanel [data-it-snd="near"]', 'chime'); pg.wait_for_timeout(300); rc = pg.evaluate(ROW, 'near'); db = pg.evaluate(IDB, 'near')
+    ck(rk[:3] == ['file', 'file', ['tone-1s.wav']] and len(rk[3]) == 1 and rc == ['chime', 'chime', [], []] and db is None,
+       f'033: a kept file + a refused second: the file kept, the warning shown; a built-in: both go {rk} {rc} {db}')
+    pick(pg, 'near', 'notes.mp3', notsnd, 'audio/mpeg'); rn = pg.evaluate(ROW, 'near')
+    pg.select_option('#intelPanel [data-it-snd="near"]', 'sonar'); pg.wait_for_timeout(200); rs = pg.evaluate(ROW, 'near')
+    ck(len(rn[3]) == 1 and 'INTEL-10' in rn[3][0] and rs == ['sonar', 'sonar', [], []], f'033: INTEL-10, then a built-in: gone {rn} {rs}')
+    c.close()
+    c, pg = ctx_at(390, out.html)
+    H = "() => Math.round(document.querySelector('#intelPanel .it-snd').getBoundingClientRect().height)"
+    h0 = pg.evaluate(H); pick(pg, 'near', 'big-horn.wav', big, 'audio/wav'); h1 = pg.evaluate(H)
+    pg.select_option('#intelPanel [data-it-snd="near"]', 'ping'); pg.wait_for_timeout(200); h2 = pg.evaluate(H)
+    ck(h1 > h0 and h2 == h0, f'033: 390 px: the box grows with the warning and goes back once it goes ({h0} -> {h1} -> {h2})')
+    c.close()
+
+class Out(list):
+    def __init__(self, html): super().__init__(); self.html = html
+
+def mutate(page, a, b):
+    if a not in page:   # the served copy (tools/publish.py) drops the script's indentation
+        a, b = ('\n'.join(l.lstrip() for l in s.split('\n')) for s in (a, b))
+    assert page.count(a) >= 1, a[:70]
+    return page.replace(a, b, 1)
+MUTANTS = [   # build queue 033: each must fail warn_cases
+    ('the warning kept when there was no file (the bug)', "if(itSnd[sl]){ if(itSnd[sl].blob) itSndStore(sl, null); itSnd[sl] = null; }", "if(itSnd[sl] && itSnd[sl].blob){ itSnd[sl] = null; itSndStore(sl, null); }"),
+    ('a press redrawing the card', "if(d) d.remove();", "it.sndRev = (it.sndRev || 0) + 1; itRender(true);"),
+    ('the last build not forgotten', "  it.lastHtml = null;   // the card no longer matches its last build", "  // the card no longer matches its last build"),
+    ('the focus clearing it', "el.addEventListener('pointerdown', (e) => { const s = e.target.closest && e.target.closest('select[data-it-snd]')", "el.addEventListener('focusin', (e) => { const s = e.target.closest && e.target.closest('select[data-it-snd]')"),
+    ('▶ Test not clearing it', "if(tst){ itSndMsgDrop(tst.dataset.itTest, el); itAudioWake();", "if(tst){ itAudioWake();"),
+    ('Tab clearing it', "const IT_SND_KEEP_KEYS = new Set(['Tab', ", "const IT_SND_KEEP_KEYS = new Set(['Nothing', "),
+]
 
 with sync_playwright() as p:
     b = p.chromium.launch()
@@ -200,6 +292,17 @@ with sync_playwright() as p:
       return [c.every(r => r.height >= 44), c.every(r => r.right <= box.right + 1 && r.left >= box.left - 1), document.documentElement.scrollWidth]; }""")
     check(ph[0] and ph[1] and ph[2] <= 390, f'390 px: 44 px controls inside the box, nothing off the page {ph}')
     ctx.close()
+    # ---- build queue 033: the refused file's warning goes at the slot's next press; then the mutants
+    warn_cases(b, Out(HTML), check)
+    page = open(HTML, encoding='utf-8').read(); tmp = tempfile.mkdtemp(prefix='alert_sound_mut_')
+    for name_, a, bb in MUTANTS:
+        try: html = mutate(page, a, bb)
+        except AssertionError as e: check(False, f'mutant "{name_}": its text is in the page ({e})'); continue
+        path = os.path.join(tmp, 'index.html'); open(path, 'w', encoding='utf-8').write(html)
+        out = Out(path)
+        try: warn_cases(b, out)
+        except Exception as e: out.append(f'error {str(e)[:80]}')
+        check(bool(out), f'mutant "{name_}" fails the 033 cases ({out[:1]})')
     reqs = [u for u in reqs if not re.match(r'https://esi\.evetech\.net/latest/status/\?datasource=tranquility$', u)]   # v2026.11.04.3: the page's own, once per load (item data after a patch)
     check(not reqs, f'nothing sent anywhere by the sounds {reqs[:3]}')
     check(not errs, f'no page errors {errs[:3]}')

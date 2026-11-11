@@ -150,6 +150,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #137 A control put where a sheet's backdrop is pressed gets that tap's click when the sheet closes on the press. See also #117.
 - #150 A page that leaves for another site can come back from the back/forward cache exactly as it left: undo "in progress" on pageshow, and drop what was kept for the return on a normal load.
 - #151 Data read in several requests must change all at once: build the new copy aside and swap it in at the end, or whatever reads it meanwhile uses half of it.
+- #152 A press can't redraw the view that holds the control pressed (a list must still open, a file picker's input must survive): change that part in place, and make the view forget its last build.
 
 **Checks and test machinery**
 
@@ -1058,6 +1059,21 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 152. A press can't redraw the view that holds the control pressed (a list must still open, a file picker's input must survive): change that part in place, and make the view forget its last build
+
+- **What happened (v2026.11.11.1, build queue 033, caught at the build review):** a refused sound file's warning (INTEL-09) stayed
+  after going back to a built-in sound. The plan cleared it with the card's usual redraw, also on the presses that can't fire a change
+  (choosing the same sound again). But Intel's card is rebuilt whole (`innerHTML`): a redraw on the list's own press would replace the
+  list under the pointer, so it wouldn't open, and the "Your own file…" input lives in the same card, so a redraw while its picker is
+  open would lose the pick.
+- **How it was caught:** reading `itRender` at the review, before building; then a mutant ("a press redrawing the card") in
+  `alert_sound_check.py`: the list on the page after the press was a different element. A second mutant showed the other half: taking the
+  line off the page without forgetting `it.lastHtml` hid the next identical warning, because the card's next build matched the last one
+  and was skipped.
+- **Do this instead:** on a press inside a card that's drawn by building and comparing, change only the part that's stale, in place
+  (`itSndMsgDrop` removes the one line), and set the compare's last build to null so the next draw writes the card whole. Check that the
+  pressed control is the same element after the press, and that the same state shown again right after is drawn.
 
 ## 151. Data read in several requests must change all at once: build the new copy aside and swap it in at the end, or whatever reads it meanwhile uses half of it
 

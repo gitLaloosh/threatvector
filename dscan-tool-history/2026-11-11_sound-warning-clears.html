@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-11 — The refused sound file's warning goes</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel sound: a refused file's warning goes at the slot's next press</h1>
+<p><span class="tag">Page</span> 2026-11-11 &middot; <code>v2026.11.11.1</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>Build queue 033, Project doc <code>roadmap/intel-sound-warning-plan.md</code>. A user's report, passed on by the owner: "The warning for a sound file thats too large persists after swapping back to a built in one."</li>
+<li>Cause: a refused file (over 1 MB, INTEL-09; not sound, INTEL-10) leaves the slot an entry with only the warning, and choosing a built-in cleared the entry only when it held a file. After a refusal the list still shows the slot's sound, so choosing that same sound again fires no change at all.</li>
+<li>Decided at the build review (the owner's A): pressing the slot's list, or opening it from the keys, also clears the warning, so choosing the same sound again works; the focus alone doesn't (the page puts the focus back on the list after a refusal, which would hide the warning before it's read).</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li>Choosing a built-in clears the slot's warning as well as any file.</li>
+<li>The slot's list pressed (pointer) or used from the keys (any key but Tab, Shift, Ctrl, Alt, Meta, Escape, Caps Lock), "Your own file…" and ▶ Test clear that slot's old warning (<code>itSndMsgDrop</code>). A new refusal shows it again.</li>
+<li>The line is taken off the page as it is, never by redrawing the card: a redraw on the list's press would replace the list under the pointer, and the file picker's input lives in the card. The card's last build is forgotten (<code>it.lastHtml = null</code>) so the same warning again is drawn.</li>
+<li>Nothing else: the limits, the texts INTEL-09/10, storage (no stored data changed; the warning lives in memory only), volume, Test, notifications.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li><code>alert_sound_check.py</code>, <code>warn_cases</code>: a different built-in (INTEL-09 and INTEL-10); the list pressed and opened from the keys (the same list element after the press, still gone after a redraw); Tab and the page's own focus keep it; the same refusal right after a drop is shown; ▶ Test (the focus stays on it); "Your own file…" then cancel (the same file input) and a pick after it; a kept file plus a refused second file; 390 px, the box's height back after.</li>
+<li>Six mutants each fail those cases: the old handler (the bug), a press redrawing the card, the last build not forgotten, the focus clearing it, ▶ Test not clearing it, Tab clearing it.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #152: a press can't redraw the view that holds the control pressed (a list must still open, a file picker's input must survive). Change that part in place, and make the view forget its last build, or the next identical state is skipped by the compare.</p>
+</body>
+</html>
