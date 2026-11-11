@@ -38,7 +38,7 @@ AREAS = {
     'fleet_kill_check': ['pilot', 'system'], 'fleet_view_check': ['system'], 'header_check': ['layout', 'intel'],
     'intel_assess_check': ['intel', 'system'], 'intel_check': ['intel'], 'intel_kills_check': ['intel'], 'feed_down_check': ['intel', 'layout'], 'intel_layout_check': ['intel'],
     'intel_place_check': ['intel'], 'intel_words_check': ['intel'], 'intel_gates_check': ['intel'], 'intel_rows_check': ['intel'], 'intel_guard_check': ['intel'], 'intel_fleet_check': ['intel', 'pilot'], 'outside_links_check': ['pilot', 'intel', 'layout'], 'fleet_vs_check': ['pilot', 'system', 'myship'], 'last_kill_check': ['pilot'], 'layout_check': ['layout'], 'matchup_strip_check': ['myship', 'calc'],
-    'mine_damage_check': ['myship', 'calc'], 'missile_picks_check': ['myship', 'calc'], 'missing_charges_check': ['fit', 'calc'],
+    'mine_damage_check': ['myship', 'calc'], 'missile_picks_check': ['myship', 'calc'], 'missing_charges_check': ['fit', 'calc'], 'eft_mutation_check': ['fit', 'calc'],   # build queue 035
     'module_charges_check': ['fit', 'calc'], 'my_ship_check': ['myship'], 'my_ships_check': ['myship'], 'no_shift_check': ['layout'],
     'pilot_rows_check': ['system'], 'request_gates_check': ['intel', 'pilot'], 'ring_track_check': ['fit'], 'sa_size_check': ['system'],
     'scan_contacts_check': ['system'], 'shared_kill_check': ['pilot'], 'ship_class_check': ['fit', 'system'],

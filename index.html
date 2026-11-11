@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-leTZEH7NMqDqMX5VllEJmDxDYHmNQnRm70GMHKags18='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-wamAoKxJUB395oG5GaTwdZEPpm3o3nYM7j2u2PiO/XE='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -13142,8 +13142,28 @@ function slotGroupFromDogmaEffects(type){
   return null;
 }
 
+// pyfa's mutation export (build queue 035; pyfa v2.70.0 service/port/eft.py): with "Mutated attributes" on, a mutated
+// module's line is its ORIGINAL item's name with a ' [N]' tag (modulePattern / droneCargoPattern: after the charge and
+// /OFFLINE, or after 'xN'), and a block per mutated item ends the paste: '[N] <original name>', the mutaplasmid, the
+// attribute line ("maxRange 14000, speedFactor -60"), up to a blank line (importGetMutationData, mutantHeaderPattern
+// '^\[(?P<ref>\d+)\](?P<tail>.*)'). pyfa reads the blocks out before the rest, and so does this: the line reads as the
+// original item (what pyfa v2.70.0's Synchronizer count sees too), and the item is marked mutated (pyfa's release after
+// v2.70.0 stops counting mutated items toward a Synchronizer, its master a2c7b8e). The mutated values themselves are not
+// read (the tool doesn't model mutated stats).
+const EFT_MUTA_HEADER_RE = /^\[(\d+)\](.*)$/, EFT_MUTA_TAG_RE = /\s*\[(\d+)\]$/;
+function eftStripMutations(text){
+  const out = [];
+  let inBlock = false;
+  for(const raw of text.split('\n')){
+    const l = raw.trim();
+    if(EFT_MUTA_HEADER_RE.test(l)){ inBlock = true; continue; }
+    if(!l){ inBlock = false; out.push(l); continue; }
+    if(!inBlock) out.push(l);
+  }
+  return out;
+}
 async function parseEftFit(text){
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const lines = eftStripMutations(text).filter(Boolean);
   if(!lines.length) throw codedError('FIT-01', 'Paste is empty -- paste a fit copied from the EVE client (Ctrl+A/Ctrl+C in the Fitting window) or exported from pyfa');
 
   const headerMatch = lines[0].match(EFT_HEADER_RE);   // shared with the D-Scan tab's detectFitPaste()
@@ -13162,12 +13182,15 @@ async function parseEftFit(text){
   // offline module is treated as online, since a killmail can't tell either.
   const quantityLines = [];
   const moduleLines = [];
-  for(const line of lines.slice(1)){
-    if(/^\[\s*empty\b.*slot\s*\]$/i.test(line)) continue;
+  for(const line0 of lines.slice(1)){
+    if(/^\[\s*empty\b.*slot\s*\]$/i.test(line0)) continue;
+    const tag = line0.match(EFT_MUTA_TAG_RE);   // build queue 035: pyfa's ' [N]' mutation tag (eftStripMutations)
+    const line = tag ? line0.slice(0, tag.index).trim() : line0;
+    const mutated = !!tag;
     if(!line.includes(',')){
       const qtyMatch = line.match(/^(.+?)\s+x(\d+)$/i);
       if(qtyMatch){
-        quantityLines.push({ name: qtyMatch[1].trim(), qty: parseInt(qtyMatch[2], 10) });
+        quantityLines.push({ name: qtyMatch[1].trim(), qty: parseInt(qtyMatch[2], 10), mutated });
         continue;
       }
     }
@@ -13175,7 +13198,7 @@ async function parseEftFit(text){
     const body = offlineMatch ? offlineMatch[1].trim() : line;
     const parts = body.split(',').map(p => p.trim()).filter(Boolean);
     if(!parts.length) continue;
-    moduleLines.push({ moduleName: parts[0], chargeName: parts[1] || null });
+    moduleLines.push({ moduleName: parts[0], chargeName: parts[1] || null, mutated });
   }
 
   // Batch-resolve every distinct name (ship + every module/charge/drone/
