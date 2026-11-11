@@ -93,6 +93,8 @@ def fast(html):
         ('card names', q('check_card_names.py'), lambda l: l.endswith(' 0 problems')),
         ('zKillboard request gates', q('check_request_gates.py'), lambda l: l.endswith(' 0 problems')),
         ('changed-items list (GAME_DATA_PENDING)', q('check_game_data_pending.py'), lambda l: l.endswith(' 0 problems')),   # v2026.11.04.3
+        # build queue 034 (LESSON #153): the patch-day report on made-up CCP data, a local stand-in for CCP's site (seconds, no network)
+        ('the patch-day report (made-up CCP data)', f'python3 -I tools/independent_checks/check_sde_change_report.py {html}', lambda l: l.endswith(': 0 problems')),
         ('error codes and ERRORS.md', q('gen_errors_md.py'), lambda l: l.endswith('ERRORS.md is up to date')),
         ('LESSONS index', 'python3 -I tools/check_lessons_index.py', lambda l: l.endswith(' 0 problems')),
         # v2026.10.31.7: seconds, not part of the 40-minute chain's cost; they load the page script in a stub DOM (LESSON #36)

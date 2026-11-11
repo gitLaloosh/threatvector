@@ -50,6 +50,11 @@ UA = 'threat-vector patch-day report (github.com/gitlaloosh/threatvector)'
 SCOPE = {6: 'Ships', 7: 'Modules', 8: 'Charges', 16: 'Skills', 18: 'Drones', 20: 'Implants', 32: 'Subsystems', 87: 'Fighters'}
 TYPE_FIELDS = ('mass', 'volume', 'capacity', 'radius')
 FILES = ('types.jsonl', 'groups.jsonl', 'typeDogma.jsonl', 'dogmaEffects.jsonl', 'dogmaAttributes.jsonl')
+# The changes files' tables this report reads (build queue 034, LESSON #153). CCP's changes files list every table of the SDE,
+# and since build 3682781 some have text ids (UUIDs: characterTitles, militaryCampaigns, militaryCampaignObjectives); chain()
+# reads only these, so a table the report never uses can't stop it.
+USED = ('types', 'typeDogma', 'groups', 'dogmaEffects', 'dogmaAttributes')
+SKIPPED = {}   # {table in USED: [ids that aren't whole numbers]}, filled by chain(); printed and said in the report
 
 def out(key, val):   # a GitHub Actions step output (nothing outside the Action)
     f = os.environ.get('GITHUB_OUTPUT')
@@ -123,8 +128,14 @@ def changes_file(build):
     except Exception: return None
     return b.decode('utf-8')
 
+def as_id(table, i):
+    """A changes file's id as an int; one that isn't a whole number is noted in SKIPPED and dropped (None)."""
+    try: return int(i)
+    except (TypeError, ValueError):
+        SKIPPED.setdefault(table, []).append(i); return None
+
 def chain(new_build, verified):
-    """Follow the changes files back from new_build to the newest build at or before verified: (old build, ids per file)."""
+    """Follow the changes files back from new_build to the newest build at or before verified: (old build, ids per table in USED)."""
     ids, b, steps = {}, new_build, 0
     while b > verified and steps < 400:
         t = changes_file(b)
@@ -133,12 +144,22 @@ def chain(new_build, verified):
         for l in t.splitlines():
             if not l.strip(): continue
             o = json.loads(l)
-            if o.get('_key') == '_meta': meta = o; continue
+            table = o.get('_key')
+            if table == '_meta': meta = o; continue
+            if table not in USED: continue   # LESSON #153: other tables' ids may be text; this report never reads them
             for k in ('added', 'changed', 'removed'):
-                if isinstance(o.get(k), list): ids.setdefault(o['_key'], set()).update(int(i) for i in o[k])
+                if isinstance(o.get(k), list):
+                    ids.setdefault(table, set()).update(n for n in (as_id(table, i) for i in o[k]) if n is not None)
         if not meta: return None, ids
         b = int(meta['lastBuildNumber']); steps += 1
     return b, ids
+
+def skipped_note():
+    """One line for the log and the report when a table the report reads had ids that aren't whole numbers ('' when none)."""
+    if not SKIPPED: return ''
+    parts = ', '.join(f'{t} {len(v)} (e.g. {", ".join(repr(x) for x in v[:3])})' for t, v in sorted(SKIPPED.items()))
+    return (f'Warning: skipped {sum(len(v) for v in SKIPPED.values())} id(s) that are not whole numbers in CCP\'s changes files: '
+            f'{parts}. CCP may have changed the format of a table this report reads: check tools/sde_change_report.py.')
 
 # ---- pyfa ----
 def pyfa_info(path):
@@ -205,6 +226,7 @@ def compare_ids(ids, new):
 def report(res, new, old_build, new_build, method, pyfa_ver, have, new_effects):
     L = [f'**EVE item data: build {old_build} -> {new_build}** (method: {method}; '
          + (f'pyfa {pyfa_ver}' if pyfa_ver else 'pyfa version unknown' if have else 'no pyfa given: handlers not checked') + ').', '']
+    if SKIPPED: L += [f'**{skipped_note()}**', '']   # build queue 034: seen in the pull request, not only the job's log
     missing = set()
     for k, it in res.items():
         for e in it['effects_added']:
@@ -269,8 +291,9 @@ def main():
     if OPTS['--sde-old']: old_build, ids = int(OPTS['--old-build'] or 0), {}
     else:
         old_build, ids = chain(new_build, verified)
+        if SKIPPED: print(skipped_note())
         if old_build is None: raise SystemExit(f'the changes files from build {new_build} back to {verified} are incomplete')
-        touched = {k for k in ('types', 'typeDogma', 'groups', 'dogmaEffects', 'dogmaAttributes') if ids.get(k)}
+        touched = {k for k in USED if ids.get(k)}
         if not touched and page_ids == set():
             print(f'builds {old_build} -> {new_build}: no item data changed (changes files)'); out('changed', 'false'); return 0
     new = load(source_for(OPTS['--sde-new'], new_build))

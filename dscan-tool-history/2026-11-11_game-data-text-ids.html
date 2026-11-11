@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-11 — The patch-day report and text ids</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+table{border-collapse:collapse; font-size:13px;} td,th{border:1px solid #ddd; padding:4px 8px; text-align:left;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The patch-day report and text ids</h1>
+<p><span class="tag">Tools</span> 2026-11-11 &middot; page unchanged (after <code>v2026.11.11.1</code>) &middot; build queue 034</p>
+
+<h2>Why</h2>
+<ul>
+<li>The "Jump table" workflow's <code>game-data</code> job failed on CCP's build 3682781 (two scheduled runs in a row): <code>ValueError: invalid literal for int()</code> in <code>chain()</code> of <code>tools/sde_change_report.py</code>, on a UUID.</li>
+<li>That build's changes file has tables whose ids are text (UUIDs): <code>characterTitles</code>, <code>militaryCampaigns</code>, <code>militaryCampaignObjectives</code> (CCP's <code>changes/3682781.jsonl</code>, checked 2026-11-11). <code>chain()</code> turned every table's ids into numbers, though the report reads five.</li>
+<li>So the report that lists what EVE's update changed, the starting list for the pyfa update, wasn't being made.</li>
+</ul>
+
+<h2>What changed (tools only)</h2>
+<ul>
+<li><b><code>chain()</code> reads only the tables the report uses</b> (<code>USED</code>: types, typeDogma, groups, dogmaEffects, dogmaAttributes), skipping the rest before any conversion; <code>main()</code> uses the same constant.</li>
+<li><b>An id in those five that isn't a whole number</b> is skipped and said: a warning in the job's log and a bold line at the top of the report (so in the pull request text too), naming the table, the count and up to 3 examples (the owner: "Log and report").</li>
+<li><b>The check</b> (<code>check_sde_change_report.py</code> case 8): a stand-in changes file with two UUID tables and an id in <code>types</code> that isn't a number. Same list as without them, the warning in the log, the report and the pull request text, no unused table named. Two mutants (<code>int()</code> on every table as before; <code>int()</code> on every id of the five) fail it.</li>
+<li><b>In the fast lints now</b> (the owner: "yes"): it takes about 2 seconds and needs no network; before, it ran only in <code>pyfa_update_check.py</code>'s chain.</li>
+<li><b>Looked at, unchanged:</b> <code>tools/jump_table_update.py</code> reads three map tables from CCP's zip (stargates, solar systems, regions; number ids) and never reads the changes files; its job passed on both failed runs. <code>tools/gen_intel_tables.py</code> reads pyfa's and the client's files, not CCP's changes files.</li>
+<li><code>.github/workflows/</code> unchanged; nothing kept in browsers changes.</li>
+</ul>
+
+<h2>Not in this delivery</h2>
+<ul>
+<li>The pyfa update for the expansion (pyfa v2.70.0): its own item, starting from the report this makes.</li>
+<li>No run against CCP's live data from the build session (no route to CCP's site from it): the owner's run of the workflow after the merge is the live test. The report then covers the newest build at or before the verified one (3624425) up to 3682781, so the list replaces the page's current one (made for 3670638).</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #153: read only the parts of an outside file you use, and expect any part to change form. A table the report never needed stopped it; in the parts you do read, skip a value in an unexpected form and say so where the owner looks, and test with a stand-in file that has a part in another form.</p>
+</body></html>

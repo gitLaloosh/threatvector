@@ -7,6 +7,11 @@ Made up: build 3624000 (at or before the verified build, the manifest's clientBu
 changes chain 3700000 -> 3650000 -> 3624000. Between them: a new ship with an effect pyfa has (4) and one it doesn't
 (990001, a new effect ID); a module's attribute 10 -> 12; a module newly published; a charge unchanged; a SKIN (out of
 scope) changed; a drone removed. Expected list: the new ship, the changed module, the published module.
+
+Build queue 034 (LESSON #153): since CCP's build 3682781 its changes files carry tables whose ids are text (UUIDs). Case 8 adds
+two such tables and one id that isn't a number inside `types`: the report must finish with the same list, skip the unused tables
+without a word and warn about the `types` id in its log and its text. Two mutants (the old int() on every table; the tables
+filtered but int() on every id in them) must fail it.
 """
 import os, sys, io, re, json, shutil, zipfile, tempfile, threading, subprocess, http.server, base64, struct
 
@@ -139,7 +144,42 @@ try:
     # 7. the page's list is already for the newest build: nothing downloaded, nothing new
     rc, o, page2 = run('--pyfa', pa, html=page)
     check('nothing new' in o, 'the page\'s list already for the newest build: not "nothing new"')
-    # 8. a build with no item data changes at all: no download (the changes files say so). The page's own list is emptied first:
+    # 8. (build queue 034, LESSON #153) tables with text ids, as in CCP's build 3682781, and one id in `types` that isn't a number.
+    # Made-up UUIDs. Both zips published (method full), so the list must be exactly WANT.
+    zipit(OLD, False)
+    NEW_CHANGES = os.path.join(site, 'changes', f'{NEW}.jsonl')
+    plain = open(NEW_CHANGES).read()
+    open(NEW_CHANGES, 'w').write(jl([{'_key': '_meta', 'buildNumber': NEW, 'lastBuildNumber': MID},
+        {'_key': 'characterTitles', 'added': ['00000000-0000-5000-8000-0000000000a1', '00000000-0000-5000-8000-0000000000a2']},
+        {'_key': 'types', 'added': [900002, 'not-a-number'], 'changed': [900102, 900201]},
+        {'_key': 'militaryCampaigns', 'added': ['00000000-0000-4000-8000-0000000000b1'], 'removed': ['00000000-0000-4000-8000-0000000000b2']},
+        {'_key': 'typeDogma', 'added': [900002]}, {'_key': 'dogmaEffects', 'added': [990001]}]))
+    body8 = os.path.join(tmp, 'body8.md')
+    rc, o, page = run('--pyfa', pa, '--write', '--body', body8)
+    check(rc == 0 and 'method: full' in o and 'build 3624000 -> 3700000' in o, f'text ids: the report did not finish: {o[-400:]}')
+    check(pending(page) == (NEW, WANT), f'text ids: list {pending(page)} (want build {NEW}, {sorted(WANT)})')
+    warn = "skipped 1 id(s) that are not whole numbers in CCP's changes files: types 1 (e.g. 'not-a-number')"
+    check(o.count(warn) == 2, f'text ids: the warning is not in both the log and the report ({o.count(warn)} of 2)')
+    check(os.path.exists(body8) and warn in open(body8).read(), 'text ids: the warning is not in the pull request text')
+    check('characterTitles' not in o and 'militaryCampaigns' not in o and '00000000-' not in o, 'text ids: an unused table is named in the output')
+    # the mutants: the same case on copies of the tool with the old reading put back
+    mut = os.path.join(tmp, 'mut', 'tools'); os.makedirs(mut)
+    for f in ('check_game_data_pending.py', 'pyfa_core_manifest.json'): shutil.copy(os.path.join(ROOT, 'tools', f), mut)
+    tool_src = open(TOOL, encoding='utf-8').read()
+    GUARD = "            if table not in USED: continue"
+    for label, swaps in (('int() on every table (the code before 034)', ((GUARD + '   #', '            #'), ('(as_id(table, i) for i in o[k])', '(int(i) for i in o[k])'))),
+                         ('the tables filtered, int() on every id in them', (('(as_id(table, i) for i in o[k])', '(int(i) for i in o[k])'),))):
+        s = tool_src
+        for a, b in swaps:
+            check(a in s, f'mutant "{label}": "{a.strip()}" not found in the tool (update the mutant)'); s = s.replace(a, b)
+        mp = os.path.join(mut, 'sde_change_report.py'); open(mp, 'w', encoding='utf-8').write(s)
+        page_m = os.path.join(tmp, 'index_mut.html'); shutil.copy(HTML, page_m)
+        env = {k: v for k, v in os.environ.items() if k not in ('PYFA_SRC', 'GITHUB_OUTPUT')}
+        p = subprocess.run([sys.executable, '-I', mp, page_m, '--base', base, '--pyfa', pa], capture_output=True, text=True, env=env, timeout=120)
+        check(p.returncode != 0 and 'ValueError' in p.stderr, f'mutant "{label}" was not caught (rc {p.returncode}): {p.stderr[-300:]}')
+    open(NEW_CHANGES, 'w').write(plain)
+    os.remove(os.path.join(site, f'eve-online-static-data-{OLD}-jsonl.zip'))
+    # 9. a build with no item data changes at all: no download (the changes files say so). The page's own list is emptied first:
     # since the first "Game data" pull request (build 3670638) the real page's list is for a build outside this made-up chain
     src8 = open(HTML, encoding='utf-8').read()
     src8 = re.sub(r"^const GAME_DATA_PENDING = \{verified: (\d+), build: \d+, types: '[^']*'\};", lambda m: f"const GAME_DATA_PENDING = {{verified: {m.group(1)}, build: 0, types: ''}};", src8, count=1, flags=re.M)
@@ -151,7 +191,7 @@ try:
     check(rc == 0 and 'no item data changed' in o, f'no item changes in the chain: {o[-300:]}')
     srv.shutdown()
 
-    # 9. the list check catches a hand edit: unsorted, repeated, a verified build not the manifest's, items without a build
+    # 10. the list check catches a hand edit: unsorted, repeated, a verified build not the manifest's, items without a build
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     from check_game_data_pending import encode
     vb = json.load(open(os.path.join(ROOT, 'tools', 'pyfa_core_manifest.json')))['pyfa']['clientBuild']
