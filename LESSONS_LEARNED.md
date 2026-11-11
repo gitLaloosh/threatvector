@@ -64,6 +64,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 
 - #3 Checking the tool against itself.
 - #6 Trimmed golden-fit records hid effects.
+- #154 A merge that keeps whatever the newer source lacks also keeps what the newer source removed: refreshed fixtures doubled two hull bonuses after a patch. See also #6, #10.
 - #37 A fixture built from the code's assumption agrees with the code.
 - #9 Comparing different quantities with pyfa.
 - #10 Different game data versions.
@@ -1060,6 +1061,22 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 154. A merge that keeps whatever the newer source lacks also keeps what the newer source removed
+
+- **What happened (build queue 035, v2026.11.11.2, pyfa v2.70.0 / CCP build 3682781):** `refresh_golden_fixtures.py` merges
+  a fixture with the SDE and keeps what only the fixture has, on purpose: live-ESI captures carry attributes and effects an SDE
+  build lacks (zero placeholders, the Baryon Exotic Plasma XL's effect 600). The patch moved the Cerberus's kinetic missile
+  bonus from Effect899 to 13056 and replaced the Hawk's 13025 with 13074-13076. The refresh added the new effects and kept the
+  old ones, so five fixtures carried both bonuses: the Cerberus showed 384 DPS where pyfa shows 342, a fit the live page (which
+  reads ESI) can never meet.
+- **How it was caught:** `compare_fit_stats.py` (the tool against pyfa's own handlers on every golden fit) flagged the
+  Cerberus; the refresh report's "effects only in fixture, kept [899]" named the cause. The regression pins alone would have
+  been re-pinned to the wrong number, since a patch moves pins anyway.
+- **Do this instead:** when keeping "what the other source lacks", tell "it never had it" from "it dropped it" with the
+  previous version of that source, and only keep the first (`OLD_PYFA_SRC`: an effect the previously verified SDE had on that
+  type and the new one doesn't is dropped and reported). After any data update, compare against the reference before
+  re-pinning, never re-pin from the tool's own output. See also #6, #10.
 
 ## 153. Read only the parts of an outside file you use, and expect any part to change form: a table you never needed stopped the whole report
 

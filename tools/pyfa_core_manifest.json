@@ -68,7 +68,7 @@
         "node tools/dump_effect_tables.mjs index.html > /tmp/t.json && python3 -I tools/audit_effect_tables.py /tmp/t.json (must print no MISSING/EXTRA/DIFF)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "6412569d6b1291de8a5da5db98cbfc8393fbfd4773e28647270116cd8f1c8c9b"
+      "sha256": "fe0c07d84111e097df0cb9437f3a2b5d54a5c479f73b6638652e7176c8127b05"
     },
     "weapon-range-table": {
       "kind": "generated",

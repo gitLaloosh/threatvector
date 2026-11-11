@@ -19,6 +19,10 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HERE, '..
 HTML = next((a for a in sys.argv[1:] if not a.startswith('--')), os.path.join(ROOT, 'index.html'))
 TOOL = os.path.join(ROOT, 'tools', 'sde_change_report.py')
 OLD, MID, NEW = 3624000, 3650000, 3700000
+# Build queue 035: the tool runs from a copy beside a made-up manifest (and the page copies carry the same verified build),
+# so these builds don't depend on the repo's real verified build. Until 035 the real manifest's 3624425 happened to sit
+# between OLD and MID; the pyfa update to 3682781 stopped the chain at MID and case 8 failed for that reason alone.
+VERIFIED = 3624425
 problems = []
 def check(ok, msg):
     if not ok: problems.append(msg)
@@ -49,6 +53,17 @@ def files(new): return {'types.jsonl': jl(types(new)), 'groups.jsonl': jl(GROUPS
                         'dogmaEffects.jsonl': jl(effects(new)), 'dogmaAttributes.jsonl': jl(ATTRS), 'mapStargates.jsonl': ''}
 
 tmp = tempfile.mkdtemp(prefix='sdecr-')
+TOOLS = os.path.join(tmp, 'tools'); os.makedirs(TOOLS)
+for _f in ('sde_change_report.py', 'check_game_data_pending.py'): shutil.copy(os.path.join(ROOT, 'tools', _f), TOOLS)
+_man = json.load(open(os.path.join(ROOT, 'tools', 'pyfa_core_manifest.json'), encoding='utf-8')); _man['pyfa']['clientBuild'] = VERIFIED
+json.dump(_man, open(os.path.join(TOOLS, 'pyfa_core_manifest.json'), 'w', encoding='utf-8'))
+TOOL = os.path.join(TOOLS, 'sde_change_report.py')
+def page_copy(dst):
+    """index.html with its GAME_DATA_PENDING at the made-up verified build and empty (as after a pyfa update)."""
+    s = open(HTML, encoding='utf-8').read()
+    s, n = re.subn(r"^const GAME_DATA_PENDING = \{verified: \d+, build: \d+, types: '[^']*'\};", f"const GAME_DATA_PENDING = {{verified: {VERIFIED}, build: 0, types: ''}};", s, count=1, flags=re.M)
+    assert n == 1, 'GAME_DATA_PENDING line not found'
+    open(dst, 'w', encoding='utf-8').write(s)
 try:
     for b, new in ((OLD, False), (NEW, True)):
         d = os.path.join(tmp, f'sde{b}'); os.makedirs(d)
@@ -85,7 +100,7 @@ try:
 
     def run(*extra, html=None):
         page = html or os.path.join(tmp, 'index.html')
-        if not html: shutil.copy(HTML, page)
+        if not html: page_copy(page)
         env = {k: v for k, v in os.environ.items() if k not in ('PYFA_SRC', 'GITHUB_OUTPUT')}
         p = subprocess.run([sys.executable, '-I', TOOL, page, '--base', base, *extra], capture_output=True, text=True, env=env, timeout=120)
         return p.returncode, p.stdout + p.stderr, page
@@ -164,7 +179,7 @@ try:
     check('characterTitles' not in o and 'militaryCampaigns' not in o and '00000000-' not in o, 'text ids: an unused table is named in the output')
     # the mutants: the same case on copies of the tool with the old reading put back
     mut = os.path.join(tmp, 'mut', 'tools'); os.makedirs(mut)
-    for f in ('check_game_data_pending.py', 'pyfa_core_manifest.json'): shutil.copy(os.path.join(ROOT, 'tools', f), mut)
+    for f in ('check_game_data_pending.py', 'pyfa_core_manifest.json'): shutil.copy(os.path.join(TOOLS, f), mut)   # the made-up manifest
     tool_src = open(TOOL, encoding='utf-8').read()
     GUARD = "            if table not in USED: continue"
     for label, swaps in (('int() on every table (the code before 034)', ((GUARD + '   #', '            #'), ('(as_id(table, i) for i in o[k])', '(int(i) for i in o[k])'))),
@@ -173,7 +188,7 @@ try:
         for a, b in swaps:
             check(a in s, f'mutant "{label}": "{a.strip()}" not found in the tool (update the mutant)'); s = s.replace(a, b)
         mp = os.path.join(mut, 'sde_change_report.py'); open(mp, 'w', encoding='utf-8').write(s)
-        page_m = os.path.join(tmp, 'index_mut.html'); shutil.copy(HTML, page_m)
+        page_m = os.path.join(tmp, 'index_mut.html'); page_copy(page_m)
         env = {k: v for k, v in os.environ.items() if k not in ('PYFA_SRC', 'GITHUB_OUTPUT')}
         p = subprocess.run([sys.executable, '-I', mp, page_m, '--base', base, '--pyfa', pa], capture_output=True, text=True, env=env, timeout=120)
         check(p.returncode != 0 and 'ValueError' in p.stderr, f'mutant "{label}" was not caught (rc {p.returncode}): {p.stderr[-300:]}')

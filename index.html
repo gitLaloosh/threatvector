@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-qgEkxQ3/ZlKX1A5dsBH0vMBNqGofX43TKzwaacJjyCU='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-5wSTVUfgxfIZ/dc1sWTnb+2IF2DQr8aE4FuedFXceyE='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -7333,7 +7333,10 @@ const SIG_SUPPRESSOR_ACTIVE_EFFECT_ID = 8109, SIG_SUPPRESSOR_ACTIVE_ATTR = 3114;
 // ==== PYFA CORE BEGIN sig-effect-tables ==== mirrors pyfa; change only to match pyfa (PYFA_CORE.md, tools/pyfa_core_manifest.json)
 const SHIP_SIG_HULL_BONUS_EFFECTS = { 3374: [1250, 5], 5853: [3190, 5], 6381: [2093, 5], 7045: [489, 5], 11358: [5207, 5] };
 // LESSON #4: only Interceptors were modeled; effect 4902 covers 27 AF/HAC/CD hulls.
-const MWD_SIG_BONUS_SHIP_EFFECTS = { 3766: [568, 5], 4902: [1803, 1], 5321: [740, 5], 5723: [1013, 5], 11400: [5237, 5] };
+// build queue 035 (pyfa v2.70.0): the Tornado Fleet Issue's MWD bloom bonus, Effect12928 shipBonusMWDSignatureRadiusMBC3 (shipBonusMBC3,
+// -15% per Minmatar Battlecruiser level, modules requiring High Speed Maneuvering) -- found by check_projected.py, not the audit
+// (it audits the ship's signatureRadius, not the MWD's signatureRadiusBonus).
+const MWD_SIG_BONUS_SHIP_EFFECTS = { 3766: [568, 5], 4902: [1803, 1], 5321: [740, 5], 5723: [1013, 5], 11400: [5237, 5], 12928: [5207, 5] };
 const MWD_SIG_BONUS_SUBSYSTEM_EFFECTS = { 3869: [1523, 5], 3872: [1512, 5] };
 // ==== PYFA CORE END sig-effect-tables ====
 const HIGH_SPEED_MANEUVERING_SKILL_ID = 3454;
