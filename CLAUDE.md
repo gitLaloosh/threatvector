@@ -35,8 +35,8 @@ single-file tool (`index.html`) that estimates EVE Online ship stats from killma
 https://threatvector.space (GitHub Pages from `main`, the `CNAME` file; build queue 013) from the repository
 `gitLaloosh/threatvector` (renamed from `dscan-tool`). The saved-data names keep the old ones on purpose (localStorage
 `dscan…`, IndexedDB `dscan-tool-cache`, `eta-intel`, `dscan-intel-sounds`), as do `dscan-tool-history/` and the extension's
-`eta-*` menu IDs: users never see them, and renaming them would lose what's saved. The footer's source link is the one
-place the account name is written into the page (the owner, 2026-11-04: "Write the repo link in"); the page no longer
+`eta-*` menu IDs: users never see them, and renaming them would lose what's saved. The footer's source link (and, since build queue 036, the
+METHODOLOGY.md link beside it) is the one place the account name is written into the page (the owner, 2026-11-04: "Write the repo link in"); the page no longer
 works it out from a github.io address. Its calculations must match **pyfa**
 exactly, using primary sources only: pyfa's source code and CCP's SDE / live ESI.
 
@@ -106,6 +106,12 @@ Before changing any calculation:
    build queue 027 (the owner, 2026-11-08: "confirmed"; first "At 800 KB", 2026-11-03): past it, stop and ask the owner
    before delivering. The source's size has no ceiling.
    Before the pull request: `python3 -I tools/run_checks.py --served` (the served copy through SERVED_CHECKS).
+7. Info text (build queue 036; the build queue README's "Info text stays true", the owner 2026-11-11: "we should implement a step in the
+   delivery process that addresses whether changes will affect the accuracy of info text"): search `CARD_INFO` and `IT_EX_NOTES` for the
+   words, labels and numbers your diff changes, and fix any line it makes wrong in the same pull request, by the panels' rules
+   (`check_subtext.py`: the length cap; the test in the Project doc roadmap/info-panels-review.md: the open part says what the card shows
+   and what to do with it, how it's built goes to METHODOLOGY.md). The pull request says `Info text: checked; changed: <keys>` or
+   `Info text: checked; none`. Never the header's Lookup budgets gauge; the Intel example's tutorial text only to fix a wrong line.
 
 **Error messages carry codes** (`ERRORS.md`). Every error the page writes ends
 with a code such as `(ZKB-01)`, defined once in `ERROR_CODES` in `index.html`
@@ -479,7 +485,10 @@ still gets its own targeted check and mutants.
 
 **How the numbers are worked out, for people:** `METHODOLOGY.md` (was the "How effective HP and DPS are
 calculated" note on the page, removed in v2026.10.14.51); each card's short version is its ⓘ panel (`CARD_INFO`).
-Change both when a calculation's assumptions change.
+Change both when a calculation's assumptions change. Since build queue 036 (v2026.11.11.3) the panels are short (`check_subtext.py`:
+85 words open, 210 in all, Intel 410; `fleet` and `vs` exempt while hidden), the detail is in METHODOLOGY.md (its Intel, Who's in the
+system and Sides sections too), and the footer links its GitHub copy. A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
+panel never inherits a heading's case or spacing (`.info-body`; `info_panels_check.py`).
 
 **After finishing any task,** check `todo-inbox/` for new requests the
 owner wrote down while you were working: `new-bugs.txt` and

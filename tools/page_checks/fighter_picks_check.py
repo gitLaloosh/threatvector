@@ -106,7 +106,8 @@ with sync_playwright() as p:
     check(len(ti) == 2 and all('Then ' in x for x in ti) and 'as set in the Fighter bay' in ti[0], f'hovers name the next best: {[x[:90] for x in ti]}')
     check("Fighters aren't ranked yet" not in pg.inner_text(f'{TV} .weak-picks'), 'no "Fighters aren\'t ranked yet"')
     info = pg.evaluate("() => CARD_INFO.weak.join(' ')")
-    check('Only the ammo, drones and fighters aboard' in info and 'one pick per class' in info, 'the card\'s info names fighters')
+    check("only what's aboard counts" in info and 'fighters' in info and 'fighters get one pick per class' in open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'METHODOLOGY.md'), encoding='utf-8').read(),
+          'the card\'s info names fighters; one pick per class is in METHODOLOGY.md (build queue 036)')
     # the Ametat's bomb on in my ship's Fighter bay (My ship view): back in the threat view the heavy pick follows
     before = t1[1] if len(t1) == 2 else None
     pg.click(f'{R} .mys-sw-btn.is-mine'); pg.wait_for_selector(f'{MV} .fb-ab[data-type-id="40560"][data-effect="6485"]', timeout=60000); settle(pg)

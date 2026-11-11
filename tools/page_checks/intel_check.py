@@ -362,8 +362,8 @@ with sync_playwright() as p:
     info = pg.evaluate("() => CARD_INFO.intel.join(' ')")
     # v2026.10.29.5 (the owner: "is there a way to automate the update so the user never has to see it?"): EVE on a newer build
     # than the table's says nothing and Intel asks ESI nothing; the GitHub Action keeps the table current (tools/jump_table_update.py)
-    check(not any('jump table' in w for w in warn) and not STATUS.get('asked') and 'checked against each new EVE build every day' in info,
-          f'EVE on a newer build than the jump table: no warning, no /status/ request ({STATUS.get("asked", 0)}), the info panel says the table is checked daily {warn}')
+    check(not any('jump table' in w for w in warn) and not STATUS.get('asked') and 'EVE build' not in info and 'checked against each new EVE build every day' in open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'METHODOLOGY.md'), encoding='utf-8').read(),
+          f'EVE on a newer build than the jump table: no warning, no /status/ request ({STATUS.get("asked", 0)}); METHODOLOGY.md says the table is checked daily (build queue 036: out of the info panel) {warn}')
     STATUS['v'] = str(J['build'])
     shot_w = pg.evaluate("() => document.documentElement.scrollWidth")
     pg.screenshot(path='/tmp/intel_1440.png', full_page=True)

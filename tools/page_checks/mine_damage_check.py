@@ -137,7 +137,8 @@ def desktop(b, W):
           f'{W}: Adjust has no signature slider; Chart across Distance / Your speed')
     pg.click(f'{MC} summary.info-btn'); pg.wait_for_timeout(200)
     info = pg.inner_text(f'{MC} .info-body')
-    check(pg.evaluate("CARD_INFO['dmg#mine'][1].slice(0, 40)") in info and pg.evaluate("CARD_INFO.dmg[0].slice(0, 40)") not in info, f'{W}: the info panel is CARD_INFO["dmg#mine"]')
+    plain = "(k, i) => CARD_INFO[k][i].replace(/\\*\\*/g, '').replace(/^\\[([^\\]]+)\\]\\s+/, '').slice(0, 40)"   # build queue 036: bold leads and folds
+    check(pg.evaluate(plain, ['dmg#mine', 1]) in info and pg.evaluate(plain, ['dmg', 0]) not in info, f'{W}: the info panel is CARD_INFO["dmg#mine"]')
     pg.keyboard.press('Escape'); pg.wait_for_timeout(150)
     # hover
     pg.locator(f'{MC} [data-out="chart"]').scroll_into_view_if_needed()

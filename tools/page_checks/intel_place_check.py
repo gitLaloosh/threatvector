@@ -182,8 +182,8 @@ _tail = r'''
       return [[...b.children].filter(x => x.tagName === 'P').length, b.querySelectorAll(':scope > p b').length, ds.length, ds.filter(d => d.open).length, b.innerText.split(/\\s+/).length - ((b.querySelector('.info-ex') || {}).innerText || '').split(/\\s+/).filter(Boolean).length, b.textContent]; }""")   # v2026.11.07.7: the "See an example" line is a control, not text to read
     pg.evaluate("() => { const s = document.querySelector('#intelPanel .it-head .info-body details.info-more summary'); if(s) s.click(); }"); pg.wait_for_timeout(100)
     op = pg.evaluate("() => [...document.querySelectorAll('#intelPanel .it-head .info-body details.info-more')].map(d => d.open)")
-    check(inf[:4] == [3, 3, 9, 0] and inf[4] < 110 and op[0] and not any(op[1:]),
-          f'How Intel works: 3 short paragraphs (each with a bold lead) and 9 folded headings (v2026.11.02.4: the map; v2026.11.08.2: Reloads), closed ({inf[4]} words shown); one opens on a click {inf[:5]} {op}')
+    check(inf[:4] == [2, 3, 8, 0] and inf[4] < 85 and op[0] and not any(op[1:]),
+          f'How Intel works: 2 short paragraphs (3 bold leads) and 8 folded headings (build queue 036; was 3 and 9), closed ({inf[4]} words shown); one opens on a click {inf[:5]} {op}')
     check('slider' not in inf[5] and 'red row' not in inf[5], 'no "slider" or "red row" left in it')
     check(not errs, f'no page errors {errs[:3]}')
     ie = pg.evaluate("() => [it.err, it.note]")
