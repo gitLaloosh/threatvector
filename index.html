@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-z1gKlGLT8lYt/qj4FyN3FFB1lhGHIHVLH7gr9KBUjiw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Itn+g5auJRLvOwLX6Ic6M6Pqnt19raCYBM2IvqMMBDA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3134,7 +3134,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.10.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.11.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -27672,6 +27672,18 @@ async function itSndPick(slot, file){   // a file chosen: checked, decoded once,
   await itSndStore(slot, {blob, name});
   it.sndRev = (it.sndRev || 0) + 1; itRender(true);
 }
+// v2026.11.11.1 (build queue 033, roadmap/intel-sound-warning-plan.md; the owner's A): a refused file's warning (INTEL-09/10, or a kept file
+// that couldn't be played) goes at the slot's next press: its list pressed or opened from the keys (choosing the same sound again fires no
+// change), "Your own file…", ▶ Test. It is taken off the page as it is, never by a redraw: the file picker's input lives in the card, and a
+// redraw while the picker is open would lose the pick. Focus alone (the page puts it back on the list after a refusal) keeps it.   // LESSON #152
+function itSndMsgDrop(slot, el){
+  const f = itSnd[slot]; if(!f || !f.msg) return false;
+  if(f.blob) delete f.msg; else itSnd[slot] = null;
+  const d = el && el.querySelectorAll ? [...el.querySelectorAll('.it-snd-e')].find(x => x.dataset.itSnde === slot) : null; if(d) d.remove();
+  it.lastHtml = null;   // the card no longer matches its last build: the next draw writes it whole (the same refusal again shows again)
+  return true;
+}
+const IT_SND_KEEP_KEYS = new Set(['Tab', 'Shift', 'Control', 'Alt', 'Meta', 'Escape', 'CapsLock']);   // keys that don't open or change a list
 function itSndRemove(slot){
   it.set[itSlotKey(slot)] = it.set.sndPrev[slot]; itSnd[slot] = null; itWriteSet(); itSndStore(slot, null); it.sndRev = (it.sndRev || 0) + 1; itRender(true);
 }
@@ -27683,7 +27695,7 @@ function itSoundHtml(){
     const opts = IT_SOUNDS.map(([v, l]) => `<option value="${v}"${k === v ? ' selected' : ''}>${l}</option>`).join('') + `<option value="file"${has ? ' selected' : ''}>${has ? 'Your own file' : 'Your own file…'}</option>`;
     return `<div class="it-snd-r"><span class="it-snd-l" title="${escapeHtml(tip)}">${label}</span><select data-it-snd="${sl}" aria-label="${label}: alert sound"${dis}>${opts}</select><button type="button" data-it-test="${sl}" title="Play the ${label} sound at this volume"${dis}>▶ Test</button></div>`
       + (has ? `<div class="it-snd-f"><span title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span><button type="button" class="it-snd-x" data-it-sndx="${sl}" aria-label="Remove ${escapeHtml(f.name)}: back to ${IT_SOUNDS.find(x => x[0] === it.set.sndPrev[sl])[1]}" title="Remove it: back to ${IT_SOUNDS.find(x => x[0] === it.set.sndPrev[sl])[1]}"${dis}>×</button></div>` : '')
-      + (f && f.msg ? `<div class="it-snd-e">${f.msg}</div>` : '');
+      + (f && f.msg ? `<div class="it-snd-e" data-it-snde="${escapeHtml(sl)}">${f.msg}</div>` : '');
   };
   return `<div class="it-snd${off ? ' off' : ''}">${slot('near', cardName('itnear'), 'A hostile or neutral 1 jump away up to your alert range')}${slot('here', 'In system', 'A hostile or neutral in your own system, kills too')}
     <div class="it-snd-r"><span class="it-snd-l">Volume</span><input type="range" min="0" max="100" step="5" value="${it.set.volume}" data-it-vol aria-label="Alert volume" style="--p:${it.set.volume}%"${dis}><span class="it-vol-v">${it.set.volume}%</span></div>
@@ -29619,8 +29631,8 @@ function rsBind(root){
     }
     if(t.dataset.itSnd){   // v2026.11.01.8: a slot's sound; "Your own file…" opens the file picker (the select keeps its value until a file is chosen)
       const sl = t.dataset.itSnd;
-      if(t.value === 'file'){ const k0 = it.set[itSlotKey(sl)]; t.value = k0 === 'file' && itSnd[sl] && itSnd[sl].blob ? 'file' : k0; const fi = el.querySelector('[data-it-sndfile]'); if(fi){ fi.dataset.slot = sl; fi.value = ''; fi.click(); } return; }
-      if(itSnd[sl] && itSnd[sl].blob){ itSnd[sl] = null; itSndStore(sl, null); }   // a built-in chosen over a file: the file goes
+      if(t.value === 'file'){ itSndMsgDrop(sl, el); const k0 = it.set[itSlotKey(sl)]; t.value = k0 === 'file' && itSnd[sl] && itSnd[sl].blob ? 'file' : k0; const fi = el.querySelector('[data-it-sndfile]'); if(fi){ fi.dataset.slot = sl; fi.value = ''; fi.click(); } return; }
+      if(itSnd[sl]){ if(itSnd[sl].blob) itSndStore(sl, null); itSnd[sl] = null; }   // a built-in chosen: a file goes, and any warning (v2026.11.11.1, 033: a warning with no file stayed)
       it.set[itSlotKey(sl)] = t.value; it.set.sndPrev[sl] = t.value; itWriteSet(); it.sndRev = (it.sndRev || 0) + 1; itRender(true);
       const again = el.querySelector(`[data-it-snd="${sl}"]`); if(again) again.focus({preventScroll: true});
       return;
@@ -29638,9 +29650,12 @@ function rsBind(root){
     if(e.target.matches('[data-it-q]')){ it.q = e.target.value; itRenderLists(); }   // v.99: Search
     else if(e.target.matches('[data-it-vol]')){ const v = Number(e.target.value) || 0, o = e.target.parentNode.querySelector('.it-vol-v'); if(o) o.textContent = `${v}%`; it.set.volume = v; if(itMasterG) itMasterG.gain.value = itVolGain(); }   // v2026.11.01.8: kept on change
   });
+  // v2026.11.11.1 (build queue 033): the sound list pressed, or opened or changed from the keys: that slot's old warning goes (itSndMsgDrop)
+  el.addEventListener('pointerdown', (e) => { const s = e.target.closest && e.target.closest('select[data-it-snd]'); if(s && !s.disabled) itSndMsgDrop(s.dataset.itSnd, el); });
+  el.addEventListener('keydown', (e) => { const s = e.target.closest && e.target.closest('select[data-it-snd]'); if(s && !IT_SND_KEEP_KEYS.has(e.key)) itSndMsgDrop(s.dataset.itSnd, el); });
   el.addEventListener('click', (e) => {
     const tst = e.target.closest('[data-it-test]');   // v2026.11.01.8: ▶ Test: that slot's sound at this volume (the press also wakes the audio)
-    if(tst){ itAudioWake(); itPlaySound(tst.dataset.itTest); return; }
+    if(tst){ itSndMsgDrop(tst.dataset.itTest, el); itAudioWake(); itPlaySound(tst.dataset.itTest); return; }   // v2026.11.11.1 (033): the slot's old warning goes
     const sx = e.target.closest('[data-it-sndx]');
     if(sx){ const sl = sx.dataset.itSndx; itSndRemove(sl); const again = el.querySelector(`[data-it-snd="${sl}"]`); if(again) again.focus({preventScroll: true}); return; }
     if(itChipTap(e, el)) return;   // v2026.11.01.2: without hover, the first tap on a pilot chip shows its parts
