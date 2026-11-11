@@ -36,6 +36,20 @@ from pyfa_sde import types, td, groups, attrs, _en
 
 GOLDEN = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'regression_suite', 'golden_fits.json')
 WRITE = '--write' in sys.argv
+# Build queue 035 (pyfa v2.70.0, CCP build 3682781): an effect a fixture holds that the new SDE lacks is kept (a live-ESI
+# capture may have what an SDE build lacks), EXCEPT when the previously verified SDE had it on that type: then CCP removed it
+# in the patch (the Cerberus's kinetic bonus 899 became 13056; the Hawk's 13025), the live page no longer sees it, and keeping
+# it would test a fit the page can't meet (LESSON #6). OLD_PYFA_SRC = the previously verified pyfa checkout (the manifest's
+# commit before the update); without it nothing is dropped, as before.
+def _old_effects():
+    old = os.environ.get('OLD_PYFA_SRC')
+    if not old: return None
+    out = {}
+    import glob
+    for f in sorted(glob.glob(os.path.join(old, 'staticdata', 'fsd_built', 'typedogma.*.json'))):
+        for t, v in json.load(open(f, encoding='utf-8')).items(): out[t] = {e['effectID'] for e in v.get('dogmaEffects', [])}
+    return out
+OLD_EFFECTS = _old_effects()
 
 def sde_type(t):
     v = types[str(t)]; d = td.get(str(t), {'dogmaAttributes': [], 'dogmaEffects': []})
@@ -89,6 +103,10 @@ for fitId, f in G.items():
             # maxRange, Baryon Exotic Plasma XL effect 600). The SDE wins on values.
             if dropped: r['attributes only in fixture (kept)'] += len(dropped)
             new['dogma_attributes'] += [a for a in old.get('dogma_attributes', []) if a['attribute_id'] in dropped]
+            removed = {e for e in oe - ne if OLD_EFFECTS is not None and e in OLD_EFFECTS.get(str(t), set())}
+            if removed:
+                notes.append(f'{new["name"]}: effects CCP removed since the verified build, dropped {sorted(removed)}'); r['effects removed by CCP (dropped)'] += len(removed)
+                oe = oe - removed
             new['dogma_effects'] += [e for e in old.get('dogma_effects', []) if e['effect_id'] in oe - ne]
             for a in changed: notes.append(f'{new["name"]}: {aname(a)} {oa[a]} -> {na[a]}')
             r['values changed'] += len(changed)

@@ -75,8 +75,13 @@ for t, v in td.items():
 MODE_GROUP = 'Ship Modifiers'
 CTX = {6: 'ship', 7: 'module', 32: 'module', 8: 'charge', 16: 'skill'}
 table, skillRows, skipped, errors = {}, [], collections.Counter(), []
+# build queue 035: pyfa v2.70.0's Synchronizer counting effects (a value counted over the fit's modules) are carried by
+# SYNC_RIG_EFFECTS (gen_sync_table.py): the page raises the rig's own attributes first, and the rig's ordinary effects below
+# read them. Before 035 this loop stopped on effect 13012 ('unexpected value expression 0').
+COUNTING = set(counting_effects(sorted(e for e in carriersByEff if e in EFFECTS)))
 for eid in sorted(carriersByEff):
     if eid not in EFFECTS: continue
+    if eid in COUNTING: skipped[f'Synchronizer counting effect (SYNC_RIG_EFFECTS): {ename(eid)}'] += 1; continue
     cats = {cat(t) for t in carriersByEff[eid] if str(t) in types}
     isMode = any(gname(t) == MODE_GROUP for t in carriersByEff[eid] if str(t) in types)
     for c in sorted(cats):

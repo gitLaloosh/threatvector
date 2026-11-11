@@ -97,7 +97,7 @@ print(f'GROUP_LIMIT_MOD_EFFECTS: {len(limits)} effects; ACTIVATION_BLOCK_EFFECTS
 for eid, rows in limits.items(): print('  limit', eid, ename(int(eid)), kind(int(eid)) or 'passive', rows)
 for eid, rows in blocks.items(): print('  block', eid, ename(int(eid)), kind(int(eid)) or 'passive', rows)
 
-html = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), '..', 'index.html')
+html = next((x for x in sys.argv[1:] if not x.startswith('--')), os.path.join(os.path.dirname(__file__), '..', 'index.html'))
 src = open(html).read() if os.path.exists(html) else ''
 gen = {'EFFECT_STATE_TYPE': state_type, 'GROUP_LIMIT_MOD_EFFECTS': limits, 'ACTIVATION_BLOCK_EFFECTS': blocks}
 for nm, table in gen.items():
@@ -110,3 +110,6 @@ for nm, table in gen.items():
     if cur != table:
         for k in sorted(set(cur) | set(table), key=int):
             if cur.get(k) != table.get(k): print('   ', k, 'index.html:', cur.get(k), ' generated:', table.get(k))
+        if '--write' in sys.argv:   # build queue 035 (pyfa v2.70.0): written like the other generators, never by hand
+            src = src[:m.start(1)] + json.dumps(table, separators=(',', ':')) + src[m.end(1):]
+            open(html, 'w').write(src); print(f'    wrote {nm} into {html}')

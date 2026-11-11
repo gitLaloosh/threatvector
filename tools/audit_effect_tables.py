@@ -92,7 +92,7 @@ for eid in T['SENSOR_STRENGTH_PERCENT_EFFECT_IDS']:
     for k in ('Radar', 'Ladar', 'Magnetometric', 'Gravimetric'): have[f'ship.scan{k}Strength'].setdefault(int(eid), []).append(('SENSOR_STRENGTH_PERCENT_EFFECT_IDS', None))
 for eid, r in T['SHIP_SHIELD_RECHARGE_EFFECTS'].items(): have['ship.shieldRechargeRate'].setdefault(int(eid), []).append(('SHIP_SHIELD_RECHARGE_EFFECTS', r))
 # v.26: + the active bursts 4921 / 6208 / 12126 / 8109 (SIG_MJD_ACTIVE_EFFECT_ID etc., hand-coded in the signature loop)
-for eid in list(T['SHIP_SIG_HULL_BONUS_EFFECTS']) + ['2716', '2644', '8108', '6730', '3808', '2029', '4921', '6208', '12126', '8109']:
+for eid in list(T['SHIP_SIG_HULL_BONUS_EFFECTS']) + ['2716', '2644', '8108', '6730', '3808', '2029', '4921', '6208', '12126', '8109', '13015']:   # 13015: build queue 035, SYNC_SIG_EFFECT_ID
     have['ship.signatureRadius'].setdefault(int(eid), []).append(('signature constants', None))
 # Skill rows are keyed by skill, not effect: compare by (target, skill typeId).
 skillRows = collections.defaultdict(list)
