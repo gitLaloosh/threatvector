@@ -59,7 +59,7 @@ PANEL_SEEN = """async () => { const d = document.querySelector('#fitAnalyzerResu
   const b = body.getBoundingClientRect();
   const pts = [[b.left + 8, b.top + 8], [b.right - 8, b.top + 8], [b.left + 8, b.bottom - 8], [b.right - 8, b.bottom - 8], [(b.left + b.right) / 2, b.bottom - 8]];
   const hidden = pts.filter(([x, y]) => { const e = document.elementFromPoint(x, y); return !(e && body.contains(e)); }).length;
-  const text = body.innerText.includes(CARD_INFO.board[3].slice(0, 40));
+  const text = body.textContent.includes(CARD_INFO.board[3].replace(/^\\[([^\\]]+)\\]\\s+/, '').slice(0, 40));   // build queue 036: a folded paragraph
   return {hidden, w: Math.round(b.width), h: Math.round(b.height), left: Math.round(b.left), right: Math.round(b.right), text}; }"""
 def board_panel(pg, W):
     r = pg.evaluate(PANEL_SEEN)

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-hoj5/1KJa4zn+3C9VcDX1jb6nLl9PYF/Oe5ol9c1LZ0='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-eoTRBD7azckxGPnlJwRXTqxsVUmop+4QOYcxxkBkMvs='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -1686,7 +1686,8 @@
   summary.info-btn:hover, details.info-pop[open] > summary.info-btn{border-color:var(--cyan); color:var(--cyan); background:#0f2a31;}
   summary.info-btn:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
   .info-body{position:absolute; right:10px; top:auto; margin-top:6px; z-index:40; width:min(380px, calc(100cqw - 20px)); max-width:calc(100vw - 32px); max-height:70vh; overflow-y:auto; box-sizing:border-box;
-    background:var(--panel-2); border:1px solid #2c3842; border-radius:8px; box-shadow:0 10px 28px rgba(0,0,0,0.55); padding:14px 16px; text-align:left; cursor:auto;}
+    background:var(--panel-2); border:1px solid #2c3842; border-radius:8px; box-shadow:0 10px 28px rgba(0,0,0,0.55); padding:14px 16px; text-align:left; cursor:auto;
+    text-transform:none; letter-spacing:normal;}   /* build queue 036: never a heading's capitals (the profile's .pp-sh holds the Standings ⓘ); LESSON #156 */
   .info-head{display:flex; align-items:center; gap:8px; font:600 13px var(--sans); color:var(--heading);}
   .info-body p{margin:8px 0 0; font:400 12.5px/1.55 var(--sans); color:var(--text);}
   .info-body details.info-more{border-top:1px solid var(--border); margin-top:8px; padding-top:2px;}   /* v2026.10.30.2: folded sections */
@@ -3134,7 +3135,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.11.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.11.3</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3282,7 +3283,7 @@
        "Write the repo link in"): the page has its own domain now, so it can't be built from the address any more. Its links leave the site as every link does: asked first (leaveAsk),
        then a new tab; zKillboard is named, not linked (its links are the zK icon). -->
   <footer class="site-foot" id="siteFoot">
-    <p>Threat Vector is free software under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3</a> or later; the <a href="https://github.com/gitLaloosh/threatvector">source is on GitHub</a>. Its fitting calculations follow <a href="https://github.com/pyfa-org/Pyfa">pyfa</a> (GPL v3). Not made, endorsed or supported by CCP hf.</p>
+    <p>Threat Vector is free software under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3</a> or later; the <a href="https://github.com/gitLaloosh/threatvector">source is on GitHub</a>, with <a href="https://github.com/gitLaloosh/threatvector/blob/main/METHODOLOGY.md">How the numbers are worked out</a>. Its fitting calculations follow <a href="https://github.com/pyfa-org/Pyfa">pyfa</a> (GPL v3). Not made, endorsed or supported by CCP hf.</p>
     <p>© CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf. Killmails and kill statistics from zKillboard.</p>
   </footer>
 
@@ -3383,139 +3384,116 @@ function cardName(key){
 // CARD_INFO: plain text paragraphs (escaped when shown). JSON on purpose, so the Python tools can read it.
 const CARD_INFO = {
  "dmg": [
-  "The big number is the DPS that lands on you at the range and movement set under Adjust; the line under it is the same with you sitting still, and the raw DPS. Hover it for the whole sentence.",
-  "As pyfa's damage graph: their webs, target painters and scram applied, resists not counted, their lock range ignored.",
-  "On the chart, their EWAR that reaches you is shaded from 0 out to its range, with the {card:ewar} card's letters and colours: T their scram and web, D their target painter, C their neuts and nosferatu; darker where two reach. Numbered pins are their lock range and drone range. Their tackle distances and your range are printed on the x axis, and the DPS there on the y axis in each line's colour. While a slider is dragged the y axis only grows; it fits again on release.",
-  "Keep at Range: that ship moves straight away from the other at the other's closing speed (its approach speed; 0 when it sits still, orbits or keeps range too), up to its own top speed, so the distance holds; pyfa's graph gets that speed, at 180°. It isn't offered inside the other ship's scram or web range, or when the other ship closes faster than it can fly; chosen and then no longer possible, it's marked amber.",
-  "Their drones hit fully when faster than you; otherwise they track like turrets from their ship, out to their drone control range.",
-  "A close, perfect hit chance averages 1.5% above raw DPS (wrecking hits), as in pyfa."
+  "**The big number:** the DPS that lands on you at the range and movement set under Adjust, as pyfa's damage graph: their webs, target painters and scram applied, resists not counted, their lock range ignored.",
+  "**On the chart:** their EWAR that reaches you is shaded out to its range with the {card:ewar} card's letters (T scram and web, D target painter, C neuts and nosferatu), darker where two reach. Numbered pins: their lock and drone range.",
+  "[Drones] Their drones hit fully when faster than you; otherwise they track like turrets from their ship, out to their drone control range.",
+  "[Keep at Range] That ship moves straight away at the other's closing speed, up to its own top speed, so the distance holds. It isn't offered inside the other ship's scram or web range, or when the other closes faster than it can fly; chosen and then no longer possible, it's marked amber.",
+  "[Wrecking hits] A close, perfect hit chance averages 1.5% above raw DPS, as in pyfa."
  ],
  "dmg#mine": [
-  "The big number is the DPS your ship lands on them at the range and movement set under Adjust, the same number as the board's DPS applied to them; the line under it is the same with them sitting still, and your raw DPS. Hover it for the whole sentence.",
-  "One fight for both perspectives: Adjust here, the strip under the board and the {card:dmg} card in the {card:perspective.threat} set the same range and movements. Chart across is this card's own.",
-  "As pyfa's damage graph: your webs, target painters and scram applied to them, their resists not counted, your lock range ignored. Their speed and signature are their fit's own, with their prop module as it runs.",
-  "On the chart, your EWAR that reaches them is shaded from 0 out to its range, with the {card:ewar} card's letters and colours: T your scram and web, D your target painter, C your neuts and nosferatu; darker where two reach. Numbered pins are your lock range and drone range. Your tackle distances and the range are printed on the x axis, and the DPS there on the y axis.",
-  "Your drones hit fully when faster than them; otherwise they track like turrets from your ship, out to your drone control range. A close, perfect hit chance averages 1.5% above raw DPS (wrecking hits), as in pyfa."
+  "The same as {card:dmg}, from your side: the DPS your ship lands on them at the range and movement set under Adjust (the board's DPS applied to them), with your webs, target painters and scram, their resists not counted. Their speed and signature are their fit's own, prop module running.",
+  "**One fight:** Adjust here, the strip under the board and {card:dmg} in {card:perspective.threat} set the same range and movements; Chart across is this card's own.",
+  "[On the chart] Your EWAR that reaches them is shaded out to its range (T scram and web, D target painter, C neuts and nosferatu); pins are your lock and drone range. Your drones hit fully when faster than them, otherwise they track like turrets."
  ],
  "weak": [
-  "Least resisted: the damage type that gets through its resists best, averaged over shield, armor and hull by how many hit points each layer has (resists as fitted, max skills).",
-  "The title says whose weaknesses these are: the threat's, or yours (Your Weaknesses, in {card:perspective.mine} and on {card:myshippage}).",
-  "Capacitor drains: its capacitor runs out with every running module cycling, even at best case (a fitted Capacitor Booster or Ancillary Shield Booster on charges). The ring is how long it lasts; hover it for the numbers. No charges: a booster with none loaded and none in cargo (pasted fits only). No paste: an Ancillary Armor Repairer with no Nanite Repair Paste loaded or in cargo (pasted fits only), so no 3x boost.",
-  "Without your ship: the ammo and drone type for each weapon system that hits that weakness hardest. A turret system that can't deal it falls back to the next weakest type.",
-  "Missiles: the best ammo for each launcher, and how much of its damage lands on this ship's signature and speed, with its MWD (or afterburner) off and on. With your skills at V; your rigs and modules aren't known. Under 50% is amber. The tile shows how many launchers land 95% or more; open it (the chevron) for each launcher.",
-  "Fighters: the T2 light fighter, heavy fighter and bomber of that damage type, and how much of each one's damage lands, as pyfa applies it at this ship (fighters fly to it): its signature and speed with its MWD (or afterburner) off and on, and its resistance to fighter missiles (a heavy fighter's torpedoes are built for capitals: a smaller ship takes a tenth). With your skills at V and no carrier bonus; abilities as pyfa sets them, with the bomber's bomb on. The tile names them; open it for each class.",
-  "With your ship saved and Use in assessments on: your own ammo, drones and fighters against it, best first by how long it lasts with that loaded (damage by type against its resists, layer by layer, minus its reps while its capacitor lasts; the rest of your fit as it is). Only the ammo, drones and fighters aboard count; fighters get one pick per class (light, heavy), in that class's squadrons, with their abilities as set in the Fighter bay. The DPS is pyfa's applied DPS at the range and movement set on {card:dmg}. Hover a pick for the next best. In {card:perspective.mine} the same, for their ammo against you."
+  "**Least resisted:** the damage type that gets through its resists best, averaged over shield, armor and hull by their hit points (resists as fitted, skills at V).",
+  "**Capacitor drains:** it runs out with every running module cycling, even at best case. The ring is how long it lasts.",
+  "**Without your ship:** the ammo and drones for each weapon system that hit that weakness hardest; a turret that can't deal it falls back to the next type.",
+  "[Missiles and fighters] How much of each launcher's or fighter's damage lands on this ship's signature and speed, MWD (or afterburner) off and on, with skills at V; your rigs, modules and carrier bonus aren't known. Under 50% is amber; the tile counts those landing 95% or more. Open a tile for each launcher or fighter class.",
+  "[With your ship] With your fit saved and Use in assessments on: your own ammo, drones and fighters against it, best first by how long it lasts with that loaded; only what's aboard counts. The DPS is at the range and movement set on {card:dmg}. Hover a pick for the next best. In {card:perspective.mine}, the same for their ammo against you."
  ],
  "ewar": [
-  "Each chip is one module type: T tackle (scrams, points, webs, bubbles), D disruption (ECM, dampeners, weapon disruptors, target painters, burst jammers and projectors), C capacitor warfare (neutralizers, nosferatu), B command bursts. Hover a chip for the whole line.",
-  "Ranges are optimal + falloff, with max skills and the hull's, subsystems' and rigs' bonuses.",
-  "Support fighters in space are listed too, one chip per squadron type: a Dromi's web, a Siren's warp disruption, a Cenobite's neutralizer, a Scarab's ECM, each for one squadron (all its fighters) with the carrier's bonuses. Only the web is counted in {card:dmg} and the times, as pyfa's damage graph does; the rest is shown, as module neutralizers are.",
-  "Misc (!): what changes the fight outside its stats: a cynosural field, Micro Jump Drives and Field Generators, an Interdiction Nullifier, a PANIC."
+  "Each chip is one module type: T tackle (scrams, points, webs, bubbles), D disruption (ECM, dampeners, weapon disruptors, target painters, burst jammers), C capacitor warfare (neutralizers, nosferatu), B command bursts. Ranges are optimal + falloff, skills at V, with hull, subsystem and rig bonuses.",
+  "**Misc (!):** what changes the fight outside its stats: a cynosural field, Micro Jump Drives and Field Generators, an Interdiction Nullifier, a PANIC.",
+  "[Support fighters] One chip per squadron type (a Dromi's web, a Siren's warp disruption, a Cenobite's neutralizer, a Scarab's ECM), with the carrier's bonuses; only the web counts in {card:dmg} and the times, as in pyfa."
  ],
  "tdmode": [
-  "This hull can switch Tactical Destroyer Mode in space, at most once every 10 s. Which mode was active at the time of death can't be known from a killmail (a mode is a built-in ship state, not a fitted item), so all three are computed; pick one with the buttons.",
-  "Sharpshooter is shown by default since it changes DPS (weapon damage and range, targeting range, sensor strength). Defense changes resistances and signature radius (and, depending on hull, repair cycle, remote repair or shield recharge). Propulsion changes speed and align time.",
-  "Every mode effect comes from pyfa's own handlers."
+  "This hull switches between three modes in space, at most once every 10 s. A killmail can't show which mode was on, so all three are computed; Sharpshooter is shown first.",
+  "Sharpshooter: weapon damage and range, targeting range, sensor strength. Defense: resists and signature (on some hulls, repairs or shield recharge). Propulsion: speed and align time."
  ],
  "tdmode#primary": [
-  "This hull switches between three modes in space, at most once every 10 s. Which one was active at the time of death can't be known from a killmail (a mode is a built-in ship state, not a fitted item), so all three are computed; pick one with the buttons.",
-  "Primary (shown by default, pyfa's default too): launchers cycle 25% faster, missile flight time x11, missile speed x0.67, targeting range x5 (capped at 300 km). Secondary: launchers cycle twice as fast, flight time halved. Tertiary: launchers cycle 25% faster, missile speed x1.5, better agility and a much shorter Micro Jump Drive reactivation delay.",
-  "Every mode effect comes from pyfa's own handlers."
+  "This hull switches between three modes in space, at most once every 10 s. A killmail can't show which was on, so all three are computed; Primary is shown first (pyfa's default too).",
+  "Primary: launchers cycle 25% faster, missile flight time x11, missile speed x0.67, targeting range x5 (capped at 300 km). Secondary: launchers cycle twice as fast, flight time halved. Tertiary: launchers cycle 25% faster, missile speed x1.5, better agility and a much shorter Micro Jump Drive reactivation delay."
  ],
  "fit#charges": [
-  "Every charge each module can load (pyfa's list), with the two numbers it changes on this fit when every copy holds it, your skills at V: a weapon's or bomb's DPS and range; a Capacitor Booster's injection and the capacitor; an Ancillary Shield Booster's clip and the capacitor; an Ancillary Armor Repairer's repair with and without paste; a script's effect on your weapons, sensors or target; a Command Burst charge's buffs; a probe's bubble. Charges on board come first (loaded, then cargo); the rest are marked not on board, best first.",
-  "Click a charge to load it into every copy. Drag it onto one module for that one only, or into the middle of the ring for every module that takes it. Capacitor Boosters, Ancillary Shield Boosters and Ancillary Armor Repairers take one charge for all their copies, so a drop on one loads them all. On a phone, hold a finger on it before dragging.",
-  "No charge unloads the same way. An unloaded weapon or bomb launcher goes Online (EVE can't run it with no charge) and does no damage; loading a charge into it makes it Active again. Any other module keeps its state and works as it does with no charge: a Capacitor Booster injects nothing, an Ancillary Shield Booster runs on capacitor, a scripted module works as the plain module. Charges in cargo don't refill a module you unloaded. Use original charges, under the ring, puts back the fit's own.",
-  "The chips filter by damage type (weapons and bombs) and, on a fit with more than one module that takes charges, by module: hover an icon for its name."
+  "Every charge each module can load (pyfa's list), with the two numbers it changes on this fit when every copy holds it, skills at V. Charges on board come first; the rest are marked not on board.",
+  "**Load:** click a charge for every copy, or drag it onto one module (or the ring's middle for all). Capacitor Boosters, Ancillary Shield Boosters and Ancillary Armor Repairers take one charge for all their copies. On a phone, hold a finger on it first.",
+  "[Unloading] No charge unloads. An unloaded weapon goes online and does no damage; other modules work without one. Cargo doesn't refill an unloaded module. Use original charges puts back the fit's own."
  ],
  "fit": [
-  "Click a module's state to switch it off, online or active, and a drone square to put drones in space or take them back; every card recalculates. The game's rules still apply (one propulsion module running at a time, Bastion blocks the Micro Jump Drive, and so on).",
-  "Ring view: filled dot = active, hollow = online, dashed = off; hover a module for its name. A weapon shows the charge loaded in it; any other module shows its charge or script in a corner. The reset icon puts every module and drone back to its default state, and the fit's own charges.",
-  "Charges: the Charges button lists every charge each module can load, with what it changes; its own info button says how to load and unload them. Hover a module that takes charges (hold a finger on it on a phone) to unload it or open its charges. Each rack's ⋯ button sets every module in it active, online or off, and unloads that rack's charges. A charge the fit doesn't have is marked not on board, and so is the card while one is loaded; every card uses the charges shown.",
-  "A killmail doesn't say what was running, so every module starts running if the game allows it (one propulsion module, the fastest; only as many Command Bursts as the hull permits), except cloaks, Micro Jump Drives and Field Generators, a Signature Suppressor's burst, Entosis Links, Capital Sensor Arrays and an Assault Damage Control's burst, which start online.",
-  "Implants and boosters are in every number, as in pyfa; booster side effects are off (pyfa's default)."
+  "A killmail doesn't say what was running, so every module starts running if the game allows it (one propulsion module, the fastest; only as many Command Bursts as the hull permits), except cloaks, Micro Jump Drives and Field Generators, a Signature Suppressor's burst, Entosis Links, Capital Sensor Arrays, an Assault Damage Control's burst, a cynosural field and a Heavy Interdictor's Zero-Point Mass Entangler, which start online.",
+  "**Ring:** filled dot active, hollow online, dashed off; click one to change it.",
+  "[Charges] Hover a module that takes charges (hold a finger on a phone) to unload it or open its charges; a rack's ⋯ sets the whole rack. A charge the fit doesn't have is marked not on board.",
+  "[Implants and boosters] Implants and boosters are in every number, as in pyfa; booster side effects are off (pyfa's default)."
  ],
  "fp": [
-  "Total DPS: every turret and launcher with the charge it had loaded, plus bombs (a bomb's damage over the launcher's cycle and its long reactivation delay, as pyfa counts it), the drones in space and fighters, at max skills (V), with the fit's damage modules, rigs and the hull's bonuses, as pyfa calculates it.",
-  "A weapon with no loaded charge is estimated from compatible ammo in cargo; Total and Weapon DPS then show the range from the weakest to the strongest of that ammo, listed at the bottom of the card.",
-  "Drone DPS counts only the drones the hull can have in space at once (max drones and bandwidth), hardest-hitting first; fighters only as many squadrons as the launch tubes and class limits allow.",
-  "Volley: one shot from every weapon, drone and fighter at once, as pyfa's Volley, not a sustained rate.",
-  "Each weapon's range: optimal + falloff for turrets; for missiles the average flight range (hover it for the two whole-second distances), as pyfa. How much damage lands at a distance is on the {card:dmg} card. A drone's range is up to its pilot.",
-  "Every number is a ceiling: a less-trained pilot hits softer."
+  "**Total DPS:** every turret and launcher with its loaded charge, bombs, the drones in space and fighters, at max skills (V), with the fit's modules, rigs and hull bonuses, as pyfa. Every number is a ceiling: a less-trained pilot hits softer.",
+  "**No charge loaded:** estimated from compatible ammo in cargo, shown as a range from the weakest to the strongest (listed at the bottom of the card).",
+  "[Volley and range] Volley: one shot from everything at once, not a sustained rate. Range: optimal + falloff for turrets, the average flight for missiles; how much lands at a distance is on {card:dmg}.",
+  "[Drones and fighters] Only as many drones as the hull can have in space (max drones and bandwidth), hardest-hitting first; fighters only as many squadrons as the tubes and class limits allow."
  ],
  "rs": [
-  "Resists per layer and damage type, with every resist source pyfa applies: hardeners, Damage Control, rigs, max skills (V), the hull's bonuses, a mode, and a Reactive Armor Hardener as pyfa simulates it against an even damage mix.",
-  "EHP: each layer's hit points against an even mix of the four damage types.",
-  "Repairs: what each layer gets back per second: passive shield regen (its peak, reached near 25% shield), a shield booster, an armor repairer, a hull repairer. Max-trained Repair Systems / Capital Repair Systems (cycle time) and Shield Operation (passive regen); cycle times include rigs and hull bonuses. A Shield Booster's own output per cycle doesn't train up.",
-  "Break Point: the DPS an attacker has to sustain to outpace that layer's repair or regen (hover a value for its breakdown). A dash means the layer has no repair module (pure buffer), not a missing number. An Ancillary Armor Repairer also shows its burst when it has Nanite Repair Paste aboard (on a killmail with none seen, a full clip is assumed)."
+  "Resists per layer and damage type, with everything pyfa applies: hardeners, Damage Control, rigs, skills at V, hull bonuses, a mode, and a Reactive Armor Hardener against an even mix. EHP: hit points against an even mix of the four damage types.",
+  "**Break Point:** the DPS an attacker must sustain to outpace that layer's repair or regen. A dash means no repair module (pure buffer).",
+  "[Repairs] What each layer gets back per second: passive shield regen at its peak (near 25% shield), boosters and repairers, with cycle times from skills, rigs and hull bonuses. An Ancillary Armor Repairer also shows its burst with paste aboard (none seen on a killmail: a full clip assumed)."
  ],
  "nav": [
-  "Speed: top speed with the fastest propulsion module running (assumed, as in a fight); the line under it is with it off. Align time: without the propulsion module, and with it on in the line under it. Both as pyfa: max skills, plates, rigs, the hull's bonuses.",
-  "Signature radius: without the MWD; the line under it with the MWD running (its signature bloom).",
-  "Drone control range: base + skills (Drone Avionics, Advanced Drone Avionics at V) + Drone Link Augmentors + hull bonus + boosters; hover the line for the parts.",
-  "Targeting range, scan resolution and sensor strength include max skills and fitted Sensor Boosters, Signal Amplifiers, a Bastion and similar modules, as pyfa. Hover a value's line for the whole sentence."
+  "**Speed and align:** with the fastest propulsion module running, as in a fight; the line under each is with it off.",
+  "**Signature:** without the MWD; the line under it with the MWD's bloom.",
+  "**Drone control range, targeting, scan resolution, sensor strength:** skills at V and the fitted modules; hover a line for the parts."
  ],
  "cp": [
-  "Capacitor state is pyfa's capacitor simulation: every running module on its real cycle for 6 hours, staggered, Capacitor Boosters injecting when needed. Stable shows the % it settles at; otherwise how long until it's empty.",
-  "Best case of the running modules: a running Capacitor Booster injects and a running Ancillary Shield Booster has charges. Their icons sit by the ring; click the Ancillary Shield Booster's icon for out of charges. A pasted fit with no charges anywhere gets none.",
-  "The ring goes from green (50% and up) through amber to red when it runs out. Hover it for the in-game fitting window's figure (pyfa's EVE stability value).",
-  "Net cap rate is the simple average (peak recharge − drain + injection); the state comes from the simulation, so the two can disagree. Drain resistance: a fitted Capacitor Battery cuts incoming neutralizers and nosferatu by that much; the {card:ewar} card's own neut figures assume an unresisted target."
+  "**State:** pyfa's capacitor simulation, every running module on its real cycle. Stable shows the % it settles at; otherwise how long until it's empty.",
+  "**Best case:** a running Capacitor Booster injects and a running Ancillary Shield Booster has charges; click the Ancillary Shield Booster's icon for out of charges. A pasted fit with no charges anywhere gets none.",
+  "[Ring and rates] Green from 50% through amber to red when it runs out; hover it for the in-game fitting window's figure. Net cap rate is a simple average, so it can disagree with the state. Drain resistance: a Capacitor Battery cuts incoming neutralizers and nosferatu by that much."
  ],
  "board": [
-  "DPS applied to you and to them: pyfa's applied DPS for the fight set in the strip under the board (the range and how each ship moves), as on {card:dmg}. The DPS applied to them uses the same fight, seen from your side.",
-  "They last / you last is not a pyfa number: the damage by type against each layer's resists (shield, then armor, then hull), minus that layer's local repairs and passive shield regen, with the repairs stopping when the capacitor runs out. An Ancillary Shield Booster on charges keeps going without the capacitor: it reps for its clip, reloads for 60 s, and repeats until its charges (loaded and in the hold) run out. An Ancillary Armor Repairer with Nanite Repair Paste repairs three times as much for its clip from when the armor starts taking damage, reloads for 60 s, repeats while its paste lasts, then repairs its plain amount; it needs the capacitor either way (a killmail with no paste seen: a full clip assumed). \"holds\" means the damage never gets through. Hover a time (tap it on a phone) for why it breaks when it does.",
-  "Edge: who outlasts the other. Faster: the two top speeds. An amber number differs from your pasted fit's own module states; hover it for the pasted value (for a time, it's at the end of its why).",
-  "The strip under the board sets one fight for both perspectives: each ship's movement, with the in-game names (Stopped, Approach, Orbit, Keep at Range), and the range between you. Adjust on {card:dmg} changes the same settings."
+  "**They last / You last:** how long each ship survives the other's damage at the range and movement set in the strip: through each layer's resists, minus its repairs and regen while its capacitor lasts; “holds”: the damage never gets through. Hover a time for why. The tool's own rule on pyfa's numbers, not a pyfa figure.",
+  "**Edge:** who outlasts the other. **Faster:** the two top speeds. **Amber:** differs from your pasted fit's own module states (hover for it).",
+  "[Ancillary boosters] An Ancillary Shield Booster on charges reps for its clip, reloads for 60 s and repeats while its charges last. An Ancillary Armor Repairer with Nanite Repair Paste repairs three times as much for its clip, reloads for 60 s, repeats while the paste lasts, then repairs its plain amount; it needs the capacitor either way (no paste seen on a killmail: a full clip assumed).",
+  "[The fight] The strip sets one fight for both perspectives: each ship's movement and the range between you. Adjust on {card:dmg} changes the same settings."
  ],
  "sysan": [
-  "Paste the Local member list (in the Local window, select the members and press Ctrl+C) and, if you have one, your D-Scan. Local lists everyone in the system, in space or docked; the D-Scan shows only ships within about 14 AU of you. So who is here comes from Local, and the scan only says what is near you now.",
-  "Each name is looked up on ESI (its corporation and alliance) and sorted into hostile, neutral and friendly by your {card:side}. A name ESI doesn't know (a typo, a renamed pilot) is listed as not found.",
-  "Up to the “pilot rows up to” number of hostile + neutral pilots (15 unless you change it, at most 30, under ⚙ Local's results) is a small gang: one row per pilot ({card:pilots}). More is shown by group, as the columns. Groups shows the columns for a small gang too.",
-  "[Kills and losses] With a system known (an Intel Assess's, else ⚙: your location from Intel, or a typed system), the line over the results counts its kills and losses in the last 1 to 72 hours (24 unless you change it) from one zKillboard request per system an hour, and the killmails read from ESI (the newest 300 at most; zKillboard lists 1,000). Each group, corporation, pilot and hull gets its own: ▲ kills it was on, ▼ its losses, with the whole kill's ISK, so totals across rows don't add up; NPCs count for nobody; folded rows show none. The numbers link to zKillboard, whose pages show all time, not the hours chosen.",
-  "{card:onscan} (with a D-Scan pasted) sits beside Local's results, or takes the whole width when there's no Local: the hulls on scan by role, with their resists, ammo and drones on hover."
+  "Local lists everyone in the system, in space or docked; your D-Scan only the ships near you. So who is here comes from Local, and the scan only says what is near you now.",
+  "Names are sorted by your {card:side}; one ESI doesn't know (a typo, a renamed pilot) is listed as not found. Up to your “pilot rows up to” number ({card:sysan} settings) is a small gang, one row per pilot; more is shown by group.",
+  "[Kills and losses] With a system known (an Intel Assess's, your location, or one typed in {card:sysan} settings), the line over the results counts its kills and losses in the hours chosen (24 unless you change it). ▲ kills a row was on, ▼ its losses, each with the whole kill's ISK, so totals across rows don't add up; NPCs count for nobody. The numbers link to zKillboard, whose pages show all time.",
+  "[{card:onscan}] With a D-Scan pasted: the hulls on scan by role."
  ],
  "side#sso": [
-  "Logging in with EVE Online tells Threat Vector which character you are. On its own it asks EVE for no permissions. It fills Your pilot, the same as typing the name.",
-  "The EVE tab of your profile lists the features that need more from EVE: Use my game location (your character's location, for Intel), Show when I'm online in EVE (whether it is in the game) and Use my corporation's and alliance's EVE standings (their contacts). Pick them before you log in and the one trip to EVE asks for exactly those; EVE's page lists them, and you agree to all of it or cancel. A feature turned on while you're logged in waits (Needs EVE's OK) until you press Continue to EVE, which asks again for everything you have on.",
-  "Log out ends the login and its permissions with EVE: Threat Vector leaves your list of apps on EVE's site. You can also remove it there (Manage on EVE's site, under EVE permissions). While a feature uses the login, it is renewed in this tab about every 20 minutes.",
-  "The login lasts for this tab: reloading keeps it, a new tab asks again (usually one click, as EVE remembers you), and closing the tab forgets it. Nothing is sent to or kept on a Threat Vector server; there isn't one.",
-  "Log out ends it in this tab and clears Your pilot; the features you picked stay picked, so the next login asks for them again. It doesn't sign you out of EVE's own website."
+  "Logging in with EVE tells Threat Vector which character you are and fills Your pilot; on its own it asks EVE for no permissions.",
+  "**Features:** the EVE tab lists those that need more from EVE (location, online status, standings). Pick them before you log in and EVE asks for exactly those; one turned on later waits until you press Continue to EVE.",
+  "[How long it lasts] The login is for this tab: a reload keeps it, a new tab asks again (usually one click, as EVE remembers you), closing the tab forgets it. Nothing is sent to or kept on a Threat Vector server; there isn't one.",
+  "[Log out] Ends the login and its permissions with EVE in this tab and clears Your pilot; your picks stay for the next login. It doesn't sign you out of EVE's own website. You can also remove Threat Vector there (Manage on EVE's site)."
  ],
  "side#online": [
-  "Show when I'm online in EVE asks EVE, about once a minute, whether your logged-in character is in the game, and shows it on your portrait at the top: a green dot when online; a grey dot and a greyed portrait when logged off. It is on the EVE tab of your profile; EVE asks for its permission when you log in, or on the trip to EVE if you turn it on while logged in.",
-  "When Intel is running for that character and it logs off, Intel says so, with a button to stop it. Intel never stops by itself.",
-  "Only one Threat Vector tab asks for each character; the others show what it found. A tab in the background asks only while it runs Intel. Log out stops the checks; the switch stays on for your next login. What EVE answers is kept in memory only."
+  "Show when I'm online in EVE asks EVE about once a minute whether your logged-in character is in the game: a green dot on your portrait when online; a grey dot and a greyed portrait when logged off.",
+  "When Intel runs for that character and it logs off, Intel says so, with a button to stop it; Intel never stops by itself.",
+  "[Tabs and what's kept] Only one Threat Vector tab asks for each character; a tab in the background asks only while it runs Intel. Log out stops the checks; the switch stays on for your next login. What EVE answers is kept in memory only."
  ],
  "side#eve": [
-  "Turn on Use my corporation's and alliance's EVE standings on the EVE tab of your profile and, once you're logged in with EVE's OK, the page reads your corporation's and your alliance's contacts from EVE. They then decide who is friendly and hostile in the {card:sysan}, Intel, the Fleet tab and the Pilot Analyzer. An NPC corporation has no standings in EVE, so its pilots use the typed lists.",
-  "Above 0 is friendly, below 0 hostile, 0 or no standing neutral. In one list, a standing on a pilot beats one on his corporation, which beats one on his alliance. When your corporation and your alliance disagree, your alliance's standing decides, and the reason says so. Your own corporation and alliance are always friendly.",
-  "Your typed lists are hidden while this is on, and used again when you turn it off or log out. Your personal contacts aren't read.",
-  "zKillboard's evidence (killed N of yours) shows beside neutrals, but doesn't make them hostile while this is on.",
-  "Read again only when something needs sides, at most every 5 minutes, and kept in this tab's memory only."
+  "With this on and EVE's OK, your corporation's and alliance's EVE contacts decide who is friendly and hostile everywhere in the tool; an NPC corporation has none, so its pilots use the typed lists.",
+  "**The rule:** above 0 friendly, below 0 hostile, 0 or none neutral. In one list a pilot's entry beats his corporation's, which beats his alliance's; when your corporation and alliance disagree, your alliance decides (the reason says so). Your own corporation and alliance are always friendly.",
+  "[Your lists and zKillboard] Your typed lists are hidden while this is on and come back when it's off or you log out; personal contacts aren't read. zKillboard's evidence (killed N of yours) shows beside neutrals but doesn't make them hostile.",
+  "[How often] Read when something needs sides, at most every 5 minutes, and kept in this tab's memory only."
  ],
  "side": [
-  "Your pilot sets your corporation and alliance; they're looked up again each time you analyze Local, so a change of corporation is picked up.",
-  "Logged in with EVE, your corporation's and alliance's standings in EVE can decide instead of the lists below (How EVE standings work, on the EVE tab).",
-  "Add other friendly alliances or corporations, such as your coalition: one at a time, or as a pasted list with one name per line. Use the full name; a ticker in < > or [ ] after it is ignored. Hostile works the same way. Adding a group to one list takes it off the other.",
-  "A corporation entry beats its alliance's: a hostile corporation inside a friendly alliance shows as hostile.",
-  "Suggested friendlies: the alliances and corporations (not already listed) that shot alongside your side on 2 or more of its last 50 kills in the past 7 days on zKillboard. One zKillboard request, kept for an hour. Add only the ones really on your side.",
-  "Everything here is saved in this browser only."
+  "Your pilot sets your corporation and alliance, looked up again each time you analyze Local. Logged in with EVE, your corporation's and alliance's EVE standings can decide instead of the lists below (How EVE standings work, on the EVE tab).",
+  "**Lists:** other friendly or hostile alliances or corporations, by full name, one at a time or as a pasted list; a ticker after the name is ignored. A corporation's entry beats its alliance's.",
+  "[Suggested friendlies] Alliances and corporations (not already listed) that shot alongside your side on 2 or more of its last 50 kills in the past 7 days on zKillboard. Add only the ones really on your side."
  ],
  "hostile": [
-  "Hostile: pilots in an alliance or corporation on your hostile list, then groups that killed your side lately: zKillboard's list of your alliance's losses in the past 7 days (one request, kept for an hour) and the newest 50 of those killmails from ESI. Every attacking pilot's alliance (or corporation, without one) counts. Your lists win: a group you list as friendly is never hostile.",
-  "Grouped by alliance, then corporation (a corporation with no alliance stands alone), largest first. Each name opens the Pilot Analyzer."
+  "With your corporation's and alliance's EVE standings in use, hostile is a negative standing there and nothing else; otherwise: pilots in an alliance or corporation on your hostile list, then groups that killed your side lately (your alliance's, or corporation's, losses on zKillboard in the past 7 days, the newest 50 read). Your lists win: a group you list as friendly is never hostile.",
+  "Grouped by alliance, then corporation (a corporation with no alliance stands alone), largest first."
  ],
  "neutral": [
-  "Neutral: everyone in Local who isn't friendly or hostile. Pilots in NPC corporations (starter corporations, often new pilots and alts) are one group. With more than 6 groups, the groups of 1 or 2 pilots share one row.",
-  "Each name opens the Pilot Analyzer."
+  "Neutral: everyone in Local who isn't friendly or hostile. Pilots in NPC corporations (starter corporations, often new pilots and alts) are one group. With more than 6 groups, the groups of 1 or 2 pilots share one row."
  ],
  "pilots": [
-  "With 15 or fewer hostile + neutral pilots in Local (your “pilot rows up to” number, in the {card:sysan}'s ⚙), each gets a row. Groups shows the columns instead.",
-  "Possible ship, for a gang size (the switch): from their newest 50 kills and 30 losses, as the {card:dossier} in the Pilot Analyzer. Auto picks each pilot's size from how many of their alliance (or corporation, without one) are in Local: 1 solo, 2–10 small gang, 11+ fleet; an NPC corporation counts as solo. The others use one size for every row.",
-  "The ship is the hull with the most of their kills in that size (the tag says which; All: kills and losses together); a ship of theirs from the last 30 days that's on your D-Scan comes first. No kill in that size: the newest ship they were seen in within 30 days, else the hull they lost most. The line under the ship says how many and when (the whole sentence on hover); it's a possibility, not what they're in now.",
-  "The numbers come from their newest loss in that hull, worked out as in the Pilot Analyzer (pyfa's numbers): DPS (a range when their charges are guessed from cargo) with its damage types, EHP, the weakest resist and the EWAR letters of the {card:ewar} card. No loss of that hull among those losses: the bare hull's EHP and resists, marked fit unknown.",
-  "Each pilot is 2 zKillboard requests (kills and losses, kept for an hour), 15 pilots at a time; Load more asks for the next ones. Rows keep their place while they fill, then sort once: hostile first, then by DPS.",
-  "A row opens that pilot in the Pilot Analyzer, on that hull, its dossier on the same size."
+  "With up to your “pilot rows up to” number of hostile + neutral pilots in Local, each gets a row; above it, the Groups columns.",
+  "**Possible ship:** the hull with most of their kills in that gang size, a ship of theirs on your D-Scan (last 30 days) first; else the newest they were seen in within 30 days, else the hull they lost most. A possibility, not what they're in now.",
+  "[Auto] Each pilot's gang size from how many of their alliance (or corporation) are in Local: 1 solo, 2–10 small gang, 11+ fleet.",
+  "[The numbers] From their newest loss in that hull, as in the Pilot Analyzer: DPS (a range when charges are guessed from cargo), EHP, the weakest resist and the EWAR letters. No loss in it: the bare hull, marked fit unknown.",
+  "[Loading] 15 pilots at a time; Load N more pilots asks for the next ones. Rows keep their place while they fill, then sort once: hostile first, then by DPS."
  ],
  "fleet": [
   "Above the “pilot rows up to” number of hostile + neutral pilots (the {card:sysan}'s ⚙), Local is a fleet. The 5 largest hostile or neutral groups are looked up; the others are listed with a Look up button. Groups shows the columns instead.",
@@ -3534,65 +3512,56 @@ const CARD_INFO = {
   "Estimates from killmails, not a count: their fits may differ, they won't all shoot you at once, and remote repairs, command bursts and overheating aren't in it."
  ],
  "aff": [
-  "The pilot's corporation and alliance (ESI), and where they stand in your {card:side} when it's set. In corp since: when they joined that corporation (their corporation history). Pilot since: the year the character was made. Sec: their security status.",
-  "zKillboard, all time: zKillboard's own numbers, as its pilot page shows them, not the tool's. Danger: zKillboard's dangerous / snuggly rating, from what they've destroyed against what they've lost. Gang: how many of their kills were solo, and their average gang size. Kills, losses and ISK destroyed: zKillboard's totals.",
-  "One zKillboard request per pilot, after the analysis' own, kept an hour; the corporation lookups are kept an hour, names and tickers a week."
+  "Corporation and alliance from ESI, and where they stand in your {card:side}. In corp since: when they joined. Pilot since: the year the character was made. Sec: their security status.",
+  "**zKillboard, all time:** zKillboard's own numbers, as its pilot page shows them, not the tool's. Danger: dangerous against snuggly, from what they destroyed against what they lost. Gang: how many of their kills were solo, and their average gang size."
  ],
  "fksum": [
-  "Before any fit: what the killmail gives for free, the pilots in ships, their hulls, logistics and the damage they did. Then added up from the pilots looked up so far: each fit is an estimate (where it came from is the line above the numbers, with how many aren't loaded). Raw DPS: every looked-up pilot's DPS at their best, no application or resists; fits unknown add none.",
-  "Tackle and EWAR: the modules on those fits, counted by kind, with the farthest optimal of each kind. Logistics: the logistics cruisers and force auxiliaries on the kill. Combined EHP: their fits' EHP added up, against uniform damage.",
-  "Weapon reach: the nearest and farthest of their main weapons (the one doing the most DPS on each fit), as pyfa gives them: turrets optimal + falloff, missiles their flight. No time to kill: in a fleet fight every ship picks its own range, so one number for the whole fleet would be a guess."
+  "**Free from the killmail:** the pilots in ships, their hulls, logistics and the damage they did. **Estimated:** the rest, added up from the fits looked up so far; fits unknown add nothing.",
+  "**Raw DPS:** every looked-up pilot at their best, no application or resists. **Combined EHP:** against uniform damage. **Weapon reach:** the nearest and farthest main weapon (turrets optimal + falloff, missiles their flight).",
+  "[Tackle and EWAR] The modules on those fits, counted by kind, with each kind's farthest optimal.",
+  "[No time to kill] In a fleet fight every ship picks its own range, so one number for the whole fleet would be a guess."
  ],
  "intel": [
-  "**Start:** in EVE, Settings → Chat → Log Chat to File. Here: choose the Chatlogs folder, tick your intel channels, then turn on the switch beside the gear (amber while Intel is off).",
-  "**{card:itnear}:** systems with reports or kills within its range under the gear, nearest first. An amber edge means within your alert range: the sound, the notification and the amber “N near” on your profile, from any tab.",
-  "**{card:itfeed}:** every report and kill as it comes in.",
-  "[Reloads] Chrome asks again for a folder chosen on an earlier visit. Its box offers Allow this time (for this visit only; Chrome may also take it back while the tab is in the background, which stops Intel reading), Allow on every visit (no more questions) and Don't allow. Until you answer, step 1 shows Allow reading and steps 2 and 3 wait for the folder. Intel runs in one tab at a time: another tab shows it's on and can take it over with Move Intel here.",
-  "[How a line is read] Systems, ship names (English or Chinese), counts (+5, x2) and words like clr and nv; the rest is looked up on ESI as pilot names and coloured by your {card:side}. One word typed by hand is a pilot only in the name's own capitals, and report words like linked, drag, hot or kill only when dragged in from chat. A word it can't place stays plain text, never guessed. A report about the ESS tags the system in {card:itnear}: white when someone is at it, red when they're linked to it; a bubble that isn't a gate camp is a tag too. When a line names two systems, they're placed where the line says they are (“on Y gate”, “→ Y”), else in the one within range, else the nearer; the other shows as a note. The copy button on a line copies its shape, names replaced, to report a line read wrong.",
-  "[Gates and camps] A short name before “gate” (“T5Z gate”, “MOG gate”) is read among the gates of the system the line is in. A report that places them on a gate and says camp, bubble, drag, smartbomb or the gate is hot tags the system in {card:itnear} with a red Camp tag and the gate. Two kills at one gate in the time set, with no such report, tag it in orange (zKillboard places each kill at the nearest stargate). A grey tag is a gate named with no camp words. “toward you”: that gate leads closer to you. Your own shorthands (word = system) go under the gear; 4 or more letters before a system's dash (“ymjg”) read as that system when only one has them.",
-  "[Kills] While Intel is on, zKillboard's live feed of every kill (about 20 small requests a minute), kept within the Feed's kill range under the gear (10 jumps unless you change it), no NPC kills. A kill near you shows in {card:itnear} with who was there and alerts like a report within your alert range. A kill's label (or a badge in {card:itnear}) opens it in the {card:fleet} tab: the victim and who killed them; a badge for several kills lists them there to pick from, grouped into fleets: kills that share 2 pilots (1 when a kill had only 1 or 2 attackers) are one fleet, the biggest first; victims never link kills. The line under the title says when a kill was last read.",
-  "[{card:itnear} and alerts] Everyone and every ship reported in a system in the time set under the gear (15 minutes unless you change it), until someone reports it clear. A hostile or neutral within your alert range plays a sound and notifies, once per system every 30 seconds; friendlies never alert. Two sounds under the gear: {card:itnear} (1 jump up to your alert range) and In system (your own system, kills too), each one of five or your own file (MP3, WAV or OGG, up to 1 MB, kept only in this browser, played at most 5 seconds), with one volume; ▶ Test plays it. The desktop notification stays silent when the page plays its sound. With the Feed's Distance set, a report beyond both it and your alert range stays out of {card:itnear}.",
-  "[{card:itmap}] The systems around you, laid out from CCP's own flat map. A ring marks a system with a report: its colour is the standing (hostile red, neutral grey, friendly blue), its size the gang (solo, 2–10, 11 or more); ✕ counts its kills. Hover a system, or a row in {card:itnear} or the {card:itfeed}, for its route to you; press it to keep the route. Drag or two fingers move it, the wheel or a pinch zooms it; on a phone, List | Map in {card:itnear} switches between the two. {card:itnear}'s range under the gear: from your alert range to the Feed's kill range, alert + 5 unless you set it. Jumps shown under the map: from {card:itnear}'s range up to the Feed's largest kill range (30); it follows the Feed's range until you change it. Systems past {card:itnear} are faded; past the Feed's range a system's kills aren't read. A route is the shortest one by stargates (one for each system, always the same); jump bridges, cynos, filaments and wormholes aren't in CCP's data. Over the map the mouse wheel zooms instead of scrolling the page.",
-  "[Jumps and your system] Your system comes from your character's Local log. Jumps are gate jumps from EVE's published stargate data (no jump bridges or wormholes); the table is checked against each new EVE build every day.",
-  "[Buttons] A pilot's name opens them in the Pilot Analyzer, in their ship when the line says it. Press a system, corp, alliance or ship to show only it in the Feed; the chips under the filters say what's on (× removes one; press it again for everything). {card:itnear} itself is never filtered; beside the map it scrolls, and the count below says how many systems are out of view. A kill badge there shows its kills' value together. The radar icon beside it in {card:itnear} sends its pilots and ships to the {card:sysan}; Restore my paste puts yours back.",
-  "[Privacy and the folder] Nothing from your logs leaves the browser except the words looked up on ESI, and nothing is kept after you close the page. Chrome or Edge read the folder once you choose it (after a browser restart, turning Intel on asks once more); the logs are read every 2 seconds, also in a hidden tab."
+  "**{card:itnear}:** systems with reports or kills within its range (Intel settings), nearest first. An amber edge means within your alert range: the sound and notification (if on) and the profile's Intel lamp (N near, or In system), from any tab.",
+  "**{card:itfeed}:** every report and kill as it comes in. **{card:itmap}:** the systems around you; hover one, or a row, for its route to you.",
+  "[How a line is read] Systems, ship names, counts (+5, x2) and words like clr and nv; the rest is looked up on ESI as pilot names, coloured by your {card:side}. A word it can't place stays plain text. To report a line read wrong, its copy button copies the line's shape with the names replaced.",
+  "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked.",
+  "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear (hide friendlies, in Intel settings, leaves out systems with only friendlies).",
+  "[Kills] zKillboard's live feed within the Feed's kill range (10 jumps unless you change it), no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11 or more); ✕ counts kills. Systems past {card:itnear}'s range are faded.",
+  "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate only (no jump bridges or wormholes).",
+  "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI, and none of it is kept after you close the page. Intel runs in one tab at a time; another tab can take it over with Move Intel here.",
+  "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit; the logs are read every 2 seconds, also in a hidden tab."
  ],
  "intel#game": [
-  "Use my game location asks EVE which system your character is in, every few seconds while Intel runs, so jumps count from where you are even before your Local log says so.",
-  "It is on the EVE tab of your profile (Intel's settings, You, say whether it's on). It needs your EVE login in the tab running Intel, as the character you picked as You, and EVE's OK to read your location (asked at login, or on the trip to EVE if you turn it on later). Logins are per tab, so a new tab asks you to log in again.",
-  "Whichever is newer wins: EVE's answer or your Local log's last system change. When they differ, the line under the box shows both, in amber.",
-  "The page asks no sooner than EVE says its answer is fresh (about 5 seconds), and slower when EVE says the app's share is running low. Your location is kept in this tab's memory only.",
-  "Turning it off stops the checks. Log out stops them too and ends the permission with EVE; the switch stays on for your next login."
+  "Use my game location asks EVE which system your character is in, every few seconds while Intel runs, so jumps count from where you are before your Local log says so. Whichever is newer wins; when they differ, the line under the box shows both, in amber.",
+  "[What it needs] Your EVE login in the tab running Intel, as the character you picked as You, and EVE's OK to read your location (asked at login, or with Continue to EVE if you turn it on later).",
+  "[How often, and what's kept] No sooner than EVE says its answer is fresh (about 5 seconds), and slower when EVE says the app's share is running low. Kept in this tab's memory only. Turning it off or logging out stops the checks; the switch stays on for your next login."
  ],
  "onscan": [
   "The ships your D-Scan sees, by hull and by role. D-Scan shows hulls, not fits or pilots, so nothing here is tied to a name in Local.",
   "[Roles] From each hull's group: Logistics, Tackle (interceptors, interdictors, heavy interdictors), EWAR (recons, electronic attack ships), Command, Bombers, Capitals, DPS for every other combat hull, Cyno Capable, Non-combat (mining, hauling, freighters, shuttles, capsules, rookie ships).",
-  "[Cyno] Which hulls can fit a cynosural field generator comes from CCP's fitting rules (regular, covert or industrial). Cyno Capable: hulls that would otherwise be DPS or Non-combat, such as haulers, Blockade Runners, Deep Space Transports, Covert Ops and the Venture. A combat hull that can fit one keeps its role with a cyno tag. D-Scan can't say whether one is fitted.",
-  "[On grid] Within 10,000 km (m or km); AU is off grid. A contact D-Scan shows with a “-” has no reading and is counted on its own. A scan with no distances (typed names) shows no grid counts.",
-  "[Each hull] Hover a hull, focus it or press it (a press keeps it open; Esc closes it): its resists for its base hull weighted by shield, armor and hull HP (higher % = less resisted), the weakest damage type and the next, a charge for each weapon system (the reason on hover) and the best drone for its size."
+  "[Cyno] From CCP's fitting rules (regular, covert or industrial cyno). Cyno Capable: hulls that would otherwise be DPS or Non-combat, such as haulers, Blockade Runners, Deep Space Transports, Covert Ops and the Venture. A combat hull that can fit one keeps its role with a cyno tag. D-Scan can't say whether one is fitted.",
+  "[On grid] Within 10,000 km; AU is off grid. A contact shown with “-” has no reading and counts on its own; typed names show no grid counts.",
+  "[Each hull] Its resists weighted by shield, armor and hull HP (higher % = less resisted), its weakest damage type and the next, a charge for each weapon system and the best drone for its size."
  ],
  "fkvictim": [
-  "The ship that died, from the killmail's own fit: what it carried, not a guess (v2026.10.31.2). Raw DPS: at its best, no application or resists. Weakest to: its lowest resist. Weapon reach: the weapon doing the most DPS, turrets optimal + falloff, missiles their flight, as pyfa gives them. Tackle and EWAR: its modules by kind, each with the farthest optimal. EHP: against uniform damage.",
+  "The ship that died, from the killmail's own fit: what it carried, not a guess. Raw DPS: at its best, no application or resists. Weakest to: its lowest resist. Weapon reach: its main weapon (turrets optimal + falloff, missiles their flight). Tackle and EWAR: its modules by kind. EHP: against uniform damage.",
   "No time to kill: how long it lasted depended on ranges and ships the killmail can't show."
  ],
  "fkpilots": [
-  "Every player on the kill in a ship (NPCs, capsules and pilots with no ship left out), with the ship and the weapon the killmail credits them with.",
-  "Each fit by the Pilot Analyzer's rule for a chosen hull: their newest loss in that hull; none, their alliance's (or corporation's) most common fit for it, said as not theirs; none, fit unknown (the bare hull, no DPS). A weapon the killmail credits them with that the fit doesn't carry is said under the ship. Under the DPS: the main weapon's range (turrets optimal + falloff, missiles flight); hover the EWAR badges for each module's range.",
-  "Damage: what they did on this kill, its share of the ship's and the final blow, from the killmail (no request).",
-  "[Fits] own: their newest loss in that hull. alliance (or corp): their alliance's most common fit for it, not theirs. unknown: no loss found, so the bare hull and no DPS. Load asks zKillboard once (twice when it also needs their alliance's). Load all with Common fits asks once per alliance and hull (this week's losses first, all of them when the week has fewer than 2); Own fits asks per pilot. Answers are kept an hour, and Load all leaves 25 of the page's 100 lookups per 10 minutes for the rest of the page.",
-  "[The icon after Damage] red: the lookup reached zKillboard and failed; amber: zKillboard is still working out that list (a big one), and the page asks once more by itself 30 s later, when zKillboard should have it ready; grey: not sent, because after a failure the page holds the rest back until zKillboard answers again, so your address isn't blocked for asking too often. Hover it for when to try again.",
-  "[Loading fits] Nothing is asked of zKillboard when a fleet opens; fits kept from the last hour load at once. Load on a row: their fit (1 request, 2 when they have no loss in that hull and their alliance's isn't kept). Load all: Common fits (the choice above 10 pilots) asks once per alliance and hull, and a pilot who is a victim in that list gets their own loss from it; Own fits (up to 10) asks per pilot, their own losses first. Its label says the exact cost and what's left of the 100 a page may ask in 10 minutes. It stops with 25 left for the rest of the page and carries on by itself when older requests age out; a row's Load can still use them.",
-  "Fit: where each fit came from, own, alliance (or corp) or unknown, the whole sentence on hover; own? asks for their own losses in that hull (1 request). Rows stay in damage order until every pilot is in, then sort once: the pilot whose dossier you came from first, then by DPS. A row opens that pilot in the Pilot Analyzer on that hull.",
-  "Copy share link: the kill and, for each pilot looked up, the loss their fit came from, so whoever opens it sees the same fleet without asking zKillboard for those fits; the others open unloaded."
+  "**Who:** every player on the kill in a ship, with the ship and weapon the killmail credits them with. **Damage** is from the killmail itself.",
+  "**Fit:** own = their newest loss in that hull; alliance (or corp) = their group's most common fit for it, not theirs; unknown = no loss found, so the bare hull and no DPS. A weapon on the kill that the fit doesn't carry is noted under the ship.",
+  "[Loading] Nothing is asked of zKillboard until you press Load or Load all; the label says what it costs. Fits looked up in the last hour load at once.",
+  "[The icon after Damage] Red: zKillboard failed. Amber: zKillboard is still building that list; the page asks once more in 30 s. Grey: held back after a failure so your address isn't blocked; hover it for when to try again.",
+  "[Copy share link] Sends the kill and the fits already looked up, so whoever opens it sees the same fleet without new lookups; the others open unloaded."
  ],
  "dossier": [
-  "What they fly, from their newest 50 kills and 30 losses on zKillboard (each killmail read from ESI and kept): one row per hull, the busiest first. Pick a row to see that hull below: their own losses in it, or, when they've never lost one, their alliance's (or corporation's) common fit, said as not theirs.",
-  "Opened on a hull (a pilot on the {card:fleet} tab, a ship you typed, a {card:sysan} row), that hull is the first row whatever its rank, tagged On this kill, Lost on this kill or Asked for. A kill from the Fleet tab that zKillboard's list for them doesn't have yet is added (the header says + this one). The 8 busiest hulls follow; Show N more hulls shows every hull read, with no new request.",
-  "Gang size on a kill is the players on that killmail (NPCs left out; anyone who joined in counts): Solo is 1, Small gang 2–10, Fleet 11 or more. The switch keeps only those kills, so you see what they fly alone, in a small gang or in a fleet. Losses show a hull but not a gang size (only who killed them).",
-  "Weapons seen: the weapon each killmail credits them with. Flies with: the other players' hulls on those kills. Kills mostly: what they killed, by ship class. Every number is a count, so a pilot with few kills shows few.",
-  "Active: the hours of their kills in your own time zone. Usual systems: where their kills and losses were. Capsules, shuttles, rookie ships and Mobile Tractor Units aren't counted as hulls.",
-  "Fleet ▸ on a kill with 2 or more pilots opens the {card:fleet} tab: everyone on that kill in a ship, with their fits.",
-  "▶ opens their kills in that hull under its row (in the switch's gang size), newest first, 10 at a time: when, the victim, the players on the kill, the system, their weapon, who flew with them, zKillboard's value and a link to the kill. Show 10 more reads older kills from ESI once those are shown (no new zKillboard request)."
+  "What they fly, from their newest 50 kills and 30 losses on zKillboard: one row per hull, the busiest first. A row shows their own losses in it, or their alliance's (or corporation's) common fit, said as not theirs.",
+  "**Gang size:** the players on the killmail (NPCs left out): solo 1, small gang 2–10, fleet 11 or more. Losses have no gang size.",
+  "[A hull asked for] Opened on a hull (from the {card:fleet} tab, a ship you typed, a {card:sysan} row), that hull comes first whatever its rank, tagged On this kill, Lost on this kill or Asked for. A kill zKillboard's list doesn't have yet is added (+ this one).",
+  "[The counts] Weapons seen, Flies with, Kills mostly, Active (in your own time zone) and Usual systems count those killmails, so a pilot with few kills shows few. Capsules, shuttles, rookie ships and Mobile Tractor Units aren't counted as hulls.",
+  "[Kills under a row] The chevron on a row opens their kills in that hull (in the switch's gang size), newest first. The fleet icon beside a kill opens it in the {card:fleet} tab: everyone on that kill in a ship, with their fits."
  ]
 };
 const CTX_MAX = 40;
@@ -3669,13 +3638,13 @@ const INFO_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
 const INFO_TITLE = {'fit#charges': 'How the Charges list works', 'side#sso': 'How logging in with EVE works', 'intel#game': 'How Use my game location works', 'side#online': 'How online status works', 'side#eve': 'How EVE standings work'};   // v2026.10.14.77: a panel about part of a card
 // v2026.10.30.2 (a user: "Bro you gotta find a way to condense this"): a paragraph "**Lead:** text" starts with its lead in bold; a
 // paragraph "[Heading] text" is folded under its heading (Intel's few lines on top, the rest a click away). Plain text otherwise.
+// Build queue 036: a paragraph may hold several leads ("**Edge:** … **Faster:** …"); every **…** pair is bold, escaped first. LESSON #156
+function infoBoldHtml(t){ return escapeHtml(t).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>'); }
 function infoParaHtml(s){
   const t = s.replace(/\{card:([\w.]+)\}/g, (_, k) => cardName(k));
-  let m = /^\[([^\]]+)\]\s+([\s\S]+)$/.exec(t);
-  if(m) return `<details class="info-more"><summary>${escapeHtml(m[1])}</summary><p>${escapeHtml(m[2])}</p></details>`;
-  m = /^\*\*([^*]+)\*\*\s*([\s\S]*)$/.exec(t);
-  if(m) return `<p><b>${escapeHtml(m[1])}</b> ${escapeHtml(m[2])}</p>`;
-  return `<p>${escapeHtml(t)}</p>`;
+  const m = /^\[([^\]]+)\]\s+([\s\S]+)$/.exec(t);
+  if(m) return `<details class="info-more"><summary>${escapeHtml(m[1])}</summary><p>${infoBoldHtml(m[2])}</p></details>`;
+  return `<p>${infoBoldHtml(t)}</p>`;
 }
 function infoExtraHtml(key){ return key === 'intel' ? IT_EX_INFO : ''; }   // v2026.11.07.7: Intel's "See an example"
 function infoBtnHtml(key){
@@ -28886,7 +28855,7 @@ const IT_EX_NOTES = [
   ['A report from your intel channel', 'read as your scouts type it: who, what they fly, where.'],
   ['How far, in jumps', '{near} lists everything within reach, nearest first.'],
   ['The map', 'reports and kills around you; hover one for its route to you.'],
-  ['Inside your alert range', 'a sound, a desktop notice, and an amber mark on your profile, from any tab.'],
+  ['Inside your alert range', 'a sound and a desktop notice if you turn them on, and an amber mark on your profile, from any tab.'],   // build queue 036: alerts start off (itDefaults)
   ['Kills nearby', 'from zKillboard as they happen; press one to see the attacking fleet and its fits.']
 ];
 const IT_EX_NOTE3_PHONE = 'switch {near} to Map to see reports and kills around you.';   // {near}: cardName('itnear')

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-11 — Info panels: accurate, short, no capitals</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Info panels: accuracy fixes, shorter panels, never a heading's capitals</h1>
+<p><span class="tag">Page</span> 2026-11-11 &middot; <code>v2026.11.11.3</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>Build queue 036, Project doc <code>roadmap/info-panels-plan.md</code> (from the accuracy pass <code>roadmap/info-panels-accuracy.md</code> and the wordiness review <code>roadmap/info-panels-review.md</code>). The owner: "can you just pick up where that task left off? wrap all of this up into one deliverable?"; the rewritten panels "good as written for now"; "please check for unnecessary capitalization as well".</li>
+<li>Several panels described the page as it was before later deliveries (Intel's system after Use my game location, Hostile after EVE standings, the dossier's old buttons, alerts that now start off). Most panels were long enough that people didn't read them.</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li>29 <code>CARD_INFO</code> entries replaced with the plan's text (every key but <code>fleet</code> and <code>vs</code>, whose cards are hidden): what the card shows and what to do, the rest folded or moved to METHODOLOGY.md. Settings are "Intel settings" / "System Analyzer settings", never "the gear".</li>
+<li>The Fit panel, at the build review (the owner: "your suggestions are fine"): its list of modules that start online adds the cynosural field and the Heavy Interdictor's Zero-Point Mass Entangler (the code's <code>MODULE_DEFAULT_ONLINE_EFFECTS</code>); the implants and boosters line is kept as a fold.</li>
+<li>Intel example note 4: "a sound and a desktop notice if you turn them on, …" (both start off). Nothing else in the example or the setup screen.</li>
+<li><code>.info-body</code>: <code>text-transform:none; letter-spacing:normal</code>. The profile's Standings panel was drawn in its heading's spaced capitals.</li>
+<li><code>infoParaHtml</code> bolds every <code>**…**</code> pair in a paragraph (<code>infoBoldHtml</code>, escaped first); before, only a lead at the start, and the new text has paragraphs with two or three.</li>
+<li><code>tools/check_subtext.py</code>: a length cap, 85 words open and 210 in all per panel, Intel 410, <code>fleet</code> and <code>vs</code> exempt while hidden.</li>
+<li>METHODOLOGY.md: new sections for the Charges list, Navigation &amp; Targeting, Capacitor, EWAR / Misc, Weaknesses, who's in the system, sides and logging in, and Intel; Module states gains the two online defaults and implants and boosters. Everything the panels dropped that isn't already in the code's own comments is there.</li>
+<li>The footer links METHODOLOGY.md on GitHub ("How the numbers are worked out"), beside the source link, asked first like every link out.</li>
+<li>CLAUDE.md delivery step 7: Info text (search <code>CARD_INFO</code> and <code>IT_EX_NOTES</code> for what the diff changes; the pull request says <code>Info text: checked; …</code>).</li>
+<li>Not changed: the header's Lookup budgets gauge and its panel, the cards' own subtext and layout, stored data.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>info_panels_check.py</code>: every panel on each profile tab and on the page, and every key drawn inside a profile heading, has normal case and spacing; every key draws one <code>&lt;b&gt;</code> per lead, no literal <code>**</code>, and CARD_INFO's text. Mutants: the CSS rule removed, the one-lead builder.</li>
+<li>Updated to the new text: <code>weakness_picks_check</code>, <code>fighter_tile_check</code> and <code>fighter_picks_check</code> (the fighter detail now read from METHODOLOGY.md), <code>intel_check</code> (the daily table check is in METHODOLOGY.md, not the panel), <code>intel_place_check</code> (2 open paragraphs, 3 leads, 8 folds), <code>unload_check</code>, <code>fight_strip_check</code>, <code>damage_chart_check</code>, <code>mine_damage_check</code> (folds and bold leads), <code>outside_links_check</code> (the footer link).</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #155: a delivery that changes behaviour changes the panels that describe it; search the info text for what the diff changes, in the same pull request. LESSON #156: a panel opened from inside a heading inherits the heading's capitals and spacing, and text written for a builder must use only the forms the builder draws: render it before trusting it.</p>
+</body>
+</html>

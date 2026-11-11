@@ -152,6 +152,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #150 A page that leaves for another site can come back from the back/forward cache exactly as it left: undo "in progress" on pageshow, and drop what was kept for the return on a normal load.
 - #151 Data read in several requests must change all at once: build the new copy aside and swap it in at the end, or whatever reads it meanwhile uses half of it.
 - #152 A press can't redraw the view that holds the control pressed (a list must still open, a file picker's input must survive): change that part in place, and make the view forget its last build.
+- #156 A panel opened from inside a heading inherits the heading's capitals and spacing; and text written for a builder must use only the forms the builder draws: render it before trusting it.
 
 **Checks and test machinery**
 
@@ -207,6 +208,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #13 "Delivered" wasn't delivered.
 - #90 A public repository keeps everything you save in it: check every saved file for personal data, pictures included.
 - #91 Before handing over a history rewrite, run its replacement list on the cleaned tree first.
+- #155 A delivery that changes behaviour changes the panels that describe it: search the info text for what the diff changes, in the same pull request.
 
 ---
 ## Checklist (in this order)
@@ -1061,6 +1063,35 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 156. A panel opened from inside a heading inherits the heading's capitals and spacing; and text written for a builder must use only the forms the builder draws
+
+- **What happened (build queue 036, v2026.11.11.3):** the profile's Standings ⓘ sits inside its section heading
+  (`.pp-pane .pp-sh`: `text-transform:uppercase; letter-spacing:.16em`), and `.info-body` set neither, so the whole "How
+  Standings works" panel was drawn in spaced capitals (the owner's screenshot). Every other panel looked right, because its
+  button sat in a heading without either. Then 036's new text put two or three bold leads in one paragraph
+  (`**Edge:** … **Faster:** …`), while `infoParaHtml` bolded only a lead at the very start: the others would have shown as
+  literal asterisks, and the plan's own counts ("3 bold leads") read as if they would render.
+- **How it was caught:** the owner, from the page; the second by the build review reading `infoParaHtml` against the new text.
+- **Do this instead:** a box that floats out of where its button sits resets what it would inherit and shouldn't
+  (`text-transform`, `letter-spacing`, and the like); test it from its worst host (`info_panels_check.py` draws every panel
+  inside a profile heading). Before writing text in a builder's mark-up, read the builder (or draw the text through it) and
+  check every form you used comes out as meant; the check counts one `<b>` per `**…**` pair. See also #101, #114.
+
+## 155. A delivery that changes behaviour changes the panels that describe it
+
+- **What happened (found by the accuracy pass of 2026-11-11, fixed in build queue 036):** deliveries changed what the page
+  does without the ⓘ panels that describe it. Intel's panel still said your system comes from the Local log after Use my game
+  location (build queue 028) let EVE decide too; Hostile said nothing of EVE standings after build queue 030; the dossier's
+  panel named buttons (Fleet ▸, ▶) that v2026.10.31.3 and .6 had replaced; Intel's alerts were said to sound and notify after
+  build queue 028 made both start off; the Fit panel's list of modules that start online missed the cynosural field and the
+  Zero-Point Mass Entangler, which the code had started online since v2026.10.14.8 and .30.
+- **How it was caught:** a line-by-line read of every panel against the code (Project doc roadmap/info-panels-accuracy.md),
+  and the 036 build review for the Fit panel.
+- **Do this instead:** every plan says "Info text it touches" (build queue README, "Info text stays true"), and every delivery
+  searches `CARD_INFO` and `IT_EX_NOTES` for the words, labels and numbers its diff changes and fixes the lines it makes wrong in
+  the same pull request (CLAUDE.md delivery step 7; the pull request says `Info text: checked; …`). A panel that names a
+  module list or a default repeats a table in the code: name the table in the plan so the next change finds it.
 
 ## 154. A merge that keeps whatever the newer source lacks also keeps what the newer source removed
 

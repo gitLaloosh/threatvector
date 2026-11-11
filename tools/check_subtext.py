@@ -9,7 +9,11 @@ limit is fine." The rule, enforced here as far as a static read can:
      characters (a template's ${...} parts count as one character each; live values are cut with an ellipsis);
   2. how a card works lives behind its info button: CARD_INFO keys are card keys (CARD_NAMES), or "<key>#<variant>"
      for a variant of a card's text (v2026.10.14.49), every infoBtnHtml(key) has a CARD_INFO entry, every CARD_INFO
-     entry is used, and every {card:key} in the text is a CARD_NAMES key;
+     entry is used, and every {card:key} in the text is a CARD_NAMES key; and (build queue 036, the owner: "Cap in
+     check_subtext (Recommended)") a panel is short: at most INFO_OPEN_MAX (85) words in its open part (the paragraphs
+     not folded under a "[Heading]") and INFO_ALL_MAX (210) in all, words counted after {card:key} is filled; Intel at
+     most 410 in all (the owner: "for now, let's allow it to go beyond the 350 cap"); `fleet` and `vs` exempt while
+     their cards are hidden (INFO_CAP_EXEMPT);
   4. (nothing moves) is checked in the page: tools/page_checks/no_shift_check.py.
   6. (since v2026.10.14.50) no text coloured --text-faint (below 4.5:1 contrast on the cards), except a disabled
      control marked "faint: disabled" on its line.
@@ -46,6 +50,23 @@ for k, paras in INFO.items():
     for p in paras:
         for ck in re.findall(r'\{card:([^}]*)\}', p):
             if ck not in NAMES: problems.append(f'CARD_INFO["{k}"]: {{card:{ck}}} is not a key in CARD_NAMES')
+# build queue 036: the length cap (Project doc roadmap/info-panels-plan.md, item 4)
+INFO_OPEN_MAX, INFO_ALL_MAX = 85, 210
+INFO_ALL_MAX_BY_KEY = {'intel': 410}   # the owner, 2026-11-11: "for now, let's allow it to go beyond the 350 cap"
+INFO_CAP_EXEMPT = {'fleet': 'card hidden; its text is rewritten when it comes back', 'vs': 'card hidden; its text is rewritten when it comes back'}
+def _name(ck):
+    v = NAMES.get(ck, ck)
+    return v if isinstance(v, str) else str(v.get('name', ck)) if isinstance(v, dict) else str(v)
+def _words(p): return len(re.sub(r'\{card:([^}]*)\}', lambda m: _name(m.group(1)), p).split())
+for k, paras in INFO.items():
+    if k in INFO_CAP_EXEMPT or not isinstance(paras, list): continue
+    op = sum(_words(p) for p in paras if isinstance(p, str) and not p.startswith('['))
+    al = sum(_words(p) for p in paras if isinstance(p, str))
+    cap = INFO_ALL_MAX_BY_KEY.get(k, INFO_ALL_MAX)
+    if op > INFO_OPEN_MAX: problems.append(f'CARD_INFO["{k}"]: {op} words before the folds (max {INFO_OPEN_MAX}); fold the rest under a [Heading] or move how it is built to METHODOLOGY.md')
+    if al > cap: problems.append(f'CARD_INFO["{k}"]: {al} words in all (max {cap}); move how it is built to METHODOLOGY.md')
+for k in INFO_CAP_EXEMPT:
+    if k not in INFO: problems.append(f'INFO_CAP_EXEMPT names "{k}", which has no CARD_INFO entry: take it out')
 used = set()
 for mm in re.finditer(r'infoBtnHtml\(\s*([\'"`])([^\'"`]+)\1\s*\)', src):
     k = mm.group(2); used.add(k)

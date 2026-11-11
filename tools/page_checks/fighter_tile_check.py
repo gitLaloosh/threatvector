@@ -178,7 +178,9 @@ with sync_playwright() as p:
         check(bool(t['fighter']) and not t['fighter']['rowsShown'] and not t['missile']['rowsShown'], f'{vw}px: a new paste starts collapsed')
         if vw == 1440:
             info = pg.evaluate("() => CARD_INFO.weak.join(' ')")
-            check(pg.locator(f'{R} details.info-pop[data-info="weak"]').count() >= 1 and 'Fighters: the T2 light fighter, heavy fighter and bomber' in info and 'open it for each class' in info, 'the Weaknesses info names the fighters')
+            check(pg.locator(f'{R} details.info-pop[data-info="weak"]').count() >= 1 and 'Open a tile for each launcher or fighter class' in info
+                  and 'the T2 light fighter, heavy fighter and bomber' in open(os.path.join(HERE, '..', '..', 'METHODOLOGY.md'), encoding='utf-8').read(),
+                  'the Weaknesses info names the fighters; the detail is in METHODOLOGY.md (build queue 036)')
         check(not errs, f'{vw}px: no page errors {errs[:2]}')
         pg.close()
 print(f'FAILURES: {fails}')

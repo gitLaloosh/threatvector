@@ -200,7 +200,7 @@ with sync_playwright() as p:
     check(s['cb'] is False and 'Not asked for' in s['sec'] and s['typedHidden'] is False,
           f"logged out: the switch, \"Not asked for\" (picked before you go), the typed lists shown ({s['sec'][:120]!r})")
     evetab(pg); pg.click('#eveTab [data-feat="stand"] summary.info-btn'); pg.wait_for_timeout(200)
-    ip = pg.evaluate("() => { const d = [...document.querySelectorAll('[role=dialog]')].find(x => x.offsetParent && /How EVE standings work/.test(x.textContent)); return d ? [!!d.querySelector('button.x-close'), /alliance's standing decides/.test(d.textContent)] : null; }")
+    ip = pg.evaluate("() => { const d = [...document.querySelectorAll('[role=dialog]')].find(x => x.offsetParent && /How EVE standings work/.test(x.textContent)); return d ? [!!d.querySelector('button.x-close'), /alliance(?:'s standing)? decides/.test(d.textContent)] : null; }")
     check(ip == [True, True], f'its info panel: "How EVE standings work", the alliance deciding, the shared close button ({ip})')
     pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
     login(pg, scp=()); prof(pg); s = sec(pg)

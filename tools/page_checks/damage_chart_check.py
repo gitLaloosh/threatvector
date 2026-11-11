@@ -216,12 +216,13 @@ def desktop(b):
     st2 = pg.evaluate(f"() => document.querySelector('{C}')._dmg.f.dmg")
     check(st2 == st and pg.is_visible(f'{C} .dmg-reset') and pg.is_disabled(f'{C} .dmg-reset') and head(pg) == h0, f'Reset: the defaults back, the icon stays (disabled) ({head(pg)})')
     # v2026.10.14.48: how the card works is behind its info button, in a panel over the page
-    info0 = pg.evaluate("CARD_INFO.dmg[0]")
+    plain = "(i) => CARD_INFO.dmg[i].replace(/\\*\\*/g, '').replace(/^\\[([^\\]]+)\\]\\s+/, '')"   # build queue 036: bold leads and folds
+    info0 = pg.evaluate(plain, 0)
     h_before = pg.locator(C).bounding_box()['height']
     check(info0 not in pg.inner_text(C), 'the method text is not on the card any more')
     pg.click(f'{C} summary.info-btn'); pg.wait_for_timeout(200)
     panel = pg.locator(f'{C} .info-body')
-    check(panel.is_visible() and info0 in panel.inner_text() and pg.evaluate("CARD_INFO.dmg[3]") in panel.inner_text(),
+    check(panel.is_visible() and info0 in panel.inner_text() and pg.evaluate(plain, 3) in panel.text_content(),
           'info button opens the panel with the card\'s CARD_INFO text')
     pb = panel.bounding_box()
     check(pb['x'] >= 0 and pb['x'] + pb['width'] <= pg.viewport_size['width'], f"the open panel is inside the window ({pb['x']:.0f} to {pb['x'] + pb['width']:.0f} of {pg.viewport_size['width']})")

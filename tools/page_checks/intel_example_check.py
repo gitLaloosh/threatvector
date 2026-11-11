@@ -58,7 +58,7 @@ INFO = """() => { const f = document.querySelector('#intelPanel .itx'); if(!f) r
     logos: [...f.querySelectorAll('.it-seg.grp')].map(g => [!!g.querySelector('.it-lg img[src^="data:image/svg+xml"]'), (g.querySelector('.tk') || {}).textContent || '']),
     emptyLogo: f.querySelectorAll('.it-lg:not(:has(img))').length, tkFor: f.querySelectorAll('[data-tk-for]').length, sw: document.documentElement.scrollWidth}; }"""
 NOTES = ['1A report from your intel channel: read as your scouts type it: who, what they fly, where.', '2How far, in jumps: Near You lists everything within reach, nearest first.',
-         '3The map: reports and kills around you; hover one for its route to you.', '4Inside your alert range: a sound, a desktop notice, and an amber mark on your profile, from any tab.',
+         '3The map: reports and kills around you; hover one for its route to you.', '4Inside your alert range: a sound and a desktop notice if you turn them on, and an amber mark on your profile, from any tab.',
          '5Kills nearby: from zKillboard as they happen; press one to see the attacking fleet and its fits.']
 
 with sync_playwright() as p:

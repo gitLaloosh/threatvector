@@ -163,7 +163,7 @@ with sync_playwright() as p:
     check(info and info['title'] == 'How the Charges list works' and not info['foot'], f'1440: the how-to text is behind the list\'s (i), no paragraph under the list ({info})')
     if info:
         pg.click(f'{R} .chg-pop details.info-pop summary'); pg.wait_for_timeout(200)
-        txt = pg.inner_text(f'{R} .chg-pop details.info-pop .info-body')
+        txt = pg.text_content(f'{R} .chg-pop details.info-pop .info-body')   # build queue 036: No charge is in the Unloading fold
         pg.keyboard.press('Escape'); pg.wait_for_timeout(250)
         st = pg.evaluate(f"() => [!!document.querySelector('{R} .chg-pop details.info-pop[open]'), !!document.querySelector('{R} .chg-pop')]")
         check('No charge' in txt and st == [False, True], f'1440: the (i) explains No charge; Escape closes the panel and leaves the list open ({st})')
