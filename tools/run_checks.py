@@ -38,7 +38,7 @@ AREAS = {
     'fleet_kill_check': ['pilot', 'system'], 'fleet_view_check': ['system'], 'header_check': ['layout', 'intel'],
     'intel_assess_check': ['intel', 'system'], 'intel_check': ['intel'], 'intel_kills_check': ['intel'], 'feed_down_check': ['intel', 'layout'], 'intel_layout_check': ['intel'],
     'intel_place_check': ['intel'], 'intel_words_check': ['intel'], 'intel_gates_check': ['intel'], 'intel_rows_check': ['intel'], 'intel_guard_check': ['intel'], 'intel_fleet_check': ['intel', 'pilot'], 'outside_links_check': ['pilot', 'intel', 'layout'], 'fleet_vs_check': ['pilot', 'system', 'myship'], 'last_kill_check': ['pilot'], 'layout_check': ['layout'], 'matchup_strip_check': ['myship', 'calc'],
-    'mine_damage_check': ['myship', 'calc'], 'missile_picks_check': ['myship', 'calc'], 'missing_charges_check': ['fit', 'calc'],
+    'mine_damage_check': ['myship', 'calc'], 'missile_picks_check': ['myship', 'calc'], 'missing_charges_check': ['fit', 'calc'], 'eft_mutation_check': ['fit', 'calc'],   # build queue 035
     'module_charges_check': ['fit', 'calc'], 'my_ship_check': ['myship'], 'my_ships_check': ['myship'], 'no_shift_check': ['layout'],
     'pilot_rows_check': ['system'], 'request_gates_check': ['intel', 'pilot'], 'ring_track_check': ['fit'], 'sa_size_check': ['system'],
     'scan_contacts_check': ['system'], 'shared_kill_check': ['pilot'], 'ship_class_check': ['fit', 'system'],
@@ -113,6 +113,18 @@ def sh(cmd, timeout):
     return out, time.time() - t0
 
 def last(out): return (out.splitlines() or [''])[-1].strip()
+
+def chain_notices(out):
+    """pyfa_update_check's ATTENTION notices: the indented lines right after its 'ATTENTION:' heading, up to the first step line
+    ('OK' / 'FAIL') or a blank line. Build queue 035: the old slice took the first 4 indented lines, so OK steps printed after
+    two notices were counted as failed steps ('4 steps failed' for 2 notices, 034's run)."""
+    if 'ATTENTION' not in out: return []
+    got = []
+    for l in out.split('ATTENTION', 1)[1].splitlines()[1:]:
+        s = l.strip()
+        if not l.startswith('  ') or not s or s.startswith(('OK ', 'FAIL')): break
+        got.append(l)
+    return got
 
 def check_tags():
     files = {f[:-3] for f in os.listdir(PC) if f.endswith('_check.py')}
@@ -202,10 +214,10 @@ def main(argv):
     if tier in ('calc', 'all'):
         out, dt = sh(f'python3 -I tools/pyfa_update_check.py --run', 3600)
         bad_steps = [l for l in out.splitlines() if l.strip().startswith('FAIL')]
-        if 'ATTENTION' in out: bad_steps = [l for l in out.split('ATTENTION', 1)[1].splitlines()[1:] if l.startswith('  ')][:4] + bad_steps   # what moved
-        good = 'UP TO DATE' in out and not bad_steps and ' OK ' in out
-        lines.append(f'{"OK  " if good else "FAIL"} the pyfa chain ({dt / 60:.0f} min): {len(bad_steps)} steps failed')
-        lines += ['     ' + l.strip()[:200] for l in bad_steps]
+        notices = chain_notices(out)   # what moved (build queue 035: was the first 4 indented lines, OK steps included)
+        good = 'UP TO DATE' in out and not bad_steps and not notices and ' OK ' in out
+        lines.append(f'{"OK  " if good else "FAIL"} the pyfa chain ({dt / 60:.0f} min): {len(bad_steps)} steps failed, {len(notices)} notices')
+        lines += ['     notice: ' + l.strip()[:190] for l in notices] + ['     ' + l.strip()[:200] for l in bad_steps]
         if not good: failed.append('pyfa chain')
     want = sorted(AREAS) if tier == 'all' else sorted(k for k, v in AREAS.items() if set(v) & (set(areas) | ({'calc'} if tier == 'calc' else set())))
     env = '' if os.environ.get('PYFA_SRC') else '(PYFA_SRC not set: page checks that need pyfa will fail) '

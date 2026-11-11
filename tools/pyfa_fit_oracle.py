@@ -48,6 +48,14 @@ ATTR_BY_NAME = {v['name']: v for v in attrs.values()}
 ATTR_BY_ID = {int(k): v for k, v in attrs.items()}
 SKILL_LEVEL = 5
 STATES = {'offline': 0, 'online': 1, 'active': 2, 'overheated': 3}
+# build queue 035: pyfa v2.70.0's Synchronizer rigs count modules with `mod.state >= FittingModuleState.ONLINE` (Effect13012 ...),
+# and pyfa_effects stubs FittingModuleState. The handlers get pyfa's own enum (eos/const.py) renumbered to this oracle's
+# states, so the comparison means what it means in pyfa; the order is asserted equal to pyfa's.
+from enum import IntEnum as _IntEnum
+_PS = pyfa_effects.module_states()
+OracleModuleState = _IntEnum('FittingModuleState', [(s.name, STATES[s.name.lower()]) for s in _PS])
+assert [s.name for s in sorted(_PS)] == [s.name for s in sorted(OracleModuleState)], 'pyfa FittingModuleState order changed'
+next(iter(EFFECTS.values())).handler.__globals__['FittingModuleState'] = OracleModuleState
 
 def _skill_types():
     return [int(t) for t, v in types.items() if v.get('published') and groups[str(v['groupID'])]['categoryID'] == 16]

@@ -75,6 +75,7 @@ if '--run' in sys.argv:
         ('implant / booster tables', env + 'python3 -I tools/gen_implant_table.py index.html', lambda o: 'up to date' in o),
         ('projected tables', env + 'python3 -I tools/gen_projected_table.py index.html', lambda o: 'up to date' in o),   # v2026.10.14.35
         ('module-state tables', env + 'python3 -I tools/gen_module_state_tables.py index.html', lambda o: o.count('matches pyfa + SDE') >= 3),
+        ('Synchronizer table', env + 'python3 -I tools/gen_sync_table.py index.html', lambda o: 'up to date' in o),   # build queue 035 (pyfa v2.70.0)
         ('effect tables audit', 'node tools/dump_effect_tables.mjs index.html > /tmp/_t.json && ' + env + 'python3 -I tools/audit_effect_tables.py /tmp/_t.json',
          lambda o: not re.search(r'MISSING|EXTRA|DIFF', o)),
         ('pyfa capacitor simulation', env + 'node regression_suite/compare_cap_sim.mjs index.html', lambda o: ' 0 mismatches' in o),

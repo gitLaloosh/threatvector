@@ -200,6 +200,52 @@ def filter_hits(lam, pool, as_charge=False, launcher=None):
         except Exception: pass
     return hits, sorted(set(REC))
 
+def module_states():
+    """pyfa's FittingModuleState, loaded from its own eos/const.py (build queue 035), never retyped."""
+    ns = {}
+    exec(compile(open(os.path.join(PYFA_SRC, 'eos', 'const.py')).read(), 'const.py', 'exec'), ns)
+    return ns['FittingModuleState']
+
+class _CountProbe:
+    """A fitted module seen by a handler that loops over fit.modules (build queue 035: pyfa v2.70.0's Synchronizer rigs
+    count matching faction modules). Its attribute reads are recorded and return the symbol 'm:<name>'."""
+    def __init__(s, state, seen): s.state = state; s.isEmpty = False; s.seen = seen
+    def getModifiedItemAttr(s, n, *a, **k): s.seen.append(n); return Sym('m:' + n)
+    def __getattr__(s, k): return Any()
+class _ModColl(Coll):
+    def __init__(s, probes): Coll.__init__(s, 'modules'); s.probes = probes
+    def __iter__(s): return iter(s.probes)
+
+def counting_effects(pool=None):
+    """Effects whose handler reads an attribute of EVERY fitted module (a sum over fit.modules), as pyfa v2.70.0's
+    Synchronizer rigs do (Effect13012 ...). Each is run with one probe module in each of pyfa's states:
+      {eid: {'counter': attribute read off the modules, 'states': [states in which the probe counted],
+             'calls': [(coll, method, args, kwargs) with the probe ONLINE]}}
+    The generic generators can't express a value counted over the fit (gen_resist_table stopped on effect 13012:
+    'unexpected value expression 0'); they skip these, and gen_sync_table.py turns them into SYNC_RIG_EFFECTS."""
+    global EVALUATOR
+    S = module_states(); out = {}
+    pool = pool if pool is not None else sorted(EFFECTS)
+    for eid in pool:
+        h = EFFECTS[eid].handler; g = h.__globals__; old = g.get('FittingModuleState')
+        g['FittingModuleState'] = S
+        try:
+            per = {}
+            for st in S:
+                seen = []; CALLS.clear(); EVALUATOR = None
+                f = Fit(); f.modules = _ModColl([_CountProbe(st, seen)])
+                try: h(f, Src('module'), ('module',), None)
+                except Exception: per = None; break
+                per[int(st)] = (sorted(set(seen)), list(CALLS))
+        finally:
+            g['FittingModuleState'] = old
+        if not per or not any(seen for seen, _ in per.values()): continue
+        names = sorted({n for seen, _ in per.values() for n in seen})
+        counted = sorted(st for st, (seen, calls) in per.items()
+                         if any(any('m:' in repr(x) for x in c[2]) for c in calls))
+        out[eid] = {'counter': names, 'states': counted, 'calls': per[int(S.ONLINE)][1]}
+    return out
+
 def carriers():
     """effectId -> [published typeIds carrying it]."""
     out = {}

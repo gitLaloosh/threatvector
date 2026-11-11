@@ -88,7 +88,20 @@ with sync_playwright() as p:
     check(labels == ['Your light fighters', 'Your heavy fighters'] and t1 == pg.evaluate(EXPECT, [R, 'yours']), f'threat view: a light and a heavy tile, the page\'s own wpRank ({t1})')
     import re
     cnt = [int(re.search(r'×(\d+)', x[1]).group(1)) for x in t1] if len(t1) == 2 else []
-    check(cnt == [3, 2], f'light squadrons fill the tubes the heavies leave: {cnt}')
+    # build queue 035 (pyfa v2.70.0 data): a class's tile flies as many squadrons as the class limit, the tubes the OTHER class's
+    # squadrons in space leave, and the type's bay allow (the page's rule, v2026.10.14.72). Which squadrons are in space is the
+    # default launch, hardest first across classes, so the numbers follow the game data: v2.69.3 launched Mantis x2 + Firbolg x3
+    # (tiles Firbolg x3, Ametat x2, the [3, 2] this pinned until 035); v2.70.0's Fighter Specialization lifts the Ametat past the
+    # Firbolg (Mantis x2, Ametat x2, Firbolg x1: tiles Firbolg x1, Ametat x2). Worked out here from the page's own launch.
+    fs = pg.evaluate("""async (t) => { const f = await parseEftFit(t); const e = await estimateHpAndDps(f.shipTypeId, f.tally, f.cargoItemIds,
+      f.highSlotByFlag, 'sharpshooter', f.midSlotByFlag, null, null, {fitSource: 'eft'}); return e.fighterStates; }""", NYX)
+    names = [re.match(r'(.+?) ×', x[1]).group(1) for x in t1] if len(t1) == 2 else []
+    def room(cls, nm):
+        other = sum(x['active'] for x in fs['items'] if x['cls'] != cls)
+        it = next((x for x in fs['items'] if x['name'] == nm), None)
+        return min(fs['classLimit'][cls], fs['tubesTotal'] - other, it['squadronsAvailable'] if it else 0)
+    want = [room('light', names[0]), room('heavy', names[1])] if len(names) == 2 else None
+    check(cnt and cnt == want, f'each class fills the tubes the other class leaves: {list(zip(names, cnt))}, want {want} (in space: {[(x["name"], x["active"]) for x in fs["items"] if x["active"]]})')
     ti = titles(pg, TV)
     check(len(ti) == 2 and all('Then ' in x for x in ti) and 'as set in the Fighter bay' in ti[0], f'hovers name the next best: {[x[:90] for x in ti]}')
     check("Fighters aren't ranked yet" not in pg.inner_text(f'{TV} .weak-picks'), 'no "Fighters aren\'t ranked yet"')

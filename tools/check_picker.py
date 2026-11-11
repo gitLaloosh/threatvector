@@ -99,6 +99,9 @@ FILES = [
     ('index.html', None),
     ('tools/page_checks/*', 'pagecheck'),
     ('regression_suite/*', [CHAIN, 'calc']),
+    # build queue 035 (found in 034): the patch-day report and its check are tools only (the page never reads them); the check is a
+    # fast lint since 034, so a change to either runs the lints, not every page check
+    ('tools/sde_change_report.py', []), ('tools/independent_checks/check_sde_change_report.py', []),
     ('tools/independent_checks/*', [CHAIN, 'calc']),
     ('tools/pyfa_*', [CHAIN, 'calc']), ('tools/cap_sim_oracle.py', [CHAIN, 'calc']), ('tools/audit_*', [CHAIN, 'calc']),
     ('tools/gen_intel_tables.py', ['intel']), ('tools/jump_table_update.py', ['intel']),
@@ -326,6 +329,15 @@ def self_test(root):
         else: new = L[:j] + [L[j] + ' /*x*/ 1'] + L[j + 1:] if what not in ('a comment', 'the version tag') else L[:j] + [L[j] + ' x'] + L[j + 1:]
         got, _ = map_html(html, '\n'.join(new))
         if got != want: problems.append(f'{what} (line {j + 1}): {sorted(got)}, expected {sorted(want)}')
+    file_cases = [   # (a changed file, the rule it must get) -- build queue 035
+        ('tools/sde_change_report.py', []), ('tools/independent_checks/check_sde_change_report.py', []),
+        ('tools/independent_checks/check_resist.py', [CHAIN, 'calc']), ('tools/gen_resist_table.py', [CHAIN, 'calc']),
+        ('tools/jump_table_update.py', ['intel']), ('tools/something_new.py', [ALL]),
+    ]
+    for f, want in file_cases:
+        got = next((r for g, r in FILES if fnmatch.fnmatch(f, g)), [ALL])
+        if got != want: problems.append(f'file {f}: {got}, expected {want}')
+    cases += file_cases
     for p in problems: print('PROBLEM', p)
     print(f'CHECK PICKER: {len(REGIONS)} regions, {len(cases)} made-up edits; {len(problems)} problems')
     return 1 if problems else 0

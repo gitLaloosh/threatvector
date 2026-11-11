@@ -1,12 +1,12 @@
 {
   "note": "PYFA CORE lock -- see PYFA_CORE.md. sha256 = SHA-256 of the lines between a section's BEGIN/END markers (LF line endings). Update ONLY with `node tools/check_pyfa_core.mjs --update` after running the section's verify commands; say so in the history doc.",
   "pyfa": {
-    "version": "v2.69.3",
-    "commit": "d2722a4c8b2ec9cdfded5024cb97df362ac513da",
-    "clientBuild": 3624425,
-    "dataDumped": "2026-10-17",
-    "verifiedOn": "2026-10-21",
-    "ownerPyfa": "v2.69.3 / EVE data 3624425 (the owner updated 2026-10-22; v2.69.3 ships data 3624425)"
+    "version": "v2.70.0",
+    "commit": "e5483f8666ed2eda99c98985c59a29b07e3bb844",
+    "clientBuild": 3682781,
+    "dataDumped": "2026-11-10",
+    "verifiedOn": "2026-11-11",
+    "ownerPyfa": "v2.70.0 / EVE data 3682781 (the owner updated 2026-11-11, build queue 035's hand test; v2.70.0 ships data 3682781)"
   },
   "sections": {
     "resist-calc": {
@@ -18,7 +18,7 @@
         "node regression_suite/run_regression.mjs index.html",
         "resist oracle comparison over every golden fit (tools/independent_checks/compare_resists.py: 0 differences)"
       ],
-      "sha256": "d4896abaebad9f3f119211aec2e6b192dd426f2f73060f419e5be2b1adb5c6c7"
+      "sha256": "f15406073c9c6ad1d96e87a190395c35089f0b7e6522dbac8c2dd16ee9767c3a"
     },
     "modes": {
       "kind": "generated",
@@ -38,7 +38,7 @@
         "python3 -I tools/independent_checks/compare_speed.py index.html (0 mismatches: every golden fit vs pyfa_fit_oracle)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "4e87025194c078a190d6dfa69d370d498ba5f7025eff71487a8d83222a3a64ac"
+      "sha256": "cd5eaa26df4c4b9211f0d8fc17c0586fe3483b1336aacaeebb5f5c167e73a6fb"
     },
     "ewar-calc": {
       "kind": "generated + port",
@@ -48,7 +48,7 @@
         "python3 -I tools/independent_checks/compare_ewar.py index.html (0 mismatches: every golden fit's EWAR modules vs pyfa_fit_oracle)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "a6da5641d142e4975d62126088d817426a1b745b9dbb4993de3f9a517c06448a"
+      "sha256": "c72fe75633aea5e58f7b2e3161ff5a669140ebff45cbb57fa778a99b18530cc6"
     },
     "implant-calc": {
       "kind": "generated + port",
@@ -59,7 +59,7 @@
         "python3 -I tools/independent_checks/compare_speed.py index.html ; compare_resists.py ; compare_ewar.py (the same fits, 0 mismatches)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "859c383d14b7d0fca16d0217eadfed4d1acc274f5a1a0c5f7fd2409e8c835d82"
+      "sha256": "2c8bf91be4352da5d204eae10d2cc2f94acf8e0ad43fc42b8489a4c927f4b08a"
     },
     "sig-effect-tables": {
       "kind": "audited",
@@ -68,7 +68,7 @@
         "node tools/dump_effect_tables.mjs index.html > /tmp/t.json && python3 -I tools/audit_effect_tables.py /tmp/t.json (must print no MISSING/EXTRA/DIFF)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "6412569d6b1291de8a5da5db98cbfc8393fbfd4773e28647270116cd8f1c8c9b"
+      "sha256": "fe0c07d84111e097df0cb9437f3a2b5d54a5c479f73b6638652e7176c8127b05"
     },
     "weapon-range-table": {
       "kind": "generated",
@@ -77,7 +77,7 @@
         "python3 -I tools/gen_weapon_range_table.py index.html (must say up to date)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "789eb8f36df807d41b703cf43e81102232776b611ccbd7dcaa554cc8af480702"
+      "sha256": "43165e15615d86ef6fda95b5cf7a09314e798f1bd330ee3a33511221fb995d0d"
     },
     "missile-range": {
       "kind": "port",
@@ -106,7 +106,7 @@
         "python3 -I tools/independent_checks/check_projected.py index.html (0 mismatches: pyfa's calc/projected.py and cache/projected.py run unmodified on oracle attributes vs the tool, every attacker x every golden fit over a 156-point grid)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "0ad46de6e7b82f39598c99a231db5ffccab196d2a1fcf7e7da8d610e1f6ad716"
+      "sha256": "5c7b15a908c918456ab583cdf67cdc89ac678a3fae0b0534a7656f2df25a01c0"
     },
     "cap-rep-effect-tables": {
       "kind": "audited",
@@ -115,7 +115,7 @@
         "node tools/dump_effect_tables.mjs index.html > /tmp/t.json && python3 -I tools/audit_effect_tables.py /tmp/t.json (must print no MISSING/EXTRA/DIFF)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "c0ed0eabff94e45dfd3d8fb706a6af994b4d23dda37e83044c9455d334c8e3cd"
+      "sha256": "75df9ec8fe6fffb853406e41755de70ec64627ea8aa2c26e779c86fbf5c700fb"
     },
     "cap-sim": {
       "kind": "port",
@@ -133,7 +133,7 @@
         "node tools/dump_effect_tables.mjs index.html > /tmp/t.json && python3 -I tools/audit_effect_tables.py /tmp/t.json (must print no MISSING/EXTRA/DIFF)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "8d19e9106c4d55bff7870cf9697a7bed9eb7781d0ff739b7cd7b51e6d4f4beff"
+      "sha256": "03c0dcef3974e70e7ede67f7265a17ebc0e026aa3421ca1dc70f7251d087ebf4"
     },
     "cycle-time-tables": {
       "kind": "audited",
@@ -169,7 +169,7 @@
         "node tools/dump_effect_tables.mjs index.html > /tmp/t.json && python3 -I tools/audit_effect_tables.py /tmp/t.json (must print no MISSING/EXTRA/DIFF)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "b24441c487160431eedfa358a3decb9b07e18e423cca5ca46aa08c2b4a350084"
+      "sha256": "a89feceec268acd746b8f8705d04db1adb1691e484d5c273e235bc816e4f39be"
     },
     "module-state-tables": {
       "kind": "generated",
@@ -178,7 +178,7 @@
         "python3 -I tools/gen_module_state_tables.py index.html (must say matches)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "f3f91be747ff54f7b7e11a70fccad03be75e950e94cdde5e311ac641bd8204f9"
+      "sha256": "d26781b1b4363833d1138075e812c566ccace830dc3f2b2daff14c9de652783e"
     },
     "cycle-time": {
       "kind": "port",
@@ -198,7 +198,16 @@
         "python3 -I tools/independent_checks/check_firepower.py",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "9307b98820e4a7a5ff8c6fecb9d627d43bda60954ca332b7010814aa41de7d1c"
+      "sha256": "e94865b7a710ab05ffecb5e1ab9f5667134e22572007af61d707bd78b32b846c"
+    },
+    "synchronizer-rigs": {
+      "kind": "generated + port",
+      "mirrors": "pyfa v2.70.0 eos/effects.py Synchronizer rig counting effects (Effect12969, 12982, 12984, 12985, 13000, 13006, 13008, 13012, 13016: runTime early, sum of rigSet...Module over fit.modules with state >= ONLINE, the rig's own attributes increaseItemAttr +/-count, position pre); table SYNC_RIG_EFFECTS by gen_sync_table.py (handlers run with a probe module in every FittingModuleState), applied by pyfaSyncRigTypes to a copy of the rig's type for that fit only (build queue 035)",
+      "verify": [
+        "python3 -I tools/gen_sync_table.py index.html (must say up to date)",
+        "node regression_suite/run_regression.mjs index.html (the Synchronizer goldens, 0 / 1 / several matching modules and one offline, from pyfa_fit_oracle.py)"
+      ],
+      "sha256": "ff52532f1799630a2bb53c9bc7c15d14bbebc978dee43008ff83ba500f4b74f5"
     }
   }
 }
