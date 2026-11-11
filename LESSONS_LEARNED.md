@@ -199,6 +199,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #140 Wait as long as the service itself waits, and let one slow item fail alone: a short timeout read as an outage stops everything. See also #106.
 - #148 Stopping a reader must also stop what it already queued at the gate: check whether the reader still runs after the wait, not only before. See also #106.
 - #149 A check runner that compares with the wrong starting point passes by testing nothing: compare with where the branch left main, and say what was compared. See also #115.
+- #153 Read only the parts of an outside file you use, and expect any part to change form: a table you never needed stopped the whole report. See also #89, #147.
 
 **Delivery, privacy and the repository**
 
@@ -1059,6 +1060,20 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 153. Read only the parts of an outside file you use, and expect any part to change form: a table you never needed stopped the whole report
+
+- **What happened (build queue 034, page unchanged after v2026.11.11.1):** the "Game data" job (`tools/sde_change_report.py`) failed
+  on CCP's build 3682781 and stayed failed on every scheduled run. `chain()` walks CCP's changes files and turned every id of every
+  table into an int, though the report reads only five tables (types, typeDogma, groups, dogmaEffects, dogmaAttributes). That build
+  added tables whose ids are UUIDs (characterTitles, militaryCampaigns, militaryCampaignObjectives); the first one raised ValueError,
+  and the patch-day report, the starting list for the pyfa update, wasn't made when it was needed most.
+- **How it was caught:** the scheduled workflow's red job, read in its log (the traceback named `chain()` and the id); CCP's changes
+  file for that build showed which tables had text ids.
+- **Do this instead:** filter an outside file to the parts you use before converting anything (`USED` in `chain()`), so a change in
+  a part you never read can't reach your code. In the parts you do read, a value in an unexpected form is skipped and said out loud
+  (in the log and in what the owner reads, `skipped_note()`), not a crash and not a silent drop. Test it with a stand-in file that has
+  a part in another form, and a mutant that converts everything (`check_sde_change_report.py` case 8, in the fast lints).
 
 ## 152. A press can't redraw the view that holds the control pressed (a list must still open, a file picker's input must survive): change that part in place, and make the view forget its last build
 
