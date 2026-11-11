@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-cDwBehnihSuE0VRkRoxH9aj3zgsZxcXDIA4a0UEObHU='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-O8knpREg26UvTFqASlt3Zr+3/H9g/tW/mc412pvpapo='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3455,9 +3455,9 @@ const CARD_INFO = {
  ],
  "sysan": [
   "Local lists everyone in the system, in space or docked; your D-Scan only the ships near you. So who is here comes from Local, and the scan only says what is near you now.",
-  "Names are sorted by your {card:side}; one ESI doesn't know (a typo, a renamed pilot) is listed as not found. Up to your “pilot rows up to” number (System Analyzer settings) is a small gang, one row per pilot; more is shown by group.",
-  "[Kills and losses] With a system known (an Intel Assess's, your location, or one typed in System Analyzer settings), the line over the results counts its kills and losses in the hours chosen (24 unless you change it). ▲ kills a row was on, ▼ its losses, each with the whole kill's ISK, so totals across rows don't add up; NPCs count for nobody. The numbers link to zKillboard, whose pages show all time.",
-  "[Ships on Scan] With a D-Scan pasted, {card:onscan} shows the hulls on scan by role."
+  "Names are sorted by your {card:side}; one ESI doesn't know (a typo, a renamed pilot) is listed as not found. Up to your “pilot rows up to” number ({card:sysan} settings) is a small gang, one row per pilot; more is shown by group.",
+  "[Kills and losses] With a system known (an Intel Assess's, your location, or one typed in {card:sysan} settings), the line over the results counts its kills and losses in the hours chosen (24 unless you change it). ▲ kills a row was on, ▼ its losses, each with the whole kill's ISK, so totals across rows don't add up; NPCs count for nobody. The numbers link to zKillboard, whose pages show all time.",
+  "[{card:onscan}] With a D-Scan pasted: the hulls on scan by role."
  ],
  "side#sso": [
   "Logging in with EVE tells Threat Vector which character you are and fills Your pilot; on its own it asks EVE for no permissions.",
