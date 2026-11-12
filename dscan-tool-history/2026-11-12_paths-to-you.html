@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-12 — The Intel map's Paths to you filter</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The Intel map's Paths to you filter</h1>
+<p><span class="tag">Page</span><span class="tag">Intel</span> 2026-11-12 &middot; <code>v2026.11.12.5</code> &middot; build queue 043 &middot; plan: <code>roadmap/paths-to-you-plan.md</code> &middot; mockup: <code>Claude outputs/paths_to_you_mockup.html</code> (scripts in <code>roadmap/paths-to-you-mockup/</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-12: "any chance you could mock up a mode for the galaxy map that just shows a tree view of paths to you from reported hostiles within the "near you" alert range? would basically just show possible paths to you in an easy to read structure in that short range."</li>
+<li>From five mockup rounds: top down, "your system at the top (with pan and zoom rather than scrolling)"; borderless, "system name centered, relevant data below it"; "lose the security status number (color already gives me what i need) and add badges for gate camps, ess and kills"; the alert range; "every shortest route"; a filter button before Wormholes, which stays last beside its list button.</li>
+<li>At the build review: the info panel's room made by moving two notes to METHODOLOGY.md ("your suggestion is fine"); the top line the count only, the range in the legend line and the map's own drag help kept under the box ("sounds good"); the count a 3 px tag in the kill tags' colours, by the tag rule ("good call").</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The seventh filter, Paths to you</b> (<code>IT_MAP_FILTERS</code>), just before Wormholes; its icon is the tree, you filled at the top. Not remembered, like the others.</li>
+<li><b>The tree</b> (<code>itPtBuild</code>): the sources are the systems in <code>itm.rep</code> with a hostile or neutral report, or kills (never a clear), within <code>it.set.range</code>. For each, a breadth-first search no deeper than its distance finds every shortest route: x is on one when its distance to you plus to the source is the source's distance; a gate x→y when both are and y is one jump nearer. A system on several routes is drawn once.</li>
+<li><b>Drawn</b> as an HTML overlay in the map's box (<code>itPt</code>): one row per jump, the rows ordered so lines cross little, each system a button over an SVG of curved gates with arrows toward you (thicker where more pilots come through). The galaxy's canvases are hidden under it and not drawn while it's on; the map's zoom buttons, "you" arrow, route button and tip are hidden; the drag help under the box stays.</li>
+<li><b>Under each name:</b> the count (an <code>.it-kl kh/kn</code> tag), the ships or "hostiles" / "neutrals", the age; YOU under your system; nothing under a system only on the way. Badges: Camp (<code>itGateTagHtml(st, now, true)</code>: the word only, the gate in its hover; no grey gate tag), ESS (<code>itEssTagHtml</code>, now shared with Near You), kills (<code>itKillBadges(ks, 0, true)</code>: "N kills", what and the ISK in its hover). One copy of each rule.</li>
+<li><b>Hover, focus or press</b> lights a system's routes toward you and back to what feeds it; press again, press your system or Esc to clear. A drag that moved is never a press. Hovering a Near You or Feed row lights its system's routes too, as the map's heading says ("hover a system or a row for its route to you").</li>
+<li><b>Pan and zoom</b> like the map: a mouse drags, the wheel zooms about the pointer; two fingers on touch, one scrolls the page. + / − / Fit at the top right (44 px on a phone). Fitted when shown, when you move, when the alert range changes or the box resizes; on a phone no smaller than 0.75, centred on you.</li>
+<li><b>Top line:</b> "N systems with hostiles" (or "No hostiles within R jumps"). <b>Legend line:</b> "Paths to you ■ hostile ■ neutral · within R jumps (your alert range) · lines point toward you".</li>
+<li><b>Drawing cost</b> (LESSON #120): <code>itPtPaint</code> runs from <code>itMapDraw</code> and, when the map's key didn't change, from <code>itMapRefresh</code>; it builds the tree and writes it only when its text changed. The ages use the card's clock (<code>it.drawNow</code>), so they move with Intel's age refresh. No timer of its own. Pan and zoom move one transform.</li>
+<li><b>The Intel example's picture</b> borrows <code>itm</code> with its own canvas and Security: <code>itPtLive</code> only answers for the live canvas, so the picture never hides your tree.</li>
+<li><b>Phone:</b> the opened filter row wraps: at 390 px six on the first line, Wormholes and its list button on the second (360 px: five, then three); every button inside the box.</li>
+<li><b>Info text:</b> <code>intel</code> [Map]: "The bottom bar picks what it shows; Paths to you draws the routes from hostiles in your alert range as a tree." To stay within 410 words, the hide-friendlies note left [Alerts] (now in METHODOLOGY.md's Near You part) and "(10 jumps unless you change it)" left [Kills] (METHODOLOGY.md already says it). METHODOLOGY.md: a Paths to you paragraph. <code>IT_EX_NOTES</code>: unchanged.</li>
+<li>Nothing stored, no request, no new error code.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>tools/page_checks/paths_to_you_check.py</code>: the bar's order; the tree around a made-up area (the systems around 1DQ1-A in the stand-ins have no loop, so you jump to one 11 jumps away, named PTnn-Z), worked out in the check from the jump table: the systems and gates exactly, a system with two shortest routes; top down; no security number; the count tags; the badges only where Intel has them; the top line, legend line and the map under it; the hover traces; press, Escape, a press on you; + / − / Fit, wheel, drag; nothing new writes nothing; a new report and a jump; Security brings the map back; the example's picture; 390 px. Seven mutants, each failing.</li>
+<li><code>intel_map_look_check.py</code>: seven filters in the bar and the opened phone row (was six); the map's column the same height on Paths to you too.</li>
+<li>Timings at the largest alert range (LESSON #160): 10 jumps with every system in it reported (43 sources, 45 systems, 47 gates): built and written 8.5 ms; built and compared with nothing new 1.1 ms.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>No new lesson. Worth knowing: a check of "every shortest route" needs test data with a loop in it; the stand-in area around 1DQ1-A is a pure tree within five jumps, where one route and every route look the same.</li>
+</ul>
+</body>
+</html>

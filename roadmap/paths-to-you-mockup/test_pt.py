@@ -1,0 +1,72 @@
+"""Clicks through the Paths-to-you mockup at 1440 and 390 px.  python3 -I test_pt.py paths_to_you_mockup.html shots/
+The decided version (2026-11-12): the alert range (set to 4 in this mockup), every shortest route, top down with pan and zoom, plain
+(no boxes, no security number), badges for camps, ESS and kills, a map filter button before Wormholes."""
+import os, sys, time
+from playwright.sync_api import sync_playwright
+page_path, out = os.path.abspath(sys.argv[1]), sys.argv[2]
+os.makedirs(out, exist_ok=True)
+fails = []
+def ok(c, what):
+    print(('ok   ' if c else 'FAIL ') + what)
+    if not c: fails.append(what)
+names = lambda pg, sel: pg.evaluate(f"[...document.querySelectorAll('{sel}')].map(b => b.querySelector('.it-sn').textContent).sort().join(',')")
+idx = lambda pg, sysid: pg.evaluate(f"itGraphGet().at.get({sysid})")
+with sync_playwright() as p:
+    b = p.chromium.launch()
+    for W, H in ((1440, 1000), (390, 844)):
+        ctx = b.new_context(viewport={'width': W, 'height': H}, bypass_csp=True, device_scale_factor=1)
+        pg = ctx.new_page(); errs = []
+        pg.on('pageerror', lambda e: errs.append(str(e)))
+        pg.goto('file://' + page_path)
+        pg.wait_for_function('window.__MKREADY || window.__MKERR', timeout=40000)
+        ok(not pg.evaluate('window.__MKERR'), f'{W}: boot')
+        time.sleep(4); pg.evaluate('itMapDraw()'); time.sleep(.3)
+        ok(pg.evaluate('document.querySelectorAll("[data-im-f]").length') == 7 and pg.evaluate("itm.filter") == 'paths', f'{W}: seventh filter, Paths to you on')
+        order = pg.evaluate("[...document.querySelectorAll('[data-im-f]')].map(b => b.dataset.imF).join(',')")
+        ok(order.endswith('paths,wh'), f'{W}: Wormholes last (beside its list button), Paths to you before it: {order}')
+        ok(pg.evaluate("(() => { const w = document.querySelector('[data-im-f=wh]'), n = w.nextElementSibling; return !!n && n.matches('[data-it-whl]'); })()"), f'{W}: the wormhole list button right after Wormholes')
+        got = names(pg, '.pt-b')
+        ok(got == '0UBC-R,3U-48K,4M-QXK,78-0R6,8-WYQZ,8BA-RA,C-J6MT,G-EURJ,MJ-LGH,MSG-BZ,RERZ-L,SHBF-V', f'{W}: alert range (4): the 10 systems with reports or kills, 8BA-RA on the way and you: {got}')
+        ge = idx(pg, 30000778)
+        ok(pg.evaluate(f'document.querySelectorAll(".pt-e[data-x=\\"{ge}\\"]").length') == 2, f'{W}: every shortest route: G-EURJ\'s two (via SHBF-V and 3U-48K)')
+        yy = pg.evaluate("[...document.querySelectorAll('.pt-b')].map(b => [b.querySelector('.it-sn').textContent, b.getBoundingClientRect().top])")
+        you = [y for n, y in yy if n == 'C-J6MT'][0]
+        ok(all(y > you for n, y in yy if n != 'C-J6MT'), f'{W}: top down: your system above every other')
+        ok(pg.evaluate("getComputedStyle(document.querySelector('.pt-scroll')).overflow") == 'hidden', f'{W}: no scrolling inside: pan and zoom')
+        ok(pg.evaluate("getComputedStyle(document.querySelector('.pt-b')).borderTopWidth") == '0px' and pg.evaluate("getComputedStyle(document.querySelector('.pt-b .pt-t')).justifyContent") == 'center', f'{W}: plain: no box, name centred')
+        ok(pg.evaluate("document.querySelectorAll('.pt-b .pt-sec').length") == 0, f'{W}: no security number (the colour carries it)')
+        tags = pg.evaluate("Object.fromEntries([...document.querySelectorAll('.pt-b')].map(b => [b.querySelector('.it-sn').textContent, [...b.querySelectorAll('.pt-tags > *')].map(x => x.textContent).join(',')]).filter(x => x[1]))")
+        ok(tags == {'78-0R6': 'Camp', 'RERZ-L': 'ESS', 'MSG-BZ': '2 kills', 'SHBF-V': '1 kill', '8-WYQZ': '1 kill'}, f'{W}: badges: camp, ESS and kills where Intel has them: {tags}')
+        pg.evaluate("document.querySelector('.it-map').scrollIntoView({block:'start'})"); time.sleep(.3); pg.screenshot(path=f'{out}/{W}_tree.png')
+        k0 = pg.evaluate('PT.v.k')
+        pg.locator('[data-pt-z="in"]').click(); time.sleep(.2)
+        ok(pg.evaluate('PT.v.k') > k0, f'{W}: + zooms in')
+        pg.locator('[data-pt-z="fit"]').click(); time.sleep(.2)
+        ok(abs(pg.evaluate('PT.v.k') - k0) < 1e-6, f'{W}: Fit goes back')
+        if W >= 600:
+            bx = pg.evaluate("(() => { const r = document.querySelector('.pt-scroll').getBoundingClientRect(); return [r.left + r.width - 60, r.top + r.height - 90]; })()")
+            pg.mouse.move(*bx); pg.mouse.wheel(0, -300); time.sleep(.3)
+            ok(pg.evaluate('PT.v.k') > k0, f'{W}: the wheel zooms')
+            tx = pg.evaluate('PT.v.tx'); pg.mouse.move(*bx); pg.mouse.down(); pg.mouse.move(bx[0] - 120, bx[1] + 10, steps=6); pg.mouse.up(); time.sleep(.2)
+            ok(abs(pg.evaluate('PT.v.tx') - (tx - 120)) < 2, f'{W}: dragging moves the tree')
+            ok(pg.evaluate('PT.pin') == -1, f'{W}: a drag doesn\'t press a system')
+            pg.locator('[data-pt-z="fit"]').click(); time.sleep(.2)
+            pg.hover('.pt-b[data-pt="%d"]' % idx(pg, 30000779)); time.sleep(.3)
+            lit = names(pg, '.pt-b.lit')
+            ok(lit == '8BA-RA,C-J6MT,G-EURJ,RERZ-L,SHBF-V', f'{W}: hover SHBF-V traces to you and back to what feeds it (G-EURJ): {lit}')
+            pg.hover('.pt-b[data-pt="%d"]' % idx(pg, 30000780)); time.sleep(.3)
+            lit = names(pg, '.pt-b.lit')
+            ok(lit == '0UBC-R,3U-48K,8BA-RA,C-J6MT,G-EURJ,RERZ-L,SHBF-V', f'{W}: hover RERZ-L traces everything behind it: {lit}')
+            pg.mouse.move(5, 5); time.sleep(.2)
+        pg.evaluate("__MKintel('Mk Gate Watcher', 'L5-UWT Mk Raider Six Sabre')"); time.sleep(4)
+        got = names(pg, '.pt-b')
+        ok('L5-UWT' in got and 'YPW-M4' in got, f'{W}: a new report (L5-UWT) joins the tree through YPW-M4')
+        pg.evaluate("__MKlocal('8BA-RA')"); time.sleep(4)
+        ok(pg.evaluate("itSysName(itGraphGet().ids[itm.home])") == '8BA-RA', f'{W}: you jump to 8BA-RA: the tree is rebuilt from there')
+        pg.evaluate("itMapFilterSet('sec')"); time.sleep(.3)
+        ok(pg.evaluate('document.querySelector(".pt-ov").hidden'), f'{W}: Security filter: the tree is hidden, the map is back')
+        ok(pg.evaluate('document.scrollingElement.scrollWidth <= innerWidth + 1'), f'{W}: no sideways scroll')
+        ok(not errs, f'{W}: no page errors {errs[:3]}')
+        ctx.close()
+    b.close()
+print('FAILED:', len(fails)) if fails else print('all passed')
