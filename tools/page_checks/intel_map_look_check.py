@@ -222,7 +222,7 @@ MUTANTS = [
     ('separate x and y scales', "  const s = Math.min((W - 2 * pad) / Math.max(1, x1 - x0), (H - 2 * pad) / Math.max(1, y1 - y0)), qx = (W - (x1 - x0) * s) / 2, qy = (H - (y1 - y0) * s) / 2;\n  for(let i = 0; i < n; i++){ P[2 * i] = qx + (P[2 * i] - x0) * s; P[2 * i + 1] = qy + (P[2 * i + 1] - y0) * s; }",
      "  const s = (W - 2 * pad) / Math.max(1, x1 - x0), sy = (H - 2 * pad) / Math.max(1, y1 - y0), qx = pad, qy = pad;\n  for(let i = 0; i < n; i++){ P[2 * i] = qx + (P[2 * i] - x0) * s; P[2 * i + 1] = qy + (P[2 * i + 1] - y0) * sy; }", ('layout',)),
     ('a wider spread off CCP\'s place', "dmin = IT_MAP_GAP / k0,", "dmin = 4 * IT_MAP_GAP / k0,", ('layout',)),
-    ('a filter that doesn\'t redraw', "  itMapFbarPaint(true); itMapLegend(); if(changed) itMapDraw();", "  itMapFbarPaint(true); itMapLegend();", ('filters',)),
+    ('a filter that doesn\'t redraw', "if(changed){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); }", "if(changed){ if(itm.rep && itm.D) itm.key = itMapKey(); }", ('filters',)),   # 040: the key follows the filter
     ('gates between regions solid', "c.setLineDash(k & 1 ? (big ? [3, 4] : [2, 3]) : []);", "c.setLineDash([]);", ('look',)),
     ('your region\'s name grey', "c.fillStyle = rg === mine ? '#ffffff' : '#8f9ba5';", "c.fillStyle = '#8f9ba5';", ('look',)),
     ('a long legend allowed to wrap', [(".it-map-leg .it-map-fl{flex:1 0 100%; display:flex; align-items:center; gap:6px; height:16px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;}",
