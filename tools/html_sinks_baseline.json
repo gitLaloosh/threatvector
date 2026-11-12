@@ -448,7 +448,6 @@
   "itMapLegend␟ring('var(--danger)', 6)": 1,
   "itMapLegend␟ring('var(--side-friendly)', 6)": 1,
   "itMapPin␟id": 1,
-  "itMapTip␟d === 0 ? 'you are here' : `${d} jump${d === 1 ? '' : 's'}`": 1,
   "itMapTip␟innerHTML = h": 1,
   "itMapTip␟it.set.forget": 1,
   "itMapTip␟itAgo(r.t)": 1,
