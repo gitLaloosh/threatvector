@@ -52,7 +52,7 @@ FAR = max((s for s, v in D0.items() if v <= 60), key=lambda s: D0[s])   # far pa
 HAND = near[6]   # added by hand
 OLD = near[7]    # kept 2 h ago by Intel: kept, not live
 HOST = M.PILOTS[M.pick(98000003, 0)][0]
-WHC, DRC = '#a98bd8', '#e4b5ff'
+WHC, DRC = '#a98bd8', '#ff5fbf'   # 045: Drifter hot pink (044 D15)
 H = 3600
 T0 = time.time()
 
@@ -93,11 +93,12 @@ def relaunch(pg):   # a reload: the made-up folder is written again (the same li
     tick(pg, 3200)
 
 STORE = "() => { try{ return JSON.parse(localStorage.getItem('tvWormholes')); }catch(e){ return 'bad'; } }"
-PX = """([id, k]) => { const i = itGraphGet().at.get(id); itm.view = {k, tx: itm.W / 2 - itm.P[2 * i] * k, ty: itm.H / 2 - itm.P[2 * i + 1] * k}; itMapDraw();
-  const c = itm.cv.getContext('2d'), d = window.devicePixelRatio || 1; return [...c.getImageData(Math.round(itm.Q[2 * i] * d), Math.round(itm.Q[2 * i + 1] * d), 1, 1).data]; }"""
+PX = """([id, k, dy]) => { const i = itGraphGet().at.get(id); itm.view = {k, tx: itm.W / 2 - itm.P[2 * i] * k, ty: itm.H / 2 - itm.P[2 * i + 1] * k}; itMapDraw();
+  const c = itm.cv.getContext('2d'), d = window.devicePixelRatio || 1, r = itm.stage ? Math.max(9, Math.min(15, itMapGatePx() * 0.2)) : 0;
+  return [...c.getImageData(Math.round(itm.Q[2 * i] * d), Math.round((itm.Q[2 * i + 1] + (dy || 0) * r) * d), 1, 1).data]; }"""   # dy: below the circle's number, in radii (045: zoomed out a wormhole is a filled disc over its dot)
 def near_col(px, hexc, tol=40): return max(abs(px[q] - int(hexc[1 + 2 * q:3 + 2 * q], 16)) for q in range(3)) <= tol
 
-def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'key', 'tip', 'setting', 'list', 'example', 'phone', 'time')):
+def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'stand', 'key', 'tip', 'setting', 'list', 'example', 'phone', 'time')):
     out, errs = [], []
     IDS_ASKED.clear()
     ctx, pg = start(b, html, 1440, errs)
@@ -152,13 +153,52 @@ def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'key', 'tip', 'set
         if sorted(F['live']) != sorted([A, B, C]): out.append(f"live wormhole reports on Security: {sorted(SYSNAME.get(i, i) for i in F['live'])} (want {SYSNAME[A]}, {SYSNAME[B]}, {SYSNAME[C]}; not {SYSNAME[OLD]} kept 2 h ago or the far one)")
         if F['repDim'] != [False, False]: out.append(f"Intel reports: the live wormhole reports dimmed {F['repDim']}")
         pg.evaluate("itMapFilterSet('wh')")
-        px = pg.evaluate(PX, [FAR, 16 / pg.evaluate('itm.G')])
+        px = pg.evaluate(PX, [FAR, 44 / pg.evaluate('itm.G'), 0.72])   # zoomed in (circles): the circle itself, below its number
         if not near_col(px, WHC): out.append(f'Wormholes: the far kept system {SYSNAME[FAR]} past "Map: within" drawn {px[:3]} (want bright {WHC})')
         pg.evaluate("() => { itMapFilterSet('sec'); itMapStartView(); itMapDraw(); }")
         spy = pg.evaluate("""() => { const c = itm.cv.getContext('2d'), s0 = c.stroke, log = [];
           c.stroke = function(){ log.push(String(this.strokeStyle).toLowerCase()); return s0.apply(this, arguments); }; try{ itMapDraw(); }finally{ c.stroke = s0; } return log; }""")
         n = spy.count(WHC) + spy.count(DRC)
         if n < 3: out.append(f'Security: {n} wormhole rings stroked (want one per live report in view, 3)')
+    if 'stand' in parts:   # build queue 045: wormholes stand out on the Wormholes filter
+        S = pg.evaluate("""([hand, a]) => { const g = itGraphGet(), danger = itMapCol('--danger', '#c65b4e').toLowerCase();
+          const spy = () => { const c = itm.cv.getContext('2d'), s0 = c.stroke, log = []; c.stroke = function(){ log.push([String(this.strokeStyle).toLowerCase(), Math.round(this.globalAlpha * 100) / 100, this.shadowBlur]); return s0.apply(this, arguments); };
+            try{ itMapDraw(); }finally{ c.stroke = s0; } return log.filter(x => x[0] === danger && x[1] !== 0.9 && x[1] !== 0.35); };   // rings, not routes
+          const lab = () => itm.labels.map(l => g.ids[l[0]]);
+          const over = () => { const L = itm.labels; for(let x = 0; x < L.length; x++) for(let y = x + 1; y < L.length; y++){ const p = L[x], q = L[y]; if(p[1] < q[3] && p[3] > q[1] && p[2] < q[4] && p[4] > q[2]) return [g.ids[p[0]], g.ids[q[0]]]; } return null; };
+          itm.hover = -1; itm.rowHover = -1; itm.pinned.clear();   // no route shown (a route still names what it passes, faintly)
+          itMapFilterSet('sec'); itMapStartView(); const sec = {rings: spy(), labels: lab(), pulse: itm.whp.children.length, chip: !itm.whn.hidden};
+          itMapFilterSet('wh'); itMapStartView(); const wh = {rings: spy(), labels: lab(), over: over(), pulse: itm.whp.children.length, chip: !itm.whn.hidden, chipText: itm.whn.textContent,
+            fresh: [...itm.wh.kept].filter(([i, w]) => Date.now() - w.t < 30 * 60000 && itm.Q[2 * i] > -30 && itm.Q[2 * i] < itm.W + 30 && itm.Q[2 * i + 1] > -30 && itm.Q[2 * i + 1] < itm.H + 30).length,
+            layer: getComputedStyle(itm.whp).pointerEvents, anim: itm.whp.firstElementChild ? getComputedStyle(itm.whp.firstElementChild).animationName : '', kept: itm.wh.kept.size};
+          const D = itm.D, nearest = [...itm.wh.kept.keys()].sort((x, y) => ((D[x] >= 0 ? D[x] : 1e4) - (D[y] >= 0 ? D[y] : 1e4)) || (itm.wh.kept.get(y).t - itm.wh.kept.get(x).t))[0];
+          itm.whn.click(); const c1 = itm.whn.textContent, cx = itm.Q[2 * nearest] - itm.W / 2, cy = itm.Q[2 * nearest + 1] - itm.H / 2;
+          itMapFilterSet('sec'); itMapFilterSet('wh'); const again = itm.whn.textContent;
+          // crowded: 40 more kept wormholes inside the reach, all fresh: labels never overlap, and only wormholes and you are named
+          const st = itWhStore(), keepRep = JSON.parse(JSON.stringify(st.rep)); let k = 0;
+          for(const id of g.ids){ const i = g.at.get(id); if(D[i] > 0 && D[i] <= Math.min(6, itm.reach) && !st.rep[id] && k < 40){ st.rep[id] = {id, t: Date.now() - k * 60000, who: 'Mk Scout', drifter: k % 4 === 0, src: 'intel'}; k++; } }
+          itMapStartView(); itMapDraw(); const crowd = {over: over(), named: lab().filter(id => !st.rep[id] && id !== g.ids[itm.home]), n: itm.labels.length};
+          for(const w of Object.values(st.rep)) w.t = Math.min(w.t, Date.now() - 40 * 60000);   // every one at least 40 minutes old: no pulse
+          itMapDraw(); const old40 = [...itm.whp.children].length;
+          st.rep = keepRep; itMapStartView(); itMapDraw();
+          return {sec, wh, c1, cx: Math.round(cx), cy: Math.round(cy), nearest: g.ids[nearest], again, crowd, old40, hand, a}; }""", [HAND, A])
+        sec, wh = S['sec'], S['wh']
+        if any(a != 0.95 for _, a, _b in sec['rings']) or not sec['rings']: out.append(f"Security: report rings at {sorted(set(a for _, a, _b in sec['rings']))} (want 0.95, as before)")
+        if HAND not in sec['labels'] or sec['pulse'] or sec['chip']: out.append(f"Security: {SYSNAME[HAND]} labelled {HAND in sec['labels']}, pulse rings {sec['pulse']}, chip {sec['chip']} (want labelled, none, no chip)")
+        alphas = sorted(set(a for _, a, _b in wh['rings']))
+        if 0.2 not in alphas or 0.95 not in alphas or any(b > 0 for _, a, b in wh['rings'] if a == 0.2): out.append(f"Wormholes: report rings at {alphas} (want the other reports at 0.2 with no glow, {SYSNAME[A]}'s (a wormhole there) at 0.95)")
+        if HAND in wh['labels'] or A not in wh['labels']: out.append(f"Wormholes: labels {[SYSNAME.get(x, x) for x in wh['labels']]} (want none for {SYSNAME[HAND]}, a report with no wormhole; {SYSNAME[A]} named)")
+        if wh['over']: out.append(f"Wormholes: two labels overlap {wh['over']}")
+        if wh['pulse'] != wh['fresh'] or not wh['fresh'] or wh['layer'] != 'none' or wh['anim'] != 'it-whp': out.append(f"Wormholes: {wh['pulse']} pulse rings for {wh['fresh']} fresh holes in view, layer pointer-events {wh['layer']!r}, animation {wh['anim']!r}")
+        if not wh['chip'] or wh['chipText'] != f"{wh['kept']} wormholes ›": out.append(f"the chip: shown {wh['chip']}, {wh['chipText']!r} (want '{wh['kept']} wormholes ›')")
+        if not S['c1'].startswith(f"1/{wh['kept']} · {SYSNAME[S['nearest']]}") or abs(S['cx']) > 1 or abs(S['cy']) > 1: out.append(f"the chip pressed: {S['c1']!r}, the view off the nearest ({SYSNAME[S['nearest']]}) by {S['cx']}, {S['cy']} px")
+        if S['again'] != f"{wh['kept']} wormholes ›": out.append(f"the chip after the filter was chosen again: {S['again']!r} (want the count again)")
+        if S['crowd']['over'] or S['crowd']['named']: out.append(f"crowded ({S['crowd']['n']} labels): overlap {S['crowd']['over']}, named without a wormhole {S['crowd']['named'][:4]}")
+        if S['old40']: out.append(f"{S['old40']} pulse rings on holes 40 minutes old (want none)")
+        pg.emulate_media(reduced_motion='reduce'); pg.evaluate("() => { itm.whpKey = null; itMapDraw(); }")
+        rm = pg.evaluate("[itm.whp.children.length, getComputedStyle(itm.whp).display]")
+        pg.emulate_media(reduced_motion='no-preference'); pg.evaluate("() => { itm.whpKey = null; itMapFilterSet('sec'); itMapDraw(); }")
+        if rm[0]: out.append(f'reduced motion: {rm[0]} pulse rings (want none)')
     if 'key' in parts:
         k = pg.evaluate("""(id) => { itMapRefresh(true); const d0 = itm.draws; itMapRefresh(); const d1 = itm.draws; const st = itWhStore(); st.rep[id].t -= 5 * 60000; itMapRefresh(); const d2 = itm.draws; itMapRefresh(); const d3 = itm.draws;
           st.rep[id].t -= 30 * 3600e3; itMapRefresh(); const d4 = itm.draws; return [d1 - d0, d2 - d1, d3 - d2, d4 - d3]; }""", B)
@@ -242,6 +282,10 @@ def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'key', 'tip', 'set
         if not pg.evaluate("document.scrollingElement.scrollWidth <= innerWidth + 1"): out.append('390 px: sideways scroll with the list open')
         pg.click('.it-whp .x-close'); pg.wait_for_timeout(200)
         if not pg.evaluate("document.activeElement && document.activeElement.matches('.it-map-fcur')"): out.append('390 px: × doesn\'t put focus back on the filter button')
+        pg.evaluate("itMapFilterSet('wh')"); pg.wait_for_timeout(200)
+        CH = pg.evaluate("""() => { const b = itm.whn, r = b.getBoundingClientRect(), shown = getComputedStyle(b).display !== 'none'; itMapFbarOpen(true);
+          const hid = getComputedStyle(b).display === 'none'; itMapFbarOpen(false); return [shown, Math.round(r.height), hid]; }""")
+        if CH != [True, 44, True]: out.append(f'390 px: the chip {CH} (want shown, 44 px tall, hidden while the filter row is open)')
         ctx.close()
     return out, errs
 
@@ -252,6 +296,10 @@ MUTANTS = [
     ('the example reading the store', "  itWhSt = itWhBlank(); itWhAside = true;", "", ('example',)),
     ('the map\'s key without the wormholes', "|${itMapWhKey(itMapWh())}`;", "`;", ('key',)),
     ('hand-added ones shown as live reports', "if(w.src === 'intel' && w.t >= fresh", "if(w.t >= fresh", ('list',)),
+    ('045: reports faded on every filter', "      const fade = whF && !itm.wh.kept.has(i);", "      const fade = !itm.wh.kept.has(i);", ('stand',)),
+    ('045: wormhole labels forced over others', "(live && !whS) || i === focus); if(whS", "true); if(whS", ('stand',)),
+    ('045: a hole 40 minutes old pulses', "IT_MAP_WH_FRESH_MS = 30 * 60000", "IT_MAP_WH_FRESH_MS = 50 * 60000", ('stand',)),
+    ('045: the chip on another filter', "itm.filter === 'wh' && !itPtLive() ? itMapWhChipList() : []", "!itPtLive() ? itMapWhChipList() : []", ('stand',)),
     ('the words not intel keywords', "  wh: 'wormhole', wormhole: 'wormhole', wormholes: 'wormhole', drifter: 'drifter', drifters: 'drifter'};", "};", ('take',)),
 ]
 

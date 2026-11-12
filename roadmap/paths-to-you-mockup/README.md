@@ -15,3 +15,29 @@ Made 2026-11-12 by the research session from main d227c9d (v2026.11.12.4), after
 - The build differs from the mockup (the build review): the top line is the count only, the map's drag help stays under the box, the count is a 3 px tag in the kill tags' colours (the mockup's was round). See the plan's "Built" notes.
 
 Run: `python3 -I build_pt.py <repo>/index.html paths_to_you_mockup.html && python3 -I test_pt.py paths_to_you_mockup.html shots`
+
+## How it got here, round by round (the research session's notes, folded in from its Project copy with build queue 045)
+
+The scripts above are the trimmed, decided version. Before the trim, the mockup offered choices the owner then decided:
+
+- **Round 1** (2026-11-12, sent first): columns left to right, You on the right, scrolling; the phone defaulted to a List layout.
+- **The choices the MOCKUP bar offered:** Range Alert (3) / Near You (6) (his words "near you alert range" fit either: Near You's is
+  `nearRange` / `itNearReach`, Alert's `it.set.range`); Routes Every shortest / One each ("One each" used the map's own route,
+  `itMapRoute`); Layout Graph / List; and, from round 3, Look Plain / Boxes.
+- **List layout** (dropped): an indented tree from You at the top (the phone's default then), each row the system, its jumps and what was
+  reported; a system reached two ways showed "N ways in" and was drawn under each (its branch "as above" the second time).
+- **Round 2** ([stated] "can you modify it to give a top down orientation rather than horizontal? your system at the top (with pan and zoom
+  rather than scrolling)"): Graph top down and the default on every width; pan and zoom like the map, + / − / Fit at the top right.
+- **Round 3** (Look): Plain became the default, with the name and security centred at first; Boxes (round 2's boxed systems) stayed as
+  the other choice until the owner picked Plain.
+- **Round 4** (badges): Camp is Near You's camp tag, red from a report's camp words, orange from 2+ kills at one gate, the gate in its
+  hover; ESS red when linked or hacking, white when only at it; kills per side, "N kill(s)" in the side's colour (blue a friendly lost,
+  red a hostile killed, grey neutral), count and value in the hover.
+- **The checks then:** 35 checks at 1440 and 390 px in round 5 (badges where Intel has them, no security number, the plain look, Boxes
+  still there, top down, + / Fit, the wheel and a drag on a wide screen, a drag doesn't press a system, 9 gate lines, hover traces,
+  Near You's range adding the 4-jump reports, G-EURJ's two routes against one, a new report joining, the List layout, a jump rebuilding
+  it, Security hiding it, no sideways scroll, no page errors). check_pii with the names list on the mockup and its scripts: 0 problems
+  (the page's own CCP login button is a reviewed image).
+- **Trimmed** 2026-11-12 to the decided version (the owner's picks: the alert range, every shortest route, Graph + Plain only, a filter
+  button): the Range / Routes / Layout / Look switches and the List layout came out of proto_pt.js; build_pt.py set the alert range to 4
+  so G-EURJ's two routes show; test_pt.py was rewritten (41 checks, all passed).
