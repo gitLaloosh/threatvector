@@ -45,7 +45,7 @@ AREAS = {
     'support_fighters_check': ['fit', 'calc'], 'system_analyzer_check': ['system'], 'ttk_why_check': ['myship', 'calc'],
     'ui_rules_check': ['layout'], 'unload_check': ['fit'], 'weakness_picks_check': ['myship', 'calc'],
     'zkb_outage_check': ['pilot'], 'zkb_slow_check': ['pilot', 'system'], 'outage_check': ['intel', 'layout', 'pilot', 'system'], 'profile_check': ['layout', 'myship', 'system', 'intel'], 'pilot_chip_check': ['intel'], 'intel_filters_check': ['intel', 'layout'], 'html_escape_check': ['intel', 'pilot', 'myship', 'fit', 'system'], 'logo_check': ['layout'], 'info_panels_check': ['layout', 'intel', 'system', 'pilot', 'myship', 'fit'],   # build queue 036
-    'csp_check': ['intel', 'pilot', 'myship', 'fit', 'system', 'layout'], 'close_buttons_check': ['intel', 'pilot', 'layout'], 'intel_redraw_check': ['intel', 'layout'], 'intel_map_check': ['intel', 'layout'], 'intel_map_look_check': ['intel', 'layout'], 'intel_map_you_check': ['intel', 'layout'],
+    'csp_check': ['intel', 'pilot', 'myship', 'fit', 'system', 'layout'], 'close_buttons_check': ['intel', 'pilot', 'layout'], 'intel_redraw_check': ['intel', 'layout'], 'intel_map_check': ['intel', 'layout'], 'intel_map_look_check': ['intel', 'layout'], 'intel_map_you_check': ['intel', 'layout'], 'wormhole_filter_check': ['intel', 'layout'],
 }
 NAMES = sorted({a for v in AREAS.values() for a in v})
 # v2026.10.31.7: a page check gets 5 minutes, these more (their longest run under load, x1.5); a hung check fails fast

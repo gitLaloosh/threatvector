@@ -381,6 +381,15 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   Systems past Near You's range are faded, past the map's reach fainter still; past the Feed's range a system's kills
   aren't read. A route is the shortest one by stargates (one for each system,
   always the same); jump bridges, cynos, filaments and wormholes aren't in CCP's data.
+- **Wormholes** (build queue 040): a line that says wh, wormhole or drifter (intel words, never looked up as pilots) with a
+  system keeps that system as a wormhole (a Drifter one with drifter), with the line's time and who sent it, in this
+  browser only (localStorage `tvWormholes`; nothing is sent anywhere), for 24 hours unless you change "keep wormhole
+  reports for" in Intel settings (1 to 48 hours; anything older than 48 hours is deleted). The map's last filter,
+  Wormholes, colours every kept one anywhere in New Eden, past the map's reach too, and dims the rest; on the other filters
+  a wormhole Intel read within "forget reports after" and the map's reach gets two thin rings and "WH · age", like a
+  report. Feed rows and Near You show a Wormhole (or Drifter WH) badge. The list button beside Wormholes adds a system by
+  hand (kept the set hours from then; shown only on the filter and in the list) or removes one; a removed one isn't
+  brought back by the same line read again, only by a newer one.
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location
   on, whichever is newer. Jumps are gate jumps from EVE's published stargate data (no jump bridges or wormholes); the
   table is checked against each new EVE build every day.

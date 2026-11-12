@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-12 — The Intel map's Wormholes filter</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+table{border-collapse:collapse; margin:8px 0;} td,th{border:1px solid #ddd; padding:4px 8px; text-align:left; font-size:14px;} th{background:#f6f6f6;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The Intel map's Wormholes filter (wormhole mapping, phase 1)</h1>
+<p><span class="tag">Page</span><span class="tag">Intel</span> 2026-11-12 &middot; <code>v2026.11.12.4</code> &middot; build queue 040 &middot; plan: <code>roadmap/wormholes-filter-plan.md</code> &middot; mockup: <code>Claude outputs/wormholes_filter_mockup.html</code> (scripts in <code>roadmap/wormholes-filter-mockup/</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-12: "we'll take what we've learned and plan a new filter for the latest intel map for wormholes. we'll consider this phase 1 of a multi-step process." Wormholes are reported as "wh", "wormhole", "drifter" (2026-11-08); kept 24 h by default, a setting; the filter shows "All of them, anywhere".</li>
+<li>On the other filters: "Show newly reported as you would intel reports on the jump count filter ... but the difference being that they're retained for 24hrs in the browser and those are used by the wormhole filter." Before this, a line with a system and no pilots ("X wh on the sun") was an info line that only the Feed showed.</li>
+<li>"add a wormhole badge to intel as well." A list to add or remove wormholes by hand, opened from a button beside the Wormholes button, closed by its × or a press outside.</li>
+<li>At the build review: the words as intel keywords ("Keywords (Recommended)"), hand-added wormholes only on the filter and the list ("Wormholes filter only (Recommended)"), "Drifter alone counts".</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The words:</b> "wh", "wormhole(s)", "drifter(s)" are intel words in <code>IT_KW</code>, so they are never looked up on ESI as pilot names unless dragged in (real characters can be named "Drifter"). <code>itWhWord</code> reads them from the parsed line.</li>
+<li><b>The store:</b> localStorage <code>tvWormholes</code> <code>{v: 1, rep: {system: {id, t, who, drifter, src}}, gone: {system: t}, keepH}</code>, a key of its own: <code>dscanIntel</code> keeps its form, an older page ignores it (safe both ways). Read back with checks (systems on the map, times within 48 h, at most 500). <code>itWhTake</code> in <code>itAddReport</code> keeps a line's first system with its time and reporter; a newer report replaces an older one; <code>gone</code> (a removal by hand) stops the same line, or an older one read again after a reload, from bringing it back.</li>
+<li><b>The setting:</b> "keep wormhole reports for" 1 to 48 h (24 by default) beside "forget reports after", saved in <code>tvWormholes</code>.</li>
+<li><b>The sixth filter, Wormholes</b> (<code>IT_MAP_FILTERS</code>): every kept one in <code>--it-wh</code> (Drifter in <code>--it-wh-drifter</code>), bright anywhere, past "Map: within" too; the rest dimmed. Two thin rings and a "WH · 3 h" label. The legend's filter line stays one line.</li>
+<li><b>The other filters:</b> a wormhole Intel read within "forget reports after" and "Map: within" gets the rings and its label, like a report; Intel reports counts it as one. Hand-added ones don't.</li>
+<li><b>The badge:</b> Wormhole / Drifter WH (one tag style) on Feed rows that say so and on a Near You row with a wormhole report; its title says who and when.</li>
+<li><b>The hover:</b> "Wormhole · reported by X, 3 h ago" (or "added by you").</li>
+<li><b>The list:</b> a button right of the bar (shown hovering or focusing Wormholes, on its own hover or focus, while the list is open and while the filter is on; in the opened row on a phone), opening a dialog with the shared close button: add a system by hand (Drifter or not), remove one; ×, Escape or a press outside close it, focus back on the button (the filter button on a phone). Its ages move on one timer only while it's open, written only when they change.</li>
+<li><b>The map's key</b> (<code>itMapKey</code>, now one function) includes the wormholes shown and their labels' ages in whole minutes, so a label that ages or a wormhole whose time is up redraws the map through the refreshes it already has; no new timer. The filter's press updates the key.</li>
+<li><b>The Intel example's sandbox</b> sets the store aside (an empty one, never saved).</li>
+<li><b>Phone:</b> the bar keeps both edges of the box so the row can wrap: six filters on one line, the list button under them.</li>
+<li><b>Info text:</b> <code>intel</code>: the Map part names Wormholes and its list button; Tags names the badge; the privacy line said nothing is kept after the page closes, now "only wormhole reports are kept". To stay within the panel's 410 words, "the logs are read every 2 seconds, also in a hidden tab" left the Reloads part (METHODOLOGY.md already says it). METHODOLOGY.md: a Wormholes paragraph in Intel.</li>
+<li>No request, no new error code.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>tools/page_checks/wormhole_filter_check.py</code>: taking lines (wh, wormhole, drifter kept; "whatever", "whiskey" not; "Drifter" never sent to ESI), the store read safely, the badges, the filter's colours and dimming (a far kept one bright, by its pixel), the legend line and the map's column the same height on every filter, live rings on Security, the key's redraws, the hover, the setting across a reload, the list (hover, add, an unknown name refused, remove, the same line after a reload not bringing it back, a newer one does, ×, Escape, outside), the example's sandbox, 390 px (every button inside the box). Seven mutants, all caught.</li>
+<li><code>intel_map_look_check.py</code>: six filters in the bar (was five).</li>
+<li>Timings at the largest settings (LESSON #160): 500 kept wormholes over the galaxy, kept 48 h, the map's reach 30, zoomed out to the whole galaxy: a draw on Wormholes 21.5 ms, the key 0.18 ms, the list's paint with 500 rows 4.9 ms.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #161: the mockup's check said "no sideways scroll" at 390 px while the list button and an end filter were cut off inside the map box (it hides its overflow); letting the row wrap then gave three to a line, because a box placed at <code>left:50%</code> wraps in half its parent's width. Check each control against its box; give a centred, wrapping row both edges.</li>
+<li>LESSON #162: the Intel example's sandbox sets Intel's state aside by a list of names; a new store outside that list would have leaked the example's lines into the user's wormholes and the user's wormholes into the example. New state a sandboxed builder reads joins the sandbox in the same change.</li>
+</ul>
+</body>
+</html>

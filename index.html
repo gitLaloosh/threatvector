@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XtiK3FRZH04FLkZuTO1nWxa05pdhMQ4fi38pjz1ChtI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-POIo9PwL46IFKynjMGi8E5OM3oqh91ia0jtF6r8jK+E='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2460,6 +2460,8 @@
   }
   /* v2026.10.14.96 Intel (roadmap/intel-plan.md): the Intel card, the header slider, the settings */
   :root{--it-clear:#3fb950;}
+  :root{--it-wh:#a98bd8; --it-wh-drifter:#e4b5ff;}   /* build queue 040: wormholes on the map, the badge and the list (Drifter holes lighter) */
+  .it-whtip{color:var(--it-wh); font-weight:600;} .it-whtip.dr{color:var(--it-wh-drifter);}
   /* v.97 (the owner: "i accidently turned intel off thinking the pill was clickable"): the "N near" pill is its own button beside
      the slider, outside its label, and opens the Intel tab */
   /* v2026.10.29.1: the switch moved to the card (beside the gear); the pill stays in the header on its own */
@@ -2704,6 +2706,34 @@
     .it-map-fbtns button, button.it-map-fcur{width:44px; height:44px; min-height:44px;}
     button.it-map-fcur{display:inline-flex; border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92); color:var(--heading);}
     .it-map-fb:not(.open) .it-map-fbtns{display:none;} .it-map-fb.open button.it-map-fcur{display:none;}
+  }
+  /* build queue 040: the Wormholes filter's list button, floating right of the bar: shown while Wormholes is hovered or focused (gone
+     0.6 s after the pointer leaves, so it can be reached), on its own hover or focus, while its list is open, and while the filter is on;
+     on a phone (no hover) it sits in the opened row. The list: a dialog over the map, above the bar. */
+  .it-map-fbtns{position:relative;}
+  .it-map-fbtns button.it-whl{position:absolute; left:100%; top:-1px; margin-left:6px; border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92); color:var(--heading);
+    visibility:hidden; opacity:0; transition:opacity .15s, visibility 0s .6s;}
+  .it-map-fbtns [data-im-f="wh"]:hover + button.it-whl, .it-map-fbtns [data-im-f="wh"]:focus-visible + button.it-whl, .it-map-fbtns button.it-whl:hover, .it-map-fbtns button.it-whl:focus-visible,
+  .it-map-fbtns button.it-whl[aria-expanded="true"], .it-map-fbtns:has([data-im-f="wh"][aria-pressed="true"]) button.it-whl{visibility:visible; opacity:1; transition-delay:0s;}
+  .it-whp{position:absolute; right:8px; bottom:56px; z-index:5; width:min(400px, calc(100% - 16px)); max-height:min(420px, calc(100% - 72px)); overflow:auto; box-sizing:border-box; padding:10px 12px;
+    border:1px solid var(--line); border-radius:6px; background:var(--panel); box-shadow:0 8px 24px rgba(0,0,0,.5); font:400 12px var(--sans); color:var(--text); text-align:left;}
+  .it-whp[hidden]{display:none;}
+  .it-whp-h{display:flex; align-items:center; gap:8px; margin-bottom:8px;} .it-whp-h h4{margin:0; font:700 14px var(--sans); color:var(--heading);} .it-whp-keep{color:var(--text-dim);}
+  .it-whp-add{display:flex; gap:6px; align-items:center; flex-wrap:wrap;} .it-whp-add input[type=text]{flex:1 1 140px; min-width:0;} .it-whp-add label{display:inline-flex; gap:4px; align-items:center; color:var(--text-dim);}
+  .it-whp-msg{min-height:16px; margin:4px 0; color:var(--text-dim);}
+  .it-whp-r{display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; padding:6px 0; border-top:1px solid var(--line);}
+  .it-whp-j{min-width:56px; color:var(--text-dim); font-weight:600;} .it-whp-s{font:700 13px var(--sans);} .it-whp-r .it-gtag{margin-left:0;}
+  .it-whp-by{flex:1 1 100%; order:4; color:var(--text-dim); padding-left:64px;} .it-whp-r button{margin-left:auto; order:3; min-height:28px; padding:2px 10px;}
+  .it-whp-none{color:var(--text-dim); padding:6px 0;}
+  .it-gtag.it-wh{color:var(--it-wh); background:color-mix(in srgb, var(--it-wh) 18%, transparent);} .it-gtag.it-wh.dr{color:var(--it-wh-drifter); background:color-mix(in srgb, var(--it-wh-drifter) 16%, transparent);}
+  @media (prefers-reduced-motion: reduce){ .it-map-fbtns button.it-whl{transition:none;} }
+  @media (max-width: 599px){
+    .it-map-fb{left:8px; right:8px; transform:none; max-width:none;}   /* 040: the bar's whole width to wrap in (centred as before; LESSON #161) */
+    .it-map-fbtns{flex-wrap:wrap; justify-content:center;}   /* six filters and the list button don't fit one 390 px line: the list button wraps under them */
+    .it-whp-j{min-width:0;} .it-whp-r button{padding:2px 8px;}
+    .it-map-fbtns button.it-whl{position:static; margin:0; visibility:visible; opacity:1; transition:none;}
+    .it-whp{left:8px; right:8px; width:auto; bottom:64px;} .it-whp-r button, .it-whp-add button{min-height:44px;} .it-whp-add input[type=text]{min-height:44px; flex-basis:100px;}
+    .it-whp-by{padding-left:0;}
   }
   .it-map-help{font:400 11.5px var(--sans); color:var(--text-dim);} .it-map-help.phone{display:none;}
   #itNearList > .it-nb.it-map-lit, #itFeedList > .it-fd.it-map-lit{outline:1px solid var(--cyan); outline-offset:-1px;}
@@ -3075,7 +3105,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.3</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.4</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3449,13 +3479,13 @@ const CARD_INFO = {
   "**{card:itnear}:** systems with reports or kills within its range (Intel settings), nearest first. An amber edge means within your alert range: the sound and notification (if on) and the profile's Intel lamp (N near, or In system), from any tab.",
   "**{card:itfeed}:** every report and kill as it comes in. **{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route to you.",
   "[How a line is read] Systems, ship names, counts (+5, x2) and words like clr and nv; the rest is looked up on ESI as pilot names, coloured by your {card:side}. A word it can't place stays plain text. To report a line read wrong, its copy button copies the line's shape with the names replaced.",
-  "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked.",
+  "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Wormhole: wh, wormhole, drifter.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear (hide friendlies, in Intel settings, leaves out systems with only friendlies).",
   "[Kills] zKillboard's live feed within the Feed's kill range (10 jumps unless you change it), no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks the colours. Systems past {card:itnear}'s range are faded.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks the colours (Wormholes: reported, kept 24 h; its list button edits them). Systems past {card:itnear}'s range are faded.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate only (no jump bridges or wormholes).",
-  "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI, and none of it is kept after you close the page. Intel runs in one tab at a time; another tab can take it over with Move Intel here.",
-  "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit; the logs are read every 2 seconds, also in a hidden tab."
+  "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI; only wormhole reports are kept after you close the page. Intel runs in one tab at a time; another tab can take it over with Move Intel here.",
+  "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit."
  ],
  "intel#game": [
   "Use my game location asks EVE which system your character is in, every few seconds while Intel runs, so jumps count from where you are before your Local log says so. Whichever is newer wins; when they differ, the line under the box shows both, in amber.",
@@ -26199,7 +26229,10 @@ const IT_KW = {clr: 'clear', clear: 'clear', nv: 'no visual', novis: 'no visual'
   citadel: 'structure', keepstar: 'structure', fortizar: 'structure', fort: 'structure', astrahus: 'structure', astra: 'structure',
   raitaru: 'structure', azbel: 'structure', sotiyo: 'structure', athanor: 'structure', tatara: 'structure', station: 'structure',
   structure: 'structure', pos: 'structure', tower: 'structure', belt: 'belt', belts: 'belt', anom: 'anom', anoms: 'anom', site: 'site',
-  mtu: 'MTU', dscan: 'd-scan', probes: 'probes', probing: 'probes', hunter: 'hunter', hunters: 'hunter', roam: 'roam', roaming: 'roam'};
+  mtu: 'MTU', dscan: 'd-scan', probes: 'probes', probing: 'probes', hunter: 'hunter', hunters: 'hunter', roam: 'roam', roaming: 'roam',
+  // build queue 040 (the owner, 2026-11-08: wormholes are reported as "wh", "wormhole", "drifter"; at the build review, "Keywords
+  // (Recommended)"): intel words, so a real character named "Drifter" or "Wormhole" is never looked up unless dragged in. itWhWord.
+  wh: 'wormhole', wormhole: 'wormhole', wormholes: 'wormhole', drifter: 'drifter', drifters: 'drifter'};
 const IT_FILLER = new Set(['in', 'on', 'at', 'to', 'from', 'and', '&', '+', '-', 'the', 'a', 'x', 'is', 'still', 'now', 'local', 'pilot', 'pilots', 'gang', 'fleet', 'ship', 'ships', 'with', 'of', 'near', 'heading', 'towards', 'toward', 'into', 'out', 'warped', 'warp', 'landed', 'jump', 'jumping', 'no', 'visual', 'vis', 'afk', 'or',
   'inside', 'outside', 'under', 'sitting', 'holding', 'by', 'for', 'just', 'here', 'there', 'up', 'down', 'back', 'around', 'over', 'off', 'onto',
   'through', 'via', 'entering', 'entered', 'leaving', 'moving', 'going', 'coming', 'spotted', 'seen', 'sighted', 'lots', 'many', 'some', 'few',   // v.99
@@ -26863,6 +26896,7 @@ let itEntryId = 0;
 function itAddReport(l, p, pilots){
   const e = {id: ++itEntryId, t: l.t, who: l.who, chan: l.chan, raw: l.msg, p, pilots, history: l.history};
   itReportSides(e);
+  itWhTake(e);   // build queue 040: a wormhole named in the line is kept for the map's Wormholes filter
   it.lastLine = Math.max(it.lastLine, l.t);
   it.feed.unshift(e);
   const old = Date.now() - it.set.forget * 60000;   // v.98: lines older than the time set go (kept to IT_FEED_MAX meanwhile)
@@ -27946,6 +27980,8 @@ function itNearTagsHtml(st, now = Date.now()){
   const g = itGateTagHtml(st, now).trim();
   if(g) out.push(g);
   if(bub) out.push(`<span class="it-gtag gt it-bub" title="${escapeHtml(`A bubble: ${by(bub)}`)}">Bubble</span>`);
+  const wh = itWhNear(st.sys, now);   // build queue 040 (the owner: "add a wormhole badge to intel as well."): a wormhole Intel reported there
+  if(wh) out.push(itWhBadgeHtml(wh.drifter, itWhBadgeTitle(wh)));
   return out.join('');
 }
 // v2026.10.31.6: a system's name as the button that shows only it in the Feed (a filter chip since v2026.11.07.1; pressed again, or the chip's
@@ -28146,6 +28182,8 @@ function itFeedRowHtml(e){
   if(e.kind !== 'kill' && e.p.kw.has('ESS linked')) tags.push('<span class="it-ess" title="Linked to the ESS">ESS</span>');
   else if(e.kind !== 'kill' && e.p.kw.has('ESS')) tags.push('<span class="it-gtag gt it-essat" title="At the ESS">ESS</span>');
   if(e.kind !== 'kill' && e.p.kw.has('bubble') && !e.p.camp) tags.push('<span class="it-gtag gt it-bub" title="A bubble">Bubble</span>');
+  const whw = e.kind !== 'kill' ? itWhWord(e.p) : null;   // build queue 040: the line names a wormhole
+  if(whw) tags.push(itWhBadgeHtml(whw === 'drifter', itWhBadgeTitle({drifter: whw === 'drifter', who: e.who, t: e.t})));
   const inr = j0 !== null && j0 <= it.set.range && e.kind !== 'clear' && !(e.friendlyOnly && !e.sighting);
   const kind = kw ? `kill ${kw[0]}` : e.kind === 'clear' ? 'clr' : 'rep';
   const open = e.kind !== 'kill' && it.rawOpen.has(e.id);
@@ -28433,7 +28471,7 @@ function itSettingsHtml(numbered){
     <div class="it-box">${n(1, 'Chat logs folder')}<div class="v">${it.dir ? escapeHtml(it.dirName) : 'not chosen'}</div>${itFolderStateHtml()}</div>
     <div class="it-box${itWaitHtml('cls')}">${n(2, 'Intel channels')}${itWaitHtml('note')}${itChansHtml(chans)}</div>
     <div class="it-box">${n(3, 'You')}${itCharsHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
-    <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
+    <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
     ${numbered ? '' : itAliasBoxHtml()}
     ${leaveHosts().length ? `<div class="it-box">${n(5, 'Links outside this site')}<div class="c">${escapeHtml(leaveHosts().map(leaveName).join(', '))} open${leaveHosts().length === 1 ? 's' : ''} without asking (you chose “Don't ask again”).</div><button type="button" data-it-act="leaveask">Ask again</button></div>` : ''}
   </div>`;
@@ -28558,6 +28596,8 @@ function itExSandbox(fn){
   const has = {}, save = {};
   for(const k of keys){ has[k] = Object.prototype.hasOwnProperty.call(it, k); save[k] = it[k]; }
   const rec = side.rec, eid = itEntryId, can = itAnCan, fz = itFrozenNow, pins = itm.pinned, hov = [itm.hover, itm.rowHover];
+  const whSt = itWhSt, whAside = itWhAside;   // build queue 040: the example never reads or writes the user's wormholes (LESSON #162)
+  itWhSt = itWhBlank(); itWhAside = true;
   const X = IT_EXAMPLE, now = Date.now(), byLower = new Map(), byId = new Map(), T = itMapTable(), g = itGraphGet();
   try{
     for(const [id, n] of Object.entries(X.sys)){ byLower.set(n.toLowerCase(), Number(id)); byId.set(Number(id), n); }
@@ -28595,6 +28635,7 @@ function itExSandbox(fn){
   }finally{
     for(const k of keys){ if(has[k]) it[k] = save[k]; else delete it[k]; }
     side.rec = rec; itEntryId = eid; itAnCan = can; itFrozenNow = fz; itm.pinned = pins; [itm.hover, itm.rowHover] = hov; itExOrg = null;
+    itWhSt = whSt; itWhAside = whAside;
   }
 }
 // The example's frame (cached: the rows don't change, and their ages were worked out once when drawn); its map picture and markers
@@ -28949,7 +28990,8 @@ function itMapFbarHtml(){
   return `<div class="it-map-fb"><div class="it-map-fn" aria-hidden="true"></div><button type="button" class="it-map-fcur" aria-expanded="false" aria-haspopup="true"></button>`
     + `<div class="it-map-fbtns" role="toolbar" aria-label="Map colours">${itMapFbtnsHtml()}</div></div>`;
 }
-function itMapFbtnsHtml(){ return IT_MAP_FILTERS.map(f => `<button type="button" data-im-f="${escapeHtml(f.k)}" title="${escapeHtml(f.name)}: ${escapeHtml(f.note)}" aria-label="${escapeHtml(f.name)}" aria-pressed="false">${itMapIconHtml(f.k)}</button>`).join(''); }
+function itMapFbtnsHtml(){ return IT_MAP_FILTERS.map(f => `<button type="button" data-im-f="${escapeHtml(f.k)}" title="${escapeHtml(f.name)}: ${escapeHtml(f.note)}" aria-label="${escapeHtml(f.name)}" aria-pressed="false">${itMapIconHtml(f.k)}</button>`).join('')
+  + `<button type="button" class="it-whl" data-it-whl aria-haspopup="dialog" aria-expanded="false" aria-label="Wormhole list" title="Wormhole list: add or remove">${IT_WH_LIST_ICON}</button>`; }   // build queue 040
 function itMapIconHtml(k){ return (IT_MAP_FILTERS.find(f => f.k === k) || IT_MAP_FILTERS[0]).icon; }
 function itMapFbarPaint(changed){
   const fb = itm.el && itm.el.querySelector('.it-map-fb'); if(!fb) return;
@@ -28969,7 +29011,7 @@ function itMapFbarOpen(open){
 function itMapFilterSet(k){
   if(!IT_MAP_FILTERS.some(f => f.k === k)) return;
   const changed = k !== itm.filter; itm.filter = k;
-  itMapFbarPaint(true); itMapLegend(); if(changed) itMapDraw();
+  itMapFbarPaint(true); itMapLegend(); if(changed){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); }   // 040: the key follows the filter (what the wormholes show depends on it)
 }
 function itMapMake(){
   if(itm.el) return itm.el;
@@ -29026,10 +29068,15 @@ function itMapRefresh(force){
   }
   if(beacon){ itm.beaconDone = true; itm.beaconPending = true; }
   itm.rep = itMapReports();
-  const fq = itFlSys();   // v2026.11.07.1: the system chip
-  const key = [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}`;
+  const key = itMapKey();
   if(force || laid || itm.stale || key !== itm.key){ itm.key = key; itm.stale = false; itMapDraw(); }
   if(itm.beaconPending){ itm.beaconPending = false; itMapBeacon(); }
+}
+// what the map shows, as text: drawn again only when it changes. v2026.11.07.1: the system chip. Build queue 040: the wormholes shown and
+// their labels' ages, so a label that ages or a wormhole whose time is up redraws the map through the refreshes it already has (no timer)
+function itMapKey(){
+  const fq = itFlSys();
+  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}`;
 }
 // slide the map so your system is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
 function itMapCenter(draw = true){
@@ -29170,7 +29217,10 @@ const IT_MAP_FILTERS = [
   {k: 'reports', name: 'Intel reports', note: 'systems with a report or a kill in Intel bright, the rest dimmed',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3.5h13v8.5H8L4.5 15v-3h-2z"/></svg>'},
   {k: 'kills', name: 'Kills from Intel', note: 'systems with kills in Intel in amber, the rest dimmed',
-    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke-width="2.2"/></svg>'}
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke-width="2.2"/></svg>'},
+  // build queue 040 (the owner: "All of them, anywhere"): every kept wormhole, past "Map: within" too
+  {k: 'wh', name: 'Wormholes', note: 'wormholes Intel reported or you added, kept for the time set in Intel settings; the rest dimmed',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 2.5a6.5 6.5 0 1 1-6.5 6.5"/><path d="M9 5.5a3.5 3.5 0 1 1-3.5 3.5"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>'}
 ];
 let itMapRegColTab = null;   // region index -> colour index, made once per table
 function itMapRegCol(T){
@@ -29190,17 +29240,20 @@ function itMapFcol(i){
   if(f === 'jumps') return itm.D[i] < 0 ? IT_MAP_NONE : IT_MAP_JUMPS[Math.min(IT_MAP_JUMPS.length - 1, itm.D[i])];
   if(f === 'region') return IT_MAP_REGION[itMapRegCol(T)[T.reg[i]]];
   if(f === 'kills') return (itm.rep.get(i) || {}).kills ? IT_MAP_KILL : IT_MAP_NONE;
+  if(f === 'wh'){ const r = itm.wh && itm.wh.kept.get(i); return r ? itMapWhCol(r) : IT_MAP_NONE; }   // build queue 040
   return IT_MAP_SEC[itMapSecClass(T.sec[i])];
 }
 function itMapDimmed(i){
   if(i === itm.home) return false;
-  if(itm.filter === 'reports') return !itm.rep.has(i);
+  if(itm.filter === 'wh') return !(itm.wh && itm.wh.kept.has(i));   // build queue 040
+  if(itm.filter === 'reports') return !itm.rep.has(i) && !(itm.wh && itm.wh.live.has(i));   // 040: a live wormhole report is a report
   if(itm.filter === 'kills') return !(itm.rep.get(i) || {}).kills;
   return false;
 }
 function itMapDraw(){
   if(!itm.P || itm.home < 0) return;
   itm.draws++;
+  itm.wh = itMapWh();   // build queue 040: the kept wormholes, and those shown as reports (itMapFcol, itMapDimmed, the labels and the hover read it)
   const T = itMapTable(), n = T.n, c = itm.cv.getContext('2d'), dpr = window.devicePixelRatio || 1, W = itm.W, H = itm.H, v = itm.view, P = itm.P, Q = itm.Q, D = itm.D, R = itm.reach, near = itNearReach();
   const C = {hostile: itMapCol('--danger', '#c65b4e'), neutral: '#b9c3ca', friendly: itMapCol('--side-friendly', '#4f8fe0'), cyan: itMapCol('--cyan', '#4fc3d9'), amber: itMapCol('--amber', '#d99a3c'), clear: itMapCol('--it-clear', '#3fb950'), gate: '#26303b', gateX: '#3a4753'};
   c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
@@ -29208,7 +29261,7 @@ function itMapDraw(){
   const on = (i) => D[i] >= 0 && D[i] <= R, X = (i) => Q[2 * i], Y = (i) => Q[2 * i + 1], m = 30;
   const seen = (i) => Q[2 * i] > -m && Q[2 * i] < W + m && Q[2 * i + 1] > -m && Q[2 * i + 1] < H + m;
   const g = itMapGatePx(), big = g >= 34, r = big ? Math.max(9, Math.min(15, g * 0.2)) : 0, names = g >= 80 && !!it.names;
-  const alpha = (i) => itMapDimmed(i) ? IT_MAP_DIM : !on(i) ? IT_MAP_FAINT : D[i] > near ? 0.45 : 1;
+  const whF = itm.filter === 'wh', alpha = (i) => itMapDimmed(i) ? IT_MAP_DIM : whF && itm.wh.kept.has(i) ? 1 : !on(i) ? IT_MAP_FAINT : D[i] > near ? 0.45 : 1;   // 040: a kept wormhole bright anywhere (the owner: "All of them, anywhere")
   // the alert range: a soft amber under the systems inside it
   c.fillStyle = 'rgba(217,154,60,.07)';
   for(const i of itm.vis) if(D[i] <= it.set.range && seen(i)){ c.beginPath(); c.arc(X(i), Y(i), big ? r + 9 : 22 * Math.min(1.4, Math.sqrt(g / IT_MAP_START_GATE)), 0, 6.283); c.fill(); }
@@ -29277,6 +29330,14 @@ function itMapDraw(){
     }
     if(!big){ c.globalAlpha = itMapDimmed(i) ? IT_MAP_DIM : 1; c.fillStyle = itMapFcol(i); c.beginPath(); c.arc(X(i), Y(i), 4.5, 0, 6.283); c.fill(); c.globalAlpha = 1; }
   }
+  // build queue 040: a wormhole: two thin rings in its colour (Drifter lighter); on the Wormholes filter every kept one in view, on the others
+  // a report Intel read within "forget reports after" and "Map: within" (the owner: "Show newly reported as you would intel reports")
+  c.lineWidth = 1.6; c.globalAlpha = 1;
+  for(const [i, w] of itm.wh.mark){
+    if(!seen(i)) continue;
+    const x = X(i), y = Y(i), r1 = big ? r + 3 : 4.5, r2 = big ? r + 7 : 8.5;
+    c.strokeStyle = itMapWhCol(w); c.beginPath(); c.arc(x, y, r1, 0, 6.283); c.moveTo(x + r2, y); c.arc(x, y, r2, 0, 6.283); c.stroke();
+  }
   const fq = itFlSys() !== undefined ? gr.at.get(itFlSys()) : undefined;   // v2026.11.07.1: the system chip
   if(fq !== undefined && on(fq)){ c.strokeStyle = C.cyan; c.lineWidth = 2; c.beginPath(); c.arc(X(fq), Y(fq), big ? r + 10 : 19, 0, 6.283); c.stroke(); }
   if(focus >= 0){ c.strokeStyle = C.cyan; c.lineWidth = 1.5; c.beginPath(); c.arc(X(focus), Y(focus), big ? r + 12 : 21, 0, 6.283); c.stroke(); }
@@ -29285,7 +29346,9 @@ function itMapDraw(){
   itm.fbBox = null;   // the filter bar's place in the box: no name goes under it
   { const fb = itm.box && itm.cv.parentNode === itm.box && itm.box.querySelector('.it-map-fbtns, .it-map-fcur');
     if(fb){ const bx = itm.box.getBoundingClientRect(), rr = [...itm.box.querySelectorAll('.it-map-fbtns, .it-map-fcur')].map(e => e.getBoundingClientRect()).filter(q => q.width > 0)[0];
-      if(rr) itm.fbBox = [rr.left - bx.left - 4, rr.top - bx.top - 4, rr.right - bx.left + 4, rr.bottom - bx.top + 4]; } }
+      if(rr) itm.fbBox = [rr.left - bx.left - 4, rr.top - bx.top - 4, rr.right - bx.left + 4, rr.bottom - bx.top + 4];
+      const lb = whF && itm.fbBox && itm.box.querySelector('.it-map-fbtns button.it-whl'), lr = lb && lb.getBoundingClientRect();   // 040: the list button beside it while Wormholes is on
+      if(lr && lr.width > 0) itm.fbBox[2] = Math.max(itm.fbBox[2], lr.right - bx.left + 4); } }
   itMapLabels(c, focus, onRoute, C, r);
   itMapRegionNames(c);
   itMapYouArrow();
@@ -29331,7 +29394,8 @@ function itMapLabels(c, focus, onRoute, C, cr = 0){   // cr: the circles' radius
   const cells = (r, f) => { for(let gx = Math.floor(r[0] / cs); gx <= Math.floor(r[2] / cs); gx++) for(let gy = Math.floor(r[1] / cs); gy <= Math.floor(r[3] / cs); gy++) if(f(gx + ',' + gy)) return true; return false; };
   const add = (r) => cells(r, (k) => { (grid.get(k) || grid.set(k, []).get(k)).push(r); });
   const hit = (r) => cells(r, (k) => (grid.get(k) || []).some(q => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]));
-  for(let i = 0; i < itm.D.length; i++){ const x = Q[2 * i], y = Q[2 * i + 1]; if(x < -10 || y < -10 || x > W + 10 || y > H + 10) continue; const rr = cr || (itm.rep.has(i) ? 6 : 4); add([x - rr, y - rr, x + rr, y + rr]); }
+  const WH = itm.wh || {mark: new Map()}, mk = (i) => itm.rep.has(i) || WH.mark.has(i);   // 040: a wormhole's rings take room like a report's
+  for(let i = 0; i < itm.D.length; i++){ const x = Q[2 * i], y = Q[2 * i + 1]; if(x < -10 || y < -10 || x > W + 10 || y > H + 10) continue; const rr = cr ? (WH.mark.has(i) ? cr + 7 : cr) : WH.mark.has(i) ? 9 : itm.rep.has(i) ? 6 : 4; add([x - rr, y - rr, x + rr, y + rr]); }
   for(const b of itm.nameBoxes || []) add(b);   // 039: the names under the circles
   if(itm.fbBox) add(itm.fbBox);   // and the filter bar
   const hx = Q[2 * itm.home], hy = Q[2 * itm.home + 1] - (cr ? cr - 6 : 0), pin = [hx - 9, hy - 29, hx + 9, hy + (cr ? 2 * cr - 6 : 0)];   // your pin's box: no name goes over it (v2026.11.04.1)
@@ -29339,7 +29403,7 @@ function itMapLabels(c, focus, onRoute, C, cr = 0){   // cr: the circles' radius
   c.textBaseline = 'middle';
   const wOf = (p) => { c.font = p.font; return c.measureText(p.t).width + (p.bg ? 8 : 0); };
   const put = (i, pieces, force, pref) => {
-    const w = pieces.reduce((s, p) => s + wOf(p) + 4, -4), h = 14, x = Q[2 * i], y = Q[2 * i + 1], o = cr ? cr + 4 : itm.rep.has(i) ? 10 : 7, spots = pref ? pref(w) : [];
+    const w = pieces.reduce((s, p) => s + wOf(p) + 4, -4), h = 14, x = Q[2 * i], y = Q[2 * i + 1], o = cr ? cr + (WH.mark.has(i) ? 8 : 4) : mk(i) ? 10 : 7, spots = pref ? pref(w) : [];
     for(const m of [0, 12]) spots.push([x + o + m, y - 16 - m / 2], [x + o + m, y + 2 + m / 2], [x - o - w - m, y - 16 - m / 2], [x - o - w - m, y + 2 + m / 2], [x - w / 2, y - 26 - m], [x - w / 2, y + 12 + m], [x + o + 2 + m, y - 7], [x - o - 2 - w - m, y - 7]);
     if(x < 0 || y < 0 || x > W || y > H) return;   // v2026.11.04.1: a system moved out of view isn't named (its name was pinned to the edge, piled up with others); you: the "You" arrow
     const inside = ([sx, sy]) => sx >= 2 && sx + w <= W - 2 && sy >= 2 && sy + h <= H - 2;
@@ -29360,14 +29424,20 @@ function itMapLabels(c, focus, onRoute, C, cr = 0){   // cr: the circles' radius
     if(r.kills) pcs.push({t: '✕' + r.kills, col: C.amber, font: '700 11px system-ui, sans-serif'});
     return pcs;
   };
+  const whTag = (i) => { const w = WH.mark.get(i); return w ? [{t: itMapWhLabel(w), bg: 'rgba(12,16,20,.85)', col: itMapWhCol(w), font: TAG}] : []; };   // 040: WH and its age
   // you: the only filled label on the map (with your system's own report, if any), beside the pin's head when there's room (right, left,
   // above it), else beside the dot
-  put(itm.home, [{t: `YOU · ${nm(itm.home)}`, bg: '#fff', col: '#0c1014', font: '700 11px system-ui, sans-serif'}, ...(itm.rep.has(itm.home) ? tags(itm.rep.get(itm.home)) : [])], true,
+  put(itm.home, [{t: `YOU · ${nm(itm.home)}`, bg: '#fff', col: '#0c1014', font: '700 11px system-ui, sans-serif'}, ...(itm.rep.has(itm.home) ? tags(itm.rep.get(itm.home)) : []), ...whTag(itm.home)], true,
     (w) => [[hx + 11, hy - 26], [hx - 11 - w, hy - 26], [hx - w / 2, hy - 47], [hx + 11, hy - 7], [hx - 11 - w, hy - 7], [hx - w / 2, hy + 10]]);
   const order = [...itm.rep.keys()].filter(i => i !== itm.home).sort((a, b) => a === focus ? -1 : b === focus ? 1 : D[a] - D[b]);
-  for(const i of order) put(i, [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}, ...tags(itm.rep.get(i))], true);
-  if(focus >= 0 && focus !== itm.home && !itm.rep.has(focus)) put(focus, [{t: nm(focus), col: C.cyan, font: F}], true);   // 039: any system, past the reach too
-  for(const i of onRoute) if(i !== itm.home && i !== focus && !itm.rep.has(i)) put(i, [{t: nm(i), col: '#6f7c86', font: '10px system-ui, sans-serif'}], false);
+  for(const i of order) put(i, [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}, ...tags(itm.rep.get(i)), ...whTag(i)], true);
+  // 040: a wormhole with no other report. A live one (the other filters) is a report: named, always. On the Wormholes filter the kept ones
+  // nearest first, only where there's room (at the galaxy's zoom there can be hundreds); inside "Map: within" with the name too
+  const whOnly = [...WH.mark.keys()].filter(i => i !== itm.home && !itm.rep.has(i)).sort((a, b) => (D[a] < 0 ? 1e4 : D[a]) - (D[b] < 0 ? 1e4 : D[b]));
+  for(const i of whOnly){ const live = !!(WH.live && WH.live.has(i)), named = live || (D[i] >= 0 && D[i] <= itm.reach);
+    put(i, [...(named ? [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}] : []), ...whTag(i)], live || i === focus); }
+  if(focus >= 0 && focus !== itm.home && !itm.rep.has(focus) && !WH.mark.has(focus)) put(focus, [{t: nm(focus), col: C.cyan, font: F}], true);   // 039: any system, past the reach too
+  for(const i of onRoute) if(i !== itm.home && i !== focus && !itm.rep.has(i) && !WH.mark.has(i)) put(i, [{t: nm(i), col: '#6f7c86', font: '10px system-ui, sans-serif'}], false);
 }
 // 039: the filter's own line in the legend, first and always one line (the same height for every filter, so Near You, as tall as the map's
 // column beside it, doesn't move when the filter changes: the build review, LESSON #113)
@@ -29379,16 +29449,18 @@ function itMapFLegHtml(){
     case 'region': return '<b>Region</b> a colour each; neighbours differ';
     case 'reports': return '<b>Intel reports</b> bright: a report · dim: none';
     case 'kills': return `<b>Kills</b> ${itMapSwHtml([IT_MAP_KILL])} kills in Intel · dim: none`;
+    case 'wh': return `<b>Wormholes</b> ${itMapSwHtml([itMapWhCol({})])} reported ${itMapSwHtml([itMapWhCol({drifter: true})])} Drifter · last ${Number(itWhStore().keepH)} h · dim: none`;   // 040
     default: return `<b>Security</b> 1.0 ${itMapSwHtml(IT_MAP_SEC.slice().reverse())} 0.0`;
   }
 }
 function itMapFLegTitle(){
   return {jumps: 'Jumps by stargate from your system, 0 to 10 or more; grey: no gate route to you', region: 'One colour per region; two regions joined by a gate never share one',
-    reports: 'Systems with a report or a kill in Intel bright, the rest dimmed', kills: 'Systems with kills in Intel in amber, the rest dimmed'}[itm.filter] || 'Each system in its security colour, 1.0 to 0.0 and below';
+    reports: 'Systems with a report or a kill in Intel bright, the rest dimmed', kills: 'Systems with kills in Intel in amber, the rest dimmed',
+    wh: `Systems where Intel reported a wormhole (wh, wormhole or drifter) or you added one, in the last ${Number(itWhStore().keepH)} h, anywhere on the map; the rest dimmed`}[itm.filter] || 'Each system in its security colour, 1.0 to 0.0 and below';
 }
 function itMapLegend(){
   const leg = itm.el.querySelector('.it-map-leg'), ring = (col, r) => `<i class="ring" style="width:${r * 2}px;height:${r * 2}px;border-color:${col}"></i>`;
-  const h = `<div class="it-map-fl" title="${escapeHtml(itMapFLegTitle())}">${itMapFLegHtml()}</div><span><svg class="pin" width="11" height="15" viewBox="-1 -1 16 22" aria-hidden="true"><path d="M7 20C5.5 16 0 12 0 7a7 7 0 0 1 14 0c0 5-5.5 9-7 13z" fill="#fff" stroke="#0c1014" stroke-width="2"/><circle cx="7" cy="7" r="2.6" fill="#0c1014"/></svg>you</span><span>${ring('var(--danger)', 6)}hostile</span><span>${ring('#b9c3ca', 6)}neutral</span><span>${ring('var(--side-friendly)', 6)}friendly</span><span class="sz">${ring('#9aa6ae', 4)}solo ${ring('#9aa6ae', 6)}2–10 ${ring('#9aa6ae', 8.5)}11+</span>`
+  const h = `<div class="it-map-fl" title="${escapeHtml(itMapFLegTitle())}">${itMapFLegHtml()}</div><span><svg class="pin" width="11" height="15" viewBox="-1 -1 16 22" aria-hidden="true"><path d="M7 20C5.5 16 0 12 0 7a7 7 0 0 1 14 0c0 5-5.5 9-7 13z" fill="#fff" stroke="#0c1014" stroke-width="2"/><circle cx="7" cy="7" r="2.6" fill="#0c1014"/></svg>you</span><span>${ring('var(--danger)', 6)}hostile</span><span>${ring('#b9c3ca', 6)}neutral</span><span>${ring('var(--side-friendly)', 6)}friendly</span><span class="sz">${ring('#9aa6ae', 4)}solo ${ring('#9aa6ae', 6)}2–10 ${ring('#9aa6ae', 8.5)}11+</span>${IT_WH_LEG_HTML}`
     + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span><span><i class="dot"></i>within your alert range (${it.set.range})</span><span>faded: past ${escapeHtml(cardName('itnear'))} (${itNearReach()})</span><span>faint: past ${escapeHtml(cardName('itmap'))}: within (${Number(itMapReach())})</span><span>✕ kills</span>`;
   if(leg._h !== h){ leg.innerHTML = h; leg._h = h; }
 }
@@ -29398,6 +29470,7 @@ function itMapTip(i, x, y){
   const tip = itm.tip;
   if(i < 0){ tip.hidden = true; return; }
   const T = itMapTable(), ids = itGraphGet().ids, r = itm.rep.get(i), d = itm.D[i];
+  const wh = itm.wh && itm.wh.mark.get(i);   // 040: the wormhole shown at this system, if any
   const where = d === 0 ? 'you are here' : d < 0 ? 'no gate route to you' : `${d} jump${d === 1 ? '' : 's'}`;
   let h = `<b>${escapeHtml(itSysName(ids[i]))}</b> <span class="d">${escapeHtml(T.regions[T.reg[i]] || '')} · ${escapeHtml(itMapSecText(T.sec[i]))} · ${escapeHtml(where)}</span>`;
   // v2026.11.04.1: how far in light-years, as a jump drive measures it (the owner: "the distance in LY (from the player's current system)")
@@ -29407,8 +29480,10 @@ function itMapTip(i, x, y){
     const word = r.side === 'clear' ? 'reported clear' : `<span class="${r.side}">${r.n ? r.n + ' ' : ''}${r.side}</span> · ${{solo: 'solo', small: 'small gang', fleet: 'fleet'}[itMapTier(Math.max(1, r.n))]}`;
     h += `<br>${word} <span class="d">· ${itAgo(r.t)} ago</span>`;
     if(r.kills) h += `<br><span class="d">✕ ${r.kills} kill${r.kills === 1 ? '' : 's'} here</span>`;
+  } else if(wh){   // 040: a wormhole shown here is its line below (the Wormholes filter shows every kept one, wherever it is)
   } else if(d > itm.reach || d < 0) h += `<br><span class="d">past ${escapeHtml(cardName('itmap'))}: within (${Number(itm.reach)}): reports aren’t shown here</span>`;
   else if(i !== itm.home) h += `<br><span class="d">nothing reported in the last ${it.set.forget} min</span>`;
+  if(wh) h += `<br>${itMapWhTipHtml(wh)}`;
   if(d > itKillRange()) h += `<br><span class="d">past the Feed's kill range (${itKillRange()}): its kills aren’t read</span>`;
   if(d > 0){
     const rt = itMapRoute(i).map(([a]) => itSysName(ids[a])).concat(itSysName(ids[itm.home]));
@@ -29418,6 +29493,189 @@ function itMapTip(i, x, y){
   const tw = tip.offsetWidth, th = tip.offsetHeight;
   tip.style.left = Math.max(4, Math.min(itm.W - tw - 6, x + 14)) + 'px'; tip.style.top = (y + th + 18 > itm.H ? Math.max(4, y - th - 12) : y + 14) + 'px';
 }
+// ---- Build queue 040 (Project doc roadmap/wormholes-filter-plan.md, mockup Claude outputs/wormholes_filter_mockup.html; wormhole mapping,
+// phase 1): Intel's wormhole lines kept in this browser for the map's Wormholes filter. The owner (2026-11-08): wormholes are reported as
+// "wh", "wormhole", "drifter" (intel words in IT_KW since the build review: "Keywords (Recommended)"); only that one exists in a system;
+// kept across reloads, for a time set in Intel settings ("Default 24 h, a setting (Recommended)"). Its own localStorage key, so dscanIntel
+// keeps its form and an older page ignores it: {v: 1, rep: {<system id>: {id, t, who, drifter, src: 'intel' | 'you'}}, gone: {<system id>: t},
+// keepH}. Who reported it is kept (DLA 2.3(c), the owner: "Keep the name (Recommended)"), in this browser only, never sent anywhere.
+// `gone`: removed by hand, so the same line (or an older one, read again after a reload) can't bring it back; a newer one can.
+const IT_WH_LEG_HTML = '<span><i class="ring" style="width:12px;height:12px;border-color:var(--it-wh)"></i>wormhole (WH)</span>';   // the map's legend
+const IT_WH_KEY = 'tvWormholes', IT_WH_KEEP = [1, 2, 4, 8, 12, 24, 48], IT_WH_MAX_H = 48, IT_WH_MAX = 500;
+const IT_WH_LIST_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6.5 4.5h9M6.5 9h9M6.5 13.5h9"/><circle cx="3" cy="4.5" r=".9" fill="currentColor"/><circle cx="3" cy="9" r=".9" fill="currentColor"/><circle cx="3" cy="13.5" r=".9" fill="currentColor"/></svg>';
+let itWhSt = null, itWhAside = false, itWhColC = null;   // itWhAside: inside the Intel example's sandbox (an empty store, never saved)
+function itWhBlank(){ return {v: 1, rep: {}, gone: {}, keepH: 24}; }
+// read back with checks: systems on the map only, times inside the last 48 h, the hours one of the choices, at most IT_WH_MAX entries
+function itWhRead(){
+  const st = itWhBlank();
+  let o = null;
+  try{ o = typeof localStorage === 'undefined' ? null : JSON.parse(localStorage.getItem(IT_WH_KEY) || 'null'); }catch(e){ o = null; }
+  if(!o || typeof o !== 'object' || o.v !== 1) return st;
+  if(IT_WH_KEEP.includes(Number(o.keepH))) st.keepH = Number(o.keepH);
+  const g = itGraphGet(), now = Date.now(), ok = (id, t) => Number.isInteger(id) && g.at.has(id) && Number.isFinite(t) && t >= now - IT_WH_MAX_H * 3600e3 && t <= now + 3600e3;
+  for(const [k, w] of Object.entries(o.rep && typeof o.rep === 'object' ? o.rep : {})){
+    const id = Number(k), t = Number(w && w.t);
+    if(!w || typeof w !== 'object' || Number(w.id) !== id || !ok(id, t)) continue;
+    st.rep[id] = {id, t, who: typeof w.who === 'string' ? w.who.slice(0, 64) : '', drifter: w.drifter === true, src: w.src === 'you' ? 'you' : 'intel'};
+  }
+  for(const [k, t] of Object.entries(o.gone && typeof o.gone === 'object' ? o.gone : {})){ const id = Number(k); if(ok(id, Number(t))) st.gone[id] = Number(t); }
+  itWhPrune(st);
+  return st;
+}
+function itWhStore(){ if(!itWhSt) itWhSt = itWhRead(); return itWhSt; }
+// past 48 h deleted (rep and gone); the newest IT_WH_MAX kept
+function itWhPrune(st){
+  const cut = Date.now() - IT_WH_MAX_H * 3600e3;
+  for(const k of Object.keys(st.rep)) if(st.rep[k].t < cut) delete st.rep[k];
+  for(const k of Object.keys(st.gone)) if(st.gone[k] < cut) delete st.gone[k];
+  const ks = Object.keys(st.rep);
+  if(ks.length > IT_WH_MAX) ks.sort((a, b) => st.rep[b].t - st.rep[a].t).slice(IT_WH_MAX).forEach(k => { delete st.rep[k]; });
+  const gs = Object.keys(st.gone);
+  if(gs.length > IT_WH_MAX) gs.sort((a, b) => st.gone[b] - st.gone[a]).slice(IT_WH_MAX).forEach(k => { delete st.gone[k]; });
+}
+function itWhSave(){
+  if(itWhAside || !itWhSt) return;
+  itWhPrune(itWhSt);
+  try{ localStorage.setItem(IT_WH_KEY, JSON.stringify(itWhSt)); }catch(e){ }
+}
+// the line's wormhole word: 'drifter', 'wh' or null (IT_KW)
+function itWhWord(p){ return !p || !p.kw ? null : p.kw.has('drifter') ? 'drifter' : p.kw.has('wormhole') ? 'wh' : null; }
+// where Intel takes a line (itAddReport): its first system, with the line's time and reporter; it changes nothing else about the line
+function itWhTake(e){
+  const w = itWhWord(e.p), sys = e.p.sys[0] && e.p.sys[0].id;
+  if(!w || !sys || !itGraphGet().at.has(sys) || !(e.t >= Date.now() - IT_WH_MAX_H * 3600e3)) return;
+  const st = itWhStore(), r = st.rep[sys];
+  if((r && r.t >= e.t) || (st.gone[sys] || 0) >= e.t) return;
+  st.rep[sys] = {id: sys, t: e.t, who: String(e.who || '').slice(0, 64), drifter: w === 'drifter', src: 'intel'};
+  itWhSave();
+  itWhListPaint(true);
+}
+// after a change made here (the list, the setting) or in another tab: the map (by its key), the lists' badges, the open list
+function itWhChanged(){
+  if(typeof itm !== 'undefined' && itm.el) itMapRefresh();
+  if(typeof itRenderLists === 'function' && it.on) itRenderLists();
+  itWhListPaint(true);
+}
+function itWhKeepOptsHtml(){ const k = itWhStore().keepH; return IT_WH_KEEP.map(h => `<option value="${Number(h)}"${escapeHtml(h === k ? ' selected' : '')}>${Number(h)} h</option>`).join(''); }
+function itWhSetKeep(h){ const st = itWhStore(); if(!IT_WH_KEEP.includes(h)) return; st.keepH = h; itWhSave(); itWhChanged(); }
+// a Near You row's badge: what Intel reported there within "forget reports after" (hand-added ones only on the filter and the list, the owner
+// at the build review: "Wormholes filter only (Recommended)")
+function itWhNear(sys, now = Date.now()){
+  const st = itWhStore(), w = st.rep[sys];
+  return w && w.src === 'intel' && w.t >= now - it.set.forget * 60000 && w.t >= now - st.keepH * 3600e3 ? w : null;
+}
+function itWhBadgeHtml(drifter, title){ return `<span class="it-gtag it-wh${escapeHtml(drifter ? ' dr' : '')}" title="${escapeHtml(title)}">${escapeHtml(drifter ? 'Drifter WH' : 'Wormhole')}</span>`; }
+function itWhBadgeTitle(w){ const st = itWhStore(); return `${w.drifter ? 'A Drifter wormhole' : 'A wormhole'}: reported by ${w.who}, ${itAgo(w.t)} ago. The map’s Wormholes filter keeps it ${st.keepH} h`; }
+// the map: the kept ones (map index -> entry), the live ones (Intel's, within "forget reports after" and "Map: within"), and which are marked
+// with the rings and labels (the Wormholes filter: every kept one; the other filters: the live ones, as reports)
+function itMapWh(){
+  const st = itWhStore(), g = itGraphGet(), now = Date.now(), cut = now - st.keepH * 3600e3, fresh = now - it.set.forget * 60000, D = itm.D, kept = new Map(), live = new Map();
+  for(const k in st.rep){
+    const w = st.rep[k]; if(w.t < cut) continue;
+    const i = g.at.get(w.id); if(i === undefined) continue;
+    kept.set(i, w);
+    if(w.src === 'intel' && w.t >= fresh && D && D[i] >= 0 && D[i] <= itm.reach) live.set(i, w);
+  }
+  return {kept, live, mark: itm.filter === 'wh' ? kept : live};
+}
+function itMapWhKey(wh){ return (itm.filter === 'wh' ? 'W' : '') + [...wh.mark].map(([i, w]) => `${i}${w.drifter ? 'd' : ''}${itWhAge(w.t)}`).join(','); }
+function itMapWhCol(w){ if(!itWhColC) itWhColC = [itMapCol('--it-wh', '#a98bd8'), itMapCol('--it-wh-drifter', '#e4b5ff')]; return itWhColC[w && w.drifter ? 1 : 0]; }
+// a label's age in whole minutes, then hours: it changes at most once a minute, so the map's key does too
+function itWhAge(t){ const m = Math.max(1, Math.floor(((itFrozenNow === null ? Date.now() : itFrozenNow) - t) / 60000)); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h`; }
+function itMapWhLabel(w){ return `${w.drifter ? 'DRIFTER' : 'WH'} · ${itWhAge(w.t)}`; }
+function itMapWhTipHtml(w){
+  const what = w.drifter ? 'Drifter wormhole' : 'Wormhole', by = w.src === 'you' ? 'added by you' : `reported by ${w.who}`;
+  return `<span class="it-whtip${escapeHtml(w.drifter ? ' dr' : '')}">${escapeHtml(what)}</span> <span class="d">· ${escapeHtml(`${by}, ${itAgo(w.t)} ago`)}</span>`;
+}
+// The list (the owner, 2026-11-12: "add a panel to manage the list (manually add/remove wormholes from the list in browser storage - for any
+// added manually, they'll be retained 24hrs or whatever the setting is, from the time they were manually added) ... accessing the list can be
+// done by hovering the wormhole button on the map. doing so will show another icon (floating to the right of the wormhole filter button) that
+// accesses the list. close can be done by clicking outside the list or clicking the x on the panel it's housed in."). A dialog in the map's
+// box above the filter bar; the shared close button, Esc or a press outside; focus back on the list button (on a phone, the filter button).
+// Its ages move on one timer only while it's open, written only when they changed and never under the focus (LESSON #120).
+const itWhL = {el: null, out: null, key: null, html: null, t: 0};
+function itWhListShown(){ return !!(itWhL.el && !itWhL.el.hidden && itWhL.el.isConnected); }
+function itWhListOpen(open, back = true){
+  const btn = itm.el && itm.el.querySelector('[data-it-whl]');
+  if(!open){
+    if(!itWhL.el || itWhL.el.hidden) return;
+    itWhL.el.hidden = true; if(btn) btn.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('pointerdown', itWhL.out, true); document.removeEventListener('keydown', itWhL.key, true); clearInterval(itWhL.t); itWhL.t = 0;
+    if(back){ const shown = btn && btn.offsetParent && getComputedStyle(btn).visibility !== 'hidden', to = shown ? btn : itm.el.querySelector('.it-map-fcur'); if(to) to.focus({preventScroll: true}); }
+    return;
+  }
+  if(!itm.box) return;
+  if(itm.el.querySelector('.it-map-fb.open')) itMapFbarOpen(false);   // a phone: the filter row closes as the list opens
+  if(!itWhL.el){
+    const p = document.createElement('div');
+    p.className = 'it-whp'; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Wormhole list'); p.hidden = true;
+    p.innerHTML = '<div class="it-whp-h"><h4>Wormholes</h4><span class="it-whp-keep"></span><button type="button" class="x-close" data-it-whx aria-label="Close" title="Close (Esc)">×</button></div>'
+      + '<form class="it-whp-add" autocomplete="off"><input type="text" name="sys" placeholder="System, e.g. Tama" aria-label="System with a wormhole" maxlength="40" spellcheck="false"><label><input type="checkbox" name="dr"> Drifter</label><button type="submit">Add</button></form>'
+      + '<div class="it-whp-msg" role="status"></div><div class="it-whp-rows"></div>';
+    p.addEventListener('click', (e) => {
+      if(e.target.closest('[data-it-whx]')){ itWhListOpen(false); return; }
+      const rm = e.target.closest('[data-it-whrm]'); if(!rm) return;
+      const id = Number(rm.dataset.itWhrm);
+      itWhRemove(id); p.querySelector('.it-whp-msg').textContent = `Removed ${itSysName(id)}.`;
+      const next = p.querySelector('[data-it-whrm]') || p.querySelector('input[name=sys]'); next.focus();
+    });
+    p.querySelector('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = e.target, r = itWhAdd(f.sys.value, f.dr.checked);
+      p.querySelector('.it-whp-msg').textContent = r.msg;
+      if(r.ok){ f.sys.value = ''; f.dr.checked = false; f.sys.removeAttribute('aria-invalid'); } else f.sys.setAttribute('aria-invalid', 'true');
+      f.sys.focus();
+    });
+    itWhL.el = p;
+  }
+  if(itWhL.el.parentNode !== itm.box) itm.box.appendChild(itWhL.el);
+  itWhL.el.hidden = false; if(btn) btn.setAttribute('aria-expanded', 'true');
+  itWhL.el.querySelector('.it-whp-msg').textContent = '';
+  itWhListPaint(true);
+  itWhL.el.querySelector('input[name=sys]').focus({preventScroll: true});
+  itWhL.out = (e) => { if(!itWhL.el.contains(e.target) && !(e.target.closest && e.target.closest('[data-it-whl]'))) itWhListOpen(false, false); };
+  itWhL.key = (e) => { if(e.key === 'Escape' && itWhListShown()){ e.preventDefault(); e.stopPropagation(); itWhListOpen(false); } };
+  document.addEventListener('pointerdown', itWhL.out, true); document.addEventListener('keydown', itWhL.key, true);
+  clearInterval(itWhL.t); itWhL.t = setInterval(() => { if(!document.hidden) itWhListPaint(); }, IT_AGE_SLOW_MS);
+}
+function itWhListPaint(force){
+  if(itWhAside || !itWhListShown()) return;
+  const rows = itWhL.el.querySelector('.it-whp-rows');
+  if(!force && rows.contains(document.activeElement)) return;   // never under a focused Remove
+  itWhL.el.querySelector('.it-whp-keep').textContent = `kept ${itWhStore().keepH} h, in this browser only`;
+  const now = itWhRowsHtml();
+  if(now !== itWhL.html){ itWhL.html = now; rows.innerHTML = itWhRowsHtml(); }   // built again for the write (the sinks lint: innerHTML takes a builder)
+}
+function itWhRowsHtml(){
+  const st = itWhStore(), now = Date.now(), cut = now - st.keepH * 3600e3, my = itMySys();
+  const list = Object.values(st.rep).filter(w => w.t >= cut).sort((a, b) => b.t - a.t);
+  if(!list.length) return '<div class="it-whp-none">No wormholes kept. Intel lines that say wh, wormhole or drifter with a system land here, or add one above.</div>';
+  return list.map(w => {
+    const j = my ? itJumps(my, w.id) : null, left = Math.max(1, Math.ceil((w.t + st.keepH * 3600e3 - now) / 3600e3)), name = itSysName(w.id);
+    const by = `${w.src === 'you' ? 'added by you' : `reported by ${w.who}`} · ${itAgo(w.t)} ago · gone in ${left} h`;
+    return `<div class="it-whp-r"><span class="it-whp-j">${itJumpsHtml(j)}</span><span class="it-whp-s it-sn ${escapeHtml(itSecClass(w.id))}">${escapeHtml(name)}</span>${itWhBadgeHtml(w.drifter, '')}`
+      + `<span class="it-whp-by">${escapeHtml(by)}</span><button type="button" data-it-whrm="${Number(w.id)}" aria-label="${escapeHtml(`Remove ${name}`)}">Remove</button></div>`;
+  }).join('');
+}
+// added by hand: a system on the map (wormhole systems come in phase 2), kept the setting's hours from now; a kept one renewed
+function itWhAdd(name, drifter){
+  const nm = String(name || '').trim();
+  if(!nm) return {ok: false, msg: 'Type a system name.'};
+  if(!it.names) return {ok: false, msg: 'System names are still loading; try again in a moment.'};
+  const id = it.names.byLower.get(nm.toLowerCase());
+  if(!id || !itGraphGet().at.has(id)) return {ok: false, msg: `“${nm}” isn’t a system on the map (wormhole systems come in a later phase).`};
+  const st = itWhStore();
+  st.rep[id] = {id, t: Date.now(), who: '', drifter: !!drifter, src: 'you'}; delete st.gone[id];
+  itWhSave(); itWhChanged();
+  return {ok: true, msg: `Added ${itSysName(id)}: kept ${st.keepH} h from now.`};
+}
+function itWhRemove(id){
+  const st = itWhStore(), w = st.rep[id];
+  if(w){ st.gone[id] = Math.max(w.t, st.gone[id] || 0); delete st.rep[id]; itWhSave(); }
+  itWhChanged();
+}
+// another tab (the one running Intel) changed the list: read it again
+if(typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('storage', (e) => { if(e.key === IT_WH_KEY && !itWhAside){ itWhSt = null; itWhChanged(); } });
 // the rows that show a system (Near You's and the Feed's), lit while the map hovers it
 function itMapRows(id){
   const el = document.getElementById('intelPanel'); if(!el) return [];
@@ -29471,6 +29729,7 @@ function itMapBind(){
   cv.addEventListener('touchend', (e) => { if(e.touches.length < 2) itm.pinch = null; if(!e.touches.length) setTimeout(() => { itm.justDragged = false; }, 350); });
   el.addEventListener('keydown', (e) => { if(e.key === 'Escape' && itm.el.querySelector('.it-map-fb.open')){ e.stopPropagation(); itMapFbarOpen(false); itm.el.querySelector('.it-map-fcur').focus(); } });
   el.addEventListener('click', (e) => {
+    if(e.target.closest('[data-it-whl]')){ itWhListOpen(!itWhListShown()); return; }   // build queue 040: the wormhole list
     const fb = e.target.closest('[data-im-f]');
     if(fb){ itMapFilterSet(fb.dataset.imF); if(itm.el.querySelector('.it-map-fb.open')){ itMapFbarOpen(false); itm.el.querySelector('.it-map-fcur').focus(); } return; }
     if(e.target.closest('.it-map-fcur')){ itMapFbarOpen(!itm.el.querySelector('.it-map-fb.open')); return; }
@@ -29619,6 +29878,7 @@ function rsBind(root){
     }
     if(t.dataset.itSndfile !== undefined){ const sl = t.dataset.slot || 'near', f = t.files && t.files[0]; t.value = ''; itSndPick(sl, f).then(() => { const again = el.querySelector(`[data-it-snd="${sl}"]`); if(again) again.focus({preventScroll: true}); }); return; }
     if(t.dataset.itVol !== undefined){ it.set.volume = Math.max(0, Math.min(100, Number(t.value) || 0)); itWriteSet(); itRender(true); const again = el.querySelector('[data-it-vol]'); if(again) again.focus({preventScroll: true}); return; }
+    if(t.dataset.itWhkeep !== undefined){ itWhSetKeep(Number(t.value)); return; }   // build queue 040: kept in tvWormholes, not dscanIntel
     const k = t.dataset.itSet;
     if(!k) return;
     if(k === 'range' || k === 'forget' || k === 'killRange') it.set[k] = Number(t.value);
