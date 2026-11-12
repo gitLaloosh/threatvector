@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UD1xKhbwSKhOhR7Dk0uolpBIjM6RiQF64F0k0QSXIfk='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-dPGi8s5pYRy+wBPy+FXQDEA2Kav3g+rTPam35M+/E/0='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3135,7 +3135,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.11.4</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -26338,6 +26338,12 @@ const IT_AGE_FAST_MS = 10000, IT_AGE_SLOW_MS = 30000;   // v2026.11.01.4: how of
 const IT_RESCAN_MS = 15000;                  // how often the folder is looked at for a new file (a relog)
 const IT_RECENT_DAYS = 2;                    // channels and characters offered: logs from the last 2 days
 const IT_FIRST_READ = 2 * 1024 * 1024;       // a long session's log: only its last 2 MB is read at the start
+// The chat log watched for a channel is the one written to last (the owner, 2026-11-11: an alt's log that started later and then went
+// quiet was watched while his main's older log kept logging: "no lines yet"; LESSON #158). IT_LOG_MINE_MS: your own character's log still wins when
+// it was written within this of the newest; IT_LOG_SAME_MS: the file watched stays when another was written only this much later
+// (two characters in one channel get the same line at about the same moment). IT_SWITCH_READ: how much of the end of a log is read
+// when the page moves to it; lines already read from the other log (same time, who and text) are skipped.
+const IT_LOG_MINE_MS = 60000, IT_LOG_SAME_MS = 2000, IT_SWITCH_READ = 256 * 1024;
 const IT_FEED_MAX = 300, IT_FEED_SHOWN = 80, IT_NEAR_MAX = 14;
 // v2026.10.31.2 (the owner: "limit the range of what shows up in Near You to (alert range +5)"): Near You lists systems up to
 // IT_NEAR_EXTRA jumps past the alert range; farther ones (and ones with no gate route) stay in the Feed. Unknown own system: all.
@@ -26903,13 +26909,22 @@ function itDecode(st, buf){
   if(bytes.length % 2){ st.odd = bytes.slice(-1); bytes = bytes.slice(0, -1); }
   return new TextDecoder('utf-16le').decode(bytes);
 }
+// The newest line read from a log (its time and the lines at that second), so a move to another log of the channel skips them
+function itLineKey(l){ return `${l.who}\u0000${l.msg}`; }
+function itLineMark(st, lines){
+  for(const l of lines){
+    if(!st.last || l.t > st.last.t) st.last = {t: l.t, keys: [itLineKey(l)]};
+    else if(l.t === st.last.t && st.last.keys.length < 50) st.last.keys.push(itLineKey(l));
+  }
+}
 // Reads the new end of one file into lines {t, who, msg}; header lines set the channel name and listener.
 async function itReadFile(st, first){
   const f = await st.handle.getFile();
   if(f.size < st.pos){ st.pos = 0; st.rest = ''; st.odd = null; }
   if(f.size === st.pos) return [];
   let from = st.pos;
-  if(first && f.size - from > IT_FIRST_READ){ from = f.size - IT_FIRST_READ; from -= from % 2; st.skipPartial = true; }
+  const cap = st.tail ? IT_SWITCH_READ : IT_FIRST_READ;
+  if(first && f.size - from > cap){ from = f.size - cap; from -= from % 2; st.skipPartial = true; }
   const text = st.rest + itDecode(st, await f.slice(from, f.size).arrayBuffer());
   st.pos = f.size;
   const parts = text.split(/\r?\n/);
@@ -26964,18 +26979,27 @@ async function itScan(){
     it.chars.set(fi.charId, {id: fi.charId, name: st.listener || (c && c.name) || `character ${fi.charId}`, sys, start: fi.start, file: fi.name, st});
   }
   if(!it.set.me && it.chars.size === 1){ it.set.me = [...it.chars.keys()][0]; itWriteSet(); }
-  // the files to watch
+  // the files to watch: for each chosen channel, the log written to last (its last-modified time), not the one that started last;
+  // yours when it was written within IT_LOG_MINE_MS of that; the one watched now when the other is only IT_LOG_SAME_MS newer
   const want = new Map();
   for(const ch of it.set.channels){
-    const L = (byChan.get(ch) || []).sort((a, b) => b.start - a.start);
-    const mine = L.find(f => f.charId === it.set.me);
-    const f = mine && mine.start >= (L[0] ? L[0].start - 3600000 : 0) ? mine : L[0];
-    if(f) want.set(ch, f);
+    const L = byChan.get(ch) || [];
+    for(const f of L){ try{ f.mod = (await f.handle.getFile()).lastModified || 0; }catch(e){ f.mod = 0; } }
+    L.sort((a, b) => b.mod - a.mod || b.start - a.start);
+    if(!L.length) continue;
+    const top = L[0].mod, cur = it.files.get(ch), here = cur && L.find(f => f.name === cur.name);
+    const mine = L.find(f => f.charId === it.set.me && f.mod >= top - IT_LOG_MINE_MS);
+    want.set(ch, mine || (here && here.mod >= top - IT_LOG_SAME_MS ? here : L[0]));
   }
   for(const [ch, f] of want){
     const cur = it.files.get(ch);
     if(cur && cur.name === f.name) continue;
-    it.files.set(ch, {chan: ch, name: f.name, handle: f.handle, pos: 0, rest: '', odd: null, fresh: true});
+    // moving from one log to another (a relog, or an alt's log going quiet): the new one's end is read, less what the old one already
+    // gave; its lines from before this scan's window are history (shown within "forget reports after", no alert), the rest are new.
+    // The first log of a channel is read as before (its old lines are history).
+    it.files.set(ch, cur ? {chan: ch, name: f.name, handle: f.handle, pos: 0, rest: '', odd: null, fresh: false, tail: true, after: cur.last || null,
+      since: Date.now() - IT_RESCAN_MS - IT_TICK_MS, chanName: cur.chanName}
+      : {chan: ch, name: f.name, handle: f.handle, pos: 0, rest: '', odd: null, fresh: true});
   }
   for(const ch of [...it.files.keys()]) if(!want.has(ch)) it.files.delete(ch);
   it.me = it.set.me ? it.chars.get(it.set.me) || null : null;
@@ -27049,11 +27073,18 @@ async function itTick(){
     const fresh = [];
     for(const st of it.files.values()){
       let lines;
-      try{ lines = await itReadFile(st, st.fresh); }catch(e){ it.files.delete(st.chan); continue; }
-      const history = st.fresh; st.fresh = false;
+      try{ lines = await itReadFile(st, st.fresh || st.tail); }catch(e){ it.files.delete(st.chan); continue; }
+      let since = 0;
+      if(st.tail){   // moved here from another log: skip what that one already gave (the same time, who and text)
+        const a = st.after;
+        if(a) lines = lines.filter(l => l.t > a.t || (l.t === a.t && !a.keys.includes(itLineKey(l))));
+        since = st.since; st.tail = false; st.after = null;
+      }
+      itLineMark(st, lines);
+      const hist = st.fresh; st.fresh = false;
       for(const l of lines){
         if(l.who === 'EVE System') continue;   // the MOTD, channel notices
-        fresh.push({...l, chan: st.chanName || st.chan, history});
+        fresh.push({...l, chan: st.chanName || st.chan, history: hist || l.t < since});
       }
     }
     if(gen !== it.gen) return;

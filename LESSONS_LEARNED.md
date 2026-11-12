@@ -154,6 +154,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #152 A press can't redraw the view that holds the control pressed (a list must still open, a file picker's input must survive): change that part in place, and make the view forget its last build.
 - #156 A panel opened from inside a heading inherits the heading's capitals and spacing; and text written for a builder must use only the forms the builder draws: render it before trusting it.
 - #157 Two things that each replace the login (the return from EVE, a renewal) must never run at once: the later one waits for the earlier, and a stale answer is dropped, never acted on.
+- #158 Of several files that each could be the live one, pick by when it was last written, not when it started; and when moving between them, skip what the old one already gave.
 
 **Checks and test machinery**
 
@@ -1064,6 +1065,20 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 158. Of several files that each could be the live one, pick by when it was last written, not when it started; and when moving between them, skip what the old one already gave
+
+- **What happened (found 2026-11-11 by the owner, fixed in v2026.11.12.1):** Intel showed "no lines yet" for over ten minutes while his intel
+  channel had new reports; kills still came in. Two of his characters had a log of that channel: his alt's started hours after his main's,
+  then went quiet when the alt logged off; his main's kept logging. `itScan` watched the log that STARTED last (your own only if it started
+  within an hour of that), so it read the quiet one, whose lines were all older than "forget reports after".
+- **How it was caught:** the owner's status line ("no lines yet"), then the timestamps of the newest line in each of the two files: one
+  hours old, one a minute old. Logging off and on (new files for both) made it work, which confirmed the pick.
+- **Do this instead:** compare files by their last-modified time (`getFile().lastModified`), at each look through the folder; keep the one
+  watched when another is only a moment newer, so two live copies don't flip. When the page does move, read the new file's end and skip
+  the lines the old one already gave (same time, who and text), and treat what's older than the last look as history, so a move neither
+  doubles reports nor floods old ones as new. Check with the stand-in folder's own write times (`intel_logs_check.py`) and a mutant of the
+  old pick.
 
 ## 157. Two things that each replace the login (the return from EVE, a renewal) must never run at once: the later one waits for the earlier, and a stale answer is dropped, never acted on
 
