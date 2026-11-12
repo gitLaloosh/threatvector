@@ -488,7 +488,7 @@ still gets its own targeted check and mutants.
 **How the numbers are worked out, for people:** `METHODOLOGY.md` (was the "How effective HP and DPS are
 calculated" note on the page, removed in v2026.10.14.51); each card's short version is its ⓘ panel (`CARD_INFO`).
 Change both when a calculation's assumptions change. Since build queue 036 (v2026.11.11.3) the panels are short (`check_subtext.py`:
-85 words open, 210 in all, Intel 410; `fleet` and `vs` exempt while hidden), the detail is in METHODOLOGY.md (its Intel, Who's in the
+85 words open, 210 in all, Intel 410), the detail is in METHODOLOGY.md (its Intel, Who's in the
 system and Sides sections too), and nothing on the page links to it (build queue 037 took 036's footer link out, the owner: "i dont want that link displayed"). A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
 panel never inherits a heading's case or spacing (`.info-body`; `info_panels_check.py`).
 
