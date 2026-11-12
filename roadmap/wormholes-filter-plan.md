@@ -1,5 +1,12 @@
 # Plan: the Intel map's Wormholes filter (wormhole mapping, phase 1)
 
+**BUILT** as v2026.11.12.4 (pull request #46, build queue 040, merged 2026-11-12). The build differs from this plan in five ways:
+1. `wh`, `wormhole` and `drifter` are intel keywords in `IT_KW`, so they are never read as pilot names.
+2. Wormholes added by hand show only on the Wormholes filter and in its list, never as live reports (Near You's tags, the Intel reports filter).
+3. The Intel example's sandbox sets the wormhole store aside, so the example never reads or writes it (LESSON #162).
+4. `itMapKey` includes the wormholes shown and their labels' ages, so the map redraws when they change, through the refreshes it already has.
+5. On a phone the filter bar is anchored to both edges of the map box, so its row can wrap and the list button sits under the filters (LESSON #161).
+
 Status: planned 2026-11-12 by a research session from main 1e22ec7 (v2026.11.12.3, build queue 039's map); **queued as 040** (2026-11-12, [stated] "Yes, queue it (Recommended)"; claude/build-queue/040-wormholes-filter.md). check_plan_sources: 0 problems. Mockup: `wormholes_filter_mockup.html` (sent to the owner 2026-11-12; see "Mockup").
 
 Backlog: "Intel map: Wormholes filter (wormhole mapping PHASE 1)" (memory areas/dscan-backlog-5.md). Phases 2–4 (your own jumps, the chain view, sharing) are in claude/roadmap/wormhole-mapping-plan.md (a draft; its D-list is for those phases).
