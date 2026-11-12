@@ -399,6 +399,13 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   `itMapRegCol`): its name line fades by one timeout per press; on a phone one 44 px button opens the row. The legend's filter line
   (`itMapFLegHtml`) is one line of one height for every filter, so Near You (as tall as the map's column) never moves. Past the reach:
   faint, no reports, but hover and press give routes (the owner: "yes"). `mapReach` reads "Map: within". `intel_map_look_check.py`.
+  Build queue 043 (roadmap/paths-to-you-plan.md, mockup `Claude outputs/paths_to_you_mockup.html`): the filter Paths to you, just before
+  Wormholes (always last, beside its list button `[data-it-whl]`): the galaxy's canvases hidden under an HTML overlay in `itm.box`
+  (`itPt`, `itPtPaint`): a top-down tree of every shortest stargate route to you from each system with hostiles, neutrals or kills
+  inside the alert range (`it.set.range`, never Near You's), each system a button; no security number; the count a 3 px tag (`.it-kl
+  kh/kn`); Camp / ESS / kills from Near You's own rules in short form (`itEssTagHtml`, `itGateTagHtml(st, now, true)`,
+  `itKillBadges(ks, 0, true)`). Written only when its text changes (from itMapDraw and itMapRefresh; ages on `it.drawNow`), never in
+  the Intel example's picture (`itPtLive`: the live canvas only). `paths_to_you_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a

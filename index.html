@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-H3MIDjvP/yAJg3vtJU0PSxXhKoSDNn63zC13Bjc4KWQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8xXaLokR6xoj4KDoyUBbgnW7yHQY7WEf9cxSvY/LAbA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2736,6 +2736,30 @@
     .it-whp-by{padding-left:0;}
   }
   .it-map-help{font:400 11.5px var(--sans); color:var(--text-dim);} .it-map-help.phone{display:none;}
+  /* build queue 043: Paths to you, a tree over the map's box (the galaxy's canvases hidden under it, its zoom buttons, "you" arrow, route
+     button and tip too; the help line under the box stays, the owner at the build review). Plain: no box or border, the name centred in its
+     security colour, what was reported and the badges under it, each line on the box's background so the gates pass behind the words. */
+  .it-map.pt-on .it-map-box > canvas{visibility:hidden;}
+  .it-map.pt-on .it-map-zoom, .it-map.pt-on .it-map-you, .it-map.pt-on .it-map-clr, .it-map.pt-on .it-map-tip{display:none !important;}
+  .pt-ov{position:absolute; inset:0; z-index:1;} .pt-ov[hidden]{display:none;}
+  .pt-vp{position:absolute; inset:0; overflow:hidden; touch-action:pan-y; cursor:grab; user-select:none; -webkit-user-select:none;} .pt-vp.drag, .pt-vp.drag button.pt-b{cursor:grabbing;}
+  .pt-in{position:relative; transform-origin:0 0;} .pt-svg{position:absolute; left:0; top:0; color:var(--danger); overflow:visible;}
+  .pt-head{position:absolute; z-index:2; left:12px; top:8px; right:150px; pointer-events:none; font:400 12px var(--sans); color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;} .pt-head b{color:var(--heading);}
+  .pt-z{position:absolute; z-index:2; right:8px; top:8px; display:flex; gap:4px;}
+  .pt-z button{min-width:32px; height:32px; min-height:32px; padding:0 8px; margin:0; border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92); color:var(--heading); font:600 14px var(--sans); cursor:pointer;}
+  .pt-z button:hover{background:var(--tag-fill-hover);} .pt-z button:focus-visible{outline:2px solid var(--cyan); outline-offset:-2px;}
+  .pt-row{position:absolute; font:600 10.5px var(--sans); letter-spacing:.06em; text-transform:uppercase; color:var(--text-dim); white-space:nowrap;}
+  .pt-e{fill:none; stroke:currentColor; opacity:.42;} .pt-tr .pt-e{opacity:.12;} .pt-tr .pt-e.lit{opacity:1;}
+  button.pt-b{position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; box-sizing:border-box; margin:0; padding:2px 4px; min-height:0;
+    border:0; border-radius:4px; background:transparent; color:var(--text); font:400 11.5px var(--sans); text-align:center; cursor:pointer; overflow:visible;}
+  button.pt-b:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;} button.pt-b[aria-pressed="true"]{outline:1px dashed var(--heading); outline-offset:2px;}
+  .pt-tr button.pt-b{opacity:.35;} .pt-tr button.pt-b.lit{opacity:1;}
+  .pt-t, .pt-sub, .pt-tags{display:flex; align-items:center; justify-content:center; gap:4px; min-width:0; max-width:100%; padding:0 4px; border-radius:4px; background:#0c1014; white-space:nowrap;}   /* the box's own background */
+  .pt-t .it-sn{font:700 13.5px var(--sans); overflow:hidden; text-overflow:ellipsis;} button.pt-b:hover .it-sn, button.pt-b:focus-visible .it-sn{text-decoration:underline; text-underline-offset:3px;}
+  button.pt-b.you .pt-t .it-sn{text-decoration:underline; text-decoration-color:var(--cyan); text-underline-offset:3px;} .pt-you{font:700 10px var(--sans); color:var(--cyan); letter-spacing:.06em;}
+  .pt-w{overflow:hidden; text-overflow:ellipsis; min-width:0;} .pt-age{flex:0 0 auto; font:400 10.5px var(--sans); color:var(--text-dim);} .pt-age::before{content:'· ';}
+  .pt-sub .it-kl, .pt-tags > *{margin-left:0; flex:0 0 auto;} .pt-tags{overflow:hidden;}
+  @media (max-width: 599px){ .pt-z button{min-width:44px; height:44px; min-height:44px;} .pt-head{right:12px; top:58px;} button.pt-b{font-size:11px;} }
   #itNearList > .it-nb.it-map-lit, #itFeedList > .it-fd.it-map-lit{outline:1px solid var(--cyan); outline-offset:-1px;}
   .it-map-rtag{display:inline-block; padding:0 6px; border-radius:3px; font:700 10px/16px var(--sans); text-transform:uppercase; letter-spacing:.4px; background:color-mix(in srgb, var(--cyan) 16%, #151b20); color:var(--cyan); white-space:nowrap;}
   /* the range stepper: − N + */
@@ -3105,7 +3129,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.4</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.5</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3480,9 +3504,9 @@ const CARD_INFO = {
   "**{card:itfeed}:** every report and kill as it comes in. **{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route to you.",
   "[How a line is read] Systems, ship names, counts (+5, x2) and words like clr and nv; the rest is looked up on ESI as pilot names, coloured by your {card:side}. A word it can't place stays plain text. To report a line read wrong, its copy button copies the line's shape with the names replaced.",
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Wormhole: wh, wormhole, drifter.",
-  "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear (hide friendlies, in Intel settings, leaves out systems with only friendlies).",
-  "[Kills] zKillboard's live feed within the Feed's kill range (10 jumps unless you change it), no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks the colours. Wormholes: reported, kept 24 h; its list button edits them. Systems past {card:itnear}'s range are faded.",
+  "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
+  "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks what it shows; Paths to you draws the routes from hostiles in your alert range as a tree. Wormholes: reported, kept 24 h; its list button edits them. Systems past {card:itnear}'s range are faded.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate only (no jump bridges or wormholes).",
   "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI; only wormhole reports are kept after you close the page. Intel runs in one tab at a time; another tab can take it over with Move Intel here.",
   "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit."
@@ -27974,15 +27998,21 @@ function itNearTagsHtml(st, now = Date.now()){
   const keep = now - it.set.forget * 60000, last = (a) => (a || []).filter(x => x.t >= keep).sort((x, y) => x.t - y.t).pop();
   const by = (x) => `reported by ${x.who}, ${itAgo(x.t)} ago`;
   if(st.kind === 'clear') return `<span class="it-gtag clr" title="${escapeHtml(`Reported clear by ${st.who}, ${itAgo(st.t)} ago`)}">Clear</span>`;
-  const out = [], ess = last(st.ess), at = ess ? null : last(st.essAt), bub = last(st.bub);
-  if(ess) out.push(`<span class="it-ess" title="${escapeHtml(`Linked to the ESS: ${by(ess)}`)}">ESS</span>`);
-  else if(at) out.push(`<span class="it-gtag gt it-essat" title="${escapeHtml(`At the ESS: ${by(at)}`)}">ESS</span>`);
+  const out = [], bub = last(st.bub), es = itEssTagHtml(st, now);
+  if(es) out.push(es);
   const g = itGateTagHtml(st, now).trim();
   if(g) out.push(g);
   if(bub) out.push(`<span class="it-gtag gt it-bub" title="${escapeHtml(`A bubble: ${by(bub)}`)}">Bubble</span>`);
   const wh = itWhNear(st.sys, now);   // build queue 040 (the owner: "add a wormhole badge to intel as well."): a wormhole Intel reported there
   if(wh) out.push(itWhBadgeHtml(wh.drifter, itWhBadgeTitle(wh)));
   return out.join('');
+}
+// the ESS tag (red: linked to it; white: someone at it), Near You's and the Paths to you tree's (build queue 043: one copy of the rule)
+function itEssTagHtml(st, now = Date.now()){
+  const keep = now - it.set.forget * 60000, last = (a) => (a || []).filter(x => x.t >= keep).sort((x, y) => x.t - y.t).pop();
+  const by = (x) => `reported by ${x.who}, ${itAgo(x.t)} ago`, ess = last(st.ess), at = ess ? null : last(st.essAt);
+  if(ess) return `<span class="it-ess" title="${escapeHtml(`Linked to the ESS: ${by(ess)}`)}">ESS</span>`;
+  return at ? `<span class="it-gtag gt it-essat" title="${escapeHtml(`At the ESS: ${by(at)}`)}">ESS</span>` : '';
 }
 // v2026.10.31.6: a system's name as the button that shows only it in the Feed (a filter chip since v2026.11.07.1; pressed again, or the chip's
 // ×, that filter off); the same in Near You and on Feed rows (the owner: "we dont filter the Near You list though")
@@ -27998,7 +28028,7 @@ const IT_ANALYZE = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" s
 // no gate could be read); 2 kills or more at one gate in the time window with no such report: the same tag in orange; a report
 // that only places them on a gate: grey, "5BTK-M gate". "toward you" when that gate leads to a system nearer you.
 const IT_CAMP_KILLS = 2;
-function itGateTagHtml(st, now = Date.now()){
+function itGateTagHtml(st, now = Date.now(), short = false){   // short (build queue 043, the Paths to you tree): a camp's word only, the gate in its hover
   const keep = now - it.set.forget * 60000, G = (st.gates || []).filter(x => x.t >= keep);
   if(!G.length) return '';
   const gname = (g) => g ? `${itSysName(g)} gate` : '';
@@ -28012,12 +28042,13 @@ function itGateTagHtml(st, now = Date.now()){
     if(kc){ cls = 'camp kz'; gate = kc[0]; }
     else { const g = G.filter(x => x.src === 'rep' && x.gate).sort((a, b) => b.t - a.t)[0]; if(!g) return ''; cls = 'gt'; gate = g.gate; }
   }
-  text = cls === 'gt' ? gname(gate) : `Camp${gate ? ` · ${gname(gate)}` : ''}`;
+  if(short && cls === 'gt') return '';   // the tree shows camps only
+  text = short ? 'Camp' : cls === 'gt' ? gname(gate) : `Camp${gate ? ` · ${gname(gate)}` : ''}`;
   const why = [];
   if(rep) why.push(`A camp${gate ? ` on the ${gname(gate)}` : ''}: reported by ${rep.who}, ${itAgo(rep.t)} ago`);
   else if(cls === 'gt'){ const g = G.filter(x => x.src === 'rep' && x.gate).sort((a, b) => b.t - a.t)[0]; why.push(`Reported on the ${gname(gate)} by ${g.who}, ${itAgo(g.t)} ago (no camp words)`); }
   for(const [g, n] of kills) if(g) why.push(`${n} kill${n === 1 ? '' : 's'} at the ${gname(g)} in the last ${it.set.forget} min (zKillboard)${cls === 'camp kz' && g === gate ? ': a camp from kills alone' : ''}`);
-  const my = itMySys(), tw = cls !== 'gt' && gate && my ? (() => { const a = itJumps(my, gate), b = itJumps(my, st.sys); return a !== null && b !== null && a < b; })() : false;
+  const my = itMySys(), tw = !short && cls !== 'gt' && gate && my ? (() => { const a = itJumps(my, gate), b = itJumps(my, st.sys); return a !== null && b !== null && a < b; })() : false;
   if(tw) why.push(`The ${gname(gate)} leads toward you: ${itSysName(gate)} is ${itJumps(my, gate)} jump${itJumps(my, gate) === 1 ? '' : 's'} from you`);
   return `<span class="it-gtag ${cls}" title="${escapeHtml(why.join('. '))}">${escapeHtml(text)}</span>${tw ? '<span class="it-tw">toward you</span>' : ''}`;
 }
@@ -28116,7 +28147,7 @@ function itJumpsHtml(j){ return j === null ? '–' : j === 0 ? '<span class="it-
 // v.100: kills by who died (the owner: "if it was an enemy being killed by allies or the other way around")
 const IT_KILL_WORD = {f: ['kf', 'Friendly lost', 'friendly lost', 'friendlies lost'], h: ['kh', 'Hostile killed', 'hostile killed', 'hostiles killed'], n: ['kn', 'Neutral killed', 'neutral killed', 'neutrals killed']};
 function itKillWord(e){ return IT_KILL_WORD[e.kill.victim.side] || IT_KILL_WORD.n; }
-function itKillBadges(ks, sys){
+function itKillBadges(ks, sys, short = false){   // short (build queue 043, the Paths to you tree): "N kills", what and the value in its hover
   // v2026.11.07.1 (build queue 010; the owner: "should combine the value of those kills"): each badge with its kills' zKillboard values together
   const by = {f: 0, h: 0, n: 0}, isk = {f: 0, h: 0, n: 0}, valued = {f: 0, h: 0, n: 0};
   for(const k of ks){ const v = IT_KILL_WORD[k.v] ? k.v : 'n'; by[v]++; if(k.isk > 0){ isk[v] += k.isk; valued[v]++; } }
@@ -28125,6 +28156,7 @@ function itKillBadges(ks, sys){
   return ['f', 'h', 'n'].filter(v => by[v]).map(v => {
     const money = isk[v] ? `<span class="isk">${itIsk(isk[v])}</span>` : '';
     const label = `${by[v]} ${IT_KILL_WORD[v][by[v] === 1 ? 2 : 3]}${money}`;
+    if(short) return `<span class="it-kl ${escapeHtml(IT_KILL_WORD[v][0])}" title="${escapeHtml(`${by[v]} ${IT_KILL_WORD[v][by[v] === 1 ? 2 : 3]} in the last ${it.set.forget} min${isk[v] ? `, ${itIsk(isk[v])} ISK` : ''} (zKillboard)`)}">${escapeHtml(`${by[v]} kill${by[v] === 1 ? '' : 's'}`)}</span>`;
     if(!sys) return ` <span class="it-kl ${IT_KILL_WORD[v][0]}">${label}</span>`;
     const worth = isk[v] ? `. Together ${Math.round(isk[v]).toLocaleString('en-US')} ISK (zKillboard's values${valued[v] < by[v] ? `; ${valued[v]} of ${by[v]} kills have a value` : ''})` : '';
     const title = (by[v] === 1 ? `Open this kill in the ${cardName('fleet')} tab` : `Open these ${by[v]} kills in the ${cardName('fleet')} tab, the newest first`) + worth;
@@ -29049,7 +29081,7 @@ function itMapRefresh(force){
   itm.el.querySelector('[data-im-z="me"]').hidden = !!why;   // nothing to center on
   itMapLegend();
   const mc = document.querySelector('[data-it-mapctx]'); if(mc) mc.textContent = itMapCtx();
-  if(why){ itm.home = -1; itm.you.hidden = true; return; }
+  if(why){ itm.home = -1; itm.you.hidden = true; itPtHide(); return; }
   const phone = typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches;
   const w = itm.box.clientWidth, h = Math.round(phone ? Math.min(460, Math.max(320, w * 1.1)) : Math.max(IT_MAP_MIN_H, Math.min(560, w * 0.72)));
   const reach = itMapReach();
@@ -29070,6 +29102,7 @@ function itMapRefresh(force){
   itm.rep = itMapReports();
   const key = itMapKey();
   if(force || laid || itm.stale || key !== itm.key){ itm.key = key; itm.stale = false; itMapDraw(); }
+  else if(itPtLive()) itPtPaint();   // build queue 043: the tree shows more than the map's key holds (ships, ages, tags); it compares its own text
   if(itm.beaconPending){ itm.beaconPending = false; itMapBeacon(); }
 }
 // what the map shows, as text: drawn again only when it changes. v2026.11.07.1: the system chip. Build queue 040: the wormholes shown and
@@ -29218,6 +29251,10 @@ const IT_MAP_FILTERS = [
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3.5h13v8.5H8L4.5 15v-3h-2z"/></svg>'},
   {k: 'kills', name: 'Kills from Intel', note: 'systems with kills in Intel in amber, the rest dimmed',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke-width="2.2"/></svg>'},
+  // build queue 043 (the owner: "the wormhole filter button needs to be furthest right so it sits next to it's wormhole list button. also
+  // fix the orientation of the "path to you" filter button."): before Wormholes; the icon top down like the tree, you filled at the top
+  {k: 'paths', name: 'Paths to you', note: 'the gate routes from hostiles inside your alert range to you, as a tree',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="3.5" r="2.2" fill="currentColor"/><circle cx="3.5" cy="14.5" r="1.8"/><circle cx="9" cy="14.5" r="1.8"/><circle cx="14.5" cy="14.5" r="1.8"/><path d="M3.8 12.7C4 9 9 9 9 5.7M14.2 12.7C14 9 9 9 9 5.7M9 12.7v-7"/></svg>'},
   // build queue 040 (the owner: "All of them, anywhere"): every kept wormhole, past "Map: within" too
   {k: 'wh', name: 'Wormholes', note: 'wormholes Intel reported or you added, kept for the time set in Intel settings; the rest dimmed',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 2.5a6.5 6.5 0 1 1-6.5 6.5"/><path d="M9 5.5a3.5 3.5 0 1 1-3.5 3.5"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>'}
@@ -29254,6 +29291,8 @@ function itMapDraw(){
   if(!itm.P || itm.home < 0) return;
   itm.draws++;
   itm.wh = itMapWh();   // build queue 040: the kept wormholes, and those shown as reports (itMapFcol, itMapDimmed, the labels and the hover read it)
+  if(itPtLive()){ itPtPaint(); return; }   // build queue 043: the tree covers the map, so the galaxy under it isn't drawn
+  if(itm.cv.parentNode === itm.box) itPtHide();
   const T = itMapTable(), n = T.n, c = itm.cv.getContext('2d'), dpr = window.devicePixelRatio || 1, W = itm.W, H = itm.H, v = itm.view, P = itm.P, Q = itm.Q, D = itm.D, R = itm.reach, near = itNearReach();
   const C = {hostile: itMapCol('--danger', '#c65b4e'), neutral: '#b9c3ca', friendly: itMapCol('--side-friendly', '#4f8fe0'), cyan: itMapCol('--cyan', '#4fc3d9'), amber: itMapCol('--amber', '#d99a3c'), clear: itMapCol('--it-clear', '#3fb950'), gate: '#26303b', gateX: '#3a4753'};
   c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
@@ -29449,6 +29488,7 @@ function itMapFLegHtml(){
     case 'region': return '<b>Region</b> a colour each; neighbours differ';
     case 'reports': return '<b>Intel reports</b> bright: a report · dim: none';
     case 'kills': return `<b>Kills</b> ${itMapSwHtml([IT_MAP_KILL])} kills in Intel · dim: none`;
+    case 'paths': return `<b>Paths to you</b> ${itMapSwHtml([itMapCol('--danger', '#c65b4e')])} hostile ${itMapSwHtml(['#b9c3ca'])} neutral · within ${Number(it.set.range)} jumps (your alert range) · lines point toward you`;   // 043
     case 'wh': return `<b>Wormholes</b> ${itMapSwHtml([itMapWhCol({})])} reported ${itMapSwHtml([itMapWhCol({drifter: true})])} Drifter · last ${Number(itWhStore().keepH)} h · dim: none`;   // 040
     default: return `<b>Security</b> 1.0 ${itMapSwHtml(IT_MAP_SEC.slice().reverse())} 0.0`;
   }
@@ -29456,6 +29496,7 @@ function itMapFLegHtml(){
 function itMapFLegTitle(){
   return {jumps: 'Jumps by stargate from your system, 0 to 10 or more; grey: no gate route to you', region: 'One colour per region; two regions joined by a gate never share one',
     reports: 'Systems with a report or a kill in Intel bright, the rest dimmed', kills: 'Systems with kills in Intel in amber, the rest dimmed',
+    paths: 'Every shortest stargate route to you from a system with hostiles, neutrals or kills inside your alert range; a system on several routes is shown once. Hover or press a system to trace its routes.',
     wh: `Systems where Intel reported a wormhole (wh, wormhole or drifter) or you added one, in the last ${Number(itWhStore().keepH)} h, anywhere on the map; the rest dimmed`}[itm.filter] || 'Each system in its security colour, 1.0 to 0.0 and below';
 }
 function itMapLegend(){
@@ -29463,6 +29504,211 @@ function itMapLegend(){
   const h = `<div class="it-map-fl" title="${escapeHtml(itMapFLegTitle())}">${itMapFLegHtml()}</div><span><svg class="pin" width="11" height="15" viewBox="-1 -1 16 22" aria-hidden="true"><path d="M7 20C5.5 16 0 12 0 7a7 7 0 0 1 14 0c0 5-5.5 9-7 13z" fill="#fff" stroke="#0c1014" stroke-width="2"/><circle cx="7" cy="7" r="2.6" fill="#0c1014"/></svg>you</span><span>${ring('var(--danger)', 6)}hostile</span><span>${ring('#b9c3ca', 6)}neutral</span><span>${ring('var(--side-friendly)', 6)}friendly</span><span class="sz">${ring('#9aa6ae', 4)}solo ${ring('#9aa6ae', 6)}2–10 ${ring('#9aa6ae', 8.5)}11+</span>${IT_WH_LEG_HTML}`
     + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span><span><i class="dot"></i>within your alert range (${it.set.range})</span><span>faded: past ${escapeHtml(cardName('itnear'))} (${itNearReach()})</span><span>faint: past ${escapeHtml(cardName('itmap'))}: within (${Number(itMapReach())})</span><span>✕ kills</span>`;
   if(leg._h !== h){ leg.innerHTML = h; leg._h = h; }
+}
+// ---- build queue 043: "Paths to you" (Project doc roadmap/paths-to-you-plan.md, mockup Claude outputs/paths_to_you_mockup.html; the owner:
+// "a tree view of paths to you from reported hostiles within the "near you" alert range", then "alert range", "every shortest route", top
+// down with "pan and zoom rather than scrolling", borderless, "lose the security status number" and "add badges for gate camps, ess and
+// kills"). While that filter is on, the galaxy gives way to a tree of the stargate routes from every system with hostiles, neutrals or
+// kills inside your alert range to you: you at the top, one row per jump, each system a button over an SVG of the gates. Built from the
+// map's own reports (itm.rep); written only when its text changes (itPtPaint, from itMapDraw and itMapRefresh, no timer of its own,
+// LESSON #120), its ages on the card's clock (it.drawNow, so they move with Intel's age refresh). Pan and zoom move one transform.
+const IT_PT_KMIN = 0.3, IT_PT_KMAX = 2.5, IT_PT_BW = 150, IT_PT_BH = 60, IT_PT_ROW = 100, IT_PT_GAP = 14, IT_PT_LAB = 70, IT_PT_PAD = 12;
+const itPt = {ov: null, G: null, html: '', pin: -1, hover: -1, v: null, fitKey: '', drag: null, moved: false, paints: 0};
+function itPtPhone(){ return typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches; }
+// the live map with the filter on (never the Intel example's picture, which borrows itm with a canvas of its own)
+function itPtLive(){ return itm.filter === 'paths' && !!itm.el && !!itm.box && itm.cv.parentNode === itm.box; }
+// the systems the routes start from: a report that is hostile or neutral, or kills (not a clear), within your alert range (the owner)
+function itPtSources(){
+  const D = itm.D, R = it.set.range, out = [];
+  for(const [i, r] of itm.rep) if(r.side !== 'clear' && (r.side === 'hostile' || r.side === 'neutral' || r.kills > 0) && D[i] >= 0 && D[i] <= R) out.push(i);
+  return out;
+}
+// every shortest route from each source to you (the owner: "every shortest route"): a breadth-first search from the source, no deeper than
+// its own distance; x is on a route when D[x] + d(x) = D[source], a gate x -> y when both are and y is one jump nearer you
+function itPtBuild(){
+  const T = itMapTable(), D = itm.D, R = it.set.range, home = itm.home, src = itPtSources();
+  const nodes = new Map(), edges = new Map();   // i -> {i, d, from}; "x>y" -> {x, y, from} (y one jump nearer you)
+  const node = (i) => { let n = nodes.get(i); if(!n){ n = {i, d: D[i], from: new Set()}; nodes.set(i, n); } return n; };
+  node(home);
+  for(const h of src){
+    node(h).from.add(h);
+    const dh = new Map([[h, 0]]), q = [h];
+    for(let k = 0; k < q.length; k++){ const x = q[k], dx = dh.get(x); if(dx >= D[h]) continue; for(const y of T.adj[x]) if(!dh.has(y)){ dh.set(y, dx + 1); q.push(y); } }
+    const on = (x) => dh.has(x) && D[x] >= 0 && D[x] + dh.get(x) === D[h];
+    for(const x of dh.keys()) if(on(x)){
+      node(x).from.add(h);
+      for(const y of T.adj[x]) if(on(y) && D[y] === D[x] - 1){ const k = x + '>' + y; (edges.get(k) || edges.set(k, {x, y, from: new Set()}).get(k)).from.add(h); }
+    }
+  }
+  // rows by jumps from you, ordered so the lines cross as little as they can: outward by where each system leads, then back by what feeds it
+  const L = []; for(const n of nodes.values()) (L[n.d] = L[n.d] || []).push(n.i);
+  const deep = Math.max(0, ...L.keys()); for(let d = 0; d <= deep; d++) L[d] = L[d] || [];
+  const E = [...edges.values()], down = (x) => E.filter(e => e.x === x).map(e => e.y), up = (y) => E.filter(e => e.y === y).map(e => e.x);
+  const pos = new Map([[home, 0]]), nm = (i) => itSysName(itGraphGet().ids[i]);
+  const bary = (list) => list.length ? list.reduce((s, j) => s + (pos.has(j) ? pos.get(j) : 0), 0) / list.length : 1e9;
+  for(let d = 1; d <= deep; d++){ L[d].sort((a, b) => bary(down(a)) - bary(down(b)) || nm(a).localeCompare(nm(b))); L[d].forEach((i, k) => pos.set(i, k)); }
+  for(let d = deep - 1; d >= 1; d--){ L[d].sort((a, b) => { const ua = up(a), ub = up(b); return (ua.length ? bary(ua) : pos.get(a)) - (ub.length ? bary(ub) : pos.get(b)) || pos.get(a) - pos.get(b); }); L[d].forEach((i, k) => pos.set(i, k)); }
+  return {R, src, nodes, edges, L, deep};
+}
+// places, top down: row 1 spread under you; each farther row under the systems it leads to (their average), pushed apart not to overlap
+function itPtPlace(G){
+  const bw = IT_PT_BW, gap = IT_PT_GAP, step = bw + gap, most = Math.max(1, ...G.L.map(l => l.length)), deep = Math.max(1, G.deep);
+  const width = IT_PT_PAD * 2 + IT_PT_LAB + most * bw + (most - 1) * gap, top0 = 16, P = new Map(), lo = IT_PT_LAB + IT_PT_PAD, hi = width - IT_PT_PAD - bw;
+  const place = (d, k, n) => [IT_PT_LAB + (width - IT_PT_LAB - (n * bw + (n - 1) * gap)) / 2 + k * step, top0 + d * IT_PT_ROW];
+  G.L.forEach((list, d) => {
+    if(d < 2){ list.forEach((i, k) => P.set(i, place(d, k, list.length))); return; }
+    const want = list.map(i => { const to = [...G.edges.values()].filter(e => e.x === i).map(e => P.get(e.y)[0]); return [i, to.reduce((a, x) => a + x, 0) / to.length]; }).sort((a, b) => a[1] - b[1]);
+    const xs = want.map(w => w[1]);
+    for(let k = 1; k < xs.length; k++) xs[k] = Math.max(xs[k], xs[k - 1] + step);
+    const over = xs.length ? xs[xs.length - 1] - hi : 0;
+    if(over > 0) for(let k = xs.length - 1; k >= 0; k--){ xs[k] -= over; if(k && xs[k - 1] > xs[k] - step) xs[k - 1] = xs[k] - step; else break; }
+    const under = xs.length ? lo - xs[0] : 0;
+    if(under > 0) for(let k = 0; k < xs.length; k++) xs[k] = Math.max(xs[k], k ? xs[k - 1] + step : lo);
+    want.forEach(([i], k) => P.set(i, [xs[k], top0 + d * IT_PT_ROW]));
+  });
+  Object.assign(G, {P, cw: width, ch: top0 + deep * IT_PT_ROW + IT_PT_BH + 16, top0, youX: place(0, 0, 1)[0] + bw / 2});
+}
+// a system's badges (the owner: "add badges for gate camps, ess and kills"): Near You's own tags, cut short (itEssTagHtml, itGateTagHtml's
+// and itKillBadges' short forms: one copy of each rule)
+function itPtTagsHtml(st, now){
+  if(!st || st.kind === 'clear') return '';
+  const ks = (st.kills || []).filter(x => x.t >= now - it.set.forget * 60000);
+  if(!itEssTagHtml(st, now) && !itGateTagHtml(st, now, true) && !ks.length) return '';
+  return `<span class="pt-tags">${itEssTagHtml(st, now)}${itGateTagHtml(st, now, true)}${itKillBadgesHtml(ks)}</span>`;
+}
+function itKillBadgesHtml(ks){ return itKillBadges(ks, 0, true); }   // the short kill badges, as a builder for the tree's markup
+function itPtHeadHtml(G){   // the build review (the owner: "sounds good"): the count only; the range is in the legend line, the drag help under the box
+  const nh = G.src.length;
+  return nh ? `<b>${escapeHtml(`${nh} system${nh === 1 ? '' : 's'}`)}</b> with hostiles` : escapeHtml(`No hostiles within ${G.R} jump${G.R === 1 ? '' : 's'}`);
+}
+// what was reported, under the name: the count (a tag in the kill tags' colours, 3 px corners: the build review, the owner: "good call"),
+// the ships or "hostiles" / "neutrals", the age; YOU under your system; nothing under a system only on the way
+function itPtSubHtml(n, now){
+  const r = itm.rep.get(n.i), bad = r && (r.side === 'hostile' || r.side === 'neutral') && r.n > 0 ? r : null;
+  if(!bad) return n.i === itm.home ? '<span class="pt-sub"><span class="pt-you">YOU</span></span>' : '';
+  const L = itLive(bad.st, now), ships = L.ships.map(x => x.n > 1 ? `${x.n}× ${x.name}` : x.name), what = ships.length ? ships.join(', ') : `${bad.side}${bad.n === 1 ? '' : 's'}`;
+  return `<span class="pt-sub"><span class="it-kl ${escapeHtml(bad.side === 'neutral' ? 'kn' : 'kh')} pt-n">${Number(bad.n)}</span><span class="pt-w">${escapeHtml(what)}</span><span class="pt-age">${escapeHtml(itAgo(bad.t))}</span></span>`;
+}
+function itPtNodeHtml(G, n, now){
+  const [x, y] = G.P.get(n.i), T = itMapTable(), r = itm.rep.get(n.i), name = itSysName(itGraphGet().ids[n.i]);
+  const side = r && (r.side === 'hostile' || r.side === 'neutral') && r.n > 0 ? ` ${r.side}` : '', cls = `pt-b${n.i === itm.home ? ' you' : ''}${side}`;
+  const tip = `${name} (${itMapSecText(T.sec[n.i])}) · ${n.d === 0 ? 'your system' : `${n.d} jump${n.d === 1 ? '' : 's'} from you`}`;
+  return `<button type="button" class="${escapeHtml(cls)}" data-pt="${Number(n.i)}" style="left:${Math.round(x)}px;top:${Math.round(y)}px;width:${Number(IT_PT_BW)}px;height:${Number(IT_PT_BH)}px" title="${escapeHtml(tip)}">`
+    + `<span class="pt-t"><span class="it-sn s${Number(itMapSecClass(T.sec[n.i]))}">${escapeHtml(name)}</span></span>${itPtSubHtml(n, now)}${itPtTagsHtml(r && r.st, now)}</button>`;
+}
+// the row labels on the left, then every system
+function itPtBodyHtml(G, now){
+  let out = '';
+  for(let d = 0; d <= Math.max(1, G.deep); d++) out += `<div class="pt-row" style="left:${Number(IT_PT_PAD)}px;top:${Math.round(G.top0 + d * IT_PT_ROW + IT_PT_BH / 2 - 7)}px">${escapeHtml(d === 0 ? 'You' : `${d} jump${d === 1 ? '' : 's'}`)}</div>`;
+  for(const n of G.nodes.values()) out += itPtNodeHtml(G, n, now);
+  return out;
+}
+// the gates, curved from the top of the farther system to the bottom of the nearer one, an arrow toward you, thicker where more come through
+function itPtGatesHtml(G){
+  let out = '<defs><marker id="ptArr" viewBox="0 0 8 8" refX="7" refY="4" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>';
+  for(const e of G.edges.values()){
+    const [x1, y1] = G.P.get(e.x), [x2, y2] = G.P.get(e.y), heads = [...e.from].reduce((s, h) => s + (itm.rep.get(h) ? itm.rep.get(h).n : 1), 0);
+    const ax = x1 + IT_PT_BW / 2, bx = x2 + IT_PT_BW / 2, by = y2 + IT_PT_BH, my = (y1 + by) / 2;
+    out += `<path class="pt-e" data-x="${Number(e.x)}" data-y="${Number(e.y)}" d="M${Math.round(ax)} ${Math.round(y1)}C${Math.round(ax)} ${Math.round(my)} ${Math.round(bx)} ${Math.round(my)} ${Math.round(bx)} ${Math.round(by + 2)}" stroke-width="${Math.min(5, 1.4 + heads / 3).toFixed(1)}" marker-end="url(#ptArr)"/>`;
+  }
+  return out;
+}
+function itPtMount(){
+  if(itPt.ov && itPt.ov.parentNode === itm.box) return itPt.ov;
+  const ov = document.createElement('div'); ov.className = 'pt-ov'; ov.hidden = true;
+  ov.innerHTML = '<div class="pt-vp"><div class="pt-in"><svg class="pt-svg" aria-hidden="true"></svg><div class="pt-nodes"></div></div></div><div class="pt-head"></div>'
+    + '<div class="pt-z"><button type="button" data-pt-z="in" aria-label="Zoom in" title="Zoom in (or the mouse wheel)">+</button><button type="button" data-pt-z="out" aria-label="Zoom out" title="Zoom out (or the mouse wheel)">−</button><button type="button" data-pt-z="fit" aria-label="Fit the tree" title="Fit the whole tree, you at the top">Fit</button></div>';
+  itm.box.insertBefore(ov, itm.box.querySelector('.it-map-fb'));
+  itPt.ov = ov; itPt.html = '';
+  itPtBind(ov);
+  return ov;
+}
+function itPtHide(){
+  if(itm.el) itm.el.classList.remove('pt-on');
+  if(itPt.ov && !itPt.ov.hidden){ itPt.ov.hidden = true; itPt.fitKey = ''; itPt.pin = -1; itPt.hover = -1; }   // fitted again when shown
+}
+function itPtPaint(){
+  if(!itPtLive() || itm.home < 0 || !itm.D || !itMapTable()){ itPtHide(); return; }
+  const ov = itPtMount(), now = it.drawNow || Date.now();
+  ov.hidden = false; itm.el.classList.add('pt-on');
+  const G = itPtBuild(); itPtPlace(G);
+  itPt.G = G;
+  itBuildAt(now, () => {   // the ages on the card's clock
+    const text = [G.cw, G.ch, itPtHeadHtml(G), itPtGatesHtml(G), itPtBodyHtml(G, now)].join('|');
+    if(text === itPt.html) return;   // written only when what it shows changed
+    itPt.html = text; itPt.paints++;
+    const inn = ov.querySelector('.pt-in'), svg = ov.querySelector('.pt-svg');
+    inn.style.width = `${G.cw}px`; inn.style.height = `${G.ch}px`; svg.setAttribute('width', G.cw); svg.setAttribute('height', G.ch);
+    svg.innerHTML = itPtGatesHtml(G); ov.querySelector('.pt-nodes').innerHTML = itPtBodyHtml(G, now); ov.querySelector('.pt-head').innerHTML = itPtHeadHtml(G);
+    if(itPt.pin >= 0 && !G.nodes.has(itPt.pin)) itPt.pin = -1;
+  });
+  const fk = [itm.home, it.set.range, itm.box.clientWidth, itm.H].join('|');   // fitted when shown, when you move, the range changes or the box resizes
+  if(!itPt.v || fk !== itPt.fitKey){ itPt.fitKey = fk; itPtFit(); } else itPtApply();
+  itPtLight();
+}
+function itPtApply(){ const v = itPt.v, inn = itPt.ov && itPt.ov.querySelector('.pt-in'); if(v && inn) inn.style.transform = `translate(${v.tx}px, ${v.ty}px) scale(${v.k})`; }
+function itPtFit(){
+  const G = itPt.G; if(!G) return;
+  const phone = itPtPhone(), W = itm.box.clientWidth, H = itm.H, top = phone ? 84 : 34, foot = phone ? 64 : 56;
+  const all = Math.min(1.2, (W - 16) / G.cw, (H - top - foot) / G.ch);
+  const k = Math.max(IT_PT_KMIN, phone ? Math.max(0.75, all) : all);   // on a phone no smaller than 0.75, centred on you (two fingers to look around)
+  itPt.v = {k, tx: Math.round(G.cw * k <= W ? (W - G.cw * k) / 2 : W / 2 - G.youX * k), ty: top}; itPtApply();
+}
+function itPtZoomAt(x, y, f){ const v = itPt.v; if(!v) return; const k = Math.max(IT_PT_KMIN, Math.min(IT_PT_KMAX, v.k * f)); v.tx = x - (x - v.tx) * k / v.k; v.ty = y - (y - v.ty) * k / v.k; v.k = k; itPtApply(); }
+// the map's own rules (itMapBind): a mouse drags and the wheel zooms about the pointer; on touch two fingers move and pinch, one scrolls the page
+function itPtBind(ov){
+  const vp = ov.querySelector('.pt-vp'), pts = new Map(), at = (e) => { const r = vp.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  vp.addEventListener('wheel', (e) => { e.preventDefault(); const [x, y] = at(e); itPtZoomAt(x, y, Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0015))); }, {passive: false});
+  vp.addEventListener('pointerdown', (e) => {
+    if(e.pointerType === 'mouse' && e.button !== 0) return;
+    pts.set(e.pointerId, at(e)); itPt.moved = false;
+    if(e.pointerType !== 'touch' || pts.size === 2) itPt.drag = {pts: new Map(pts), v: {...itPt.v}};
+  });
+  vp.addEventListener('pointermove', (e) => {
+    if(!pts.has(e.pointerId) || !itPt.drag || !itPt.v) return;
+    pts.set(e.pointerId, at(e));
+    const a = [...itPt.drag.pts.values()], b = [...pts.values()], v0 = itPt.drag.v;
+    if(e.pointerType === 'touch'){
+      if(a.length < 2 || b.length < 2) return;
+      const m0 = [(a[0][0] + a[1][0]) / 2, (a[0][1] + a[1][1]) / 2], m1 = [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2];
+      const s = Math.hypot(b[0][0] - b[1][0], b[0][1] - b[1][1]) / Math.max(1, Math.hypot(a[0][0] - a[1][0], a[0][1] - a[1][1])), k = Math.max(IT_PT_KMIN, Math.min(IT_PT_KMAX, v0.k * s));
+      itPt.v = {k, tx: m1[0] - (m0[0] - v0.tx) * k / v0.k, ty: m1[1] - (m0[1] - v0.ty) * k / v0.k}; itPt.moved = true; itPtApply(); e.preventDefault(); return;
+    }
+    const [x0, y0] = a[0], [x1, y1] = b[0];
+    if(!itPt.moved && Math.hypot(x1 - x0, y1 - y0) < 4) return;
+    if(!itPt.moved){ itPt.moved = true; try{ vp.setPointerCapture(e.pointerId); }catch(err){ } vp.classList.add('drag'); }
+    itPt.v = {k: v0.k, tx: v0.tx + x1 - x0, ty: v0.ty + y1 - y0}; itPtApply();
+  });
+  const end = (e) => { pts.delete(e.pointerId); if(pts.size < (e.pointerType === 'touch' ? 2 : 1)){ itPt.drag = null; vp.classList.remove('drag'); } };
+  vp.addEventListener('pointerup', end); vp.addEventListener('pointercancel', end);
+  const sysOf = (t) => { const b = t && t.closest && t.closest('[data-pt]'); return b ? Number(b.dataset.pt) : -1; };
+  ov.addEventListener('pointerover', (e) => { const v = sysOf(e.target); if(v !== itPt.hover){ itPt.hover = v; itPtLight(); } });
+  ov.addEventListener('pointerleave', () => { if(itPt.hover !== -1){ itPt.hover = -1; itPtLight(); } });
+  ov.addEventListener('focusin', (e) => { itPt.hover = sysOf(e.target); itPtLight(); });
+  ov.addEventListener('focusout', () => { itPt.hover = -1; itPtLight(); });
+  ov.addEventListener('click', (e) => {
+    const z = e.target.closest('[data-pt-z]');
+    if(z){ if(z.dataset.ptZ === 'fit') itPtFit(); else itPtZoomAt(itm.box.clientWidth / 2, itm.H / 3, z.dataset.ptZ === 'in' ? 1.25 : 0.8); return; }
+    if(itPt.moved){ itPt.moved = false; return; }   // a drag that moved is never a press
+    const v = sysOf(e.target); if(v < 0) return;
+    itPt.pin = itPt.pin === v || v === itm.home ? -1 : v; itPtLight();
+  });
+  ov.addEventListener('keydown', (e) => { if(e.key === 'Escape' && itPt.pin >= 0){ e.stopPropagation(); itPt.pin = -1; itPtLight(); } });
+}
+// the system under the pointer (or focused), else the one pressed: every gate toward you and back toward what feeds it, for the sources
+// whose routes go through it; the rest fades
+function itPtLight(){
+  const ov = itPt.ov, G = itPt.G; if(!ov || !G) return;
+  const f = itPt.hover >= 0 ? itPt.hover : itPt.pin, inn = ov.querySelector('.pt-in'), keepN = new Set(), keepE = new Set();
+  const tr = f >= 0 && f !== itm.home && G.nodes.has(f);
+  if(tr){
+    const hs = G.nodes.get(f).from, E = [...G.edges.values()].filter(e => [...e.from].some(h => hs.has(h)));
+    const walk = (next) => { const st = [f]; while(st.length){ const x = st.pop(); if(keepN.has(x) && x !== f) continue; keepN.add(x); for(const e of E){ const [a, b] = next(e); if(a === x){ keepE.add(`${e.x}>${e.y}`); if(!keepN.has(b)) st.push(b); } } } };
+    walk((e) => [e.x, e.y]); walk((e) => [e.y, e.x]);
+  }
+  inn.classList.toggle('pt-tr', tr);
+  for(const b of inn.querySelectorAll('.pt-b')){ const i = Number(b.dataset.pt); b.classList.toggle('lit', keepN.has(i)); b.setAttribute('aria-pressed', String(itPt.pin === i)); }
+  for(const p of inn.querySelectorAll('.pt-e')) p.classList.toggle('lit', keepE.has(`${p.dataset.x}>${p.dataset.y}`));
 }
 // 039: any system on the map, past the reach too (its tip and route); zoomed in, anywhere on its circle
 function itMapPick(x, y){ const g = itMapGatePx(), rr = g >= 34 ? Math.max(14, Math.min(15, g * 0.2) + 2) : 14; let best = -1, bd = rr * rr; for(let i = 0; i < itm.D.length; i++){ const d = (itm.Q[2 * i] - x) ** 2 + (itm.Q[2 * i + 1] - y) ** 2; if(d < bd){ bd = d; best = i; } } return best; }

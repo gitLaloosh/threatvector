@@ -356,7 +356,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   pilots (1 when a kill had only 1 or 2 attackers) are one fleet, the biggest first; victims never link kills. The line
   under the title says when a kill was last read.
 - **Near You and alerts:** everyone and every ship reported in a system in the time set (15 minutes unless you change
-  it), until someone reports it clear. With sounds or notifications turned on in Intel settings (both start off), a
+  it), until someone reports it clear; hide friendlies, in Intel settings, leaves out systems with only friendlies. With sounds or notifications turned on in Intel settings (both start off), a
   hostile or neutral within your alert range plays a sound and notifies, once per system every 30 seconds; friendlies
   never alert. Two sounds: Near You (1 jump up to your alert range) and In system (your own system, kills too), each one
   of five or your own file (MP3, WAV or OGG, up to 1 MB, kept only in this browser, played at most 5 seconds), with one
@@ -370,7 +370,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   names (from about 80 px); gates between two regions are dotted and region names are written in spaced capitals, yours
   in white. The bar at the bottom of the map picks the colours: Security status, Jumps from you (0 to 10 or more; grey
   with no gate route), Region (two regions joined by a gate never share a colour), Intel reports or Kills from Intel (the
-  rest dimmed); it opens on Security status every visit. A ring marks a system with a report: its colour is
+  rest dimmed), Paths to you (below) or Wormholes; it opens on Security status every visit. A ring marks a system with a report: its colour is
   the standing (hostile red, neutral grey, friendly blue), its size the gang (solo, 2–10, 11 or more); ✕ counts its
   kills. Hover a system, or a row in Near You or the Feed, for its route to you; press it to keep the route (past the
   map's reach too). Drag or two
@@ -381,6 +381,16 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   Systems past Near You's range are faded, past the map's reach fainter still; past the Feed's range a system's kills
   aren't read. A route is the shortest one by stargates (one for each system,
   always the same); jump bridges, cynos, filaments and wormholes aren't in CCP's data.
+- **Paths to you** (build queue 043): the bar's filter just before Wormholes. In place of the galaxy it draws the stargate routes
+  to you from every system with hostiles, neutrals or kills inside your alert range (not Near You's range), as a tree: your
+  system at the top, one row per jump. Every shortest route counts, so a system reached two equally short ways has both
+  gates; a system on several routes is drawn once, and a gate's line is thicker where more pilots come through it, with an
+  arrow toward you. Under each name: the count, the ships (or "hostiles" / "neutrals") and how long ago; then Camp, ESS and
+  kills, the same rules as Near You's tags (the gate, who and the ISK in their hover). No security number: the name's
+  colour carries it, its hover the number. Hover or press a system to light its routes, toward you and back to what feeds
+  it; press it again, press your system or Esc to clear. Drag or two fingers move it, the wheel or a pinch zooms it;
+  + / − / Fit at its top right. It's built from what Intel already has, nothing is asked of anyone, and it's drawn again
+  only when what it shows changes.
 - **Wormholes** (build queue 040): a line that says wh, wormhole or drifter (intel words, never looked up as pilots) with a
   system keeps that system as a wormhole (a Drifter one with drifter), with the line's time and who sent it, in this
   browser only (localStorage `tvWormholes`; nothing is sent anywhere), for 24 hours unless you change "keep wormhole
