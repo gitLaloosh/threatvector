@@ -35,8 +35,7 @@ single-file tool (`index.html`) that estimates EVE Online ship stats from killma
 https://threatvector.space (GitHub Pages from `main`, the `CNAME` file; build queue 013) from the repository
 `gitLaloosh/threatvector` (renamed from `dscan-tool`). The saved-data names keep the old ones on purpose (localStorage
 `dscan…`, IndexedDB `dscan-tool-cache`, `eta-intel`, `dscan-intel-sounds`), as do `dscan-tool-history/` and the extension's
-`eta-*` menu IDs: users never see them, and renaming them would lose what's saved. The footer's source link (and, since build queue 036, the
-METHODOLOGY.md link beside it) is the one place the account name is written into the page (the owner, 2026-11-04: "Write the repo link in"); the page no longer
+`eta-*` menu IDs: users never see them, and renaming them would lose what's saved. The footer's source link is the one place the account name is written into the page (the owner, 2026-11-04: "Write the repo link in"); the page no longer
 works it out from a github.io address. Its calculations must match **pyfa**
 exactly, using primary sources only: pyfa's source code and CCP's SDE / live ESI.
 
@@ -351,7 +350,7 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   its time in amber (`PD_RECENT_MS`).
 - **What was asked for stays on screen** (v2026.11.01.5, LESSON #121): the Pilot Dossier draws the hull asked for (a pilot opened
   from the Fleet tab, a typed hull, a System Analyzer row) as its first row in every size, tagged On this kill / Lost on this kill /
-  Asked for with its rank; the 8 busiest follow; "Show N more hulls" is a button that draws every hull read. A Fleet-tab kill missing
+  Asked for with its rank; the 8 used most recently follow (build queue 037: newest first, in a size by their newest kill in it); "Show N more hulls" is a button that draws every hull read. A Fleet-tab kill missing
   from zKillboard's list for the pilot is added from the killmail already open ("+ this one"). `dossier_pin_check.py`.
 - **Kills grouped into fleets** (v2026.11.01.6, Project doc roadmap/kill-groups-impact.md §0, LESSON #122): the Fleet tab's kill picker
   (opened from Intel with 2+ kills) groups kills by shared player attackers: 2 shared pilots link two kills, 1 when either kill had
@@ -487,7 +486,7 @@ still gets its own targeted check and mutants.
 calculated" note on the page, removed in v2026.10.14.51); each card's short version is its ⓘ panel (`CARD_INFO`).
 Change both when a calculation's assumptions change. Since build queue 036 (v2026.11.11.3) the panels are short (`check_subtext.py`:
 85 words open, 210 in all, Intel 410; `fleet` and `vs` exempt while hidden), the detail is in METHODOLOGY.md (its Intel, Who's in the
-system and Sides sections too), and the footer links its GitHub copy. A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
+system and Sides sections too), and nothing on the page links to it (build queue 037 took 036's footer link out, the owner: "i dont want that link displayed"). A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
 panel never inherits a heading's case or spacing (`.info-body`; `info_panels_check.py`).
 
 **After finishing any task,** check `todo-inbox/` for new requests the

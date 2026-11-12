@@ -147,7 +147,9 @@ for where, t in frags:
     for k, v in single.items():
         if re.search(r'(?<![\w])' + re.escape(v) + r'(?: card\b|["”])', t1) or re.search(r'["“]' + re.escape(v) + r'["”]', t1):
             problems.append(f"{where}: '{v}' typed by hand; use cardName('{k}')"); hit = True
-    for mm in re.finditer(r'\b((?:[A-Z][\w&/]*\s?)+?) card\b', t1):
+    # build queue 037: only text that says " card" can match; the pattern's nested repeat backtracks for minutes on a long run of
+    # capitals and digits (GAME_DATA_PENDING's 256-character base64 since the 2026-11-11 Game data pull request, under v.96's 400)
+    for mm in (re.finditer(r'\b((?:[A-Z][\w&/]*\s?)+?) card\b', t1) if ' card' in t1 else ()):
         nm = mm.group(1).strip()
         if nm not in flat.values():
             problems.append(f"{where}: '{nm} card' names a card that isn't in CARD_NAMES"); hit = True

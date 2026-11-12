@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-eoTRBD7azckxGPnlJwRXTqxsVUmop+4QOYcxxkBkMvs='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UD1xKhbwSKhOhR7Dk0uolpBIjM6RiQF64F0k0QSXIfk='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3135,7 +3135,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.11.3</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.11.4</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3283,7 +3283,7 @@
        "Write the repo link in"): the page has its own domain now, so it can't be built from the address any more. Its links leave the site as every link does: asked first (leaveAsk),
        then a new tab; zKillboard is named, not linked (its links are the zK icon). -->
   <footer class="site-foot" id="siteFoot">
-    <p>Threat Vector is free software under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3</a> or later; the <a href="https://github.com/gitLaloosh/threatvector">source is on GitHub</a>, with <a href="https://github.com/gitLaloosh/threatvector/blob/main/METHODOLOGY.md">How the numbers are worked out</a>. Its fitting calculations follow <a href="https://github.com/pyfa-org/Pyfa">pyfa</a> (GPL v3). Not made, endorsed or supported by CCP hf.</p>
+    <p>Threat Vector is free software under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3</a> or later; the <a href="https://github.com/gitLaloosh/threatvector">source is on GitHub</a>. Its fitting calculations follow <a href="https://github.com/pyfa-org/Pyfa">pyfa</a> (GPL v3). Not made, endorsed or supported by CCP hf.</p>
     <p>© CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf. Killmails and kill statistics from zKillboard.</p>
   </footer>
 
@@ -3490,7 +3490,7 @@ const CARD_INFO = {
  ],
  "pilots": [
   "With up to your “pilot rows up to” number of hostile + neutral pilots in Local, each gets a row; above it, the Groups columns.",
-  "**Possible ship:** the hull with most of their kills in that gang size, a ship of theirs on your D-Scan (last 30 days) first; else the newest they were seen in within 30 days, else the hull they lost most. A possibility, not what they're in now.",
+  "**Possible ship:** a ship of theirs on your D-Scan (last 30 days) first; then the hull of their newest kill in that gang size; else the newest they were seen in within 30 days, else the hull they lost most. A possibility, not what they're in now.",
   "[Auto] Each pilot's gang size from how many of their alliance (or corporation) are in Local: 1 solo, 2–10 small gang, 11+ fleet.",
   "[The numbers] From their newest loss in that hull, as in the Pilot Analyzer: DPS (a range when charges are guessed from cargo), EHP, the weakest resist and the EWAR letters. No loss in it: the bare hull, marked fit unknown.",
   "[Loading] 15 pilots at a time; Load N more pilots asks for the next ones. Rows keep their place while they fill, then sort once: hostile first, then by DPS."
@@ -3557,7 +3557,7 @@ const CARD_INFO = {
   "[Copy share link] Sends the kill and the fits already looked up, so whoever opens it sees the same fleet without new lookups; the others open unloaded."
  ],
  "dossier": [
-  "What they fly, from their newest 50 kills and 30 losses on zKillboard: one row per hull, the busiest first. A row shows their own losses in it, or their alliance's (or corporation's) common fit, said as not theirs.",
+  "What they fly, from their newest 50 kills and 30 losses on zKillboard: one row per hull, the one they used last first (in a gang size, by their newest kill in it). A row shows their own losses in it, or their alliance's (or corporation's) common fit, said as not theirs.",
   "**Gang size:** the players on the killmail (NPCs left out): solo 1, small gang 2–10, fleet 11 or more. Losses have no gang size.",
   "[A hull asked for] Opened on a hull (from the {card:fleet} tab, a ship you typed, a {card:sysan} row), that hull comes first whatever its rank, tagged On this kill, Lost on this kill or Asked for. A kill zKillboard's list doesn't have yet is added (+ this one).",
   "[The counts] Weapons seen, Flies with, Kills mostly, Active (in your own time zone) and Usual systems count those killmails, so a pilot with few kills shows few. Capsules, shuttles, rookie ships and Mobile Tractor Units aren't counted as hulls.",
@@ -4564,7 +4564,14 @@ function bgEsiUse(){   // what the gauge and panel show: stored plus this tab's 
 async function esiFetch(url, init, kind, auth){
   if(auth){
     if(typeof url !== 'string' || !url.startsWith(ESI + '/') || !auth.scope) throw new Error('The EVE login goes to ESI only.');
+    // 037 (sso_game_check's bug): back from EVE while logged in, the reload keeps the login but not its access token. A feature asking
+    // then (the online check) renewed the old login while the new code was being swapped; the new login then landed, the renewal saw
+    // another login and ended it, revoking the new refresh token. Wait for the return first, then use what it left. LESSON #157
+    if(sso.retP) await sso.retP.catch(() => {});
     const tok = await ssoAccess();
+    // 037: a caller that waited for the return from EVE (sso.retP) checked the permission before the new token was read: check it
+    // again, so ESI is never asked for something this login wasn't allowed (SSO-07's "why"); the return's grants say so to the user
+    if(Array.isArray(sso.scp) && !sso.scp.includes(auth.scope)) throw codedError('SSO-07', "EVE didn't give this login that permission, so nothing was asked.");
     init = Object.assign({}, init, {credentials: 'omit', referrerPolicy: 'no-referrer',
       headers: Object.assign({}, init && init.headers, {'Authorization': 'Bearer ' + tok, 'X-Compatibility-Date': ESI_COMPAT, 'X-User-Agent': ESI_UA})});
   }
@@ -12632,17 +12639,22 @@ async function pdBuild(charId, kms){
   return {hulls: [...hulls.values()].map(h => Object.assign(h, info.get(h.id))), info, sizes, times, systems, sysNames,
     nKills: kms.kills.length, nLosses: kms.losses.length, from: allT.length ? Math.min(...allT) : null, to: allT.length ? Math.max(...allT) : null};
 }
-// Rows for a mode ('all' or a size): kills in that size, sorted; 'all' adds the hulls only lost (activity = kills + losses).
+// Rows for a mode ('all' or a size): kills in that size; 'all' adds the hulls only lost (activity = kills + losses).
+// Build queue 037 (the owner, 2026-11-11: "we should just list strictly by recency"): newest first, the count only as a
+// tie-break; in a size, `last` is their newest kill in that size (the row's last-used column follows the size).
 function pdRows(d, mode){
   const rows = [];
   for(const h of d.hulls){
     if(h.stub) continue;   // v2026.11.01.5: a hull asked for that isn't among those read: drawn only as the pinned row
     const ks = mode === 'all' ? h.kills : h.kills.filter(k => k.size === mode);
     if(mode !== 'all' && !ks.length) continue;
-    const last = Math.max(...h.kills.map(k => k.t), ...h.losses.map(l => l.t));
-    rows.push({h, ks, last, score: mode === 'all' ? h.kills.length + h.losses.length : ks.length});
+    rows.push({h, ks, last: pdLast(h, mode), score: mode === 'all' ? h.kills.length + h.losses.length : ks.length});
   }
-  return rows.sort((a, b) => b.score - a.score || b.last - a.last);
+  return rows.sort((a, b) => b.last - a.last || b.score - a.score);
+}
+// 037: when a hull was last used: in 'all' its newest kill or loss, in a size its newest kill in that size (-Infinity: none, drawn "—")
+function pdLast(h, mode){
+  return mode === 'all' ? Math.max(...h.kills.map(k => k.t), ...h.losses.map(l => l.t)) : Math.max(...h.kills.filter(k => k.size === mode).map(k => k.t));
 }
 function pdTop(list, n, name){
   const c = new Map(); for(const x of list) if(x) c.set(x, (c.get(x) || 0) + 1);
@@ -12661,10 +12673,10 @@ function pdHtml(d){
   // v2026.11.01.5 (the owner: "if the ship the pilot flew on the killmail isn't in their top 15 or whatever, the user wont see
   // that hull in their list"; his picks in Claude outputs/dossier_hull_from_kill_mockup.html: A pinned first, all at once,
   // C1 the kill added, typed hulls too): the hull asked for is the first row in every size, tagged, with its rank; the
-  // busiest PD_ROWS follow; "Show N more hulls" draws every hull read (no request), "Show fewer" folds them back.
+  // newest PD_ROWS follow (037: by when they were last used); "Show N more hulls" draws every hull read (no request), "Show fewer" folds them back.
   const all = pdRows(d, pd.mode);
   const pinH = pd.pin ? d.hulls.find(h => h.id === pd.pin.id) : null;
-  const pinRow = pinH ? all.find(r => r.h === pinH) || {h: pinH, ks: [], last: Math.max(...pinH.kills.map(k => k.t), ...pinH.losses.map(l => l.t)), score: 0} : null;
+  const pinRow = pinH ? all.find(r => r.h === pinH) || {h: pinH, ks: [], last: pdLast(pinH, pd.mode), score: 0} : null;
   const rest = pinRow ? all.filter(r => r !== pinRow) : all;
   const rows = [...(pinRow ? [pinRow] : []), ...(pd.allHulls ? rest : rest.slice(0, PD_ROWS))];
   const pinRank = pinRow ? all.indexOf(pinRow) + 1 : 0;
@@ -12717,7 +12729,7 @@ function pdPinHtml(d, h, rank, of){
 }
 function pdMoreHtml(d, all, rows){
   const left = all.filter(r => !rows.includes(r)).length;
-  if(left) return `<div class="pdk-more pd-more"><button type="button" data-pd-allhulls="1" aria-expanded="false">${IT_CHEV}Show ${left} more hull${left === 1 ? '' : 's'}</button><span>with fewer ${pd.mode === 'all' ? 'kills and losses' : 'of these kills'}</span></div>`;
+  if(left) return `<div class="pdk-more pd-more"><button type="button" data-pd-allhulls="1" aria-expanded="false">${IT_CHEV}Show ${left} more hull${left === 1 ? '' : 's'}</button></div>`;   // 037 (the owner: "\"Show N more hulls\" works"): no line beside it
   if(!pd.allHulls || all.length <= PD_ROWS) return '';
   const what = pd.mode === 'all' ? `in their newest ${d.nKills - (d.added ? 1 : 0)} kills${d.added ? ' + this one' : ''} and ${d.nLosses} losses` : `with ${PD_SIZES.find(x => x[0] === pd.mode)[1].toLowerCase()} kills`;
   return `<div class="pdk-more pd-more"><button type="button" data-pd-allhulls="0" aria-expanded="true">${IT_CHEV}Show fewer</button><span>all ${all.length} hulls ${what}</span></div>`;
@@ -12862,7 +12874,7 @@ async function pdPin(d, id, why){
   pd.pin = {id, why};
   return true;
 }
-// Reads the killmails and draws the dossier; returns the hull to show first (the busiest in All), or null.
+// Reads the killmails and draws the dossier; returns the hull to show first (the one used last in the mode), or null.
 async function pdLoad(character, statusEl, forceRefresh, quiet){
   const charId = character.id;
   pd.charId = charId; pd.character = character; pd.statusEl = statusEl;
@@ -12897,7 +12909,7 @@ async function pdLoad(character, statusEl, forceRefresh, quiet){
   Object.assign(pd, {kStubs, read: Math.min(PD_KILLS, kStubs.length), older: [], open: null, shown: PD_SHOW_STEP, busy: false, failed: [], value: new Map()});
   for(const s of kStubs) if(s && s.zkb && s.zkb.totalValue) pd.value.set(s.killmail_id, s.zkb.totalValue);
   if(pd.extra && pd.extra.zkb.totalValue) pd.value.set(pd.extra.killmail_id, pd.extra.zkb.totalValue);
-  // the hull to show first: the busiest in the mode (v.92: or the one a System Analyzer row picked)
+  // the hull to show first: the one used last in the mode (037; v.92: or the one a System Analyzer row picked)
   const wantHull = want && want.hull ? d.hulls.find(h => h.id === want.hull) : null;
   const top = wantHull ? {h: wantHull} : pdRows(d, pd.mode)[0] || pdRows(d, 'all')[0];
   pd.sel = top ? top.h.id : null;
@@ -12953,7 +12965,7 @@ async function pdShowHull(character, hull, statusEl, forceRefresh){
       const again = el.querySelector(`[data-pd-more="${id}"]`) || el.querySelector(`[data-pd-exp="${id}"]`); if(again) again.focus({preventScroll: true}); return; }
     const fb = e.target.closest('[data-pd-fleet]');   // v.94: the fleet on that kill, in the Fleet tab
     if(fb){ const id = Number(fb.dataset.pdFleet), st = pd.kStubs.find(x => x && x.killmail_id === id) || (pd.extra && pd.extra.killmail_id === id ? pd.extra : null); if(st && st.zkb && st.zkb.hash) fkOpen(id, st.zkb.hash, pd.charId); return; }
-    const ah = e.target.closest('[data-pd-allhulls]');   // v2026.11.01.5: every hull read, or the busiest again
+    const ah = e.target.closest('[data-pd-allhulls]');   // v2026.11.01.5: every hull read, or the newest PD_ROWS again
     if(ah){ pd.allHulls = ah.dataset.pdAllhulls === '1'; pdRender(); const again = el.querySelector('[data-pd-allhulls]'); if(again) again.focus({preventScroll: true}); return; }
     if(e.target.closest('.pd-kills')) return;   // a zKillboard link opens on its own
     const r = e.target.closest('[data-pd-hull]');
@@ -12970,7 +12982,7 @@ async function pdShowHull(character, hull, statusEl, forceRefresh){
 
 async function speculateShip(character, statusEl, forceRefresh){
   // v2026.10.14.90 (pilot-dossier-plan.md D3, D7): the Pilot Dossier, from their newest kills AND losses, replaces the
-  // dropdown of hulls by losses; the busiest hull in All is shown first (its losses, or their group's common fit).
+  // dropdown of hulls by losses; the hull used last in All is shown first (its losses, or their group's common fit).
   const top = await pdLoad(character, statusEl, forceRefresh);
   const d = pd.d;
   if(!d) return;
@@ -23597,8 +23609,8 @@ function saSizeFor(p){
   return {size: pdSize(n), n, npc, gname: sa.last.orgNames.get(g.id) || `their ${g.kind}`};
 }
 const SA_SIZE_WORD = {solo: 'solo', small: 'small-gang', fleet: 'fleet'}, SA_SIZE_TAG = {solo: 'solo', small: 'small gang', fleet: 'fleet'};
-// The possible ship for the size: a ship of theirs on your D-Scan (seen within SA_RECENT_DAYS) first; then the hull with
-// the most of their kills in that size (All: kills + losses, the dossier's All); no kill in that size: v.84's rule (the
+// The possible ship for the size: a ship of theirs on your D-Scan (seen within SA_RECENT_DAYS) first; then the hull of their
+// newest kill in that size (All: their newest kill or loss, the dossier's All; 037); no kill in that size: v.84's rule (the
 // newest seen within SA_RECENT_DAYS, else the hull they lost most). Its numbers: their newest loss in it, else "fit unknown".
 async function saRowPick(r, p){
   const S = saSizeFor(p), size = S.size;
@@ -23618,12 +23630,12 @@ async function saRowPick(r, p){
   else if(top && size === 'all'){
     const k = top.h.kills.length, l = top.h.losses.length;
     pick = top.h.id; basis = `${k} kill${k === 1 ? '' : 's'} · ${l} loss${l === 1 ? '' : 'es'} · ${saAgoShort(top.last)}`;
-    title = `Their most flown hull, all sizes: ${k} of their newest ${r.d.nKills} kills and ${l} of their newest ${r.d.nLosses} losses.`;
+    title = `The hull they used last, all sizes: ${k} of their newest ${r.d.nKills} kills and ${l} of their newest ${r.d.nLosses} losses are in it.`;
   }
   else if(top){
-    const last = Math.max(...top.ks.map(k => k.t)), n = top.ks.length, of = r.d.sizes[size];
-    pick = top.h.id; tag = size; basis = `${n} of ${of} ${SA_SIZE_WORD[size]} kills · ${saAgoShort(last)}`;
-    title = `Their most flown hull in ${size === 'solo' ? 'solo kills' : `${SA_SIZE_TAG[size]}s`}: ${n} of their ${of} ${SA_SIZE_WORD[size]} kills among their newest ${r.d.nKills}.${why}`;
+    const n = top.ks.length, of = r.d.sizes[size];   // 037: top.last is their newest kill in that size
+    pick = top.h.id; tag = size; basis = `${n} of ${of} ${SA_SIZE_WORD[size]} kills · ${saAgoShort(top.last)}`;
+    title = `The hull of their newest ${SA_SIZE_WORD[size]} kill: ${n} of their ${of} ${SA_SIZE_WORD[size]} kills among their newest ${r.d.nKills}.${why}`;
   }
   else{
     if(recent.length){ pick = recent[0].typeId; basis = how(recent[0]); }
@@ -24497,7 +24509,8 @@ const sso = {who: null, access: null, busy: false, note: null, meta: null, lost:
   // 028: starting (the press, until the page leaves), leaving (when it left for EVE: the Back-button fix), exp / scp (from the access
   // token; scp null = no token read since this load), renewP (the one renewal), renewAt / fails / renewErr (waiting after a failure),
   // from ('loc' when Use my game location asked), dupAsk (when this tab asked whether it is a copy)
-  starting: false, leaving: 0, exp: 0, scp: null, renewP: null, renewAt: 0, fails: 0, renewErr: '', from: '', dupAsk: 0, bc: null};
+  // 037: retP, the return from EVE (ssoFinish) while it is being worked out: esiFetch's login branch waits for it
+  starting: false, leaving: 0, exp: 0, scp: null, renewP: null, renewAt: 0, fails: 0, renewErr: '', from: '', dupAsk: 0, bc: null, retP: null};
 // v2026.11.09.1 (029): Show when I'm online in EVE. show: the setting (localStorage tvOnlineShow, this browser); st: the last answer
 // {id, online, at} (from this tab or the one asking, memory only, DLA 9.5); held / req: this tab's Web Lock for the character, or its
 // place in the queue; next: the next check (the answer's Expires, 60 s at least); stop: 'SSO-06' / 'SSO-08' (never asked again).
@@ -24676,7 +24689,11 @@ async function ssoRenew(){
   let v;
   try{ v = await ssoVerify(t.access_token, m, cid); }
   catch(e){ if(errorCodeOf(e) === 'SSO-04') throw ssoLost("The renewed login from EVE didn't check out. Log in again to go on."); throw ssoWait(0, "CCP's login keys couldn't be read to check the renewal."); }
-  if(sso.who !== who || v.id !== who.id) throw ssoLost('EVE renewed the login for another character. Log in again to go on.');
+  if(sso.who !== who){   // 037: replaced meanwhile (a newer login back from EVE, or Log out): this answer is dropped and nothing is revoked
+    if(sso.who && sso.access && sso.exp - Date.now() > SSO_EARLY_MS) return sso.access;
+    throw codedError('SSO-06', 'This tab logged out meanwhile.');
+  }
+  if(v.id !== who.id) throw ssoLost('EVE renewed the login for another character. Log in again to go on.');
   sso.access = t.access_token; sso.exp = v.exp; sso.scp = v.scp; sso.fails = 0; sso.renewAt = 0; sso.renewErr = '';
   renderSidePanel();
   return sso.access;
@@ -24818,7 +24835,7 @@ function ssoInit(panel){
     side.msg.pilot = null; sso.note = {text: 'Your pilot was changed in another tab, so this tab is logged out.'};
     renderSideChip(); renderSidePanel(); if(typeof renderProfile === 'function' && profileIsOpen()) renderProfile(); if(sa.last) saRender();
   });
-  if(SSO_RET) Promise.resolve().then(() => ssoFinish(SSO_RET));   // after the rest of the script has started
+  if(SSO_RET) sso.retP = Promise.resolve().then(() => ssoFinish(SSO_RET)).finally(() => { sso.retP = null; });   // after the rest of the script has started; 037: retP
 }
 // 028: a duplicated tab may start with a copy of this tab's sessionStorage, and with it the same refresh token (one copy would fail
 // when CCP hands out a new one). A tab holding a login asks once on load whether a live tab has its id; one that has it answers, and the

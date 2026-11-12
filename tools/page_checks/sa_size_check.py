@@ -8,11 +8,12 @@ switch, Auto default", "Their alliance". The real page with ESI and zKillboard a
 is pasted in Local, alone or with another pilot of her alliance; the expected rows are worked out here from the mock's
 killmails (players per kill, times), not from the page. Checks:
   * the switch on the Pilots card: Auto Solo Small gang Fleet All, Auto by default;
-  * Auto, alone from her alliance: solo, so her solo hull (Loki, 4 of her 6 solo kills, the time of the newest), its
-    tag, "fit unknown" (no loss of hers in it), the whole sentence on hover saying why solo;
+  * Auto, alone from her alliance: solo, so the hull of her newest solo kill (build queue 037: the Sabre, 1 of her 6 solo kills,
+    though the Loki has 4, all older), its tag, "fit unknown" (no loss of hers in it), the whole sentence on hover ("The hull of
+    their newest solo kill: …") saying why solo; the page with the busiest-first sort fails it (a mutant);
   * Auto, 2 of her alliance in Local: small gang (Sabre, 12 of 20 small-gang kills), the hover says 2 of Random Third Party;
     one of her alliance in another corporation counts too, a pilot of another alliance doesn't;
-  * Fleet: Purifier 11 of 19; All: Sabre "14 kills · 0 losses", no tag; switching asks zKillboard nothing; the choice is
+  * Fleet: the Sabre 1 of 19 (newer than the Purifier's 11); All: Sabre "14 kills · 0 losses", no tag; switching asks zKillboard nothing; the choice is
     kept in the browser (dscanSaSize) and comes back on reload;
   * a pilot with no kill in the chosen size (the Vedmak pilot of pilot_rows_check, one solo kill) under Fleet: v.84's
     rule (the newest ship seen), no tag, the hover says why; under Solo: tagged, "1 of 1 solo kills";
@@ -65,7 +66,7 @@ def want(cid, sz):
         for k in M.HIST[cid]['losses']:
             h = NAME[M.KM[k]['victim']['ship_type_id']]
             if h != 'Capsule': by.setdefault(h, []).append(ts(M.KM[k]['killmail_time']))
-    hull = sorted(by, key=lambda h: (-len(by[h]), -max(by[h])))[0]
+    hull = sorted(by, key=lambda h: (-max(by[h]), -len(by[h])))[0]   # 037: newest first, the count only breaking a tie
     return hull, len(by[hull]), len(ks), max(by[hull])
 
 ROWS = """() => Object.fromEntries([...document.querySelectorAll('#saPilots button.pr-row')].map(b => [b.querySelector('.pr-pilot .nm').textContent, {
@@ -100,9 +101,9 @@ with sync_playwright() as p:
           f'the switch on the Pilots card, Auto by default {sw}')
     h, n, of, t = want(M.DOSSIER_PILOT, 'solo')
     r = pg.evaluate(ROWS)[VESNA]
-    check(r['hull'] == h == 'Loki' and r['tag'] == 'solo' and 'solo' in r['tagCls'] and r['basis'] == f'{n} of {of} solo kills · {ago(t)}' and r['fu'],
+    check(r['hull'] == h == 'Sabre' and r['tag'] == 'solo' and 'solo' in r['tagCls'] and r['basis'] == f'{n} of {of} solo kills · {ago(t)}' and r['fu'],
           f"Auto, the only one of her alliance in Local: her solo hull, tagged, fit unknown ({r['hull']}, {r['tag']!r}, {r['basis']!r}; want {h} {n} of {of} {ago(t)})")
-    check(r['title'].endswith('Solo: the only one of Random Third Party in Local.') and f'{n} of their {of} solo kills among their newest 45' in r['title'],
+    check(f'. The hull of their newest solo kill: {n} of their {of} solo kills among their newest 45.' in r['title'] and r['title'].endswith('Solo: the only one of Random Third Party in Local.'),
           f"the whole sentence on hover, with why solo ({r['title']!r})")
     # Auto, 2 of her alliance: small gang
     M.ZKB_CALLS.clear()
@@ -117,7 +118,7 @@ with sync_playwright() as p:
     r2 = pg.evaluate(ROWS)[VESNA]
     analyze(pg, [VESNA, VED])
     r3 = pg.evaluate(ROWS)[VESNA]
-    check(r2['tag'] == 'small gang' and r2['title'].endswith('Small gang: 2 of Random Third Party in Local.') and r3['tag'] == 'solo' and r3['hull'] == 'Loki',
+    check(r2['tag'] == 'small gang' and r2['title'].endswith('Small gang: 2 of Random Third Party in Local.') and r3['tag'] == 'solo' and r3['hull'] == 'Sabre',
           f"her group is her alliance: one of another corporation of it counts ({r2['tag']!r}), a pilot of another alliance doesn't ({r3['tag']!r} {r3['hull']})")
     analyze(pg, [VESNA, RANDO])
     asked = len(M.ZKB_CALLS)
@@ -125,7 +126,7 @@ with sync_playwright() as p:
     switch(pg, 'fleet')
     h, n, of, t = want(M.DOSSIER_PILOT, 'fleet')
     r = pg.evaluate(ROWS)[VESNA]
-    check(r['hull'] == h == 'Purifier' and r['tag'] == 'fleet' and r['basis'] == f'{n} of {of} fleet kills · {ago(t)}' and r['fu'] and 'in Local' not in r['title'],
+    check(r['hull'] == h == 'Sabre' and r['tag'] == 'fleet' and r['basis'] == f'{n} of {of} fleet kills · {ago(t)}' and r['fu'] and 'in Local' not in r['title'],
           f"Fleet: her fleet hull ({r['hull']}, {r['basis']!r}; want {h} {n} of {of}), no Local reason when chosen by hand")
     switch(pg, 'all')
     h, n, of, t = want(M.DOSSIER_PILOT, 'all')
@@ -153,12 +154,23 @@ with sync_playwright() as p:
     check(r['hull'] == 'Vedmak' and r['tag'] == '' and r['basis'] == 'on scan; lost one 3 d ago' and r['dps'] == f"{round(M.PIN['Vedmak']['dpsFixed']):,}",
           f"a ship of hers on the D-Scan comes first, with that loss's numbers ({r['hull']}, {r['basis']!r}, {r['dps']})")
     # a row opens the dossier on the same size, that hull selected
-    analyze(pg, [VESNA])   # Fleet still chosen: Purifier
+    analyze(pg, [VESNA])   # Fleet still chosen: the Sabre (037: her newest fleet kill)
     pg.click(f'#saPilots button.pr-row[data-pr-pilot="{VESNA}"]'); pg.wait_for_timeout(300)
     pg.wait_for_function("() => !document.querySelector('#fitBtn').disabled && document.querySelector('#pilotBusy').hidden && document.querySelector('#pilotDossier button.pd-row')", timeout=120000); pg.wait_for_timeout(500)
     o = pg.evaluate("() => [[...document.querySelectorAll('#pilotDossier [data-pd-mode]')].filter(b => b.getAttribute('aria-pressed') === 'true').map(b => b.dataset.pdMode), [...document.querySelectorAll('#pilotDossier button.pd-row[aria-pressed=true]')].map(b => b.dataset.pdHull), document.querySelector('#fitStatus').textContent]")
-    check(o[0] == ['fleet'] and o[1] == [str(M.byname['Purifier'])], f'a row opens the Pilot Analyzer, its dossier on the same size, that hull selected {o}')
+    check(o[0] == ['fleet'] and o[1] == [str(M.byname['Sabre'])], f'a row opens the Pilot Analyzer, its dossier on the same size, that hull selected {o}')
     ctx.close()
+    # 037: the page with the busiest-first sort picks the Loki (4 older solo kills) for her: this check fails it
+    import tempfile
+    PAGE = open(HTML, encoding='utf-8').read(); a_ = "  return rows.sort((a, b) => b.last - a.last || b.score - a.score);"
+    if PAGE.count(a_) != 1: check(False, 'mutant "the busiest first": its text is in the page')
+    else:
+        f = os.path.join(tempfile.mkdtemp(prefix='sa_size_mut_'), 'index.html'); open(f, 'w', encoding='utf-8').write(PAGE.replace(a_, "  return rows.sort((a, b) => b.score - a.score || b.last - a.last);", 1))
+        ctx = new_ctx(1440); pg = ctx.new_page(); pg.goto('file://' + f)
+        pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.removeItem('dscanSaSize'); }", SIDE); pg.reload(); pg.wait_for_timeout(300)
+        analyze(pg, [VESNA]); r = pg.evaluate(ROWS)[VESNA]
+        check(r['hull'] != 'Sabre', f'mutant "the busiest first" fails the solo case (it picks the {r["hull"]})')
+        ctx.close()
     # phone
     ctx = new_ctx(390); pg = setup(ctx)
     analyze(pg, [VESNA, RANDO])

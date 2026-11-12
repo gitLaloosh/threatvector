@@ -153,6 +153,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #151 Data read in several requests must change all at once: build the new copy aside and swap it in at the end, or whatever reads it meanwhile uses half of it.
 - #152 A press can't redraw the view that holds the control pressed (a list must still open, a file picker's input must survive): change that part in place, and make the view forget its last build.
 - #156 A panel opened from inside a heading inherits the heading's capitals and spacing; and text written for a builder must use only the forms the builder draws: render it before trusting it.
+- #157 Two things that each replace the login (the return from EVE, a renewal) must never run at once: the later one waits for the earlier, and a stale answer is dropped, never acted on.
 
 **Checks and test machinery**
 
@@ -1063,6 +1064,23 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 157. Two things that each replace the login (the return from EVE, a renewal) must never run at once: the later one waits for the earlier, and a stale answer is dropped, never acted on
+
+- **What happened (found by build queue 036's full run, fixed in build queue 037):** `sso_game_check.py` timed out, about 1 run in 4,
+  in the case "logged in, turned on later: one Continue to EVE". The check was right; the page logged the user out. Back from EVE
+  while logged in, the reload keeps the login (`tvSsoWho`, the refresh token) but not its access token, which lives in memory. While
+  `ssoFinish` was swapping EVE's code for the new tokens, the online check (Show when I'm online in EVE) asked `ssoAccess`, which
+  renewed the old login with its refresh token. The new login then landed (`ssoKeep`); the renewal, checking its token afterwards,
+  saw a different login, called `ssoLost`, and `ssoEnd` revoked the refresh token now stored: the new login's.
+- **How it was caught:** the check failed on `main` too, so it wasn't the branch. The stand-in's log showed a second token request
+  (`refresh_token`) right after the code exchange, then a revoke; a copy of the page with a one-line trace in `ssoAccess`, `ssoRenew`,
+  `ssoKeep`, `ssoLost` and `ssoEnd` named the caller (`ssoOnTick` → `ssoOnCheck` → `esiFetch`) on the run that failed.
+- **Do this instead:** keep one promise for each thing that replaces the login while it runs (`sso.retP` for the return, beside
+  `sso.renewP`), and make whatever asks for the token wait for it first (`esiFetch`'s login branch; `ssoAccess` itself may only be called from there). When an answer comes back for a login that was replaced
+  meanwhile, drop it: return the newer token, or say "logged out meanwhile"; never end or revoke from a stale answer. A caller that
+  waited checked its permission before the new token existed, so check it again once the token is in hand (`esiFetch`: SSO-07, nothing
+  sent). Test a race by holding the stand-in's answer until the case lets it go (never by timing), and keep a mutant of each half.
 
 ## 156. A panel opened from inside a heading inherits the heading's capitals and spacing; and text written for a builder must use only the forms the builder draws
 

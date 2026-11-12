@@ -5,8 +5,7 @@ This was the "How effective HP and DPS are calculated" note at the bottom of eve
 document." It moved here in v2026.10.14.51, split into sections and brought up to date. The short version of each
 section is behind the matching card's ⓘ button on the page (`CARD_INFO` in index.html). Since build queue 036
 (v2026.11.11.3) the panels are short, and the detail they no longer carry is here: the cards' own sections below, then
-who's in the system, sides and logging in with EVE, and Intel. The page's footer links here ("How the numbers are worked
-out").
+who's in the system, sides and logging in with EVE, and Intel.
 
 Everything follows pyfa (the verified version is in `tools/pyfa_core_manifest.json`). Where the tool deliberately
 differs, it's listed in `DEVIATIONS.md`. **Treat every number as a ceiling, not a guarantee:** all skills are assumed
@@ -290,7 +289,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   time. A row opens that pilot in the Pilot Analyzer, on that hull, its dossier on the same gang size.
 - **Possible ship,** for a gang size: from their newest 50 kills and 30 losses, as the Pilot Dossier. Auto picks each
   pilot's size from how many of their alliance (or corporation, without one) are in Local; an NPC corporation counts as
-  solo. The ship is the hull with most of their kills in that size (All: kills and losses together); a ship of theirs
+  solo. The ship is the hull of their newest kill in that size (All: their newest kill or loss); a ship of theirs
   from the last 30 days that's on your D-Scan comes first. No kill in that size: the newest ship they were seen in
   within 30 days, else the hull they lost most.
 - **Kills and losses in the system:** one zKillboard request per system an hour, then the killmails from ESI, newest
@@ -301,7 +300,8 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   corporation, without one) counts.
 - **Affiliation:** one zKillboard request per pilot after the analysis' own, kept an hour; corporation lookups are kept
   an hour, names and tickers a week. Kills, losses and ISK destroyed are zKillboard's totals.
-- **Pilot Dossier:** each killmail is read from ESI and kept. The 8 busiest hulls follow the one asked for; Show N more
+- **Pilot Dossier:** each killmail is read from ESI and kept. Hulls are listed newest first (in a gang size, by their newest kill in it), the count only breaking a tie; the 8
+  used most recently follow the one asked for; Show N more
   hulls shows every hull read, with no new request. Gang size counts the players on the killmail (anyone who joined in
   counts). Weapons seen: the weapon each killmail credits them with; Flies with: the other players' hulls on those
   kills; Kills mostly: what they killed, by ship class; Active: the hours of their kills in your own time zone; Usual
