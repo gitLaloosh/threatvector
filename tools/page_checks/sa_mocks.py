@@ -180,6 +180,7 @@ import datetime as _dt
 DOSSIER_PILOT = 92000002; PILOTS[DOSSIER_PILOT] = ('Vesna Dossier', 98000041); NAME_ID['vesna dossier'] = DOSSIER_PILOT
 ANNEX_PILOT = 92000003; PILOTS[ANNEX_PILOT] = ('Tessa Annex', 98000042); NAME_ID['tessa annex'] = ANNEX_PILOT   # v.92: her alliance, another corporation
 SYSTEMS = {30000142: 'Jita', 30004759: '1DQ1-A', 30002187: 'Amarr'}
+REGION = {30000142: 'The Forge', 30004759: 'Delve', 30002187: 'Domain'}   # build queue 038: their regions (CCP's static data; region_names_check reads the page's own table)
 SYSTEM_SEC = {30000142: 0.946, 30004759: -0.38, 30002187: 1.0}   # v2026.10.31.3: made-up security, for the system colours
 # (hull, weapon, players on the kill (them included), wingmates' hulls (cycled), victims (cycled), how many, system)
 DOSSIER_SPEC = [

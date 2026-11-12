@@ -11,9 +11,10 @@ INTEL_JUMPS by this check itself, not by the page. Uses intel_check.py's made-up
 sa_mocks.py's pilots; every pilot, line and character is made up. Checks:
   * the helper: a k-space system's region; a wormhole id (not in the table) and a table that doesn't match the jump table give none;
     the sentence bracket "(Region)", "(Region, N jumps)", or today's "(N jumps)" / nothing without a region;
-  * 7 Near You and 8 the Feed: a Region cell right after the system on every row, the system's region (the first system's on the Feed),
-    empty for none; one column (every cell's left edge the same); as wide as the widest of the 68 region names in the cell's own font
-    (--it-rg-w, itSysWidths), nothing cut off; no hover text anywhere in the two lists names a region;
+  * 7 Near You: the region on a line under the system (the owner at the build, "Under the system"), from the system's left edge, none
+    for a system with no region (no line); 8 the Feed: a Region column right after the system (the first system's region), one column,
+    as wide as the widest of the 68 region names in the cell's own font (--it-rg-w, itSysWidths); nothing cut off; no row's hover text
+    names its region;
   * 11 the status line "Your Main in 1DQ1-A (Delve)"; 13 the notification's title "System (Region) · N jumps" (a stand-in Notification);
   * 17 the Feed search: a region's name finds exactly the shown reports with a system in it; the placeholder names region;
   * 18 System Analyzer and 19 Pilot Analyzer "From Intel" notes: "8WA-Z6 (Delve, 1 jump)", one bracket;
@@ -51,7 +52,8 @@ LINES = [(1, 'Scout Alt', '8WA-Z6 Marrek Ketter sabre'), (2, 'Gate Watcher', 'An
 STATUS = "() => itStatusLine()"
 ROWS = """(sel) => [...document.querySelectorAll(sel)].map(r => { const s = r.querySelector('.it-sysb'), g = r.querySelector('.it-rg');
   return {sys: s ? s.textContent : '', rg: g ? g.textContent : null, after: !!(g && s && (g.previousElementSibling === s || g.previousElementSibling === s.parentElement)),
-    left: g ? Math.round(g.getBoundingClientRect().left) : null, cut: g ? g.scrollWidth > g.clientWidth + 0.5 : null, shown: g ? getComputedStyle(g).display !== 'none' : null}; })"""
+    left: g ? Math.round(g.getBoundingClientRect().left) : null, sleft: s ? Math.round(s.getBoundingClientRect().left) : null,
+    below: !!(g && s && g.getBoundingClientRect().top >= s.getBoundingClientRect().bottom - 3), cut: g ? g.scrollWidth > g.clientWidth + 0.5 : null, shown: g ? getComputedStyle(g).display !== 'none' : null}; })"""
 NEAR_SEL, FEED_SEL = '#itNearList .it-nb', '#itFeedList .it-fd'
 
 def intel_cases(b, html, out, errs, phone=True):
@@ -76,15 +78,21 @@ def intel_cases(b, html, out, errs, phone=True):
         if len(rows) < 3: out.append(f'{what}: {len(rows)} rows (want at least 3)'); continue
         bad = [r for r in rows if r['rg'] != REGION.get(SYSID.get(r['sys']), '') or not r['after']]
         if bad: out.append(f'{what}: rows without their region right after the system {bad[:2]}')
-        if len({r['left'] for r in rows}) != 1: out.append(f'{what}: the Region cells are not one column {sorted({r["left"] for r in rows})}')
+        if what == 'the Feed' and len({r['left'] for r in rows}) != 1: out.append(f'{what}: the Region cells are not one column {sorted({r["left"] for r in rows})}')
+        if what == 'Near You' and any(r['rg'] and not (r['below'] and abs(r['left'] - r['sleft']) <= 1) for r in rows): out.append(f'Near You: a region not on the line under its system {rows[:2]}')
         if any(r['cut'] for r in rows): out.append(f'{what}: a region cut off {[r for r in rows if r["cut"]][:1]}')
     regs = list(dict.fromkeys(MAP['regions']))
-    w = pg.evaluate("""(regs) => { const g = document.querySelector('#itNearList .it-rg, #itFeedList .it-rg'), c = document.createElement('canvas').getContext('2d'); c.font = getComputedStyle(g).font;
+    w = pg.evaluate("""(regs) => { const g = document.querySelector('#itFeedList .it-rg'), c = document.createElement('canvas').getContext('2d'); c.font = getComputedStyle(g).font;
       const widest = Math.max(...regs.map(n => c.measureText(n).width)); return [parseFloat(getComputedStyle(g).getPropertyValue('--it-rg-w')) || 0, widest, g.getBoundingClientRect().width]; }""", regs)
-    if not (w[0] >= w[1] and w[2] + 0.5 >= w[1]): out.append(f'the Region column ({w[0]} px set, {w[2]:.1f} px drawn) is narrower than the widest region name ({w[1]:.1f} px)')
+    if not (w[0] >= w[1] and w[2] + 0.5 >= w[1]): out.append(f'the Feed\'s Region column ({w[0]} px set, {w[2]:.1f} px drawn) is narrower than the widest region name ({w[1]:.1f} px)')
     tips = pg.evaluate("""() => [...document.querySelectorAll('#itNearList .it-nb, #itFeedList .it-fd')].flatMap(r => { const g = r.querySelector('.it-rg'), n = g && g.textContent;
       return n ? [...r.querySelectorAll('.it-sysb[title], .it-rg[title], .j[title], .age[title], .it-age[title]')].map(e => e.title).filter(t => t.includes(n)) : []; })""")
     if tips: out.append(f'hover text on a row names its region: {tips[:2]}')
+    nr = pg.evaluate("""() => { sysRegTab = null; it.lastHtml = null; itRenderLists();   // no region table (as for a wormhole): no line under any system
+      const r = document.querySelector('#itNearList .it-nb'), g = r && r.querySelector('.it-rg'), sy = r && r.querySelector('.sys');
+      const out = r ? [g ? g.textContent : null, g ? getComputedStyle(g).display : null, getComputedStyle(r).gridTemplateAreas.includes('rg')] : null;
+      sysRegTab = undefined; it.lastHtml = null; itRenderLists(); return out; }""")
+    if nr != ['', 'none', False]: out.append(f'Near You: a system with no region still gets a region line {nr}')
     # 11 the status line, 13 the notification
     st = pg.evaluate(STATUS)
     if not st.startswith(f"Your Main in 1DQ1-A ({R('1DQ1-A')}) · "): out.append(f'the status line {st!r}')

@@ -86,7 +86,7 @@ with sync_playwright() as p:
     pg.evaluate("() => [...document.querySelectorAll('#intelPanel .it-fd')].find(f => f.querySelector('.raw').textContent.endsWith('8WA-Z6 Vesna Dossier vedmak')).querySelector('.it-chip.p button.it-seg.nmb').click()")
     pa_done(pg)
     got = pg.evaluate("() => [getComputedStyle(document.querySelector('#tabPilot')).display, document.querySelector('#pilotName').value, document.querySelector('#manualShip').value, document.querySelector('#pilotFromIntel').hidden, document.querySelector('#pilotFromIntel').textContent]")
-    check(got[:4] == ['block', 'Vesna Dossier', 'Vedmak', False] and re.match(r'From Intel · Vesna Dossier reported in a Vedmak at 8WA-Z6 \(1 jump\) · \d+ s ago← Back to Intel$', got[4]),
+    check(got[:4] == ['block', 'Vesna Dossier', 'Vedmak', False] and re.match(r'From Intel · Vesna Dossier reported in a Vedmak at 8WA-Z6 \(Delve, 1 jump\) · \d+ s ago← Back to Intel$', got[4]),
           f'a paired pilot: the Pilot Analyzer in the Vedmak, the From Intel line {got}')
     sel = pg.evaluate("() => [...document.querySelectorAll('#pilotDossier button.pd-row.sel .pd-hull')].map(e => e.textContent)")
     check(len(sel) == 1 and sel[0].startswith('Vedmak'), f'the dossier on the Vedmak {sel}')
@@ -96,7 +96,7 @@ with sync_playwright() as p:
     pg.evaluate(f"() => [...document.querySelectorAll('#intelPanel .it-fd')].find(f => f.querySelector('.raw').textContent.endsWith({json.dumps(LONG)})).querySelector('.it-chip.p button.it-seg.nmb').click()")
     pa_done(pg)
     got = pg.evaluate("() => [document.querySelector('#pilotName').value, document.querySelector('#manualShip').value, document.querySelector('#pilotFromIntel').textContent]")
-    check(got[:2] == ['Marrek Ketter', ''] and got[2].startswith('From Intel · Marrek Ketter reported at 8WA-Z6 (1 jump)'), f'an unpaired pilot: no ship, the dossier picks {got}')
+    check(got[:2] == ['Marrek Ketter', ''] and got[2].startswith('From Intel · Marrek Ketter reported at 8WA-Z6 (Delve, 1 jump)'), f'an unpaired pilot: no ship, the dossier picks {got}')
     pg.fill('#pilotName', 'Kirra Longtail'); pg.fill('#manualShip', ''); pg.click('#fitBtn'); pa_done(pg)
     check(pg.evaluate("() => document.querySelector('#pilotFromIntel').hidden"), 'another pilot analyzed by hand: the From Intel line goes')
     pg.click('#tabBtnIntel'); pg.wait_for_timeout(200)
@@ -111,7 +111,7 @@ with sync_playwright() as p:
     pg.click('[data-it-assess="%d"]' % SYSID['8WA-Z6']); sa_done(pg, 2)
     got = pg.evaluate("() => [getComputedStyle(document.querySelector('#tabDscan')).display, document.querySelector('#localInput').value, document.querySelector('#dscanInput').value, document.querySelector('#saFromIntel').textContent]")
     check(got[:3] == ['block', 'Marrek Ketter\nVesna Dossier', 'Sabre\nVedmak\nVedmak\nLoki'], f'Assess: the System Analyzer with the pilots as Local and the ships as D-Scan {got[:3]}')
-    check(got[3] == 'From Intel · 8WA-Z6 (1 jump), reported in the last 15 min: 2 pilots +3 unnamed, 4 ships (Vesna Dossier in the Vedmak) · your own Local and D-Scan paste was replacedRestore my paste← Back to Intel',
+    check(got[3] == 'From Intel · 8WA-Z6 (Delve, 1 jump), reported in the last 15 min: 2 pilots +3 unnamed, 4 ships (Vesna Dossier in the Vedmak) · your own Local and D-Scan paste was replacedRestore my paste← Back to Intel',
           f'the From Intel line {got[3]!r}')
     rows = pg.evaluate(SA_ROWS)
     vd = next((x for x in rows if x[0] == 'Vesna Dossier'), None); mk = next((x for x in rows if x[0] == 'Marrek Ketter'), None)
@@ -123,7 +123,7 @@ with sync_playwright() as p:
     pg.click('#tabBtnIntel'); pg.click('#tabBtnDscan'); pg.click('#saClearBtn'); pg.click('#tabBtnIntel')
     pg.click('[data-it-assess="%d"]' % SYSID['QX-LIJ']); pg.wait_for_timeout(500)
     got = pg.evaluate("() => [document.querySelector('#saFromIntel').textContent, !!document.querySelector('#saFromIntel [data-fi-act=restore]')]")
-    check(got[0].startswith('From Intel · QX-LIJ (4 jumps), reported in the last 15 min: 1 pilot, 1 ship (Anouk Morrow in the Scimitar)') and not got[1], f'no paste of your own: no Restore {got}')
+    check(got[0].startswith('From Intel · QX-LIJ (Delve, 4 jumps), reported in the last 15 min: 1 pilot, 1 ship (Anouk Morrow in the Scimitar)') and not got[1], f'no paste of your own: no Restore {got}')
     pg.type('#localInput', 'x'); pg.wait_for_timeout(200)
     check(pg.evaluate("() => [document.querySelector('#saFromIntel').hidden, sa.intel]") == [True, None], 'typing in the boxes ends it')
     pg.click('#tabBtnIntel')

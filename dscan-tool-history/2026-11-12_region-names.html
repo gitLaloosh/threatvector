@@ -14,14 +14,15 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <h2>Why</h2>
 <ul>
 <li>The owner, 2026-11-11: "widen it to do a review of existing places where system name is used and show me the list. i'll tell you where i would like to add the region name." He picked 12 of the 27 places, and "we dont need region names for wormhole space".</li>
-<li>From the mockup: Near You and the Feed "A: own column"; the Fleet tab's and the dossier's kill lists on phones "System only"; sentences "Yes, as drawn" ("E-VKJV (Querious)", "8-YNBE (Querious, 4 jumps)").</li>
+<li>From the mockup: Near You and the Feed "A: own column" (Near You changed at the build, below); the Fleet tab's and the dossier's kill lists on phones "System only"; sentences "Yes, as drawn" ("E-VKJV (Querious)", "8-YNBE (Querious, 4 jumps)").</li>
 <li>The removal: "have it removed with the next change to the system analyzer tab" (the fleet view had been off since v.89, Against Your Ship since v2026.10.31.1).</li>
 </ul>
 
 <h2>What changed</h2>
 <ul>
 <li><code>sysRegion(id)</code>: a system's region from the map's table already in the page (<code>INTEL_MAP.reg</code> / <code>.regions</code>), only the region bytes unpacked, once. Nothing for a system the table doesn't cover (wormholes, Jove space) or while the map table doesn't match the jump table. <code>sysBracket(id, jumps)</code> writes every sentence's bracket, so they can't drift apart.</li>
-<li>Near You and the Feed: a Region column after the system, as wide as the widest region name measured in the cell's font (<code>--it-rg-w</code> in <code>itSysWidths</code>; the Intel example sizes it to its own widest); plain dim text with no hover; hidden under 600 px.</li>
+<li>The Feed: a Region column after the system, as wide as the widest region name measured in the cell's font (<code>--it-rg-w</code> in <code>itSysWidths</code>; the Intel example sizes it to its own widest); plain dim text with no hover; hidden under 600 px.</li>
+<li>Near You: the region on a line under the system name (the owner at the build, "Under the system"). Near You sits about 400 px wide beside the map between 905 and 1200 px, and the Region column from the mockup left its tags no room there (they spilled over the time and off the row; <code>intel_layout_check</code>'s busy row caught it). The line runs from the system's column to the row's end, so no region is cut short; a system with no region gets no line (<code>:has(&gt; .it-rg:empty)</code>); hidden under 600 px.</li>
 <li>Sentences: Intel's status line ("… in 1DQ1-A (Delve)"), the desktop notification's title ("E-VKJV (Querious) · 3 jumps"), the System Analyzer's and the Pilot Analyzer's "From Intel" notes ("8WA-Z6 (Delve, 1 jump)"), the Fleet tab's head line and the kill picker's heading. They keep the region on a phone.</li>
 <li>The Feed search finds a region's reports by its name; its placeholder says "region".</li>
 <li>The Pilot Dossier: each usual system with its region (dim); the kill list under a hull has a Region column after System (hidden where the list stacks, 900 px and under). The kill picker's rows have a Region column after the system (hidden under 600 px). These two columns narrow on a smaller window and show the name on hover.</li>
@@ -38,6 +39,7 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <h2>Lesson for future models</h2>
 <ul>
 <li>LESSON #159: deleting by name deletes what the name once meant. The queue item listed <code>fleet_vs_check.py</code> for deletion, but it checks the live Fleet tab; the fleet view's code and CSS blocks held helpers and classes other features use. Before removing a feature, list what its block defines and search each name outside it. Also: <code>itB64</code> decodes 16-bit numbers, so a one-byte table needs its own decode.</li>
+<li>LESSON #113 again: the mockup was checked at 1440 and 390 px only. Near You's narrowest width (about 400 px beside the map, windows of 905 to 1200 px) is where the Region column broke the busy row. A plan that adds a column to a list should name that list's narrowest width and check a busy row there.</li>
 </ul>
 </body>
 </html>

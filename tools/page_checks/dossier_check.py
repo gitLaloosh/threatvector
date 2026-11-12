@@ -113,7 +113,7 @@ with sync_playwright() as p:
     foot = pg.evaluate("() => [document.querySelector('#pilotDossier .pd-foot .k').textContent, [...document.querySelectorAll('#pilotDossier [data-pd=hours] i')].map(i => Number(i.dataset.pdH)), document.querySelector('[data-pd=systems]').textContent, document.querySelector('[data-pd=split]').textContent]")
     check(foot[0] == 'Active, your time (UTC+9)' and foot[1] == hrs, f"active hours in the browser's own time zone ({TZ}): {foot[0]!r}, {foot[1]} (want {hrs})")
     sysc = Counter(e[7] for e in E); [sysc.update([30004759]) for _ in range(3)]
-    want_sys = ' · '.join(f'{M.SYSTEMS[s]} {n}' for s, n in sorted(sysc.items(), key=lambda x: -x[1])[:3])
+    want_sys = ' · '.join(f'{M.SYSTEMS[s]} ({M.REGION[s]}) {n}' for s, n in sorted(sysc.items(), key=lambda x: -x[1])[:3])
     check(foot[2] == want_sys and foot[3] == f"{sizes['solo']} solo · {sizes['small']} small gang · {sizes['fleet']} fleet", f'usual systems {foot[2]!r} (want {want_sys!r}); the split {foot[3]!r}')
     # the switch
     for mode in ('small', 'fleet'):

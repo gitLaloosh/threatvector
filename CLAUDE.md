@@ -247,8 +247,9 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   `--field-border-hover`; focus a cyan border and the `--accent-ring` ring (never amber, never the browser's own);
   disabled 45%. 36px tall, 32px in filter bars; paste boxes stay monospace.
 - **Intel lists** (v2026.10.30.1, the owner): the jump count first; system names in a column as wide as the widest system name
-  (measured in the drawn font, `itSysWidths`), then the region in its own column, as wide as the widest region name; rows on a phone
-  show the system only (build queue 038, `sysRegion`; sentences elsewhere say "System (Region, N jumps)", `sysBracket`); the left edge only means "within your alert range", in the "N near" colour
+  (measured in the drawn font, `itSysWidths`); the region (build queue 038, `sysRegion`): in the Feed its own column after the system,
+  as wide as the widest region name; in Near You (narrow beside the map) a line under the system (the owner at the build); rows on a phone
+  show the system only; sentences elsewhere say "System (Region, N jumps)" (`sysBracket`); the left edge only means "within your alert range", in the "N near" colour
   (amber); no background highlighting; standing colours on words and names (neutral a bright grey). Intel channel names are
   shown only under the gear, never elsewhere (the owner: "security reasons"). `tools/page_checks/intel_layout_check.py`.
   A line naming several systems is placed after the name lookups, never before (LESSON #105; `intel_place_check.py`).

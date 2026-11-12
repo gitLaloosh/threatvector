@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-aBRNJ1vaSYFAyYslgFO4P/F74JWcZ55LxTt8VrKVo1s='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MB+UGBB3ICnAvQaBhbYzaybKApFB/WDyeQNvzo4trpA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2783,12 +2783,18 @@
   button.it-an{display:inline-flex; align-items:center; justify-content:center; width:26px; height:24px; min-height:0; padding:0; border:1px solid transparent; border-radius:4px; background:transparent; color:var(--text-dim); cursor:pointer;}
   button.it-an:hover, button.it-an:focus-visible{border-color:var(--accent-edge); background:var(--tag-fill-hover); color:var(--heading);} button.it-an svg{width:14px; height:14px;}
   .it-gtag.clr{color:var(--it-clear); background:color-mix(in srgb, var(--it-clear) 18%, transparent);}
-  .it-nb.dd{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-sys-w, 121px) var(--it-rg-w, 120px) minmax(0,1fr) auto; grid-template-areas:"j an sys rg tg age" ". . kb kb kb kb" "rt . wl wl wl wl";
+  .it-nb.dd{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-sys-w, 121px) minmax(0,1fr) auto; grid-template-areas:"j an sys tg age" ". . rg rg rg" ". . kb kb kb" "rt . wl wl wl";
     column-gap:10px; row-gap:4px; align-items:center;}
-  .it-nb.dd.nokb{grid-template-areas:"j an sys rg tg age" "rt . wl wl wl wl";}
-  /* build queue 038: the Region column after the system (--it-rg-w, the widest region name, itSysWidths); plain dim text, no hover */
+  .it-nb.dd.nokb{grid-template-areas:"j an sys tg age" ". . rg rg rg" "rt . wl wl wl";}
+  @media (min-width:600px){   /* no region (a wormhole): no line under the system */
+    .it-nb.dd:has(> .it-rg:empty){grid-template-areas:"j an sys tg age" ". . kb kb kb" "rt . wl wl wl";} .it-nb.dd.nokb:has(> .it-rg:empty){grid-template-areas:"j an sys tg age" "rt . wl wl wl";}
+    .it-nb.dd > .it-rg:empty{display:none;}
+  }
+  /* build queue 038: the region, plain dim text, no hover. The Feed: its own column after the system (--it-rg-w, the widest region name,
+     itSysWidths). Near You, beside the map and often ~400 px wide: a second line under the system, from the system's column to the row's
+     end (the owner at the build, "Under the system": a column there left the tags no room between 905 and 1200 px) */
   .it-rg{min-width:0; font:400 12px var(--sans); color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .it-nb.dd > .it-rg{grid-area:rg; line-height:18px;} .it-fd.fe .it-rg{grid-area:rg;}
+  .it-nb.dd > .it-rg{grid-area:rg; line-height:15px; margin-top:-3px;} .it-fd.fe .it-rg{grid-area:rg;}
   .it-nb.dd > .j{grid-area:j; line-height:18px;} .it-nb.dd > .sys{grid-area:sys; line-height:18px;} .it-nb.dd > .it-an, .it-nb.dd > .it-an-none{grid-area:an;}
   .it-nb.dd > .tg{grid-area:tg; min-width:0; display:flex; flex-wrap:wrap; gap:4px 6px; align-items:center;} .it-nb.dd > .tg > *{margin-left:0;}
   .it-nb.dd > .age{grid-area:age; display:block; justify-self:end; white-space:nowrap; line-height:18px;}
@@ -26108,8 +26114,9 @@ function sysBracket(id, j = null){
   const parts = [sysRegion(id), j === null || j === undefined ? '' : `${j} jump${j === 1 ? '' : 's'}`].filter(Boolean);
   return parts.length ? ` (${parts.join(', ')})` : '';
 }
-// Near You's and the Feed's Region column (A): plain dim text, no hover ([stated] "7. yes but not in the hover text"); empty when there's
-// no region, so nothing else on the row moves; hidden under 600 px ([stated] "phones only get system name")
+// The region in Near You (a line under the system) and the Feed (its own column, A): plain dim text, no hover ([stated] "7. yes but not
+// in the hover text"); empty when there's no region (the Feed's cell keeps its place; Near You's row then has no line); hidden under
+// 600 px ([stated] "phones only get system name")
 function itRgHtml(sys){ return `<span class="it-rg">${escapeHtml(sysRegion(sys))}</span>`; }
 
 // ---- ships (INTEL_SHIPS: English and Chinese names from pyfa's data) ----
@@ -28021,7 +28028,7 @@ function itSysWidths(el){
   if(!el || !el.style || typeof document === 'undefined' || !document.createElement || !it.names) return;
   const a = el.querySelector('#itNearList .it-nb .sys'), f = el.querySelector('#itFeedList .it-fh .it-sn');
   const jn = el.querySelector('#itNearList .it-nb .j'), jf = el.querySelector('#itFeedList .it-fh .fj');
-  const rg = el.querySelector('#itNearList .it-nb .it-rg, #itFeedList .it-fh .it-rg');   // build queue 038: the Region column
+  const rg = el.querySelector('#itFeedList .it-fh .it-rg');   // build queue 038: the Feed's Region column (Near You's is a line under the system)
   // v2026.11.01.4: the key no longer reads four computed fonts on every draw (~15 ms): what changes the widths is the font loading
   // (itFontEpoch), the width class (a phone's smaller fonts) and the table; which lists are on the card decides what can be measured
   const key = `${itFontEpoch}|${typeof innerWidth === 'number' && innerWidth < 600 ? 'n' : 'w'}|${!!a}${!!f}${!!jn}${!!jf}${!!rg}|${it.names.list.length}`;
@@ -28646,7 +28653,7 @@ function itExWidths(f){   // the system and jump columns as wide as the example'
   const w = (sel) => Math.ceil(Math.max(0, ...[...f.querySelectorAll(sel)].map(x => x.scrollWidth)));
   const a = w('.itx-near .it-nb .sys'), b = w('.itx-feed .it-fh .it-sn'), j = w('.itx-near .it-nb .j, .itx-feed .it-fh .fj');
   if(a) f.style.setProperty('--it-sys-w', `${a + 2}px`); if(b) f.style.setProperty('--it-fsys-w', `${b + 2}px`); if(j) f.style.setProperty('--it-jw', `${Math.max(j, 54)}px`);
-  const r = w('.itx-near .it-nb .it-rg, .itx-feed .it-fh .it-rg'); f.style.setProperty('--it-rg-w', `${r ? r + 2 : 0}px`);   // build queue 038: the example's own widest region
+  const r = w('.itx-feed .it-fh .it-rg'); f.style.setProperty('--it-rg-w', `${r ? r + 2 : 0}px`);   // build queue 038: the example Feed's own widest region
 }
 function itExPlace(f){
   const W = f.querySelector('.itx-wrap'); if(!W) return;

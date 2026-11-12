@@ -79,7 +79,7 @@ with sync_playwright() as p:
     check(nk == [0, False], f'from the dossier: one kill, no kill list and no fleets to pick from (v2026.11.01.6) {nk}')
     sub = ' '.join(pg.inner_text('#fleetPanel .fk-sub').split())   # v2026.10.31.1: the victim is a tag (its name, then ›)
     VIC = pg.evaluate("() => fk.info.get(fk.victim.id)")
-    check(VIC and sub.startswith(f"Chosen from {ORLA}'s Pilot Dossier · killed {VIC} › in a Thanatos (Carrier) · ") and sub.endswith('· 1DQ1-A · 8 pilots on the kill, 6 in ships'),
+    check(VIC and sub.startswith(f"Chosen from {ORLA}'s Pilot Dossier · killed {VIC} › in a Thanatos (Carrier) · ") and sub.endswith('· 1DQ1-A (Delve) · 8 pilots on the kill, 6 in ships'),
           f'the kill, with the NPC, the capsule and the pilot with no ship left out ({sub!r})')
     R = pg.evaluate(ROWS)
     want = [  # the dossier's pilot first, then DPS (ties in the killmail's order), fit unknown last

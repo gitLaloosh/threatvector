@@ -50,7 +50,7 @@ _tail = r'''
         const cy = (e) => e.top + e.height / 2;
         return {sys: r.querySelector('.sys').textContent, jx: j.left, jr: j.right, jtxt: r.querySelector('.j').textContent, jw: parseFloat(cs.gridTemplateColumns.split(' ')[0]), anr: an.right, gap: parseFloat(cs.columnGap), sx: s.left, sw: parseFloat(cs.gridTemplateColumns.split(' ')[2]), sb: s.bottom, l1b: Math.max(j.bottom, s.bottom, an.bottom, tg.height ? tg.bottom : 0, a.bottom), rg: parseFloat(cs.rowGap), ax: an.left, tgx: tg.left, ar: Math.round(a.right),
           line1: Math.max(...[j, s, a].map(e => Math.abs(cy(e) - cy(s)))), anc: r.querySelector(':scope > .it-an') ? Math.abs(cy(an) - cy(s)) : 0,
-          kb: kb ? [kb.top, kb.left, kb.bottom] : null, rt: [rt.left, rt.top], wl: [wl.left, wl.top], word1: b ? b.getBoundingClientRect().height <= 20 : true,
+          kb: kb ? [kb.top, kb.left, kb.bottom] : null, rlb: (() => { const g = r.querySelector(':scope > .it-rg'); return g && getComputedStyle(g).display !== 'none' ? R(g).bottom : null; })(), rt: [rt.left, rt.top], wl: [wl.left, wl.top], word1: b ? b.getBoundingClientRect().height <= 20 : true,
           inside: kids.every(k => k.left >= rr.left - 1 && k.right <= rr.right + 1), overlap, alert: r.classList.contains('alert'), edge: cs.boxShadow, bg: cs.backgroundColor,
           an: (r.querySelector(':scope > .it-an') || {}).title || '', assess: !!r.querySelector('.it-assess')}; }); }"""
     G = pg.evaluate("""() => { const c = document.createElement('canvas').getContext('2d'); c.font = getComputedStyle(document.querySelector('#itNearList .it-nb .sys')).font;
@@ -65,8 +65,8 @@ _tail = r'''
     chk(all(abs(r['sw'] - r0['sw']) < 0.5 for r in rows) and r0['sw'] >= G['widest'] - 0.5, f'the system column as wide as the widest system name in the table ({G["wn"]}, {G["widest"]:.1f} px): {r0["sw"]:.1f} px on every row')
     chk(len({round(r['ax']) for r in rows}) == 1 and len({round(r['tgx']) for r in rows}) == 1, f'the icons and the tags start at the same place on every row {sorted({round(r["ax"]) for r in rows})} {sorted({round(r["tgx"]) for r in rows})}')
     kr = [r for r in rows if r['kb']]
-    chk(kr and all(r['kb'][0] >= r['sb'] - 1 and abs(r['kb'][1] - r['sx']) < 1.5 and r['wl'][1] >= r['kb'][2] - 1 for r in kr) and not [r for r in rows if not r['kb'] and r['wl'][1] - r['l1b'] > r['rg'] + 1.5],
-          f'the kill badges on line 2 under the system name, only when there are kills (rows without them: no empty line) {[(r["sys"], r["kb"] and [round(x) for x in r["kb"]], round(r["sb"]), [round(x) for x in r["wl"]]) for r in rows]}')
+    chk(kr and all(r['kb'][0] >= (r['rlb'] or r['sb']) - 1 and abs(r['kb'][1] - r['sx']) < 1.5 and r['wl'][1] >= r['kb'][2] - 1 for r in kr) and not [r for r in rows if not r['kb'] and r['wl'][1] - (r['rlb'] or r['l1b']) > r['rg'] + 1.5],
+          f'the kill badges on their own line under the system name (and its region line, build queue 038), only when there are kills (rows without them: no empty line) {[(r["sys"], r["kb"] and [round(x) for x in r["kb"]], round(r["sb"]), [round(x) for x in r["wl"]]) for r in rows]}')
     chk(all(abs(r['rt'][0] - r['jx']) < 2 and r['rt'][1] >= r['sb'] - 1 and abs(r['wl'][0] - r['sx']) < 1.5 for r in rows), f'the toggle under the jump count, then the word and the names from under the system {[(r["sys"], [round(x) for x in r["rt"]], [round(x) for x in r["wl"]]) for r in rows][:3]}')
     chk(not any(r['assess'] for r in rows) and all(r['an'].startswith('Analyze ') for r in rows if r['an']) and any(r['an'] for r in rows), f'no Assess column; the analyze icon instead {[(r["sys"], r["an"][:30]) for r in rows]}')
     chk(all(r['overlap'] == 0 and r['inside'] for r in rows), f'nothing overlaps or sticks out of its row {[(r["sys"], r["overlap"], r["inside"]) for r in rows if r["overlap"] or not r["inside"]]}')
