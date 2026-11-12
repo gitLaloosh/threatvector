@@ -176,7 +176,7 @@ with sync_playwright() as p:
     pg.evaluate(OPEN, [[K2[0]], 'intel']); pg.wait_for_timeout(2500)
     S = pg.evaluate(STRIPS); line = pg.evaluate(LINE); rows = pg.evaluate("() => [...document.querySelectorAll('#fleetPanel .fk-pk')].map(b => b.getAttribute('aria-pressed'))")
     lst, ships, pilots = hulls([K2[0]])
-    check(line == '1 kill in Amamake from Intel · as it was when you opened this' and len(S) == 1 and S[0]['t'] == 'Fleet 1' and S[0]['m'] == '6 pilots · 1 kill' and S[0]['open'] == 'true' and S[0]['here']
+    check(line == '1 kill in Amamake (Heimatar) from Intel · as it was when you opened this' and len(S) == 1 and S[0]['t'] == 'Fleet 1' and S[0]['m'] == '6 pilots · 1 kill' and S[0]['open'] == 'true' and S[0]['here']
           and S[0]['shown'] == strip_want(lst, 4)[0] and re.fullmatch(r'\d+ min ago', S[0]['age']) and rows == ['true'] and 'The pilots on this one kill' in S[0]['title'],
           f'one Intel kill by a gang: the kill list, "1 kill in Amamake from Intel", its Fleet 1 open and "analyzing", "6 pilots · 1 kill", its hulls, the age without "newest", the kill pressed\n      {line!r} {[(s["t"], s["m"], s["open"], s["here"], s["shown"], s["age"], s["title"]) for s in S]} {rows} want hulls {strip_want(lst, 4)[0]}')
     pg.evaluate(OPEN, [[K3[0]], 'intel']); pg.wait_for_timeout(2000)

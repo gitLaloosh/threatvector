@@ -119,7 +119,7 @@ with sync_playwright() as p:
     want = [[f'Fleet {i + 1}', 'solo · 2 kills' if g['pilots'] == 1 else f"{g['pilots']} pilots · {len(g['ids'])} kills"] for i, g in enumerate(fl)] + [['Not linked', '2 kills']]
     check([[h['t'], h['m']] for h in hs] == want, f'the brawl: gang A, the other side (their victims are gang A: victims never link) and the solo hunter (the 1-pilot exception) as fleets, biggest first, then Not linked\n      page {[[h["t"], h["m"]] for h in hs]}\n      want {want}')
     line = pg.evaluate("() => document.querySelector('#fleetPanel .fk-pk-h').textContent")
-    check(line == '15 kills in 1DQ1-A from Intel · 3 fleets by shared pilots · as they were when you opened this', f'the line above: "3 fleets by shared pilots" {line!r}')
+    check(line == '15 kills in 1DQ1-A (Delve) from Intel · 3 fleets by shared pilots · as they were when you opened this', f'the line above: "3 fleets by shared pilots" {line!r}')
     here0 = [first in g['ids'] for g in fl + [lone]]
     check(here0 == [False, False, True, False] and all(h['open'] == 'false' and not h['rows'] for h in hs) and [h['here'] for h in hs] == here0 and pg.evaluate("() => fk.killId") == first,
           f'every group closed; "analyzing" on the fleet holding the newest kill, the one analyzed {[(h["open"], len(h["rows"]), h["here"]) for h in hs]}')

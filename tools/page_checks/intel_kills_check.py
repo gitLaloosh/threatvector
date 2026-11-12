@@ -238,7 +238,7 @@ with sync_playwright() as p:
     check(wc.get('8WA-Z6') == ['2 hostile', 'rgb(198, 91, 78)'] and wc.get('T5ZI-S') == ['1 neutral', 'rgb(215, 222, 227)'] and wc.get('Y-OMTZ') == ['1 hostile', 'rgb(198, 91, 78)'],
           f"Near You's word in its standing's colour (the owner, 2026-10-30): hostile as hostile names, neutral a bright grey {wc}")
     al = pg.evaluate("() => [__fs.beeps, __fs.notes]")
-    check(al[0] == 3 and al[1] == [['8WA-Z6 · 1 jump', f'Friendly lost: {FRIEND} lost a Sabre (62.4M ISK)'], ['MO-GZ5 · 1 jump', 'Neutral killed: Seren Morrow lost a Rifter (3.0M ISK)'], ['Y-OMTZ · 3 jumps', 'Hostile killed: Marrek Ketter lost a Vedmak (188.6M ISK)']],
+    check(al[0] == 3 and al[1] == [['8WA-Z6 (Delve) · 1 jump', f'Friendly lost: {FRIEND} lost a Sabre (62.4M ISK)'], ['MO-GZ5 (Delve) · 1 jump', 'Neutral killed: Seren Morrow lost a Rifter (3.0M ISK)'], ['Y-OMTZ (Delve) · 3 jumps', 'Hostile killed: Marrek Ketter lost a Vedmak (188.6M ISK)']],
           f'the live kills alert: sound and notification "Friendly lost: ..."; enemies killed by friendlies alert too (a sighting, v2026.10.30.1) {al}')
     pr = pg.evaluate("() => { const st = it.near.get(it.names.byLower.get('8wa-z6')); return Object.fromEntries([...st.pairs].map(([id, s]) => [st.pilots.find(x => x.id === id).name, s.name])); }")
     check(pr == {'Marrek Ketter': 'Vedmak', 'Seren Ketter': 'Sabre'}, f'each attacker paired with their ship {pr}')

@@ -286,6 +286,8 @@ those pilots are docked up and likely not even flying a combat ship of any kind.
 - The fleet view is switched off (`saFleetOn = false`): over "pilot rows up to" Local shows the Groups columns only (the
   pill says "N hostile + neutral", not "Fleet"), no Fleet / Groups switch, no group lookups on zKillboard. Its code and
   `fleet_view_check.py` stay (the check switches it on). The small gang's Pilots view is unchanged.
+- **Taken out** in build queue 038 (the owner, 2026-11-11: "have it removed with the next change to the system analyzer tab"):
+  the view's code and `fleet_view_check.py`. Its common-fit part (`saHullFits`) stays: the Pilot Dossier and the Fleet tab use it.
 - Why: Local proves presence, not that a pilot is undocked, in a combat ship or in the fight; a trade hub's Local is
   mostly docked traders. The 4 zKillboard requests per group also ran into zKillboard's limits (ZKB-01) on a big Local.
 - To discuss (backlog "System Analyzer fleet content"): what a fleet picture can rest on (D-Scan and what's on grid, your
@@ -322,7 +324,7 @@ taking a guess and what ship multiple pilots could be flying and getting any num
 wildly inaccurate assumptions resulting in poor decision making."
 
 - The card is switched off (`saVsOn = false`); its code and `vs_check.py` stay, so a refined version starts from tested
-  pieces. Nothing else changed: the Pilots / Fleet views still say "Possible ship" and "≈".
+  pieces. (Taken out in build queue 038 with the fleet view: the code and `vs_check.py`.) Nothing else changed: the Pilots / Fleet views still say "Possible ship" and "≈".
 - Why it misled: every counted ship is a guess twice over (the hull from killmail history, the fit from losses), and the
   card adds the guesses up into one verdict, so wrong guesses compound instead of averaging out.
 - To discuss before it comes back (not decided): count only what's certain (hulls on your D-Scan, with the fit as

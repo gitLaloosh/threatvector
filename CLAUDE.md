@@ -247,7 +247,9 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   `--field-border-hover`; focus a cyan border and the `--accent-ring` ring (never amber, never the browser's own);
   disabled 45%. 36px tall, 32px in filter bars; paste boxes stay monospace.
 - **Intel lists** (v2026.10.30.1, the owner): the jump count first; system names in a column as wide as the widest system name
-  (measured in the drawn font, `itSysWidths`); the left edge only means "within your alert range", in the "N near" colour
+  (measured in the drawn font, `itSysWidths`); the region (build queue 038, `sysRegion`): in the Feed its own column after the system,
+  as wide as the widest region name; in Near You (narrow beside the map) a line under the system (the owner at the build); rows on a phone
+  show the system only; sentences elsewhere say "System (Region, N jumps)" (`sysBracket`); the left edge only means "within your alert range", in the "N near" colour
   (amber); no background highlighting; standing colours on words and names (neutral a bright grey). Intel channel names are
   shown only under the gear, never elsewhere (the owner: "security reasons"). `tools/page_checks/intel_layout_check.py`.
   A line naming several systems is placed after the name lookups, never before (LESSON #105; `intel_place_check.py`).
@@ -488,7 +490,7 @@ still gets its own targeted check and mutants.
 **How the numbers are worked out, for people:** `METHODOLOGY.md` (was the "How effective HP and DPS are
 calculated" note on the page, removed in v2026.10.14.51); each card's short version is its ⓘ panel (`CARD_INFO`).
 Change both when a calculation's assumptions change. Since build queue 036 (v2026.11.11.3) the panels are short (`check_subtext.py`:
-85 words open, 210 in all, Intel 410; `fleet` and `vs` exempt while hidden), the detail is in METHODOLOGY.md (its Intel, Who's in the
+85 words open, 210 in all, Intel 410), the detail is in METHODOLOGY.md (its Intel, Who's in the
 system and Sides sections too), and nothing on the page links to it (build queue 037 took 036's footer link out, the owner: "i dont want that link displayed"). A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
 panel never inherits a heading's case or spacing (`.info-body`; `info_panels_check.py`).
 

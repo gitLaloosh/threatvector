@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-dPGi8s5pYRy+wBPy+FXQDEA2Kav3g+rTPam35M+/E/0='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MB+UGBB3ICnAvQaBhbYzaybKApFB/WDyeQNvzo4trpA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -1958,7 +1958,6 @@
   .sa-mode{margin-top:10px; display:flex; gap:6px 10px; align-items:center; flex-wrap:wrap;}
   .sa-mode .ctx{display:inline-block;}
   .sa-pill{display:inline-flex; align-items:center; height:24px; padding:0 10px; border:1px solid var(--line); border-radius:3px; font:600 12px var(--sans); color:var(--text); white-space:nowrap; border-color:transparent; background:var(--tag-fill);}
-  .sa-pill.fleet{border-color:transparent; color:var(--amber); background:color-mix(in srgb, var(--amber) 14%, var(--tag-fill));}
   .sa-warn{display:flex; gap:8px; align-items:flex-start; margin-top:10px; max-width:460px;}
   .sa-warn .ewar-badge{flex:none;}
   .sa-warn button.sa-link{margin-left:6px;}
@@ -2139,10 +2138,10 @@
     .pr-msg{grid-column:1 / -1;}
     .pr-seg button{min-height:40px;}
   }
-  /* FLEET VIEW (v2026.10.14.83; local-and-fleet-plan.md L4, D9): their fleet, estimated, then a card per looked-up group:
-     its main hulls lately, share and ≈ count, the common fit's variant and its numbers. */
-  .fl-sum, .fl-g, .fl-rest{margin-top:14px; padding:14px 14px 8px; position:relative;}
-  .fl-sum .ctx, .fl-gt .ctx{display:block;}
+  /* The Fleet tab's summary and victim cards (fkRender, fkVictimHtml) keep the fleet view's card classes (v2026.10.14.83, L4;
+     the view itself taken out in build queue 038). */
+  .fl-sum{margin-top:14px; padding:14px 14px 8px; position:relative;}
+  .fl-sum .ctx{display:block;}
   .fl-row{display:flex; gap:12px 32px; flex-wrap:wrap; margin-top:10px; align-items:flex-start;}
   .fl-stat .k{font:600 var(--label-size) var(--sans); letter-spacing:var(--label-tracking); text-transform:uppercase; color:var(--text-dim);}
   .fl-stat .v{font:600 22px var(--mono); color:var(--heading); margin-top:2px;}
@@ -2150,102 +2149,7 @@
   .fl-dbar i{display:block; height:100%;}
   .fl-dk{display:flex; gap:4px 12px; flex-wrap:wrap; margin-top:5px; font:400 11.5px var(--sans);}
   .fl-dk b{font:600 11.5px var(--mono);}
-  .fl-ewl{display:flex; gap:6px 12px; flex-wrap:wrap; margin-top:8px; font:600 14px var(--mono); color:var(--heading);}
-  .fl-ewl > span{display:inline-flex; align-items:center; gap:5px;}
-  .fl-gh{display:flex; align-items:center; gap:10px; min-width:0;}
-  .fl-gh .sa-logo{width:34px; height:34px; flex:none;}
-  .fl-gt{min-width:0; flex:1 1 auto;}
-  .fl-gt .nm{display:block; font:600 14px/18px var(--sans); color:var(--heading); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .fl-cnt{text-align:right; flex:none;}
-  .fl-cnt b{font:600 18px var(--mono); color:var(--heading);}
-  .fl-cnt .ctx{display:block;}
-  .fl-cols, .fl-h{display:grid; grid-template-columns:minmax(160px,1.3fr) 110px minmax(180px,1.4fr) 112px 64px 76px 62px 24px; gap:12px; align-items:center;}
-  .fl-cols{font:600 var(--label-size) var(--sans); letter-spacing:var(--label-tracking); text-transform:uppercase; color:var(--text-dim); padding:10px 4px 6px; border-bottom:1px solid var(--line);}
-  .fl-cols .r{text-align:right;}
-  .fl-h{padding:8px 4px; border-bottom:1px solid var(--line-soft); min-height:54px;}
-  .fl-share{display:flex; flex-direction:column; gap:3px;}
-  .fl-share b{font:600 14px var(--mono); color:var(--heading); white-space:nowrap;}
-  .fl-est{font-weight:400; color:var(--text-dim); font-size:12px;}
-  .fl-sbar{height:5px; background:var(--line); border-radius:2px; overflow:hidden; width:96px;}
-  .fl-sbar i{display:block; height:100%; background:var(--amber-dim);}
-  .ctx.fl-onscan{color:var(--cap-good);}
-  .fl-var{display:flex; flex-direction:column; gap:2px; min-width:0; position:relative;}
-  details.fl-pick{position:relative;}
-  .fl-varbtn{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:5px; padding:3px 8px; min-height:28px; box-sizing:border-box; font:600 12px var(--sans); color:var(--text); width:max-content; max-width:100%; cursor:pointer; list-style:none;}
-  summary.fl-varbtn::-webkit-details-marker{display:none;}
-  .fl-varbtn .c{color:var(--text-dim); font-weight:400;}
-  .fl-varbtn.is-vary{cursor:default;}
-  details.fl-pick[open] > summary.fl-varbtn, summary.fl-varbtn:hover{border-color:var(--cyan);}
-  .fl-pop{position:absolute; left:0; top:calc(100% + 4px); z-index:35; width:max-content; min-width:280px; max-width:min(440px, calc(100vw - 40px)); background:var(--panel-2); border:1px solid #2c3842; border-radius:8px; box-shadow:0 10px 28px rgba(0,0,0,.55); padding:8px;}
-  .fl-pop-t{margin:0 4px 4px;}
-  button.fl-opt{display:flex; width:100%; gap:10px; align-items:baseline; padding:8px 6px; min-height:36px; border:none; border-radius:4px; background:transparent; color:var(--text-dim); font:400 12.5px var(--sans); letter-spacing:0; text-align:left;}
-  button.fl-opt b{font:600 12.5px var(--sans); color:var(--heading); white-space:nowrap;}
-  button.fl-opt.on, button.fl-opt:hover{background:var(--panel);}
-  button.fl-open{width:24px; height:28px; min-height:0; padding:0; border:none; color:var(--text-dim); font-size:16px; background:transparent;}
-  button.fl-open:hover{color:var(--cyan); background:transparent;}
-  .fl-mob{display:none;}
-  .fl-h > .pr-msg{grid-column:3 / -1;}
-  .fl-more{padding:10px 4px 4px; font:400 12px var(--sans); color:var(--text-dim);}
   .fl-msg{padding:10px 4px;}
-  .fl-rr{display:flex; gap:10px; align-items:center; padding:6px 0; border-top:1px solid var(--line-soft); min-width:0;}
-  .fl-rr .nm{font:600 13px var(--sans); color:var(--heading); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .fl-rn{margin-left:auto; font:600 13px var(--mono); color:var(--heading);}
-  .fl-rr button{padding:4px 12px;}
-  @media (max-width: 760px){
-    .fl-cols{display:none;}
-    .fl-h{grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"h s" "v v" "x o"; row-gap:6px;}
-    .fl-h > .pr-hull{grid-area:h;} .fl-h > .fl-share{grid-area:s; align-items:flex-end;} .fl-h > .fl-var{grid-area:v;} .fl-h > .fl-open{grid-area:o; width:44px; height:44px;}
-    .fl-h > .fl-mob{grid-area:x; display:flex; gap:4px 8px; flex-wrap:wrap; align-items:center; font:400 12px var(--sans); color:var(--text-dim);}
-    .fl-h > .pr-dps, .fl-h > .fl-ehp, .fl-h > .fl-weak, .fl-h > .fl-ew{display:none;}
-    .fl-h > .pr-msg{grid-column:1 / -1;}
-    .fl-rr button{min-height:44px;}
-    .fl-pop{position:fixed; left:0; right:0; bottom:0; top:auto; width:auto; max-width:none; border-radius:14px 14px 0 0; box-shadow:0 0 0 100vmax rgba(0,0,0,.55); padding:10px 12px 20px;}
-  }
-  /* AGAINST YOUR SHIP (v2026.10.14.85; local-and-fleet-plan.md L5, D10): their counted ships against My Ship, added up. */
-  .vs-card{margin-top:14px; padding:14px 16px 10px; position:relative; border-left:3px solid var(--cyan); min-width:0;}
-  .vs-head{display:flex; align-items:center; gap:10px; min-width:0;}
-  .vs-head h3{margin:0; flex:none;}
-  .vs-head .info-pop{flex:none;}
-  .vs-opt{display:inline-flex; align-items:center; gap:8px;}
-  .vs-ship{flex:0 1 auto; display:inline-flex; align-items:baseline; gap:6px; border:1px solid var(--line); border-radius:4px; padding:2px 10px; font:600 12px var(--sans); color:var(--cyan); min-width:0; max-width:100%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; border-color:transparent; background:var(--tag-fill);}
-  .vs-fit{font-weight:400; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis;}
-  .vs-set{display:flex; gap:8px 10px; align-items:center; flex-wrap:wrap; margin-top:10px;}
-  .vs-k{font:600 var(--label-size) var(--sans); letter-spacing:var(--label-tracking); text-transform:uppercase; color:var(--text-dim);}
-  .vs-set .pr-seg{margin-left:0;}
-  .vs-set .pr-seg button{padding:4px 10px; min-height:30px;}
-  .vs-verdict{display:flex; gap:10px; align-items:flex-start; margin-top:12px; padding:10px 12px; background:var(--panel-2); border:1px solid var(--line); border-radius:6px;}
-  .vs-verdict.bad{background:#2a1715; border-color:#5a2a24;}
-  .vs-vt{min-width:0;}
-  .vs-vt b{display:block; font:600 14px var(--sans); color:var(--heading);}
-  .vs-vt .ctx{display:block;}
-  .vs-row{display:flex; gap:12px 34px; flex-wrap:wrap; margin-top:12px;}
-  .vs-stat{min-width:0;}
-  .vs-stat .k{font:600 var(--label-size) var(--sans); letter-spacing:var(--label-tracking); text-transform:uppercase; color:var(--text-dim);}
-  .vs-stat .v{font:600 22px var(--mono); color:var(--heading); margin-top:2px;}
-  .vs-stat .v.bad{color:var(--danger);}
-  .vs-stat .ctx{display:block;}
-  .vs-ko{margin-top:14px;}
-  .vs-ko h4{margin:0 0 2px; font:600 var(--label-size) var(--sans); letter-spacing:var(--label-tracking); text-transform:uppercase; color:var(--text-dim);}
-  .vs-kr{display:grid; grid-template-columns:22px minmax(150px,1.2fr) 60px 110px 120px minmax(160px,1.4fr); gap:12px; align-items:center; padding:8px 4px; border-bottom:1px solid var(--line-soft); min-width:0;}
-  .vs-kr.vs-kh{font:600 var(--label-size) var(--sans); letter-spacing:var(--label-tracking); text-transform:uppercase; color:var(--text-dim); border-bottom:1px solid var(--line); padding-top:4px;}
-  .vs-kr .r{text-align:right;}
-  .vs-rank, .vs-n{font:600 14px var(--mono); color:var(--heading);}
-  .vs-num{font:600 14px var(--mono); color:var(--heading); text-align:right; white-space:nowrap;}
-  .vs-who{min-width:0;}
-  .vs-who .nm{display:block; font:600 13px var(--sans); color:var(--heading); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .vs-who .cls{font-weight:400; color:var(--text-dim); margin-left:6px; font-size:11.5px;}
-  .vs-why{font:400 12px var(--sans); color:var(--text); min-width:0;}
-  .vs-msg{padding:10px 0 4px;}
-  .vs-msg button{padding:4px 12px; margin-left:6px;}
-  @media (max-width: 760px){
-    .vs-set .pr-seg button{min-height:40px; padding:4px 9px;}
-    .vs-row{gap:12px 22px;}
-    .vs-kr{grid-template-columns:22px minmax(0,1fr) auto; row-gap:4px;}
-    .vs-kr.vs-kh{display:none;}
-    .vs-kr > .vs-c3, .vs-kr > .vs-c4{display:none;}
-    .vs-kr > .vs-why{grid-column:2 / -1;}
-    .vs-msg button{min-height:44px;}
-  }
   /* PILOT AFFILIATION (v2026.10.14.87): the top right of the Pilot Analyzer; below the pilot line under 1241 px. */
   @media (min-width: 1241px){
     .pa-top:has(> .pa-aff:not([hidden])){display:grid; grid-template-columns:minmax(0,1fr) 360px; column-gap:24px; align-items:start;}
@@ -2298,10 +2202,11 @@
   button.pd-exp{position:absolute; left:9px; top:50%; margin-top:-12px; z-index:1; width:26px; height:24px; min-height:0; padding:0; border:none; border-radius:3px; background:transparent; color:var(--text-dim); opacity:.6; letter-spacing:0; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;}
   button.pd-exp:hover, button.pd-exp:focus-visible{opacity:1; background:rgba(255,255,255,.07);} button.pd-exp[aria-expanded="true"]{opacity:.9;} button.pd-exp[aria-expanded="true"] svg{transform:rotate(180deg);}
   .pd-kills{border-bottom:1px solid var(--line); background:color-mix(in srgb, var(--panel-2) 55%, transparent); padding:2px 10px 10px 44px;}
-  .pdk{position:relative; display:grid; grid-template-columns:96px minmax(170px,1.2fr) 86px 74px minmax(150px,1.1fr) minmax(120px,1fr) 58px 34px; gap:12px; align-items:center; font:400 12.5px var(--sans); color:var(--text); padding:6px 0; border-bottom:1px solid var(--line-soft); min-height:40px;}
+  .pdk{position:relative; display:grid; grid-template-columns:96px minmax(170px,1.2fr) 86px 74px minmax(0,.8fr) minmax(150px,1.1fr) minmax(120px,1fr) 58px 34px; gap:12px; align-items:center; font:400 12.5px var(--sans); color:var(--text); padding:6px 0; border-bottom:1px solid var(--line-soft); min-height:40px;}
   .pdk > span{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .pdk b{font-weight:600; color:var(--heading);} .pdk .pd-dim{font-size:11.5px;}
   .pdk-t, .pdk-v{display:flex; flex-direction:column;}
+  .pdk-r{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text-dim);}   /* 038: the region */
   .pdk-g i{display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:6px;}
   .pdk-val, .pdk-l{text-align:right;} .pdk-val{font-family:var(--mono);}
   .pdk-l a{color:var(--cyan); text-decoration:none; font-weight:600;} .pdk-l a:hover{text-decoration:underline;}
@@ -2342,18 +2247,19 @@
   .fk-picks{container-type:inline-size;}
   @container (max-width: 930px){ button.fk-kg-h .fk-kg-hulls{order:5; flex-basis:100%; margin-left:22px;} }
   .fk-pk-i{text-align:right; font:600 11.5px var(--mono); color:var(--amber); white-space:nowrap;}
-  button.fk-pk{display:grid; grid-template-columns:16px minmax(0,1.6fr) minmax(0,1fr) 70px 64px 90px 130px; gap:10px; align-items:center; width:100%; min-height:0; padding:7px 10px; text-align:left;
+  button.fk-pk{display:grid; grid-template-columns:16px minmax(0,1.6fr) minmax(0,1fr) minmax(0,.9fr) 70px 64px 90px 130px; gap:10px; align-items:center; width:100%; min-height:0; padding:7px 10px; text-align:left;
     border:1px solid transparent; border-radius:4px; background:var(--tag-fill); color:var(--text); font:400 12.5px var(--sans); letter-spacing:0; cursor:pointer;}
   button.fk-pk:hover, button.fk-pk:focus-visible{background:var(--tag-fill-hover); border-color:var(--accent-edge);}
   button.fk-pk[aria-pressed="true"]{background:var(--tag-on); border-color:var(--cyan);}
   .fk-pk-n{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;} .fk-pk-n .nm{font-weight:600; color:var(--heading);} .fk-pk-n .cls{color:var(--text-dim); margin-left:6px;}
   .fk-pk-s{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .fk-pk-r{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font:400 12px var(--sans); color:var(--text-dim);}   /* 038: the region */
   .fk-pk-a, .fk-pk-t{text-align:right; font:400 12px var(--mono); color:var(--text-dim); white-space:nowrap;} .fk-pk-l{justify-self:end;} .fk-pk-l .it-kl{margin-left:0;}
   @media (max-width:599px){ button.fk-kg-h{min-height:44px; flex-wrap:nowrap;} button.fk-kg-h[aria-expanded="true"]{flex-wrap:wrap;} .fk-kg-m{min-width:0; overflow:hidden; text-overflow:ellipsis;}
     button.fk-kg-h .fk-kg-x{display:none;} button.fk-kg-h[aria-expanded="true"] .fk-kg-x{display:flex; flex-basis:100%; margin-left:22px;} .fk-kg-r{padding-left:0;}
     button.fk-kg-h .fk-kg-hulls{display:none;} button.fk-kg-h[aria-expanded="true"] .fk-kg-hulls{display:inline-flex; flex-basis:100%; margin-left:22px; order:5;}   /* v2026.11.04.2: open only, up to 3 */
     .fk-kg-hl[data-k="4"], .fk-kg-more[data-n="4"]{display:none;} .fk-kg-more[data-n="3"]{display:inline;} }   /* v2026.11.01.6: one line; ISK, age and victims on a second line when open */
-  @media (max-width:599px){ .fk-picks{--fk-pk-h:46px;} button.fk-pk{grid-template-columns:16px minmax(0,1fr) auto auto; row-gap:2px; min-height:44px;} .fk-pk > svg{grid-row:1 / span 2;} .fk-pk .fk-pk-n{grid-column:2; grid-row:1;} .fk-pk .fk-pk-s{grid-column:2; grid-row:2;} .fk-pk .fk-pk-t{grid-column:3 / span 2; grid-row:1;} .fk-pk .fk-pk-a{grid-column:3; grid-row:2;} .fk-pk .fk-pk-i{grid-column:4; grid-row:2;} .fk-pk .fk-pk-l{display:none;} }
+  @media (max-width:599px){ .fk-picks{--fk-pk-h:46px;} button.fk-pk{grid-template-columns:16px minmax(0,1fr) auto auto; row-gap:2px; min-height:44px;} .fk-pk > svg{grid-row:1 / span 2;} .fk-pk .fk-pk-n{grid-column:2; grid-row:1;} .fk-pk .fk-pk-s{grid-column:2; grid-row:2;} .fk-pk .fk-pk-t{grid-column:3 / span 2; grid-row:1;} .fk-pk .fk-pk-a{grid-column:3; grid-row:2;} .fk-pk .fk-pk-i{grid-column:4; grid-row:2;} .fk-pk .fk-pk-l, .fk-pk .fk-pk-r{display:none;} }
   /* v2026.10.31.1: the victim, a tag in the line under the title; opens them in the Pilot Analyzer on the ship they lost */
   button.fk-vbtn{display:inline-flex; align-items:center; gap:6px; min-height:0; padding:1px 8px; margin:0 2px; border:1px solid transparent; border-radius:4px; background:var(--tag-fill); color:var(--heading); font:600 13px var(--sans); cursor:pointer; vertical-align:baseline;}
   button.fk-vbtn:hover, button.fk-vbtn:focus-visible{background:var(--tag-fill-hover); border-color:var(--accent-edge);}
@@ -2530,7 +2436,7 @@
     .pdk{grid-template-columns:auto minmax(0,1fr) auto; grid-template-areas:"f v l" ". g g" ". w w"; row-gap:3px; column-gap:10px; padding:8px 0;}
     .pdk > button.pdk-fb{grid-area:f; position:static; transform:none; width:40px; height:40px; align-self:start;}
     .pdk > .pdk-v{grid-area:v;} .pdk > .pdk-l{grid-area:l; align-self:start;} .pdk > .pdk-g{grid-area:g;} .pdk > .pdk-w{grid-area:w; color:var(--text-dim); font-size:11.5px;}
-    .pdk > .pdk-t, .pdk > .pdk-s, .pdk > .pdk-x, .pdk > .pdk-val{display:none;}
+    .pdk > .pdk-t, .pdk > .pdk-s, .pdk > .pdk-r, .pdk > .pdk-x, .pdk > .pdk-val{display:none;}
     .pdk-m{display:inline;}
     .pdk-l a:not(.zk-ic){display:inline-flex; align-items:center; min-height:40px;}
     .pdk-more button, .sa-cmore button, button.lk-more, .sa-pilots button.sa-link[data-more]{min-height:44px;}
@@ -2877,9 +2783,18 @@
   button.it-an{display:inline-flex; align-items:center; justify-content:center; width:26px; height:24px; min-height:0; padding:0; border:1px solid transparent; border-radius:4px; background:transparent; color:var(--text-dim); cursor:pointer;}
   button.it-an:hover, button.it-an:focus-visible{border-color:var(--accent-edge); background:var(--tag-fill-hover); color:var(--heading);} button.it-an svg{width:14px; height:14px;}
   .it-gtag.clr{color:var(--it-clear); background:color-mix(in srgb, var(--it-clear) 18%, transparent);}
-  .it-nb.dd{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-sys-w, 121px) minmax(0,1fr) auto; grid-template-areas:"j an sys tg age" ". . kb kb kb" "rt . wl wl wl";
+  .it-nb.dd{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-sys-w, 121px) minmax(0,1fr) auto; grid-template-areas:"j an sys tg age" ". . rg rg rg" ". . kb kb kb" "rt . wl wl wl";
     column-gap:10px; row-gap:4px; align-items:center;}
-  .it-nb.dd.nokb{grid-template-areas:"j an sys tg age" "rt . wl wl wl";}
+  .it-nb.dd.nokb{grid-template-areas:"j an sys tg age" ". . rg rg rg" "rt . wl wl wl";}
+  @media (min-width:600px){   /* no region (a wormhole): no line under the system */
+    .it-nb.dd:has(> .it-rg:empty){grid-template-areas:"j an sys tg age" ". . kb kb kb" "rt . wl wl wl";} .it-nb.dd.nokb:has(> .it-rg:empty){grid-template-areas:"j an sys tg age" "rt . wl wl wl";}
+    .it-nb.dd > .it-rg:empty{display:none;}
+  }
+  /* build queue 038: the region, plain dim text, no hover. The Feed: its own column after the system (--it-rg-w, the widest region name,
+     itSysWidths). Near You, beside the map and often ~400 px wide: a second line under the system, from the system's column to the row's
+     end (the owner at the build, "Under the system": a column there left the tags no room between 905 and 1200 px) */
+  .it-rg{min-width:0; font:400 12px var(--sans); color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .it-nb.dd > .it-rg{grid-area:rg; line-height:15px; margin-top:-3px;} .it-fd.fe .it-rg{grid-area:rg;}
   .it-nb.dd > .j{grid-area:j; line-height:18px;} .it-nb.dd > .sys{grid-area:sys; line-height:18px;} .it-nb.dd > .it-an, .it-nb.dd > .it-an-none{grid-area:an;}
   .it-nb.dd > .tg{grid-area:tg; min-width:0; display:flex; flex-wrap:wrap; gap:4px 6px; align-items:center;} .it-nb.dd > .tg > *{margin-left:0;}
   .it-nb.dd > .age{grid-area:age; display:block; justify-self:end; white-space:nowrap; line-height:18px;}
@@ -2888,9 +2803,9 @@
   .it-nb.dd > .wl{grid-area:wl; min-width:0; line-height:18px; font-size:11.5px; color:var(--text-dim);}
   .it-nb.dd .wl .st{display:inline; font-size:12.5px;} .it-nb.dd .wl .sep{color:var(--text-dim);}
   .it-nb.dd .wl .who{display:inline; white-space:normal; overflow:visible; text-overflow:clip;}
-  .it-fd.fe{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-fsys-w, 132px) minmax(0,1fr) auto; grid-template-areas:"fj an sys tg ag" "rt . c1 c1 c1";
+  .it-fd.fe{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-fsys-w, 132px) var(--it-rg-w, 120px) minmax(0,1fr) auto; grid-template-areas:"fj an sys rg tg ag" "rt . c1 c1 c1 c1";
     column-gap:10px; row-gap:5px; align-items:center;}
-  .it-fd.fe.two{grid-template-areas:"fj an sys tg ag" "rt . c1 c1 c1" ". . c2 c2 c2";} .it-fd.fe.noc{grid-template-areas:"fj an sys tg ag" "rt . . . .";}
+  .it-fd.fe.two{grid-template-areas:"fj an sys rg tg ag" "rt . c1 c1 c1 c1" ". . c2 c2 c2 c2";} .it-fd.fe.noc{grid-template-areas:"fj an sys rg tg ag" "rt . . . . .";}
   .it-fd.fe .it-an{grid-area:an;}
   .it-fd.fe > .it-fh{display:contents;}
   .it-fd.fe .fj{grid-area:fj;} .it-fd.fe .fsys{grid-area:sys; min-width:0; display:block;} .it-fd.fe .it-age{grid-area:ag; justify-self:end; white-space:nowrap;}
@@ -2912,6 +2827,7 @@
     .it-fd.fe{grid-template-columns:max(var(--it-jw, 66px), 64px) auto minmax(0,1fr) auto; grid-template-areas:"fj sys sys ag" ". tg tg tg" "rt c1 c1 c1"; column-gap:8px;}
     .it-fd.fe.two{grid-template-areas:"fj sys sys ag" ". tg tg tg" "rt c1 c1 c1" ". c2 c2 c2";} .it-fd.fe.noc{grid-template-areas:"fj sys sys ag" ". tg tg tg" "rt . . .";}
     .it-fd.fe .ftg:empty{display:none;} .it-fd.fe .it-rawt{width:32px; height:32px; align-self:center;}
+    .it-nb.dd > .it-rg, .it-fd.fe .it-rg{display:none;}   /* build queue 038: phones show the system only */
     .it-fd.fe > .it-raw, .it-fd.fe > .it-toast{margin-left:0;}
     .fsz-m{display:inline;}
   }
@@ -3135,7 +3051,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3356,7 +3272,6 @@ const CARD_NAMES = {
  "onscan": "Ships on Scan",
  "pilots": "Pilots",
  "fleet": "Fleet",
- "vs": "Against Your Ship",
  "aff": "Pilot Affiliation",
  "dossier": "Pilot Dossier",
  "fksum": "Their fleet on this kill",
@@ -3495,22 +3410,7 @@ const CARD_INFO = {
   "[The numbers] From their newest loss in that hull, as in the Pilot Analyzer: DPS (a range when charges are guessed from cargo), EHP, the weakest resist and the EWAR letters. No loss in it: the bare hull, marked fit unknown.",
   "[Loading] 15 pilots at a time; Load N more pilots asks for the next ones. Rows keep their place while they fill, then sort once: hostile first, then by DPS."
  ],
- "fleet": [
-  "Above the “pilot rows up to” number of hostile + neutral pilots (the {card:sysan}'s ⚙), Local is a fleet. The 5 largest hostile or neutral groups are looked up; the others are listed with a Look up button. Groups shows the columns instead.",
-  "Lately flying: each group's 50 newest kills on zKillboard; every pilot of theirs on those kills counts the hull they flew. “≈” is that hull's share × how many of the group are in Local: an estimate. The D-Scan count beside it is what's really near you.",
-  "Common fit, for the 3 main hulls: the group's 20 newest losses in that hull, grouped by their exact set of fitted modules (drone types included, cargo not). Up to 3 variants of 2 or more losses, with how many and what differs from the most common; pick one and the numbers follow. Each weapon gets the charge most of those losses had in it. No fit on 2 or more losses: the newest one (“fits vary”).",
-  "The numbers are worked out as in the Fit Analyzer (pyfa's numbers). › opens that fit there.",
-  "Their fleet, estimated: those ≈ counts × each fit, added up. Raw DPS by damage type (no application, no resists), what most of the counted ships are weakest to, how many have tackle (T), disruption (D), cap warfare (C) or bursts (B), and logistics. Hulls beyond the main 3 aren't counted.",
-  "Each group is 4 zKillboard requests (its kills, and the losses of its 3 main hulls), kept for an hour."
- ],
- "vs": [
-  "Your fit (My Fits, with “Use in assessments” on) against the ships counted here: in the Fleet view each main hull's common fit (the variant picked) × its ≈ count; in the Pilots view each row's fit once (rows with “fit unknown” aren't counted). All, or only what's on your D-Scan.",
-  "One fight setup for all of them: the range, starting at your guns' best range, and you sitting still or moving with your MWD or afterburner on (their webs and painters as fitted). Each ship's damage on you and yours on it is worked out as in {card:dmg} and the {card:board} (pyfa's damage application), then their damage is added up by type.",
-  "You last: all of that damage through your resists and repairs, layer by layer, as the {card:board}'s “you last”, the tool's own rule on pyfa's numbers. Your capacitor is pyfa's simulation of your fit with their neutralizers and nosferatus in reach draining it, as pyfa adds projected ones (their optimal and falloff at this range); your repairs stop when it's empty.",
-  "Holding you: ships whose scram or web reaches you at this range (T), and whose neutralizers or nosferatus do (C).",
-  "Kill first: logistics first; then the damage each one puts on you ÷ the time you take to break one (your damage on it through its resists and repairs). The verdict counts how many you'd break one after another before you go, with all of their damage still landing meanwhile, so it's the worse case.",
-  "Estimates from killmails, not a count: their fits may differ, they won't all shoot you at once, and remote repairs, command bursts and overheating aren't in it."
- ],
+
  "aff": [
   "Corporation and alliance from ESI, and where they stand in your {card:side}. In corp since: when they joined. Pilot since: the year the character was made. Sec: their security status.",
   "**zKillboard, all time:** zKillboard's own numbers, as its pilot page shows them, not the tool's. Danger: dangerous against snuggly, from what they destroyed against what they lost. Gang: how many of their kills were solo, and their average gang size."
@@ -12703,7 +12603,7 @@ function pdHtml(d){
   const hmax = Math.max(1, ...hrs);
   const hours = hrs.map((n, i) => `<i style="height:${n ? Math.max(3, Math.round(n / hmax * 30)) : 1}px" title="${String(i).padStart(2, '0')}:00–${String((i + 1) % 24).padStart(2, '0')}:00, your time: ${n} kill${n === 1 ? '' : 's'}" data-pd-h="${n}"></i>`).join('');
   const sys = [...d.systems].sort((a, b) => b[1] - a[1]);
-  const sysTop = sys.slice(0, 3).map(([id, n]) => `<b>${sysNameHtml(id, d.sysNames.get(id) || `system ${id}`)}</b> ${n}`).join(' · ');
+  const sysTop = sys.slice(0, 3).map(([id, n]) => `<b>${sysNameHtml(id, d.sysNames.get(id) || `system ${id}`)}</b>${pdRegionHtml(id)} ${n}`).join(' · ');   // 038: each with its region
   const sysRest = sys.slice(3).reduce((s, x) => s + x[1], 0);
   const span = d.from ? `, ${day(d.from)} – ${day(d.to)}` : '';
   const rowsBody = rows.length ? rows.map(rowHtml).join('') : `<div class="pr-msg pd-msg">${pd.mode === 'all' ? 'No ships among their recent kills and losses (capsules, shuttles and rookie ships aren’t counted).' : `No ${PD_SIZES.find(x => x[0] === pd.mode)[1].toLowerCase()} kills among their newest ${d.nKills}.`}</div>`;
@@ -12718,6 +12618,9 @@ function pdHtml(d){
       <div><div class="k">Solo / gang</div><div class="v" data-pd="split"><b>${d.sizes.solo}</b> solo · <b>${d.sizes.small}</b> small gang · <b>${d.sizes.fleet}</b> fleet</div></div>
     </div>`;
 }
+// build queue 038: a dossier kill's Region cell (its name on hover too, as fkPickRegionHtml), and a usual system's region, dim, after its name
+function pdkRegionHtml(id){ const r = sysRegion(id); return `<span class="pdk-r" title="${escapeHtml(r)}">${escapeHtml(r)}</span>`; }
+function pdRegionHtml(id){ const r = sysRegion(id); return r ? ` <span class="pd-dim">(${escapeHtml(r)})</span>` : ''; }
 // v2026.11.01.5: the pinned row's tag (why it's first, and where it ranks) and the line under the rows
 function pdOrd(n){ const t = n % 100; return n + (t >= 11 && t <= 13 ? 'th' : ({1: 'st', 2: 'nd', 3: 'rd'})[n % 10] || 'th'); }
 function pdPinHtml(d, h, rank, of){
@@ -12744,7 +12647,7 @@ function pdKillList(h){
   return [...h.kills, ...pd.older.filter(k => k.hull === h.id)].filter(k => pd.mode === 'all' || k.size === pd.mode).sort((a, b) => b.t - a.t);
 }
 const PD_RECENT_MS = 4 * 3600 * 1000;   // v2026.10.31.3 (the owner: "timestamps in the WHEN column within the past 4 hours should be in amber")
-const PD_KHEAD = '<div class="pdk pdk-h" aria-hidden="true"><span>When</span><span>Victim</span><span title="How many pilots were on the kill">Fleet size</span><span>System</span><span>Their weapon</span><span>With them</span><span class="pdk-val">Value</span><span></span></div>';
+const PD_KHEAD = '<div class="pdk pdk-h" aria-hidden="true"><span>When</span><span>Victim</span><span title="How many pilots were on the kill">Fleet size</span><span>System</span><span>Region</span><span>Their weapon</span><span>With them</span><span class="pdk-val">Value</span><span></span></div>';
 // v2026.11.07.5 (build queue 011): past PD_SHOW_STEP rows they scroll inside a box PD_SHOW_STEP rows tall (pdKlFit measures it), the
 // heading row inside it (sticky, so the columns stay over theirs beside the scrollbar), with "Show fewer" beside "Show 10 more"
 function pdKlOpenHtml(h, n){ return n > PD_SHOW_STEP ? `<div class="pd-kl" data-pd-kl="${Number(h.id)}">${PD_KHEAD}` : PD_KHEAD; }
@@ -12774,7 +12677,7 @@ function pdKillsHtml(h){
     return `<div class="pdk${recent}" data-pdk="${k.id}"><button type="button" class="pdk-fb" data-pd-fleet="${k.id}" title="${escapeHtml(fleetT)}" aria-label="${escapeHtml(fleetT)}">${FLEET_ICON}</button><span class="pdk-t"><b>${day}</b><span class="pd-dim">${hm} your time</span></span>
       <span class="pdk-v"><span><b>${escapeHtml(nm(k.victim) || `type ${k.victim}`)}</b> <span class="pd-dim">${escapeHtml(cls(k.victim))}</span></span><span class="pd-dim">${pdVictimHtml(k, who)} ${orgTickerHtml('corporation', k.vcorp)}<span class="pdk-m"> · <span class="pdk-when">${day} ${hm}</span></span></span></span>
       <span class="pdk-g">${fleetSizeMarkHtml(k.n)}<span class="pdk-m pd-dim"> ${k.n === 1 ? 'pilot' : 'pilots'}, ${PD_SIZE_WORD[k.size]} · ${k.sys ? sysNameHtml(k.sys, sys) : ''} · ${isk}</span></span>
-      <span class="pdk-s">${k.sys ? sysNameHtml(k.sys, sys) : ''}</span>
+      <span class="pdk-s">${k.sys ? sysNameHtml(k.sys, sys) : ''}</span>${pdkRegionHtml(k.sys)}
       <span class="pdk-w">${escapeHtml(nm(k.weapon) || '—')}<span class="pdk-m">${mates ? ` · with ${escapeHtml(mates)}` : ''}</span></span>
       <span class="pdk-x">${escapeHtml(mates) || '<span class="pd-dim">alone</span>'}</span>
       <span class="pdk-val">${isk}</span>
@@ -12997,7 +12900,7 @@ async function speculateShip(character, statusEl, forceRefresh){
 // every analysis, so per-render document listeners would pile up -- see the .fit-menu note).
 (function headerPopClose(){
   if(typeof document === 'undefined' || !document.addEventListener) return;   // LESSON #36: suites run this file against a stub DOM
-  const openOnes = () => [...document.querySelectorAll('details.lk-pop[open], details.hull-pick[open], details.info-pop[open], details.mys-fpart[open], details.mys-pick[open], details.fl-pick[open]')];
+  const openOnes = () => [...document.querySelectorAll('details.lk-pop[open], details.hull-pick[open], details.info-pop[open], details.mys-fpart[open], details.mys-pick[open]')];
   document.addEventListener('pointerdown', (e) => { for(const d of openOnes()) if(!d.contains(e.target)) d.open = false; }, true);
   // v2026.10.14.48: an info panel's close button (shown on a phone, where the panel is a sheet)
   document.addEventListener('click', (e) => {
@@ -22613,7 +22516,6 @@ function myShipAfterChange(){
   if(myShip.faViewing && myShip.rec && myShip.faEft !== myShip.rec.eft) showMyShipInFitAnalyzer({keepPanel: true, noTab: true});
   dmgRefreshAll(); // v.36
   mysRefreshStrips(); // v.41
-  sa.vs.rangeKm = null; saRefreshVs();   // v.85: Against your ship, from your new ship's best range
 }
 
 // ---- Fit Analyzer: "Set as my ship", "Viewing my ship" ----
@@ -23355,7 +23257,6 @@ async function runLocal(text, statusEl, force){
   }
   sa.last = {pilots, notFound, orgNames, names: names.length};
   sa.gen++; sa.rows = new Map(); sa.rowLimit = SA_ROWS_PER_BATCH; sa.rowOrder = null;   // v.82: a new paste, new pilot rows
-  sa.fleet = new Map(); sa.fleetExtra = new Set();   // v.83: and new fleet lookups
   saRender();
   const ev = sa.evidence;
   setStatus(statusEl, `${names.length} name(s): ${pilots.length} pilot(s) found${notFound.length ? `, ${notFound.length} not found` : ''}.${ev ? ` Evidence: ${ev.n} of your side's losses${ev.capped ? ` (the last ${SA_KM_MAX})` : ''} in 7 days.` : ''}`);
@@ -23473,13 +23374,10 @@ function saRender(){
       <div class="sa-sum-top"><span class="sa-total">${tot}</span><span class="sa-total-l">in local</span></div>
       <div class="sa-bar" role="img" aria-label="${S.h} hostile, ${S.n} neutral, ${S.f} friendly">${['h', 'n', 'f'].filter(k => S[k]).map(k => `<i class="${k}" style="flex:${S[k]}"></i>`).join('')}</div>
       <div class="sa-keys">${['h', 'n', 'f'].map(k => `<span class="sa-key">${SIDE_MARK_BY_WORD[k]}${SIDE_WORD[k]} <b>${S[k]}</b></span>`).join('')}</div>
-      <div class="sa-mode">${threat > rows ? `<span class="sa-pill${saFleetOn ? ' fleet' : ''}">${saFleetOn ? 'Fleet: ' : ''}${threat} hostile + neutral</span>${ctxHtml(`over ${rows}: shown by group`)}`
-                                          : `<span class="sa-pill">Small gang: ${threat} hostile + neutral</span>${ctxHtml(`${rows} or fewer`)}`}${evLine}${threat > 0 && (small || saFleetOn) ? saViewSwitchHtml(small ? 'pilots' : 'fleet') : ''}</div>
+      <div class="sa-mode">${saModeHtml(threat, rows)}${evLine}${saViewSwitchHtml('pilots', threat > 0 && small)}</div>
       ${notes}
     </div>
-    ${small && sa.view !== 'groups' ? `${threat > 0 && saVsOn ? `<div id="saVsHost">${saVsPilotsHtml()}</div>` : ''}<div class="card pr-card" id="saPilots">${saPilotsCardHtml(G)}</div>`   // v.85 (L5)
-      : !small && threat > 0 && saFleetOn && sa.view !== 'groups' ? `<div id="saFleet">${saFleetCardHtml(G)}</div>`   // v.83 (L4); off since v.89
-      : `<div class="sa-cols">${saColHtml('h', G.h)}${saColHtml('n', G.n)}</div>`}
+    ${saBodyHtml(G, small)}
     <details class="sa-g sa-friendly" data-sa-g="friendly"${sa.friendOpen ? ' open' : ''}><summary>${SIDE_MARK.f}<span class="sa-gname"><span class="nm">${escapeHtml(cardName('friendly'))}</span><span class="ctx sa-ftk">${G.f.slice(0, 6).map(g => g.kind ? orgTickerHtml(g.kind, g.id) : '').join(' ')}</span></span><span class="sa-gn">${S.f}</span><span class="sa-chev" aria-hidden="true">▶</span></summary>
       <div class="sa-friendly-body">${G.f.length ? G.f.map(g => saGroupHtml(g, 'f')).join('') : '<div class="sa-empty">None in local.</div>'}</div></details>`;
   fillOrgTickers(host);
@@ -23487,7 +23385,14 @@ function saRender(){
   if(fk){ const f = host.querySelector(fk); if(f) f.focus({preventScroll: true}); }
   saMoreSoon();
   if(small && sa.view !== 'groups') saPumpRows();
-  else if(!small && threat > 0 && saFleetOn && sa.view !== 'groups') saPumpFleet();
+}
+// build queue 038 (the hidden fleet view taken out): the line's pill, and the pilot rows (a small gang) or the columns
+function saModeHtml(threat, rows){
+  return threat > rows ? `<span class="sa-pill">${Number(threat)} hostile + neutral</span>${ctxHtml(`over ${rows}: shown by group`)}`
+    : `<span class="sa-pill">Small gang: ${Number(threat)} hostile + neutral</span>${ctxHtml(`${rows} or fewer`)}`;
+}
+function saBodyHtml(G, small){
+  return small && sa.view !== 'groups' ? `<div class="card pr-card" id="saPilots">${saPilotsCardHtml(G)}</div>` : `<div class="sa-cols">${saColHtml('h', G.h)}${saColHtml('n', G.n)}</div>`;
 }
 function saAgo(ts){ const m = Math.round((Date.now() - ts) / 60000); return m < 1 ? 'just now' : `from ${m} min ago`; }
 // v2026.11.07.5 (build queue 011; roadmap/list-caps-plan.md item 1): a selector for the focused control, to find it again after a redraw
@@ -23544,7 +23449,8 @@ function saShowGroup(d){
 // by DPS.
 const SA_ROW_KILLS = 5, SA_ROW_LOSSES = 10, SA_RECENT_DAYS = 30, SA_ROWS_PER_BATCH = 15, SA_ROW_WORKERS = 3;
 const DAY_MS = 86400000;
-function saViewSwitchHtml(kind){   // kind: 'pilots' (a small gang) or 'fleet' (v.83); either one against 'groups'
+function saViewSwitchHtml(kind, show = true){   // kind: 'pilots' (a small gang) against 'groups' (build queue 038 took out the hidden 'fleet' kind)
+  if(!show) return '';
   return `<span class="pr-seg" role="group" aria-label="Show ${kind} or groups">${[[kind, cardName(kind)], ['groups', 'Groups']].map(([v, l]) => {
     const on = (v === 'groups') === (sa.view === 'groups');
     return `<button type="button" data-sa-view="${v}" aria-pressed="${on}"${on ? ' class="on"' : ''}>${escapeHtml(l)}</button>`; }).join('')}</span>`;
@@ -23756,37 +23662,21 @@ function saUpdatePilots(){
   const focused = document.activeElement && el.contains(document.activeElement) ? document.activeElement.dataset.prPilot : null;
   el.innerHTML = saPilotsCardHtml(sa.lastGroups);
   fillOrgTickers(el);
-  saRefreshVs();   // v.85: Against your ship adds up the rows looked up so far
   if(focused){ const f = el.querySelector(`[data-pr-pilot="${CSS.escape(focused)}"]`); if(f) f.focus({preventScroll: true}); }
 }
 
 
 
-// ---- L4: the fleet view (v2026.10.14.83; plan D4, D5, D9: the owner's answers to the fleet-view mockup: "Newest 50 kills",
-// "Show ≈ counts", the summary "Include it now", "L4 now, L5 next") ----
-// Above "pilot rows up to", the 5 largest hostile / neutral groups (D4) are looked up: their 50 newest kills on
-// zKillboard (1 request; killmails from ESI) give what they fly lately: every pilot of theirs on those kills counts the
-// hull they flew. For their top 3 hulls, the group's 20 newest losses in that hull (1 request each) give the common fit
-// (D5): losses grouped by their exact set of fitted modules (drone types included, cargo not), up to 3 variants of 2+
-// losses with their share and what differs from the first; the charge in each weapon is the most common one among that
-// variant's losses; no variant: the newest loss ("fits vary"). Numbers through the same engine as everywhere. "≈ in
-// local" = the hull's share × the group's count in local, an estimate. Their fleet, estimated: those counts × each
-// common fit, added up (raw DPS, no application or resists).
-const SA_FLEET_GROUPS = 5, SA_FLEET_KILLS = 50, SA_FLEET_HULLS = 3, SA_FLEET_LOSSES = 20, SA_VARIANT_MIN = 2, SA_VARIANTS = 3;
+// ---- A hull's common fit among a group's losses (v2026.10.14.83, plan D5; built for the System Analyzer's fleet view, taken out
+// in build queue 038 with Against Your Ship: both had been hidden since v.89 / v2026.10.31.1). Used by the Pilot Dossier and the Fleet
+// tab (their group's common fit for a hull). The group's newest SA_FLEET_LOSSES losses in that hull (1 request) give the fit: losses
+// grouped by their exact set of fitted modules (drone types included, cargo not), up to SA_VARIANTS variants of SA_VARIANT_MIN+
+// losses with what differs from the first; the charge in each weapon is the most common one among that variant's losses; no
+// variant: the newest loss ("fits vary"). Numbers through the same engine as everywhere. LESSON #159: kept when the view went.
+const SA_FLEET_LOSSES = 20, SA_VARIANT_MIN = 2, SA_VARIANTS = 3;
 const KM_SLOT_FLAG = (f) => (f >= 11 && f <= 34) || (f >= 92 && f <= 99) || (f >= 125 && f <= 132);   // low, mid, high, rigs, subsystems
 const KM_DRONE_FLAG = 87, KM_FIGHTER_FLAG = 158;
-sa.fleet = new Map(); sa.fleetExtra = new Set();   // group key -> {state, ...}; groups looked up by hand
-function saFleetPlan(G){
-  const all = [];
-  for(const k of ['h', 'n']) for(const g of G[k]) if(!g.npc && !g.small) all.push({g, side: k});
-  const big = [...all].sort((a, b) => b.g.n - a.g.n).slice(0, SA_FLEET_GROUPS).map(x => x.g.key);
-  sa.fleetAuto = new Set(big);
-  const looked = all.filter(x => sa.fleetAuto.has(x.g.key) || sa.fleetExtra.has(x.g.key));
-  const rest = all.filter(x => !looked.includes(x));
-  return {looked, rest};
-}
 function saGroupPath(g){ return `${g.kind === 'alliance' ? 'allianceID' : 'corporationID'}/${g.id}`; }
-async function saIsShip(typeId){ try{ const t = await getType(typeId); const gr = await getGroup(t.group_id); return gr.category_id === 6 && !EXCLUDED_HULL_GROUP_IDS.has(t.group_id); }catch(e){ return false; } }
 // The module set of one loss: fitted modules by type and count, drone and fighter types (no counts: how many were in the
 // bay varies), and each weapon's charge.
 async function saFitKey(km){
@@ -23899,348 +23789,6 @@ async function saHullFitsFrom(data, hullId){
   const times = take.map(km => Date.parse(km.killmail_time));
   return keep({variants: out, vary, of: take.length, from: Math.min(...times), to: Math.max(...times)});
 }
-async function saFleetGroupData(g){
-  const {data} = await zkbCachedJson(`${ZKB}/kills/${saGroupPath(g)}/`, false, 'kills lookup', 'array', {who: cardName('sysan')});
-  const kms = await (async () => {
-    const take = [...data].filter(s => s && s.killmail_id && s.zkb && s.zkb.hash).sort((a, b) => b.killmail_id - a.killmail_id).slice(0, SA_FLEET_KILLS);
-    return (await analyzeChunks(take, fetchKillmail, 5)).filter(r => r && r.km).map(r => r.km);
-  })();
-  const mine = (a) => a.character_id && a.ship_type_id && (g.kind === 'alliance' ? a.alliance_id === g.id : a.corporation_id === g.id);
-  const count = new Map();
-  for(const km of kms) for(const a of (km.attackers || [])) if(mine(a)) count.set(a.ship_type_id, (count.get(a.ship_type_id) || 0) + 1);
-  const ships = [];
-  for(const [id, n] of count) if(await saIsShip(id)) ships.push([id, n]);
-  ships.sort((a, b) => b[1] - a[1] || a[0] - b[0]);
-  const total = ships.reduce((s, x) => s + x[1], 0);
-  if(!total) return {state: 'done', kills: kms.length, hulls: [], total: 0};
-  const times = kms.map(km => Date.parse(km.killmail_time));
-  const hulls = [];
-  for(const [id, n] of ships.slice(0, SA_FLEET_HULLS)){
-    const t = await getType(id), gr = await getGroup(t.group_id);
-    const h = {typeId: id, name: t.name, cls: gr.name, n, share: n / total, logi: /Logistics|Force Auxiliary/i.test(gr.name), pick: 0};
-    try{ Object.assign(h, await saHullFits(g, id, {who: cardName('sysan')})); }catch(e){ h.err = withCode(e.message, errorCodeOf(e)); }
-    hulls.push(h);
-  }
-  const rest = ships.slice(SA_FLEET_HULLS);
-  return {state: 'done', kills: kms.length, from: Math.min(...times), to: Math.max(...times), hulls, total,
-          restShare: rest.reduce((s, x) => s + x[1], 0) / total, restHulls: rest.length};
-}
-function saPumpFleet(){
-  const G = sa.lastGroups;
-  if(!G) return;
-  const {looked} = saFleetPlan(G), gen = sa.gen;
-  const todo = looked.filter(x => !sa.fleet.has(x.g.key));
-  for(const x of todo) sa.fleet.set(x.g.key, {state: 'wait'});
-  let i = 0;
-  const worker = async () => {
-    while(i < todo.length){
-      const x = todo[i++];
-      if(gen !== sa.gen) return;
-      sa.fleet.set(x.g.key, {state: 'load'}); saUpdateFleet();
-      let r;
-      try{ r = await saFleetGroupData(x.g); }catch(e){ r = {state: 'err', msg: withCode(e.message, errorCodeOf(e))}; }
-      if(gen !== sa.gen) return;
-      sa.fleet.set(x.g.key, r); saUpdateFleet();
-    }
-  };
-  for(let w = 0; w < 2; w++) worker();
-}
-function saMonthDay(t){ return new Date(t).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); }
-function saFleetHullHtml(g, gr, h){
-  const v = h.variants && h.variants[h.pick];
-  const est = Math.round(h.share * g.n), scanN = lastScanCounts.get(h.typeId) || 0;
-  const share = `<span class="fl-share"><b>${Math.round(h.share * 100)}% <span class="fl-est" title="An estimate: this share of their ${g.n} pilots in local">≈${est}</span></b><span class="fl-sbar"><i style="width:${Math.round(h.share * 100)}%"></i></span></span>`;
-  const hull = `<span class="pr-hull"><img class="pr-ico" src="https://images.evetech.net/types/${h.typeId}/render?size=64" alt="" loading="lazy" data-imgfail="hide"><span class="pr-hn"><span class="nm">${escapeHtml(h.name)}<span class="cls">${escapeHtml(h.cls)}</span></span>${scanN ? `<span class="ctx fl-onscan">✓ ${scanN} on scan</span>` : ctxHtml('none on scan')}</span></span>`;
-  if(h.err) return `<div class="fl-h">${hull}${share}<span class="pr-msg err">${escapeHtml(h.err)}</span></div>`;
-  if(h.none || !v) return `<div class="fl-h">${hull}${share}<span class="pr-msg">No losses of it: fit unknown</span></div>`;
-  const e = v.est, dps = saRowDps(e), td = saRowTypeDps(e);
-  const bar = dps.v > 0 ? `<span class="pr-dbar" aria-hidden="true">${DMG.filter(d => td[d] > 0).map(d => `<i style="flex:${td[d]};background:var(--${d})"></i>`).join('')}</span>` : '';
-  const cats = ['tackle', 'disrupt', 'drain', 'boost'].filter(c => (e.ewarModules || []).some(m => m.category === c));
-  const ew = cats.map(c => `<span class="ewar-badge ${c}">${EWAR_BADGE_LETTER[c]}</span>`).join('');
-  const weak = `<span style="color:var(--${e.weakest})">${escapeHtml(DMG_FULL[e.weakest] || '')}</span>`;
-  const span = `${escapeHtml(h.name)}: ${escapeHtml(gr.name)}'s last ${h.of} loss${h.of === 1 ? '' : 'es'} in it, ${saMonthDay(h.from)} – ${saMonthDay(h.to)}`;
-  const pick = h.vary ? `<span class="fl-varbtn is-vary" title="${span}">Fits vary <span class="c">showing the latest</span></span>${ctxHtml('no fit on 2 or more losses')}`
-    : `<details class="fl-pick"><summary class="fl-varbtn" title="${span}">Variant ${h.pick + 1} <span class="c">${v.n} of ${h.of}</span><span aria-hidden="true">▾</span></summary>
-       <div class="fl-pop" role="menu"><div class="ctx fl-pop-t" title="${span}">${span}</div>${h.variants.map((x, i) => `<button type="button" role="menuitemradio" aria-checked="${i === h.pick}" class="fl-opt${i === h.pick ? ' on' : ''}" data-fl-var="${escapeHtml(gr.key)}|${h.typeId}|${i}"><b>${x.n} of ${h.of}</b><span>${i ? escapeHtml(x.diff) : 'the most common'}</span></button>`).join('')}</div></details>
-       ${ctxHtml(h.pick ? v.diff : h.variants.length > 1 ? `${h.variants.length - 1} more: ${h.variants[1].diff}` : v.n * 4 >= h.of * 3 ? 'a strict doctrine' : '', '', h.pick ? v.diff : '')}`;
-  return `<div class="fl-h">${hull}${share}<span class="fl-var">${pick}</span>
-    <span class="pr-dps"><span class="pr-num">${dps.text}</span>${bar}</span>
-    <span class="pr-num fl-ehp">${saFmtK(e.totalHP)}</span>
-    <span class="pr-weak fl-weak">${weak}</span>
-    <span class="pr-ew fl-ew">${ew || '<span class="pr-dash">—</span>'}</span>
-    <button type="button" class="fl-open" data-fl-open="${escapeHtml(gr.key)}|${h.typeId}" title="Open this fit in the Fit Analyzer" aria-label="Open the ${escapeHtml(h.name)} fit in the Fit Analyzer">›</button>
-    <span class="fl-mob">DPS ${dps.text} · EHP ${saFmtK(e.totalHP)} · ${weak}${ew ? ` ${ew}` : ''}</span></div>`;
-}
-function saFleetGroupHtml(x){
-  const g = x.g, r = sa.fleet.get(g.key) || {state: 'wait'};
-  const why = saWhyText(g) || (x.side === 'n' ? 'Neutral' : '');
-  const k = `${g.kind}:${g.id}`, path = g.kind === 'alliance' ? 'alliances' : 'corporations';
-  const logo = `<span class="sa-logo${g.kind === 'corporation' ? ' corp' : ''}" aria-hidden="true"><span data-tk-for="${k}"></span><img src="https://images.evetech.net/${path}/${g.id}/logo?size=64" alt="" loading="lazy" data-imgfail="remove"></span>`;
-  const span = r.state === 'done' && r.kills ? `from its last ${r.kills} kill${r.kills === 1 ? '' : 's'}, ${saMonthDay(r.from)} – ${saMonthDay(r.to)}` : '';
-  const head = `<div class="fl-gh" data-sa-g="${escapeHtml(x.side)}:${escapeHtml(g.key)}">${SIDE_MARK[x.side]}${logo}<span class="fl-gt"><span class="nm">${escapeHtml(g.name)} ${orgTickerHtml(g.kind, g.id)}</span>${ctxHtml([why, span].filter(Boolean).join(' · '))}</span><span class="fl-cnt"><b>${g.n}</b><span class="ctx">in local</span></span></div>`;
-  let body;
-  if(r.state === 'wait' || r.state === 'load') body = `<div class="pr-msg fl-msg"><span class="busy-spin" aria-hidden="true"></span>${r.state === 'load' ? 'Looking up on zKillboard…' : 'Waiting for zKillboard…'}</div>`;
-  else if(r.state === 'err') body = `<div class="pr-msg fl-msg err">${escapeHtml(r.msg)} ${zkbRetryHtml(`data-fl-retry="${escapeHtml(g.key)}"`)}</div>`;
-  else if(!r.hulls.length) body = `<div class="pr-msg fl-msg">${r.kills ? 'No ships of theirs on those kills' : 'No kills on zKillboard'}</div>`;
-  else body = `<div class="fl-cols" aria-hidden="true"><span>Lately flying</span><span>Share</span><span>Common fit</span><span class="r">DPS</span><span class="r">EHP</span><span>Weakest</span><span>EWAR</span><span></span></div>
-    ${r.hulls.map(h => saFleetHullHtml(x.g, g, h)).join('')}${r.restHulls ? `<div class="fl-more">${Math.round(r.restShare * 100)}% in ${r.restHulls} other hull${r.restHulls === 1 ? '' : 's'}</div>` : ''}`;
-  return `<div class="card fl-g" data-fl-g="${escapeHtml(g.key)}">${head}${body}</div>`;
-}
-// Their fleet, estimated: the looked-up groups' main hulls, ≈ count × the common fit (the picked variant).
-function saFleetSummary(looked){
-  let dps = 0, ships = 0, logi = 0; const td = {}, weak = {}, ew = {tackle: 0, disrupt: 0, drain: 0, boost: 0}, logiBy = new Map();
-  for(const x of looked){
-    const r = sa.fleet.get(x.g.key);
-    if(!r || r.state !== 'done') continue;
-    for(const h of r.hulls){
-      const v = h.variants && h.variants[h.pick], n = Math.round(h.share * x.g.n);
-      if(!v || !n) continue;
-      const e = v.est, d = saRowDps(e), t = saRowTypeDps(e);
-      ships += n; dps += n * d.v;
-      for(const k of DMG) td[k] = (td[k] || 0) + n * (t[k] || 0);
-      weak[e.weakest] = (weak[e.weakest] || 0) + n;
-      for(const c of Object.keys(ew)) if((e.ewarModules || []).some(m => m.category === c)) ew[c] += n;
-      if(h.logi){ logi += n; logiBy.set(h.name, (logiBy.get(h.name) || 0) + n); }
-    }
-  }
-  return {dps, ships, td, weak, ew, logi, logiBy};
-}
-function saFleetCardHtml(G){
-  const {looked, rest} = saFleetPlan(G);
-  const order = [...looked].sort((a, b) => (a.side === b.side ? 0 : a.side === 'h' ? -1 : 1) || b.g.n - a.g.n);
-  const S = saFleetSummary(order), pilots = order.reduce((s, x) => s + x.g.n, 0), threat = [...G.h, ...G.n].reduce((s, g) => s + g.n, 0);
-  const done = order.filter(x => ['done', 'err'].includes((sa.fleet.get(x.g.key) || {}).state)).length;
-  const tot = DMG.reduce((s, k) => s + (S.td[k] || 0), 0);
-  const w = Object.entries(S.weak).sort((a, b) => b[1] - a[1])[0];
-  const sum = `<div class="card fl-sum"><div class="pr-head"><h3>Their fleet, estimated</h3>${ctxHtml(`${done} of ${order.length} groups looked up`)}<span class="sa-sp"></span>${infoBtnHtml('fleet')}</div>
-    ${ctxHtml(`${order.length} largest groups: ${pilots} of ${threat} pilots`, '', `The ${order.length} largest hostile / neutral groups in local (${pilots} of ${threat} hostile + neutral pilots): their main hulls lately × how many are in local. An estimate, not a count.`)}
-    ${S.ships ? `<div class="fl-row">
-      <div class="fl-stat"><div class="k">Raw DPS, all of it</div><div class="v">≈${Math.round(S.dps).toLocaleString()}</div>
-        <span class="fl-dbar" aria-hidden="true">${DMG.filter(k => S.td[k] > 0).map(k => `<i style="flex:${S.td[k]};background:var(--${k})"></i>`).join('')}</span>
-        <div class="fl-dk">${DMG.filter(k => S.td[k] > 0).sort((a, b) => S.td[b] - S.td[a]).map(k => `<span style="color:var(--${k})">${DMG_FULL[k]} <b>${Math.round(S.td[k] / tot * 100)}%</b></span>`).join('')}</div></div>
-      <div class="fl-stat"><div class="k">Their ships are weakest to</div><div class="v" style="color:var(--${w[0]})">${escapeHtml(DMG_FULL[w[0]])}</div>${ctxHtml(`≈${w[1]} of the ≈${S.ships} ships counted`)}</div>
-      <div class="fl-stat"><div class="k">Tackle and EWAR</div><div class="fl-ewl">${['tackle', 'disrupt', 'drain', 'boost'].filter(c => S.ew[c]).map(c => `<span><span class="ewar-badge ${c}">${EWAR_BADGE_LETTER[c]}</span>≈${S.ew[c]}</span>`).join('') || '<span class="pr-dash">none seen</span>'}</div></div>
-      <div class="fl-stat"><div class="k">Logistics</div><div class="v">≈${S.logi}</div>${ctxHtml([...S.logiBy].map(([n, c]) => `${n} ×${c}`).join(', ') || 'none seen')}</div>
-    </div>` : `<div class="pr-msg fl-msg">${done < order.length ? 'Adds up as the groups come in…' : 'Nothing to add up: no fits found'}</div>`}</div>`;
-  const restHtml = rest.length ? `<div class="card fl-rest"><div class="pr-head"><h3>Not looked up</h3>${ctxHtml('4 zKillboard requests each')}</div>
-    ${rest.slice(0, 12).map(x => `<div class="fl-rr">${SIDE_MARK[x.side]}<span class="nm">${escapeHtml(x.g.name)} ${orgTickerHtml(x.g.kind, x.g.id)}</span><span class="fl-rn">${x.g.n}</span><button type="button" data-fl-look="${escapeHtml(x.g.key)}">Look up</button></div>`).join('')}
-    ${rest.length > 12 ? `<div class="fl-more">and ${rest.length - 12} more in Groups</div>` : ''}</div>` : '';
-  return `${sum}${saVsOn ? saVsHtml(saVsUnitsFleet(order), 'fleet') : ''}${order.map(saFleetGroupHtml).join('')}${restHtml}`;   // v.85 (L5)
-}
-function saUpdateFleet(){
-  const el = document.getElementById('saFleet');
-  if(!el || !sa.lastGroups) return;
-  if(el.querySelector('details.info-pop[open], details.fl-pick[open]')) return setTimeout(saUpdateFleet, 400);   // not under an open panel
-  el.innerHTML = saFleetCardHtml(sa.lastGroups);
-  fillOrgTickers(el);
-}
-function saFleetHull(gkey, typeId){ const r = sa.fleet.get(gkey); return r && r.hulls ? r.hulls.find(h => h.typeId === Number(typeId)) : null; }
-async function saOpenFleetFit(gkey, typeId){
-  const h = saFleetHull(gkey, typeId), v = h && h.variants && h.variants[h.pick];
-  if(!v) return;
-  const ids = new Set(); for(const it of v.km.victim.items) ids.add(it.item_type_id);
-  const names = new Map((await resolveIdsToNames([...ids])).map(n => [n.id, n.name]));
-  const g = [...sa.lastGroups.h, ...sa.lastGroups.n].find(x => x.key === gkey);
-  const text = await fitToEftText(h.name, `${g ? g.name : 'Common fit'}, variant ${h.pick + 1}`, v.built.tally, names, v.built.highSlotByFlag);
-  document.getElementById('fitAnalyzerInput').value = text;
-  switchTab('fit');
-  runFitAnalyzer();
-}
-
-
-// ---- L5: their fleet against your ship (v2026.10.14.85; plan D10, the owner's answers to the mockup: "Fleet and Pilots
-// views", "All, with an On scan switch", "One range + Still/MWD", "Damage per second of your fire") ----
-// Each counted ship type (a fleet hull's picked common fit × its ≈ count, or a pilot row's fit × 1) against My Ship,
-// one ship at a time, through the Matchup's own pyfa-verified pieces (mysFight: pyfa's projected webs / paints and
-// damage application both ways; ttkDefense / ttkSeconds: the time-to-kill rule, DEVIATIONS.md section 3). Then added
-// up: their applied damage by type × count, and your time to last under all of it, your capacitor simulated by pyfa's
-// capSim with their neuts and nosferatus in reach added as incoming drains, as pyfa's projected neut / nos effects add
-// them (Fit.addDrain: amount × calculateRangeFactor(optimal, falloff, distance), cycle = duration; DEVIATIONS.md for
-// what isn't applied). Kill first: logistics, then the damage each puts on you ÷ the time your fire takes to break one.
-// Nothing here changes a number the engine works out.
-// v2026.10.14.88: HIDDEN. The owner (todo-inbox): "The assumptions in the 'against your ship' section ... just aren't reliable
-// ... inaccurate and even misleading. probably need to back it out until it can be refined"; then: "a lot of pilots simply
-// fly a wide variety of hulls and/or do not get killed very often. taking a guess and what ship multiple pilots could be
-// flying and getting any number of those wrong, can result in some wildly inaccurate assumptions resulting in poor
-// decision making." The card adds up guessed hulls and guessed fits into one verdict, so one wrong guess per pilot
-// compounds. Kept, switched off, until it's refined (dscan-backlog; plan L5 "Status"); vs_check.py switches it on.
-let saVsOn = false;   // v2026.10.31.1: stays off. No time to kill for a whole fleet (the owner: "given the fluidity of ranges in fleet battles"; LESSON #108)
-// v2026.10.14.89: the FLEET VIEW (L4) is switched off too. The owner: "it's just not on point, again, due to the lack of other
-// ships on-grid. just too many assumptions based on local. we should strip the fleet stuff out of that page temporarily
-// until we have a better method" (his screenshot: a high-sec trade hub, 1499 in Local, most of them docked and not in a
-// combat ship at all). Over "pilot rows up to" Local now shows the Groups columns only: no Fleet / Groups switch, no
-// group lookups on zKillboard. Kept, switched off (dscan-backlog; plan L4 "Status"); fleet_view_check.py switches it on.
-let saFleetOn = false;
-const SA_VS_RANGES_KM = [5, 10, 20, 30, 50];
-sa.vs = {rangeKm: null, prop: false, count: 'all'};   // range: null = start at your own guns' best range
-const saVsInput = (typeId, b) => ({shipTypeId: typeId, tally: b.tally, cargoItemIds: b.cargoItemIds, highSlotByFlag: b.highSlotByFlag, midSlotByFlag: b.midSlotByFlag});
-function saVsUnitsFleet(order){
-  const units = [];
-  for(const x of order){
-    const r = sa.fleet.get(x.g.key);
-    if(!r || r.state !== 'done') continue;
-    for(const h of r.hulls){
-      const v = h.variants && h.variants[h.pick];
-      const n = Math.round(h.share * x.g.n);
-      if(!v || !n) continue;
-      units.push({key: `${x.g.key}|${h.typeId}`, label: h.name, sub: x.g.name, ship: h.name, typeId: h.typeId, count: n,
-        scan: lastScanCounts.get(h.typeId) || 0, f: v.vsF || (v.vsF = {estimate: v.est, input: saVsInput(h.typeId, v.built)}), logi: h.logi});
-    }
-  }
-  return units;
-}
-function saVsUnitsPilots(list){
-  const units = [];
-  for(const x of list){
-    const r = sa.rows.get(x.p.id);
-    if(!r || r.state !== 'done' || r.fitUnknown) continue;
-    units.push({key: `p${x.p.id}`, label: x.p.name, sub: r.hull, ship: r.hull, typeId: r.typeId, count: 1, scan: sa.scanTypes.has(r.typeId) ? 1 : 0,
-      f: r.vsF || (r.vsF = {estimate: r.est, input: saVsInput(r.typeId, r.built)}), logi: /Logistics|Force Auxiliary/i.test(r.cls || '')});
-  }
-  return units;
-}
-// Your ship, and every assumed charge (dmgAssumeReady) loaded; then the card is drawn again. A failed load says why
-// (MYSHIP-02) and isn't tried again until My Ship changes.
-let saVsLoading = false;
-function saVsReady(units){
-  const mf = myShip.f && myShip.f.eftText === myShip.rec.eft ? myShip.f : null;
-  const need = (f) => dmgNeedsAssume(f.estimate) && !ASSUME_CANDS.has(f.estimate);
-  const pending = !mf || need(mf) || units.some(u => need(u.f));
-  if(pending && !saVsLoading && !(myShip.error && !mf)){
-    saVsLoading = true;
-    (async () => {
-      try{ const f = await myShipEnsureFit(); await Promise.all([f ? dmgAssumeReady(f) : null, ...units.map(u => dmgAssumeReady(u.f))]); }
-      finally{ saVsLoading = false; saRefreshVs(); }
-    })();
-  }
-  return pending ? null : mf;
-}
-function saVsState(mf){
-  if(sa.vs.rangeKm === null){
-    const best = dmgDefaultRangeM(mf.estimate.application) / 1000;
-    sa.vs.rangeKm = SA_VS_RANGES_KM.reduce((a, b) => Math.abs(b - best) < Math.abs(a - best) ? b : a);
-  }
-  return {range: sa.vs.rangeKm * 1000, mode: sa.vs.prop ? 'orbit' : 'still', speedPct: 100, prop: sa.vs.prop, sigPct: 100, theirPct: 100, theirMode: 'still', axis: 'distance'};
-}
-// Their neuts and nosferatus running, as pyfa's projected effects drain you at `range` (Effect6187 / 6197 and the
-// fighters' neut ability: amount × calculateRangeFactor, cycle = duration): [cycle ms, GJ, amount] per module copy.
-function saVsDrains(est, range){
-  const out = [];
-  for(const m of est.ewarModules || []){
-    if((m.kind !== 'neut' && m.kind !== 'nos') || m.running === false || !(m.capPerCycle > 0) || !(m.capPerSec > 0)) continue;
-    const gj = m.capPerCycle * pyfaCalculateRangeFactor(m.rangeM || 0, m.falloffM || 0, range);
-    if(gj > 0) out.push({ms: Math.round(1000 * m.capPerCycle / m.capPerSec), gj, qty: m.qty || 1});
-  }
-  return out;
-}
-// The numbers: per unit (one ship of it) and added up for `count` ('all': ≈ counts; 'scan': what's on your D-Scan).
-function saVsCompute(units, mf, st, count){
-  const per = [];
-  for(const u of units){
-    const n = count === 'scan' ? Math.min(u.scan, u.count) : u.count;
-    const F = mysFight(u.f, mf, st);
-    if(!F) continue;
-    const inc = dmgTypedPoint(F.tApp, F.me, F.qIn), out = dmgTypedPoint(F.mApp, F.them, F.qOut);
-    const theyLast = ttkSeconds(ttkDefense(u.f.estimate), out.typed);
-    const reach = dmgTackleReach(F.tApp);
-    const holds = (reach.scram > 0 && st.range <= reach.scram) || (reach.web > 0 && st.range <= reach.web);
-    const drains = saVsDrains(u.f.estimate, st.range);
-    per.push({u, n, inc, out, theyLast, holds, drains, raw: saRowDps(u.f.estimate).v,
-              score: theyLast === Infinity ? 0 : inc.dps / Math.max(theyLast, 0.1)});
-  }
-  const typed = {em: 0, therm: 0, kin: 0, exp: 0};
-  let raw = 0, hold = 0, neutShips = 0, logi = 0, ships = 0;
-  const drains = [];
-  for(const x of per){
-    if(!x.n) continue;
-    ships += x.n; raw += x.n * x.raw;
-    for(const d of DMG) typed[d] += x.n * (x.inc.typed[d] || 0);
-    if(x.holds) hold += x.n;
-    if(x.drains.length) neutShips += x.n;
-    if(x.u.logi) logi += x.n;
-    // pyfa's incoming drains: [cycle ms, GJ per cycle, no clip, staggered, no reload, not an injector], one per copy
-    for(const d of x.drains) for(let i = 0; i < x.n * d.qty; i++) drains.push([d.ms, d.gj, 0, false, 0, false]);
-  }
-  const def = ttkDefense(mf.estimate), si = (mf.estimate.capacitor || {}).simInputs || {};
-  if(drains.length && si.capacity > 0){
-    const sim = capSimPyfa(si.capacity, si.rechargeMs, [...(si.best || []), ...drains]);
-    def.capSec = sim.stable ? Infinity : (sim.timeToEmptyExactSec ?? Infinity);
-  }
-  const youLast = ships ? ttkSeconds(def, typed) : Infinity;
-  const dps = DMG.reduce((s, d) => s + typed[d], 0);
-  const order = per.filter(x => x.n > 0).sort((a, b) => (b.u.logi - a.u.logi) || (b.score - a.score) || (b.inc.dps - a.inc.dps));
-  return {per, order, typed, dps, raw, ships, hold, neutShips, logi, capSec: def.capSec, youLast, neutDrains: drains.length};
-}
-// How many you break, one after another down the kill order, before you go. Their damage on you stays as it is while
-// you shoot (the worse case: a ship you break stops shooting).
-function saVsBreaks(C){
-  let t = 0, k = 0;
-  for(const x of C.order) for(let i = 0; i < x.n; i++){
-    if(x.theyLast === Infinity || t + x.theyLast > C.youLast) return k;
-    t += x.theyLast; k++;
-  }
-  return k;
-}
-function saVsWhy(x, top){
-  if(x.u.logi) return 'repairs the others';
-  if(x.theyLast === Infinity) return "you can't break it here";
-  if(x === top) return 'most damage removed per second of your fire';
-  if(x.drains.length) return 'its neuts drain your capacitor';
-  if(x.holds) return 'holds you: scram or web';
-  return x.score * 2 >= top.score ? 'high damage, quick to break' : 'less damage per second of your fire';
-}
-function saVsShell(inner, ship, attrs = ''){
-  return `<div class="card vs-card" id="saVs"${attrs}><div class="vs-head"><h3>${escapeHtml(cardName('vs'))}</h3>${ship || ''}<span class="sa-sp"></span>${infoBtnHtml('vs')}</div>${inner}</div>`;
-}
-function saVsHtml(units, kind){
-  const myBtn = '<button type="button" data-vs-myship="1">My Fits</button>';
-  if(!myShip.rec) return saVsShell(`<div class="pr-msg vs-msg">Save your fit in My Fits to see how long it lasts against them. ${myBtn}</div>`);
-  if(!myShip.rec.use) return saVsShell(`<div class="pr-msg vs-msg">Turn on “Use in assessments” on your profile to see how long it lasts against them. ${myBtn}</div>`);
-  const r = myShip.rec;
-  const ship = `<span class="vs-ship">${escapeHtml(r.shipName)}${r.fitName ? `<span class="vs-fit">${escapeHtml(r.fitName)}</span>` : ''}</span>`;
-  const mf = saVsReady(units);
-  if(!mf) return saVsShell(`<div class="pr-msg vs-msg">${myShip.error && !saVsLoading ? `${escapeHtml(myShip.error)} ${myBtn}` : '<span class="busy-spin" aria-hidden="true"></span>Loading your ship…'}</div>`, ship);
-  if(!mf.estimate.application || !mf.estimate.projectedTarget) return saVsShell(`<div class="pr-msg vs-msg">${escapeHtml(withCode("Your ship's hull record has no dogma effects, so pyfa's numbers can't be worked out for it.", 'DMG-01'))}</div>`, ship);
-  const st = saVsState(mf), km = sa.vs.rangeKm;
-  const A = saVsCompute(units, mf, st, 'all'), S = saVsCompute(units, mf, st, 'scan');
-  const onScan = sa.vs.count === 'scan', C = onScan ? S : A, other = onScan ? A : S;
-  const seg = (name, items) => `<span class="pr-seg" role="group" aria-label="${escapeHtml(name)}">${items.map(([v, l, on]) => `<button type="button" data-vs-set="${v}" aria-pressed="${on}"${on ? ' class="on"' : ''}>${escapeHtml(l)}</button>`).join('')}</span>`;
-  const set = `<div class="vs-set"><span class="vs-opt"><span class="vs-k">Range</span>${seg('Range', SA_VS_RANGES_KM.map((k, i) => [`range:${k}`, i === SA_VS_RANGES_KM.length - 1 ? `${k} km` : String(k), k === km]))}</span>
-    <span class="vs-opt"><span class="vs-k">You</span>${seg('You', [['prop:0', 'Still', !sa.vs.prop], ['prop:1', 'MWD on', sa.vs.prop]])}</span>
-    <span class="vs-opt"><span class="vs-k">Count</span>${seg('Count', [['count:all', `All ${kind === 'pilots' ? '' : '≈'}${A.ships}`, !onScan], ['count:scan', `${cardName('onscan')}: ${S.ships}`, onScan]])}</span></div>`;
-  if(!C.ships) return saVsShell(`${set}<div class="pr-msg vs-msg">${onScan ? 'None of the ships counted is on your D-Scan.' : kind === 'pilots' ? 'No pilot row with a known fit yet.' : 'No counted ship with a known fit yet.'}</div>`, ship);
-  const top = C.order[0], k = saVsBreaks(C);
-  const verdict = C.youLast === Infinity ? {bad: false, t: 'You hold against all of it here.', c: "their damage doesn't break your tank"}
-    : C.youLast < top.theyLast ? {bad: true, t: "Don't take this fight.", c: "you'd go before the first one breaks"}
-    : k >= C.ships ? {bad: false, t: 'You could break all of them first.', c: `${C.ships} ships, one at a time`}
-    : {bad: true, t: `You'd break about ${k} before you go.`, c: `of ${C.ships} ships, in ${ttkText(C.youLast)}`};
-  const landPct = C.raw > 0 ? Math.round(C.dps / C.raw * 100) : 0;
-  const bar = C.dps > 0 ? `<span class="fl-dbar" aria-hidden="true">${DMG.filter(d => C.typed[d] > 0).map(d => `<i style="flex:${C.typed[d]};background:var(--${d})"></i>`).join('')}</span>` : '';
-  const pre = kind === 'pilots' ? '' : '≈';
-  const rows = C.order.slice(0, 6).map((x, i) => `<div class="vs-kr" data-vs-unit="${escapeHtml(x.u.key)}"><span class="vs-rank">${i + 1}</span><span class="vs-who"><span class="nm">${escapeHtml(x.u.label)}<span class="cls">${escapeHtml(x.u.sub)}</span></span></span>
-      <span class="vs-n vs-c3">${kind === 'pilots' ? '' : x.n}</span><span class="vs-num vs-c4">${dmgFmt(x.inc.dps)}</span><span class="vs-num" data-vs-they="1">${escapeHtml(ttkText(x.theyLast))}</span><span class="vs-why">${escapeHtml(saVsWhy(x, top))}</span></div>`).join('');
-  return saVsShell(`${set}
-    <div class="vs-verdict${verdict.bad ? ' bad' : ''}"><span class="ewar-badge ${verdict.bad ? 'danger' : 'boost'}" aria-hidden="true">${verdict.bad ? '!' : '✓'}</span><span class="vs-vt"><b>${escapeHtml(verdict.t)}</b>${ctxHtml(verdict.c)}</span></div>
-    <div class="vs-row">
-      <div class="vs-stat"><div class="k">You last</div><div class="v${C.youLast < 60 ? ' bad' : ''}" data-vs="last">${escapeHtml(ttkText(C.youLast))}</div>${ctxHtml(`${onScan ? 'all of them' : 'on scan only'}: ${other.ships ? ttkText(other.youLast) : 'none'}`)}</div>
-      <div class="vs-stat"><div class="k">DPS applied to you</div><div class="v" data-vs="dps">${pre}${dmgFmt(C.dps)}</div>${bar}${ctxHtml(`${landPct}% of their raw DPS lands at ${km} km`)}</div>
-      <div class="vs-stat"><div class="k">Holding you</div><div class="fl-ewl" data-vs="hold"><span><span class="ewar-badge tackle">T</span>${pre}${C.hold}</span><span><span class="ewar-badge drain">C</span>${pre}${C.neutShips}</span></div>${ctxHtml(`scram, web or neuts in reach at ${km} km`)}</div>
-      <div class="vs-stat"><div class="k">Your capacitor</div><div class="v${C.capSec < 60 ? ' bad' : ''}" data-vs="cap">${C.capSec === Infinity ? 'Stable' : escapeHtml(ttkText(C.capSec))}</div>${ctxHtml(C.neutDrains ? 'under their neuts' : 'no neuts in reach')}</div>
-      <div class="vs-stat"><div class="k">Their logistics</div><div class="v" data-vs="logi">${pre}${C.logi}</div>${ctxHtml(C.logi ? 'kill them first' : 'none seen')}</div>
-    </div>
-    <div class="vs-ko"><h4>Kill first</h4>
-      <div class="vs-kr vs-kh" aria-hidden="true"><span></span><span>${kind === 'pilots' ? 'Pilot' : 'Ship'}</span><span class="vs-c3">${pre}</span><span class="r vs-c4">On you, each</span><span class="r">You kill one in</span><span>Why</span></div>
-      ${rows}</div>`, ship, ` data-you-last="${C.youLast}" data-dps="${C.dps}"`);
-}
-function saVsPilotsHtml(){ return saVsHtml(saVsUnitsPilots(saThreatList(sa.lastGroups).slice(0, sa.rowLimit)), 'pilots'); }
-function saRefreshVs(){
-  if(document.getElementById('saFleet')) return saUpdateFleet();
-  const host = document.getElementById('saVsHost');
-  if(!host || !sa.lastGroups) return;
-  if(host.querySelector('details.info-pop[open]')) return setTimeout(saRefreshVs, 400);   // not under an open panel
-  host.innerHTML = saVsPilotsHtml();
-}
-
 async function runSystemAnalyzer(force){
   const localEl = document.getElementById('localInput'), scanEl = document.getElementById('dscanInput');
   const local = localEl.value, scan = scanEl.value, statusEl = document.getElementById('localStatus');
@@ -24273,7 +23821,7 @@ function saClear(){
   if(typeof itAssessEnd === 'function') itAssessEnd(false);   // v.98
   for(const id of ['localInput', 'dscanInput']) document.getElementById(id).value = '';
   for(const id of ['localStatus', 'scanStatus']) setStatus(document.getElementById(id), '');
-  sa.last = null; sa.evidence = null; sa.evidenceErr = null; sa.gen++; sa.rows = new Map(); sa.fleet = new Map(); sa.fleetExtra = new Set(); saRender();
+  sa.last = null; sa.evidence = null; sa.evidenceErr = null; sa.gen++; sa.rows = new Map(); saRender();
   scanData = null; scanRailHide();
   saActGen++; sa.act = null; saActDraw(false);   // v2026.11.02.3
   showDscanFitHint('');
@@ -25555,23 +25103,6 @@ async function sideTagForPilot(charId){
     if(zb){ saSetSize(zb.dataset.saSize).then(() => { const again = res.querySelector(`[data-sa-size="${sa.size}"]`); if(again) again.focus({preventScroll: true}); }); return; }
     const lm = e.target.closest('[data-pr-more]');
     if(lm){ sa.rowLimit += SA_ROWS_PER_BATCH; sa.rowOrder = null; saPumpRows(); saUpdatePilots(); return; }
-    const vset = e.target.closest('[data-vs-set]');   // v.85: Against your ship
-    if(vset){
-      const [k, v] = vset.dataset.vsSet.split(':');
-      if(k === 'range') sa.vs.rangeKm = Number(v); else if(k === 'prop') sa.vs.prop = v === '1'; else sa.vs.count = v;
-      saRefreshVs();
-      const again = res.querySelector(`[data-vs-set="${vset.dataset.vsSet}"]`); if(again) again.focus({preventScroll: true});
-      return;
-    }
-    if(e.target.closest('[data-vs-myship]')){ openMyShipPanel(); return; }
-    const fv = e.target.closest('[data-fl-var]');   // v.83: fleet view
-    if(fv){ const [gk, t, i] = fv.dataset.flVar.split('|'); const h = saFleetHull(gk, t); if(h){ h.pick = Number(i); } const d = fv.closest('details'); if(d) d.open = false; saUpdateFleet(); return; }
-    const fo = e.target.closest('[data-fl-open]');
-    if(fo){ const [gk, t] = fo.dataset.flOpen.split('|'); saOpenFleetFit(gk, t); return; }
-    const fl = e.target.closest('[data-fl-look]');
-    if(fl){ sa.fleetExtra.add(fl.dataset.flLook); saPumpFleet(); saUpdateFleet(); return; }
-    const fr = e.target.closest('[data-fl-retry]');
-    if(fr){ sa.fleet.delete(fr.dataset.flRetry); saPumpFleet(); saUpdateFleet(); return; }
     const rr = e.target.closest('[data-pr-retry]');
     if(rr){ for(const [k, v] of [...sa.rows]) if(v.state === 'err') sa.rows.delete(k); sa.rowOrder = null; saPumpRows(); saUpdatePilots(); return; }
     const ab = e.target.closest('[data-sa-act]');
@@ -26040,6 +25571,8 @@ function fkFocusKey(el){
   return null;
 }
 function fkFocusBack(el, sel){ if(!sel) return; const f = el.querySelector(sel); if(f && document.activeElement !== f) f.focus({preventScroll: true}); }
+// The head line's system: " · <b>E-VKJV</b> (Querious)" (build queue 038: with its region)
+function fkSubSysHtml(){ return fk.sys ? ` · <b>${sysNameHtml(fk.km.solar_system_id, fk.sys)}</b>${escapeHtml(sysBracket(fk.km.solar_system_id))}` : ''; }
 function fkRender(){
   const el = document.getElementById('fleetPanel');
   if(!el) return;
@@ -26054,7 +25587,7 @@ function fkRender(){
     // v2026.10.31.1: the victim, a tag that opens them in the Pilot Analyzer on the ship they lost (the owner: "include victims")
     const vr = v.id ? sideOf(v.corp, v.alliance, sideSets(), sa.evidence, v.id) : {side: 'n'}, vs = vr.side;
     const vBtn = vName ? `<button type="button" class="fk-vbtn" data-fk-pilot="${escapeHtml(vName)}" data-fk-type="${v.type}" title="${escapeHtml(`${vName}: open in the Pilot Analyzer, on the ${v.name}`)}">${standMark(vs, v.corp, v.alliance, sideWhyText(vr))}<span class="nm std-n ${vs}">${escapeHtml(vName)}</span><span class="pr-chev" aria-hidden="true">›</span></button>` : '';
-    sub = `<div class="fk-sub">${from} · killed ${vBtn ? `${vBtn} in a` : 'a'} <b>${escapeHtml(v.name || '')}</b>${v.cls ? ` (${escapeHtml(v.cls)})` : ''} · ${when}${fk.sys ? ` · <b>${sysNameHtml(fk.km.solar_system_id, fk.sys)}</b>` : ''} · <b>${fk.players}</b> pilot${fk.players === 1 ? '' : 's'} on the kill, <b>${fk.members.length}</b> in ships</div>`;
+    sub = `<div class="fk-sub">${from} · killed ${vBtn ? `${vBtn} in a` : 'a'} <b>${escapeHtml(v.name || '')}</b>${v.cls ? ` (${escapeHtml(v.cls)})` : ''} · ${when}${fkSubSysHtml()} · <b>${fk.players}</b> pilot${fk.players === 1 ? '' : 's'} on the kill, <b>${fk.members.length}</b> in ships</div>`;
   }
   const head = `<div class="card fk-head"><div class="fk-top"><h2>${escapeHtml(cardName('fleet'))} on a kill</h2>${acts}</div>${sub}${fkPicksHtml()}${fk.err ? `<div class="pr-msg err">${escapeHtml(fk.err)}</div>` : ''}${!fk.km && !fk.err ? `<div class="pr-msg"><span class="busy-spin" aria-hidden="true"></span>Reading killmail ${fk.killId || ''} from ESI…</div>` : ''}</div>`;
   if(!fk.km){ const focused = fkFocusKey(el), keep = fkPicksTop(el); el.innerHTML = head; fkPicksKeep(el, keep); fkFocusBack(el, focused); return; }
@@ -26206,7 +25739,7 @@ function fkGroups(){
 // sits under its fleet heading's
 function fkPickHtml(p, i){
   const kind = {f: 'good', h: 'bad'};
-  return `<button type="button" class="fk-pk" data-fk-pick="${i}" aria-pressed="${p.id === fk.killId}" title="${escapeHtml(`Analyze the kill of ${p.name || 'no pilot'}'s ${p.ship || 'ship'}`)}">${standIcon(kind[p.v] || 'neu')}<span class="fk-pk-n"><span class="nm std-n ${p.v === 'f' || p.v === 'h' ? p.v : 'n'}">${escapeHtml(p.name || 'no pilot')}</span><span class="cls">${escapeHtml(p.ship || '')}</span></span><span class="fk-pk-s">${p.sysId ? sysNameHtml(p.sysId, p.sys) : escapeHtml(p.sys || '')}</span><span class="fk-pk-a">${p.ships === 1 ? 'solo' : p.ships ? `${p.ships} pilots` : 'NPCs'}</span><span class="fk-pk-i"${p.isk ? ` title="${escapeHtml(`${Math.round(p.isk).toLocaleString('en-US')} ISK (zKillboard's value)`)}"` : ''}>${p.isk ? `${itIsk(p.isk)}` : ''}</span><span class="fk-pk-t">${escapeHtml(itAgo(p.t))} ago</span><span class="fk-pk-l"><span class="it-kl ${p.word[0]}">${escapeHtml(p.word[1])}</span></span></button>`;
+  return `<button type="button" class="fk-pk" data-fk-pick="${i}" aria-pressed="${p.id === fk.killId}" title="${escapeHtml(`Analyze the kill of ${p.name || 'no pilot'}'s ${p.ship || 'ship'}`)}">${standIcon(kind[p.v] || 'neu')}<span class="fk-pk-n"><span class="nm std-n ${p.v === 'f' || p.v === 'h' ? p.v : 'n'}">${escapeHtml(p.name || 'no pilot')}</span><span class="cls">${escapeHtml(p.ship || '')}</span></span><span class="fk-pk-s">${p.sysId ? sysNameHtml(p.sysId, p.sys) : escapeHtml(p.sys || '')}</span>${fkPickRegionHtml(p.sysId)}<span class="fk-pk-a">${p.ships === 1 ? 'solo' : p.ships ? `${p.ships} pilots` : 'NPCs'}</span><span class="fk-pk-i"${p.isk ? ` title="${escapeHtml(`${Math.round(p.isk).toLocaleString('en-US')} ISK (zKillboard's value)`)}"` : ''}>${p.isk ? `${itIsk(p.isk)}` : ''}</span><span class="fk-pk-t">${escapeHtml(itAgo(p.t))} ago</span><span class="fk-pk-l"><span class="it-kl ${p.word[0]}">${escapeHtml(p.word[1])}</span></span></button>`;
 }
 function fkGroupHtml(g){
   const P = fk.picks, open = fk.kgOpen.has(g.key), here = g.idx.some(i => P[i].id === fk.killId), k = g.idx.length;
@@ -26216,11 +25749,19 @@ function fkGroupHtml(g){
   const tip = `${g.name}: ${who.replace(' · ', ', ')}${g.isk ? `, ${itIsk(g.isk)} ISK` : ''}, ${k === 1 ? '' : 'newest '}${itAgo(g.newest)} ago. ${g.loose ? FK_KG_LOOSE_TIP : g.one ? 'The pilots on this one kill.' : FK_KG_TIP}${g.loose ? '' : ` ${FK_KG_HULLS_TIP}`}`;
   return `<div class="fk-kg${g.loose ? ' loose' : ''}"><button type="button" class="fk-kg-h" data-fk-kg="${g.key}" aria-expanded="${open}"${open ? ` aria-controls="fkkg-${g.key}"` : ''} title="${escapeHtml(tip)}"><span class="fk-kg-c" aria-hidden="true">${IT_CHEV}</span><span class="fk-kg-t">${escapeHtml(g.name)}</span><span class="fk-kg-m">${who}</span>${here ? '<span class="fk-kg-here">analyzing</span>' : ''}${fkHullsHtml(g)}<span class="fk-kg-x">${isk}<span class="fk-kg-a">${k === 1 ? '' : 'newest '}${escapeHtml(itAgo(g.newest))} ago</span>${vic}</span></button>${open ? `<div class="fk-kg-r" id="fkkg-${g.key}" role="group" aria-label="${escapeHtml(`${g.name}: its kills`)}">${g.idx.map(i => fkPickHtml(P[i], i)).join('')}</div>` : ''}</div>`;
 }
+// build queue 038: a kill picker row's Region cell; its name on hover too, as the column narrows on a smaller window (only Near You and the
+// Feed were to have no hover: "7. yes but not in the hover text", "8. yes but not on hover")
+function fkPickRegionHtml(id){ const r = sysRegion(id); return `<span class="fk-pk-r" title="${escapeHtml(r)}">${escapeHtml(r)}</span>`; }
+// " in E-VKJV (Querious)" when every kill is in one system (build queue 038: with its region)
+function fkPicksWhereHtml(P, where){
+  if(where.length !== 1 || !where[0]) return '';
+  return P[0].sysId ? ` in ${sysNameHtml(P[0].sysId, where[0])}${escapeHtml(sysBracket(P[0].sysId))}` : ` in ${escapeHtml(where[0])}`;
+}
 function fkPicksHtml(){
   const P = fk.picks;
   if(!P || !P.length) return '';   // v2026.11.04.2: one Intel kill gets the list too (was: 2 or more)
   const G = fkGroups(), where = [...new Set(P.map(p => p.sys))], nf = G.fleets.length, one = P.length === 1;
-  return `<div class="fk-pk-h">${P.length} kill${one ? '' : 's'}${where.length === 1 && where[0] ? ` in ${P[0].sysId ? sysNameHtml(P[0].sysId, where[0]) : escapeHtml(where[0])}` : ''} from ${escapeHtml(cardName('intel'))}${one ? '' : ` · <span title="${escapeHtml(FK_KG_TIP)}">${nf} fleet${nf === 1 ? '' : 's'} by shared pilots</span>`} · as ${one ? 'it was' : 'they were'} when you opened this</div>
+  return `<div class="fk-pk-h">${P.length} kill${one ? '' : 's'}${fkPicksWhereHtml(P, where)} from ${escapeHtml(cardName('intel'))}${one ? '' : ` · <span title="${escapeHtml(FK_KG_TIP)}">${nf} fleet${nf === 1 ? '' : 's'} by shared pilots</span>`} · as ${one ? 'it was' : 'they were'} when you opened this</div>
     <div class="fk-picks" role="group" aria-label="Kill to analyze">${G.all.map(fkGroupHtml).join('')}</div>`;
 }
 // The victim, from the killmail's own fit: the same facts as the fleet's summary (no time to kill, LESSON #108)
@@ -26543,6 +26084,40 @@ async function itLoadNames(){
   try{ return await it.namesBusy; }finally{ it.namesBusy = null; }
 }
 function itSysName(id){ return it.names && it.names.byId.get(id) || String(id); }
+// ---- build queue 038 (Project doc roadmap/region-names-plan.md; the owner's picks from the review of the 27 places a system is named,
+// mockup Claude outputs/region_names_mockup.html: "A: own column", phones "System only", sentences "Yes, as drawn") ----
+// A system's region, from the map's table already in the page (INTEL_MAP.reg / .regions, CCP's static data by tools/jump_table_update.py),
+// in INTEL_JUMPS's order (itGraphGet). Only the region bytes are unpacked, once (not the map's whole table). '' for a system the table
+// doesn't cover ([stated] "we dont need region names for wormhole space"; Jove space too) and while INTEL_MAP doesn't match INTEL_JUMPS
+// (after a jump-table update, until the map table is made again): no region is shown then, and nothing else changes.
+let sysRegTab;
+function sysRegTable(){
+  if(sysRegTab !== undefined) return sysRegTab;
+  sysRegTab = null;
+  try{
+    if(typeof INTEL_MAP === 'undefined' || !INTEL_MAP || INTEL_MAP.jumps !== INTEL_JUMPS.md5 || INTEL_MAP.systems !== INTEL_JUMPS.systems) return null;
+    const bin = atob(INTEL_MAP.reg), r = new Uint8Array(bin.length);   // one byte per system (itB64 reads 16-bit numbers)
+    for(let i = 0; i < bin.length; i++) r[i] = bin.charCodeAt(i);
+    if(r.length === INTEL_MAP.systems && Array.isArray(INTEL_MAP.regions)) sysRegTab = {reg: r, names: INTEL_MAP.regions};
+  }catch(e){ sysRegTab = null; }
+  return sysRegTab;
+}
+function sysRegion(id){
+  const T = sysRegTable(), n = Number(id);
+  if(!T || !n) return '';
+  const i = itGraphGet().at.get(n);
+  return i === undefined ? '' : T.names[T.reg[i]] || '';
+}
+// A sentence's bracket after a system's name (plain text; the caller escapes): " (Querious)", with jumps " (Querious, 4 jumps)", with
+// no region today's " (4 jumps)" or nothing. One place, so the sentences can't drift apart (the owner: "8-YNBE (Querious, 4 jumps)").
+function sysBracket(id, j = null){
+  const parts = [sysRegion(id), j === null || j === undefined ? '' : `${j} jump${j === 1 ? '' : 's'}`].filter(Boolean);
+  return parts.length ? ` (${parts.join(', ')})` : '';
+}
+// The region in Near You (a line under the system) and the Feed (its own column, A): plain dim text, no hover ([stated] "7. yes but not
+// in the hover text"); empty when there's no region (the Feed's cell keeps its place; Near You's row then has no line); hidden under
+// 600 px ([stated] "phones only get system name")
+function itRgHtml(sys){ return `<span class="it-rg">${escapeHtml(sysRegion(sys))}</span>`; }
 
 // ---- ships (INTEL_SHIPS: English and Chinese names from pyfa's data) ----
 let itShipMap = null;
@@ -27875,7 +27450,7 @@ function itAlert(st, e){
   const played = it.set.sound ? itPlaySound(j === 0 ? 'here' : 'near') : false;   // v2026.11.01.8: In system at 0 jumps (kills too), Near you otherwise
   if(it.set.notify && typeof Notification !== 'undefined' && Notification.permission === 'granted'){
     const body = e.kind === 'kill' ? `${itKillWord(e)[1]}: ${e.kill.victim.name} lost a ${e.kill.victim.ship ? e.kill.victim.ship.name : 'ship'}${e.kill.value ? ` (${itIsk(e.kill.value)} ISK)` : ''}` : `${e.who}: ${e.raw}`;
-    try{ new Notification(`${itSysName(st.sys)} · ${j} jump${j === 1 ? '' : 's'}`, {body: body.slice(0, 180), tag: `intel-${st.sys}`, silent: played}); }catch(err){ /* not shown */ }   // silent: the page's own sound already played
+    try{ new Notification(`${itSysName(st.sys)}${sysBracket(st.sys)} · ${j} jump${j === 1 ? '' : 's'}`, {body: body.slice(0, 180), tag: `intel-${st.sys}`, silent: played}); }catch(err){ /* not shown */ }   // silent: the page's own sound already played
   }
 }
 
@@ -28328,7 +27903,7 @@ function itNearRowHtml({st, j}){
   // the content looking misaligned"): the analyze icon in its own column right after the jumps, then the system; a row with nothing to
   // analyze leaves that cell empty, and nothing else moves. On a phone it sits under the jumps, beside the toggle.
   const row = `<div class="it-nb dd${kb ? '' : ' nokb'}${tags ? '' : ' notg'}${alert ? ' alert' : ''}${open ? ' open' : ''}" data-it-sys="${st.sys}">${jt}`
-    + (can ? itAnalyzeHtml(st.sys, `its reported pilots and ships`) : '<span class="it-an-none"></span>') + itSysBtnHtml(st.sys, 'sys it-sn')
+    + (can ? itAnalyzeHtml(st.sys, `its reported pilots and ships`) : '<span class="it-an-none"></span>') + itSysBtnHtml(st.sys, 'sys it-sn') + itRgHtml(st.sys)
     + `<span class="tg">${tags}${itMapPinTag(st.sys)}</span><span class="age">${itAgo(st.t)}</span>${kb ? `<span class="kb">${kb}</span>` : ''}`
     + `<button type="button" class="it-rawt" data-it-nbo="${st.sys}" aria-expanded="${open}" aria-label="${open ? 'Hide' : 'Show'} what this row is built from" title="${open ? 'Hide' : 'Show'} the reports and kills behind this row">${IT_CHEV}</button>`
     + `<span class="wl">${st.kind === 'clear' ? '' : `<span class="st ${wcls}"><b>${escapeHtml(word)}</b></span><span class="sep"> · </span>`}<span class="who"${cap}>${who}</span></span></div>`;
@@ -28453,14 +28028,18 @@ function itSysWidths(el){
   if(!el || !el.style || typeof document === 'undefined' || !document.createElement || !it.names) return;
   const a = el.querySelector('#itNearList .it-nb .sys'), f = el.querySelector('#itFeedList .it-fh .it-sn');
   const jn = el.querySelector('#itNearList .it-nb .j'), jf = el.querySelector('#itFeedList .it-fh .fj');
+  const rg = el.querySelector('#itFeedList .it-fh .it-rg');   // build queue 038: the Feed's Region column (Near You's is a line under the system)
   // v2026.11.01.4: the key no longer reads four computed fonts on every draw (~15 ms): what changes the widths is the font loading
   // (itFontEpoch), the width class (a phone's smaller fonts) and the table; which lists are on the card decides what can be measured
-  const key = `${itFontEpoch}|${typeof innerWidth === 'number' && innerWidth < 600 ? 'n' : 'w'}|${!!a}${!!f}${!!jn}${!!jf}|${it.names.list.length}`;
+  const key = `${itFontEpoch}|${typeof innerWidth === 'number' && innerWidth < 600 ? 'n' : 'w'}|${!!a}${!!f}${!!jn}${!!jf}${!!rg}|${it.names.list.length}`;
   if(itSysW && itSysW.key === key){ itSysW.apply(el); return; }
   let c; try{ c = document.createElement('canvas').getContext('2d'); }catch(e){ return; }
   if(!c) return;
   const widest = (font) => { if(!font) return 0; c.font = font; let m = 0; for(const n of it.names.byId.values()) m = Math.max(m, c.measureText(n).width); return Math.ceil(m + 2); };
   const wa = widest(a && getComputedStyle(a).font), wf = widest(f && getComputedStyle(f).font);
+  // build queue 038 ([stated] "A: own column"): as wide as the widest region name, measured as the cell draws it, as the system column is
+  // sized (CLAUDE.md "Intel lists"); 0 when the page has no region table (nothing would show in it)
+  const RT = rg && sysRegTable(), wr = RT ? (() => { c.font = getComputedStyle(rg).font; let m = 0; for(const n of RT.names) m = Math.max(m, c.measureText(n).width); return Math.ceil(m + 2); })() : 0;
   // v2026.10.31.7 (the owner: "just have to account for double digit jumps"): the jump column, one width for both lists so their system
   // names line up across the card: "88 Jumps" or the In system callout, whichever is wider, measured as the cells draw them
   let wj = 0;
@@ -28469,7 +28048,7 @@ function itSysWidths(el){
     j.parentNode.appendChild(x); wj = Math.max(wj, x.getBoundingClientRect().width); x.remove();
   }
   wj = Math.ceil(wj);
-  itSysW = {key, apply: (x) => { if(wa) x.style.setProperty('--it-sys-w', `${wa}px`); if(wf) x.style.setProperty('--it-fsys-w', `${wf}px`); if(wj) x.style.setProperty('--it-jw', `${wj}px`); }};
+  itSysW = {key, apply: (x) => { if(wa) x.style.setProperty('--it-sys-w', `${wa}px`); if(wf) x.style.setProperty('--it-fsys-w', `${wf}px`); if(wj) x.style.setProperty('--it-jw', `${wj}px`); if(rg) x.style.setProperty('--it-rg-w', `${wr}px`); }};
   itSysW.apply(el);
 }
 // v.100 (the owner: "let's go ahead and use the format of 'x Jumps'", and "a callout like 'IN SYSTEM'" for your own system)
@@ -28549,7 +28128,7 @@ function itFeedRowHtml(e){
   const tog = e.kind === 'kill' ? '' : `<button type="button" class="it-rawt" data-it-raw="${e.id}" aria-expanded="${open}" aria-label="${open ? 'Hide' : 'Show'} the line as typed" title="${open ? 'Hide' : 'Show'} the line as it was typed, and who sent it">${IT_CHEV}</button>`;
   const an = e.kind !== 'kill' && e.kind !== 'clear' && s0 && itCanAnalyze(s0.id) ? itAnalyzeHtml(s0.id, `everything reported there in the last ${it.set.forget} min (not only this line)`) : '';   // v2026.10.31.7
   if(s0) tags.push(itMapPinTag(s0.id));   // v2026.11.02.4: its route kept on the map
-  const hd = `<div class="it-fh"><span class="fj">${j0 === null ? '' : itJumpsHtml(j0)}</span>${an}<span class="fsys">${sysB}</span><span class="ftg">${tags.join('')}</span><span class="it-age" title="your time ${itClock(e.t)}">${itAgo(e.t)}</span>${tog || '<span class="tg-none"></span>'}</div>`;
+  const hd = `<div class="it-fh"><span class="fj">${j0 === null ? '' : itJumpsHtml(j0)}</span>${an}<span class="fsys">${sysB}</span>${itRgHtml(s0 ? s0.id : 0)}<span class="ftg">${tags.join('')}</span><span class="it-age" title="your time ${itClock(e.t)}">${itAgo(e.t)}</span>${tog || '<span class="tg-none"></span>'}</div>`;
   if(e.kind === 'kill'){   // v.99: who lost what, and who killed them
     const k = e.kill, a = e.pilots[0];
     const l1 = `${itPilotChip(k.victim, e)}<span class="it-by">lost a</span>${k.victim.ship ? itShipChip({id: k.victim.ship.typeId, name: k.victim.ship.name, n: 1}) : '<span class="it-by">ship</span>'}${k.value ? `<span class="it-isk">${itIsk(k.value)} ISK</span>` : ''}`;
@@ -28627,6 +28206,7 @@ function itGrpIn(e, g){
 function itSearchText(e){
   const who = [...e.pilots, ...(e.kill ? [e.kill.victim] : [])], parts = [e.raw, e.who];
   for(const s of e.p.sys) parts.push(itSysName(s.id));
+  parts.push(...new Set(e.p.sys.map(s => sysRegion(s.id))));   // build queue 038 ([stated] "17. yes"): a region's name finds the reports in it
   for(const s of e.p.ships) parts.push(s.name);
   if(e.kill && e.kill.victim.ship) parts.push(e.kill.victim.ship.name);
   for(const x of who){
@@ -28638,7 +28218,7 @@ function itSearchText(e){
 }
 function itFeedBarHtml(){
   const f = it.set.feed, sel = (k, opts) => `<select data-it-f="${k}">${opts.map(([v, l]) => `<option value="${v}"${String(f[k]) === String(v) ? ' selected' : ''}>${l}</option>`).join('')}</select>`;
-  return itFlBarAfter(`<div class="it-fbar"><label>Types ${sel('types', IT_FEED_TYPES)}</label><label>Distance ${sel('dist', IT_FEED_DIST.map(d => [d, d ? `≤ ${d} jump${d === 1 ? '' : 's'}` : 'any']))}</label><label>Sort ${sel('sort', IT_FEED_SORT)}</label><input type="search" data-it-q placeholder="Search pilot, corp, ship, system" aria-label="Search the ${escapeHtml(cardName('itfeed'))}" value="${escapeHtml(it.q)}"></div>`);
+  return itFlBarAfter(`<div class="it-fbar"><label>Types ${sel('types', IT_FEED_TYPES)}</label><label>Distance ${sel('dist', IT_FEED_DIST.map(d => [d, d ? `≤ ${d} jump${d === 1 ? '' : 's'}` : 'any']))}</label><label>Sort ${sel('sort', IT_FEED_SORT)}</label><input type="search" data-it-q placeholder="Search pilot, corp, ship, system, region" aria-label="Search the ${escapeHtml(cardName('itfeed'))}" value="${escapeHtml(it.q)}"></div>`);
 }
 function itFlBarAfter(bar){ return bar + itFlBarHtml(); }   // v2026.11.07.1: the chips on their own line under the bar
 function itFeedWhy(){   // v2026.11.06.6 (015): why no new kills come, the most important first; '' when they do
@@ -28754,7 +28334,7 @@ function itOpenPilot(id, pair, sys, t){
   if(!x) return;
   if(pair) saOpenRow(x.name, pair.name, 'all', pair.typeId); else saOpenRow(x.name, '', null);
   const j = sys ? itJumps(itMySys(), sys) : null;
-  const where = sys ? ` at <b>${escapeHtml(itSysName(sys))}</b>${j === null ? '' : ` (${j} jump${j === 1 ? '' : 's'})`}` : '';
+  const where = sys ? ` at <b>${escapeHtml(itSysName(sys))}</b>${escapeHtml(sysBracket(sys, j))}` : '';   // build queue 038: "(Delve, 1 jump)"
   const n = document.getElementById('pilotFromIntel');
   it.fromPilot = x.name;
   n.innerHTML = itFromIntelHtml(`<b>From ${escapeHtml(cardName('intel'))}</b> · ${escapeHtml(x.name)} reported${pair ? ` in a <b>${escapeHtml(pair.name)}</b>` : ''}${where}${t ? ` · ${escapeHtml(itAgo(t))} ago` : ''}`, false);
@@ -28784,7 +28364,7 @@ function itAssess(sys){
   const j = itJumps(itMySys(), sys), nS = L.ships.reduce((a, b) => a + b.n, 0);
   const paired = [...pairs].map(([k, v]) => `${escapeHtml(L.pilots.find(x => x.name.toLowerCase() === k).name)} in the ${escapeHtml(v.name)}`).join(', ');
   const n = document.getElementById('saFromIntel');
-  n.innerHTML = itFromIntelHtml(`<b>From ${escapeHtml(cardName('intel'))}</b> · <b>${escapeHtml(itSysName(sys))}</b>${j === null ? '' : ` (${j} jump${j === 1 ? '' : 's'})`}, reported in the last ${it.set.forget} min: ${L.pilots.length} pilot${L.pilots.length === 1 ? '' : 's'}${L.extra ? ` +${L.extra} unnamed` : ''}, ${nS} ship${nS === 1 ? '' : 's'}${paired ? ` (${paired})` : ''}${it.saved ? ' · your own Local and D-Scan paste was replaced' : ''}`, !!it.saved);
+  n.innerHTML = itFromIntelHtml(`<b>From ${escapeHtml(cardName('intel'))}</b> · <b>${escapeHtml(itSysName(sys))}</b>${escapeHtml(sysBracket(sys, j))}, reported in the last ${it.set.forget} min: ${L.pilots.length} pilot${L.pilots.length === 1 ? '' : 's'}${L.extra ? ` +${L.extra} unnamed` : ''}, ${nS} ship${nS === 1 ? '' : 's'}${paired ? ` (${paired})` : ''}${it.saved ? ' · your own Local and D-Scan paste was replaced' : ''}`, !!it.saved);
   n.hidden = false;
   switchTab('dscan');
   runSystemAnalyzer(false);
@@ -28857,7 +28437,9 @@ function itKillStatus(){
 }
 function itStatusLine(){
   if(!it.on) return '';
-  const me = it.me ? `${it.me.name} in ${(itGlSys() ? itSysName(itGlSys()) : it.me.sys) || 'an unknown system'}` : 'choose which character is you';
+  const mid = itGlSys() || itMySys(), mnm = (itGlSys() ? itSysName(itGlSys()) : it.me && it.me.sys) || '';
+  const mrg = mnm && mid && itSysName(mid) === mnm ? sysBracket(mid) : '';   // build queue 038: "… in 1DQ1-A (Delve)"
+  const me = it.me ? `${it.me.name} in ${mnm ? mnm + mrg : 'an unknown system'}` : 'choose which character is you';
   // v2026.10.30.1 (the owner: "do not include the intel channel name in any of the output for now. security reasons"): the channels
   // are named only under the gear, where they are chosen; elsewhere their count
   const n = it.set.channels.length, ch = `${n} channel${n === 1 ? '' : 's'}`;
@@ -29071,6 +28653,7 @@ function itExWidths(f){   // the system and jump columns as wide as the example'
   const w = (sel) => Math.ceil(Math.max(0, ...[...f.querySelectorAll(sel)].map(x => x.scrollWidth)));
   const a = w('.itx-near .it-nb .sys'), b = w('.itx-feed .it-fh .it-sn'), j = w('.itx-near .it-nb .j, .itx-feed .it-fh .fj');
   if(a) f.style.setProperty('--it-sys-w', `${a + 2}px`); if(b) f.style.setProperty('--it-fsys-w', `${b + 2}px`); if(j) f.style.setProperty('--it-jw', `${Math.max(j, 54)}px`);
+  const r = w('.itx-feed .it-fh .it-rg'); f.style.setProperty('--it-rg-w', `${r ? r + 2 : 0}px`);   // build queue 038: the example Feed's own widest region
 }
 function itExPlace(f){
   const W = f.querySelector('.itx-wrap'); if(!W) return;

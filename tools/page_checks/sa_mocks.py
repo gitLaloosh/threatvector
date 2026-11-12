@@ -180,6 +180,7 @@ import datetime as _dt
 DOSSIER_PILOT = 92000002; PILOTS[DOSSIER_PILOT] = ('Vesna Dossier', 98000041); NAME_ID['vesna dossier'] = DOSSIER_PILOT
 ANNEX_PILOT = 92000003; PILOTS[ANNEX_PILOT] = ('Tessa Annex', 98000042); NAME_ID['tessa annex'] = ANNEX_PILOT   # v.92: her alliance, another corporation
 SYSTEMS = {30000142: 'Jita', 30004759: '1DQ1-A', 30002187: 'Amarr'}
+REGION = {30000142: 'The Forge', 30004759: 'Delve', 30002187: 'Domain'}   # build queue 038: their regions (CCP's static data; region_names_check reads the page's own table)
 SYSTEM_SEC = {30000142: 0.946, 30004759: -0.38, 30002187: 1.0}   # v2026.10.31.3: made-up security, for the system colours
 # (hull, weapon, players on the kill (them included), wingmates' hulls (cycled), victims (cycled), how many, system)
 DOSSIER_SPEC = [
@@ -278,26 +279,6 @@ _rk.append(_fkill([_fatt(RHEA, 'Curse', 'Acolyte II', True)], 'Rifter', 30))
 _rk.append(_fkill([_fatt(RHEA, 'Vedmak', 'Heavy Entropic Disintegrator II', True)], 'Rifter', 10))
 _rk.append(_fkill([_fatt(RHEA, 'Curse', 'Acolyte II', True), _fatt(BIG_PILOTS[0], 'Rifter'), _fatt(BIG_PILOTS[1], 'Rifter')], 'Stabber', 1))
 HIST[RHEA] = {'kills': _rk, 'losses': []}
-
-def expected_fleet():
-    """The fleet view worked out here: shares from the kills (each attacker of the group counts its hull; capsules
-    don't), ≈ = share × the group's count in local, the variants by exact module set, and the summary from the golden
-    pins (Curse 177, Vedmak 507, Loki 801 DPS)."""
-    n_local = {CRTS: 32, VOIDR: 13}
-    out = {}
-    for g, kills in FLEET_KILLS.items():
-        cnt = {}
-        for k in kills:
-            for a in KM[k]['attackers']:
-                if a.get('alliance_id') != g: continue
-                h = {v: kk for kk, v in byname.items()}[a['ship_type_id']]
-                if h == 'Capsule': continue
-                cnt[h] = cnt.get(h, 0) + 1
-        tot = sum(cnt.values())
-        out[g] = [(h, round(100 * c / tot), round(c / tot * n_local[g])) for h, c in sorted(cnt.items(), key=lambda x: (-x[1], byname[x[0]]))]
-    dps = {'Curse': PIN['Curse']['dpsFixed'], 'Vedmak': PIN['Vedmak']['dpsFixed'], 'Loki': PIN['Loki']['dpsFixed']}
-    counted = [(h, est) for g in out for h, pct, est in out[g] if FLEET_LOSSES.get((g, h))]
-    return {'rows': out, 'dps': dps, 'sum_dps': sum(est * dps[h] for h, est in counted), 'ships': sum(est for _, est in counted)}
 
 def expected():
     """What the page should show, worked out here. Side rules (plan D2, D2b): corporation entries first (yours, the

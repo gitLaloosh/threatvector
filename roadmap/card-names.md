@@ -36,8 +36,7 @@ types a name by hand.
 | `friendly` | Friendly | v2026.10.14.81: the System Analyzer's collapsed line and side; the Pilot Analyzer's tag |
 | `onscan` | Ships on Scan | v2026.10.14.81: the D-Scan contacts under the System Analyzer (what the D-Scan tab showed); v2026.11.02.2: the scan rail beside Local's results (was On Scan) |
 | `pilots` | Pilots | v2026.10.14.82: one row per hostile / neutral pilot in a small gang (local-and-fleet-plan.md L3, D8 "A: Pilots / Groups switch") |
-| `fleet` | Fleet | v2026.10.14.83: the fleet view above "pilot rows up to" (local-and-fleet-plan.md L4, D9); the Fleet / Groups switch |
-| `vs` | Against Your Ship | v2026.10.14.85: their counted ships against My Ship, in the Fleet and Pilots views (local-and-fleet-plan.md L5, D10) |
+| `fleet` | Fleet | v2026.10.14.83: first the System Analyzer's fleet view (local-and-fleet-plan.md L4, D9; taken out in build queue 038); now the Fleet tab's name |
 | `aff` | Pilot Affiliation | v2026.10.14.87: the pilot's corporation, alliance and zKillboard stats, top right of the Pilot Analyzer (the owner via todo-inbox; mockup picks) |
 | `dossier` | Pilot Dossier | v2026.10.14.90: what a pilot flies, by gang size, in the Pilot Analyzer (roadmap/pilot-dossier-plan.md) |
 | `fksum` | Their fleet on this kill | v2026.10.14.94: the Fleet tab's summary of a fleet from one of their kills (roadmap/fleet-from-kill-plan.md) |

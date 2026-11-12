@@ -53,7 +53,7 @@ for k, paras in INFO.items():
 # build queue 036: the length cap (Project doc roadmap/info-panels-plan.md, item 4)
 INFO_OPEN_MAX, INFO_ALL_MAX = 85, 210
 INFO_ALL_MAX_BY_KEY = {'intel': 410}   # the owner, 2026-11-11: "for now, let's allow it to go beyond the 350 cap"
-INFO_CAP_EXEMPT = {'fleet': 'card hidden; its text is rewritten when it comes back', 'vs': 'card hidden; its text is rewritten when it comes back'}
+INFO_CAP_EXEMPT = {}   # build queue 038: the hidden 'fleet' and 'vs' panels were taken out with their cards
 def _name(ck):
     v = NAMES.get(ck, ck)
     return v if isinstance(v, str) else str(v.get('name', ck)) if isinstance(v, dict) else str(v)

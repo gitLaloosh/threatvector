@@ -206,7 +206,7 @@ with sync_playwright() as p:
     check(on == [True, 1, 'On', 'worker'], f'the switch on the card turns it on ("On"), still one switch, a worker ticks {on}')
     check(NAMES_CALLS == [1000] * (len(ids) // 1000) + [len(ids) % 1000], f'the system names asked once: {len(NAMES_CALLS)} requests {NAMES_CALLS}')
     status = pg.inner_text('#intelPanel [data-it-status]')
-    check(status.startswith('Your Main in 1DQ1-A · 1 channel · last line '), f'the status line, the channel counted, not named (v2026.10.30.1) ({status!r})')
+    check(status.startswith('Your Main in 1DQ1-A (Delve) · 1 channel · last line '), f'the status line, the channel counted, not named (v2026.10.30.1; the region since build queue 038) ({status!r})')
     jumps = pg.evaluate("(names) => Object.fromEntries(names.map(n => [n, itJumps(it.names.byLower.get('1dq1-a'), it.names.byLower.get(n.toLowerCase()))]))", list(REAL.values()))
     want = {v: D0.get(k) for k, v in REAL.items()}
     check(jumps == want, f"the page's jumps from 1DQ1-A = a search over the table decoded here (Jita {jumps.get('Jita')}) {jumps}")
@@ -286,7 +286,8 @@ with sync_playwright() as p:
     leak = pg.evaluate("() => { const h = document.documentElement; const txt = h.innerText; const attrs = [...document.querySelectorAll('[title],[aria-label]')].map(e => (e.getAttribute('title') || '') + ' ' + (e.getAttribute('aria-label') || '')).join(' '); return ['region.intel', 'other.intel'].filter(c => txt.includes(c) || attrs.includes(c)); }")
     check(not pg.evaluate("() => !!document.querySelector('.it-pop:not([hidden])')") and leak == [], f'no intel channel name shown outside the gear (text or hover) {leak}')
     al = pg.evaluate("() => [__fs.beeps, __fs.notes.map(n => n[0])]")
-    check(al == [3, ['8WA-Z6 · 1 jump', 'Y-OMTZ · 3 jumps', 'D-W7F0 · 2 jumps']], f'alerts: sound and notification for hostile/neutral within 3 jumps, not 4, not friendlies {al}')
+    check(al == [3, ['8WA-Z6 (Delve) · 1 jump', 'Y-OMTZ (Delve) · 3 jumps', 'D-W7F0 (Delve) · 2 jumps']],   # build queue 038: the region in the title
+          f'alerts: sound and notification for hostile/neutral within 3 jumps, not 4, not friendlies {al}')
     # 032: the lamp counts people (hostiles and neutrals) and says the closest jump; the systems are in its hover
     hn = pg.evaluate("() => itNearSum().h")
     badge = pg.evaluate("() => [document.querySelector('#intelNear').hidden, document.querySelector('#intelNear .pf-vw').textContent, document.querySelector('#profile').dataset.s, document.querySelector('#tabBtnIntel').dataset.s]")
