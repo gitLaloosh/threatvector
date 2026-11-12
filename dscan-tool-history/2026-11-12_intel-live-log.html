@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-12 — Intel reads the chat log still being written</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel reads the chat log that is still being written</h1>
+<p><span class="tag">Page</span> 2026-11-12 &middot; <code>v2026.11.12.1</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-11: "intel reports are not being read. killmails do show on the list but not chat log reports." The status line said "no lines yet" for over ten minutes.</li>
+<li>Cause: two of his characters had a log of the same intel channel. His alt's started hours after his main's and then went quiet (the alt logged off); his main's kept logging. Intel watched the log that <i>started</i> last (your own only if it started within an hour of that), so it read the quiet one. Logging off and on (new files) made it work. The owner: "on it's own branch as soon as possible."</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><code>itScan</code>: for each chosen channel, the log <i>written to</i> last (its last-modified time) is watched; your own character's while it was written within a minute of that (<code>IT_LOG_MINE_MS</code>); the one watched now stays when another is only 2 s newer (<code>IT_LOG_SAME_MS</code>: two characters in a channel get the same line at about the same moment).</li>
+<li>Moving to another log (a relog, an alt's log going quiet) reads its last 256 KB (<code>IT_SWITCH_READ</code>), skips the lines the old log already gave (the same time, who and text: <code>itLineKey</code>, <code>itLineMark</code>), and treats lines older than the last look through the folder as history (shown within "forget reports after", no alert); newer ones are live reports. The first log of a channel is read as before.</li>
+<li>Nothing else: no stored data, no request, nothing users see except reports arriving.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>intel_logs_check.py</code> (intel_check's stand-in folder, which keeps each file's write time): the owner's case (the main's log watched and read, the status line moves on), then the main's log going quiet while the alt's is written (the page moves; a line both carry read once; the new one live). Mutants: the old pick (the log that started last) and the move without skipping what was read, both caught.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #158: of several files that each could be the live one, pick by when it was last written, not when it started; and when moving between them, skip what the old one already gave.</p>
+</body>
+</html>

@@ -323,6 +323,9 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   (`itLookAgain`) on tab shown / focus and, while the setup card shows, every `IT_RESCAN_MS`: nothing while hidden, redrawn only when
   `itFoundKey` changed. A permission taken back while Intel runs: INTEL-02 (`itPermLostText`) with Allow reading in the error line
   (`itAllowNoteHtml`). `intel_folder_check.py` (a stand-in folder whose answers switch, and a stand-in store so a reload restores it).
+  Which log is read (v2026.11.12.1, LESSON #158): per channel the one written to last (`getFile().lastModified` at each look), yours
+  while written within `IT_LOG_MINE_MS`, the current one kept within `IT_LOG_SAME_MS`; a move reads the new end and skips what the old
+  log gave (`itLineKey`); lines older than the last look are history. `intel_logs_check.py`.
 - **Intel in one tab at a time** (v2026.11.08.3, build queue 026; Project doc roadmap/intel-one-tab-plan.md): a Web Lock (`IT_LOCK`,
   `tv-intel`) is held exactly while Intel runs (`itLockTake`, `itLockFree` in `itStop`); the switch asks for it only when free, and
   another tab's card says "Intel is on in another tab." with **Move Intel here** (`itMoveHere`: the folder permission from the press
