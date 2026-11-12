@@ -157,6 +157,8 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #158 Of several files that each could be the live one, pick by when it was last written, not when it started; and when moving between them, skip what the old one already gave.
 - #159 Deleting by name deletes what the name once meant: before removing a feature's code, checks or CSS, find every live caller and every class still drawn.
 - #160 A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it.
+- #161 "No sideways scroll" can't see a control cut off inside a box that hides its overflow, and a box placed at left:50% wraps in half its parent's width: check each control lies inside its box.
+- #162 A sandbox that sets state aside by a list of names doesn't cover state added later: new state the sandboxed builders read (a new store) joins the list in the same change.
 
 **Checks and test machinery**
 
@@ -1067,6 +1069,31 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 162. A sandbox that sets state aside by a list of names doesn't cover state added later: new state the sandboxed builders read (a new store) joins the list in the same change
+
+- **What happened (build queue 040, v2026.11.12.4):** the Intel example (017) draws its map, Near You and Feed with the page's own builders
+  inside `itExSandbox`, which sets Intel's state aside by a list of keys (`feed`, `near`, `me`, `set`, ...) and the map's pins. The
+  wormholes plan added a store (`tvWormholes`) that the map, Near You's badge and the line reader all use, outside `it`. Built as the plan
+  said, the example's lines would have gone through `itWhTake` into the user's real store, and the example's map and Near You would have
+  drawn the user's own wormholes.
+- **How it was caught:** at the build review, by listing every caller of the functions the plan changed (`itAddReport` is called by the
+  sandbox too) and every place the new store is read.
+- **Do this instead:** when a change adds state that a sandboxed builder reads or writes, set it aside in the sandbox in the same change
+  (here an empty store and a flag that stops saving), and give the check a mutant without it. `wormhole_filter_check.py` checks the
+  sandbox writes nothing and reads an empty store.
+
+## 161. "No sideways scroll" can't see a control cut off inside a box that hides its overflow, and a box placed at left:50% wraps in half its parent's width: check each control lies inside its box
+
+- **What happened (build queue 040, v2026.11.12.4):** the map's filter bar is placed at `left:50%` with `translateX(-50%)` inside the
+  map box, which has `overflow:hidden`. The mockup put the Wormholes list button outside the bar on the right, and at 390 px the six
+  44 px filters plus the list button were wider than the box: the outer buttons were cut off by the box, while the mockup's check, "no
+  sideways scroll", passed (the page itself didn't scroll). Letting the row wrap then wrapped it three to a line: an absolutely placed
+  box sized to its content gets only the width from its left edge (half the box) to the right edge to wrap in.
+- **How it was caught:** looking at the 390 px screenshot of the built page, not only at the check's result.
+- **Do this instead:** for controls inside a box that hides overflow, check each control's rectangle against the box, not the page's
+  scroll width. To let an absolutely placed, centred row wrap, give it both edges (`left` and `right`) rather than `left:50%`.
+  `wormhole_filter_check.py` checks every filter button and the list button inside the map box at 390 px.
 
 ## 160. A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it
 

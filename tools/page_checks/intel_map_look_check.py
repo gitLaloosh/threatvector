@@ -17,12 +17,12 @@ not by the page. Uses intel_check.py's made-up folder, mocks and names (you in 1
   * gates between two regions dotted (the dash and colour at the stroke); your region's name white, the others grey, in capitals;
   * the filters: each system's colour (security class; jumps 0 to 10+, none without a gate route; region, never the same colour as a
     region joined by a gate; reports and kills dimming the rest), a dot's pixel follows the pressed filter, a press redraws once;
-  * the bar: five buttons inside the map box, the pressed one aria-pressed, 32 px; the name line shown on a press, faded after;
+  * the bar: six buttons inside the map box (Wormholes since build queue 040, wormhole_filter_check.py), the pressed one aria-pressed, 32 px; the name line shown on a press, faded after;
   * routes past the reach (the owner: "yes"): hover shows its route and the tip says reports aren't shown there; a press keeps it; a
     system with no gate route to you: the tip says so, nothing kept;
   * Near You beside the map at 905, 1000 and 1200 px with a busy row (LESSON #113): at least 400 px, no row wider than its box, and
     the map's column (so Near You) the same height for every filter;
-  * 390 px: one 44 px button; it opens the row of five 44 px buttons; a pick, Escape (focus back on the button) and a press outside
+  * 390 px: one 44 px button; it opens the row of six 44 px buttons; a pick, Escape (focus back on the button) and a press outside
     close it; no sideways scroll;
   * the info text and "Map: within"; the timings (layout at a 30-jump reach, a redraw of the whole galaxy), printed for the history doc;
   * mutants, each must fail: separate x and y scales, a wider spread off CCP's place, a filter that doesn't redraw, gates between
@@ -159,7 +159,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
     if 'bar' in parts:
         bb = pg.evaluate("""() => { const box = itm.box.getBoundingClientRect(); return [...itm.box.querySelectorAll('[data-im-f]')].map(b => { const r = b.getBoundingClientRect();
           return [b.dataset.imF, b.getAttribute('aria-pressed'), Math.round(r.width), Math.round(r.height), r.left >= box.left && r.right <= box.right && r.top >= box.top && r.bottom <= box.bottom]; }); }""")
-        if [x[0] for x in bb] != ['sec', 'jumps', 'region', 'reports', 'kills'] or [x[1] for x in bb] != ['true', 'false', 'false', 'false', 'false'] or any(x[2] != 32 or x[3] != 32 or not x[4] for x in bb):
+        if [x[0] for x in bb] != ['sec', 'jumps', 'region', 'reports', 'kills', 'wh'] or [x[1] for x in bb] != ['true', 'false', 'false', 'false', 'false', 'false'] or any(x[2] != 32 or x[3] != 32 or not x[4] for x in bb):
             out.append(f'the bar at 1440 px: {bb}')
         pg.mouse.move(5, 5); pg.click('#intelPanel [data-im-f="region"]'); pg.mouse.move(5, 5); pg.wait_for_timeout(500)
         nm = pg.evaluate("() => { const n = itm.box.querySelector('.it-map-fn'); return [n.textContent, getComputedStyle(n).opacity, itm.box.querySelector('[data-im-f=\"region\"]').getAttribute('aria-pressed')]; }")
@@ -194,7 +194,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
     if 'near' in parts:
         for w in (905, 1000, 1200):
             ctx, pg = start(b, html, w, errs)
-            r = pg.evaluate("""() => { const hs = []; for(const f of ['sec', 'jumps', 'region', 'reports', 'kills']){ itMapFilterSet(f); hs.push(Math.round(document.querySelector('#intelPanel .it-mapcol').getBoundingClientRect().height * 10) / 10); }
+            r = pg.evaluate("""() => { const hs = []; for(const f of ['sec', 'jumps', 'region', 'reports', 'kills', 'wh']){ itMapFilterSet(f); hs.push(Math.round(document.querySelector('#intelPanel .it-mapcol').getBoundingClientRect().height * 10) / 10); }
               itMapFilterSet('sec'); const nc = document.querySelector('#intelPanel .it-nearcol').getBoundingClientRect();
               const over = [...document.querySelectorAll('#itNearList > .it-nb')].filter(e => e.scrollWidth > e.clientWidth + 1 || e.getBoundingClientRect().right > nc.right + 1).length;
               return [hs, Math.round(nc.width), over, document.querySelectorAll('#itNearList > .it-nb').length, document.querySelector('#intelPanel .it-map-fl').getBoundingClientRect().height]; }""")
@@ -207,7 +207,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         if ph != [44, 44, 'none']: out.append(f'390 px: one 44 px button, the row hidden {ph}')
         pg.tap('#intelPanel .it-map-fcur'); pg.wait_for_timeout(150)
         op = pg.evaluate("() => [itm.box.querySelector('.it-map-fb').classList.contains('open'), [...itm.box.querySelectorAll('[data-im-f]')].map(b => { const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; })]")
-        if not op[0] or op[1] != [[44, 44]] * 5: out.append(f'390 px: a tap opens the row of five 44 px buttons {op}')
+        if not op[0] or op[1] != [[44, 44]] * 6: out.append(f'390 px: a tap opens the row of six 44 px buttons {op}')
         pg.tap('#intelPanel [data-im-f="jumps"]'); pg.wait_for_timeout(150)
         pk = pg.evaluate("() => [itm.filter, itm.box.querySelector('.it-map-fb').classList.contains('open')]")
         pg.tap('#intelPanel .it-map-fcur'); pg.wait_for_timeout(100); pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
@@ -222,7 +222,7 @@ MUTANTS = [
     ('separate x and y scales', "  const s = Math.min((W - 2 * pad) / Math.max(1, x1 - x0), (H - 2 * pad) / Math.max(1, y1 - y0)), qx = (W - (x1 - x0) * s) / 2, qy = (H - (y1 - y0) * s) / 2;\n  for(let i = 0; i < n; i++){ P[2 * i] = qx + (P[2 * i] - x0) * s; P[2 * i + 1] = qy + (P[2 * i + 1] - y0) * s; }",
      "  const s = (W - 2 * pad) / Math.max(1, x1 - x0), sy = (H - 2 * pad) / Math.max(1, y1 - y0), qx = pad, qy = pad;\n  for(let i = 0; i < n; i++){ P[2 * i] = qx + (P[2 * i] - x0) * s; P[2 * i + 1] = qy + (P[2 * i + 1] - y0) * sy; }", ('layout',)),
     ('a wider spread off CCP\'s place', "dmin = IT_MAP_GAP / k0,", "dmin = 4 * IT_MAP_GAP / k0,", ('layout',)),
-    ('a filter that doesn\'t redraw', "  itMapFbarPaint(true); itMapLegend(); if(changed) itMapDraw();", "  itMapFbarPaint(true); itMapLegend();", ('filters',)),
+    ('a filter that doesn\'t redraw', "if(changed){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); }", "if(changed){ if(itm.rep && itm.D) itm.key = itMapKey(); }", ('filters',)),   # 040: the key follows the filter
     ('gates between regions solid', "c.setLineDash(k & 1 ? (big ? [3, 4] : [2, 3]) : []);", "c.setLineDash([]);", ('look',)),
     ('your region\'s name grey', "c.fillStyle = rg === mine ? '#ffffff' : '#8f9ba5';", "c.fillStyle = '#8f9ba5';", ('look',)),
     ('a long legend allowed to wrap', [(".it-map-leg .it-map-fl{flex:1 0 100%; display:flex; align-items:center; gap:6px; height:16px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;}",
@@ -234,7 +234,7 @@ with sync_playwright() as p:
     b = p.chromium.launch()
     errs = []
     out = []; layout_cases(b, HTML, out, errs)
-    check(not out, "the map like EVE's 2D map: the whole galaxy at CCP's places, one scale, 12 px apart in the reach, opening on you; zoom stages, dotted gates between regions, region names; the five filters and their bar; routes past the reach; Near You beside it unmoved by the filters at 905-1200 px; the phone's one button" + ''.join(f'\n      {o}' for o in out))
+    check(not out, "the map like EVE's 2D map: the whole galaxy at CCP's places, one scale, 12 px apart in the reach, opening on you; zoom stages, dotted gates between regions, region names; the six filters and their bar; routes past the reach; Near You beside it unmoved by the filters at 905-1200 px; the phone's one button" + ''.join(f'\n      {o}' for o in out))
     tmp = tempfile.mkdtemp(prefix='maplook_mut_')
     for name_, a_, *rest in MUTANTS:
         b_, parts = (None, rest[0]) if isinstance(a_, list) else rest
