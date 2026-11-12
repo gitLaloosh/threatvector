@@ -62,7 +62,7 @@ REGIONS = [
 ]
 # CSS / markup class and id prefixes -> areas (the first part of the name, before - or _ or a capital)
 CSS = {
-    'it': ['intel'], 'nb': ['intel'], 'nbx': ['intel'], 'fe': ['intel'], 'fj': ['intel'], 'fsys': ['intel'], 'ftg': ['intel'],
+    'it': ['intel'], 'pt': ['intel'], 'nb': ['intel'], 'nbx': ['intel'], 'fe': ['intel'], 'fj': ['intel'], 'fsys': ['intel'], 'ftg': ['intel'],
     'intel': ['intel'], 'intelPanel': ['intel'], 'intelSw': ['intel'], 'tabIntel': ['intel'],
     'sa': ['system'], 'side': ['system'], 'std': ['system'], 'vs': ['system', 'myship'], 'ds': ['system'], 'contacts': ['system'],
     'candidate': ['system'], 'candidates': ['system'], 'saResults': ['system'], 'tabDscan': ['system'],
