@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-H3MIDjvP/yAJg3vtJU0PSxXhKoSDNn63zC13Bjc4KWQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-DZ7Y7jI/tnnJhsCtsmxYDY0DIXbLW4hiGyK5nNAsfCw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -9975,7 +9975,7 @@ function gdVersionCheck(){
 // The items that changed in EVE's last update and aren't checked against pyfa yet: sorted uint32 type IDs, big-endian, base64.
 // Written only by tools/sde_change_report.py --write (the workflow's pull request) and emptied by the pyfa update process
 // (PYFA_CORE.md); never typed by hand (tools/check_game_data_pending.py). build: the EVE build they changed in.
-const GAME_DATA_PENDING = {verified: 3682781, build: 3687575, types: 'AAAsZQABeR4AAXkfAAF5IAABeSEAAXkiAAF5IwABeSQAAXklAAF5JgABeScAAXkoAAF5KQABeSoAAXkrAAF5LAABeS0AAXkuAAF5MAABeTEAAXkyAAF5MwABeTUAAXk2AAF5NwABeTgAAXk5AAF5OgABeTsAAXk8AAF5PQABeT4AAXk/AAF5QAABeUEAAXlCAAF5RQABeUYAAXlHAAF5SAABeUkAAXlKAAF5TAABeU0AAXlOAAF5TwABeVAAAXlR'};
+const GAME_DATA_PENDING = {verified: 3682781, build: 3693310, types: 'AAAsZQABdo0AAXaOAAF5HgABeR8AAXkgAAF5IQABeSIAAXkjAAF5JAABeSUAAXkmAAF5JwABeSgAAXkpAAF5KgABeSsAAXksAAF5LQABeS4AAXkwAAF5MQABeTIAAXkzAAF5NQABeTYAAXk3AAF5OAABeTkAAXk6AAF5OwABeTwAAXk9AAF5PgABeT8AAXlAAAF5QQABeUIAAXlFAAF5RgABeUcAAXlIAAF5SQABeUoAAXlMAAF5TQABeU4AAXlPAAF5UAABeVE='};
 let gdSet = null;
 function gdPendingSet(){
   if(gdSet) return gdSet;
