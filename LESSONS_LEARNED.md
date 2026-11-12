@@ -155,6 +155,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #156 A panel opened from inside a heading inherits the heading's capitals and spacing; and text written for a builder must use only the forms the builder draws: render it before trusting it.
 - #157 Two things that each replace the login (the return from EVE, a renewal) must never run at once: the later one waits for the earlier, and a stale answer is dropped, never acted on.
 - #158 Of several files that each could be the live one, pick by when it was last written, not when it started; and when moving between them, skip what the old one already gave.
+- #159 Deleting by name deletes what the name once meant: before removing a feature's code, checks or CSS, find every live caller and every class still drawn.
 
 **Checks and test machinery**
 
@@ -1065,6 +1066,20 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 159. Deleting by name deletes what the name once meant: before removing a feature's code, checks or CSS, find every live caller and every class still drawn
+
+- **What happened (build queue 038, v2026.11.12.2):** the queue item said to remove the System Analyzer's hidden fleet view and Against
+  Your Ship "and the checks `fleet_view_check.py`, `fleet_vs_check.py`, `vs_check.py`". `fleet_vs_check.py` never touched either hidden
+  view: since v2026.10.31.1 it checks the live Fleet tab (its name is left over from a card taken out then). The fleet view's code block
+  also held `saHullFits` and its helpers, which the Pilot Dossier and the Fleet tab use for a group's common fit, and its CSS block held
+  `.fl-sum`, `.fl-row`, `.fl-stat`, `.fl-dbar`, `.fl-dk`, `.fl-msg`, which the Fleet tab's summary and victim cards draw. Deleting by the
+  names in the plan would have dropped a live check, broken the dossier's and the Fleet tab's common fits, and unstyled two live cards.
+- **How it was caught:** before deleting, every name defined in the block was searched for outside it (a script listing each one's uses),
+  every class in the CSS block was searched for in the script, and the check's own docstring was read.
+- **Do this instead:** for a removal, list what the block defines (functions, constants, classes, info keys, checks) and search each one
+  outside the block; keep what is still used, and say so in the plan or the pull request. Read a check's docstring before deleting it by
+  its name. In the same build, `itB64` turned out to decode 16-bit numbers, not bytes: read a helper before reusing it on another table.
 
 ## 158. Of several files that each could be the live one, pick by when it was last written, not when it started; and when moving between them, skip what the old one already gave
 

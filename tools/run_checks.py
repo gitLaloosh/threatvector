@@ -35,7 +35,7 @@ AREAS = {
     'dossier_check': ['pilot'], 'intel_example_check': ['intel', 'layout'], 'sso_check': ['system', 'layout'], 'sso_game_check': ['intel', 'system', 'layout'], 'sso_online_check': ['intel', 'system', 'layout'], 'sso_standings_check': ['system', 'intel', 'pilot', 'layout'], 'intel_folder_check': ['intel', 'layout'], 'intel_logs_check': ['intel'], 'intel_one_tab_check': ['intel', 'layout'], 'list_caps_check': ['pilot', 'system', 'layout'], 'dossier_kills_check': ['pilot'], 'dossier_pin_check': ['pilot', 'system'], 'kill_groups_check': ['intel', 'pilot', 'system'], 'fleet_hulls_check': ['intel', 'pilot', 'system', 'layout'], 'game_data_check': ['calc', 'fit', 'myship', 'pilot', 'system', 'intel', 'layout'], 'alert_sound_check': ['intel', 'layout'], 'fleet_fit_budget_check': ['pilot', 'system', 'intel'], 'budget_gauge_check': ['pilot', 'system', 'intel', 'layout'], 'scan_rail_check': ['system', 'layout'], 'system_activity_check': ['system', 'intel'], 'extension_check': ['pilot', 'extension'],
     'fight_strip_check': ['myship', 'calc'], 'fighter_application_check': ['fit', 'calc'], 'fighter_bay_check': ['fit', 'calc'],
     'fighter_bombs_check': ['fit', 'calc'], 'fighter_picks_check': ['myship', 'calc'], 'fighter_tile_check': ['myship', 'calc'],
-    'fleet_kill_check': ['pilot', 'system'], 'header_check': ['layout', 'intel'],
+    'fleet_kill_check': ['pilot', 'system'], 'region_names_check': ['intel', 'pilot', 'system'], 'header_check': ['layout', 'intel'],
     'intel_assess_check': ['intel', 'system'], 'intel_check': ['intel'], 'intel_kills_check': ['intel'], 'feed_down_check': ['intel', 'layout'], 'intel_layout_check': ['intel'],
     'intel_place_check': ['intel'], 'intel_words_check': ['intel'], 'intel_gates_check': ['intel'], 'intel_rows_check': ['intel'], 'intel_guard_check': ['intel'], 'intel_fleet_check': ['intel', 'pilot'], 'outside_links_check': ['pilot', 'intel', 'layout'], 'fleet_vs_check': ['pilot', 'system', 'myship'], 'last_kill_check': ['pilot'], 'layout_check': ['layout'], 'matchup_strip_check': ['myship', 'calc'],
     'mine_damage_check': ['myship', 'calc'], 'missile_picks_check': ['myship', 'calc'], 'missing_charges_check': ['fit', 'calc'], 'eft_mutation_check': ['fit', 'calc'],   # build queue 035
@@ -50,7 +50,7 @@ AREAS = {
 NAMES = sorted({a for v in AREAS.values() for a in v})
 # v2026.10.31.7: a page check gets 5 minutes, these more (their longest run under load, x1.5); a hung check fails fast
 PAGE_TIMEOUT = 300
-SLOW = {'intel_kills_check': 600, 'zkb_slow_check': 600, 'outage_check': 900}
+SLOW = {'intel_kills_check': 600, 'region_names_check': 600, 'zkb_slow_check': 600, 'outage_check': 900}
 QUARANTINE_MAX_DAYS = 14
 # build queue 027 (Project doc roadmap/page-publish-plan.md): the page checks run on the served copy before every pull request.
 # The source-form checks (the PYFA CORE lock, the HTML-sink baseline, LESSON markers) read comments, so they stay on the source.

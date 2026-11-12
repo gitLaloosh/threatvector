@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-is9mGKFjc6sGVg23VtZkzCEFv8sGhk8JqXraXHC5bc8='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-aBRNJ1vaSYFAyYslgFO4P/F74JWcZ55LxTt8VrKVo1s='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2202,10 +2202,11 @@
   button.pd-exp{position:absolute; left:9px; top:50%; margin-top:-12px; z-index:1; width:26px; height:24px; min-height:0; padding:0; border:none; border-radius:3px; background:transparent; color:var(--text-dim); opacity:.6; letter-spacing:0; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;}
   button.pd-exp:hover, button.pd-exp:focus-visible{opacity:1; background:rgba(255,255,255,.07);} button.pd-exp[aria-expanded="true"]{opacity:.9;} button.pd-exp[aria-expanded="true"] svg{transform:rotate(180deg);}
   .pd-kills{border-bottom:1px solid var(--line); background:color-mix(in srgb, var(--panel-2) 55%, transparent); padding:2px 10px 10px 44px;}
-  .pdk{position:relative; display:grid; grid-template-columns:96px minmax(170px,1.2fr) 86px 74px minmax(150px,1.1fr) minmax(120px,1fr) 58px 34px; gap:12px; align-items:center; font:400 12.5px var(--sans); color:var(--text); padding:6px 0; border-bottom:1px solid var(--line-soft); min-height:40px;}
+  .pdk{position:relative; display:grid; grid-template-columns:96px minmax(170px,1.2fr) 86px 74px minmax(0,.8fr) minmax(150px,1.1fr) minmax(120px,1fr) 58px 34px; gap:12px; align-items:center; font:400 12.5px var(--sans); color:var(--text); padding:6px 0; border-bottom:1px solid var(--line-soft); min-height:40px;}
   .pdk > span{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .pdk b{font-weight:600; color:var(--heading);} .pdk .pd-dim{font-size:11.5px;}
   .pdk-t, .pdk-v{display:flex; flex-direction:column;}
+  .pdk-r{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text-dim);}   /* 038: the region */
   .pdk-g i{display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:6px;}
   .pdk-val, .pdk-l{text-align:right;} .pdk-val{font-family:var(--mono);}
   .pdk-l a{color:var(--cyan); text-decoration:none; font-weight:600;} .pdk-l a:hover{text-decoration:underline;}
@@ -2246,18 +2247,19 @@
   .fk-picks{container-type:inline-size;}
   @container (max-width: 930px){ button.fk-kg-h .fk-kg-hulls{order:5; flex-basis:100%; margin-left:22px;} }
   .fk-pk-i{text-align:right; font:600 11.5px var(--mono); color:var(--amber); white-space:nowrap;}
-  button.fk-pk{display:grid; grid-template-columns:16px minmax(0,1.6fr) minmax(0,1fr) 70px 64px 90px 130px; gap:10px; align-items:center; width:100%; min-height:0; padding:7px 10px; text-align:left;
+  button.fk-pk{display:grid; grid-template-columns:16px minmax(0,1.6fr) minmax(0,1fr) minmax(0,.9fr) 70px 64px 90px 130px; gap:10px; align-items:center; width:100%; min-height:0; padding:7px 10px; text-align:left;
     border:1px solid transparent; border-radius:4px; background:var(--tag-fill); color:var(--text); font:400 12.5px var(--sans); letter-spacing:0; cursor:pointer;}
   button.fk-pk:hover, button.fk-pk:focus-visible{background:var(--tag-fill-hover); border-color:var(--accent-edge);}
   button.fk-pk[aria-pressed="true"]{background:var(--tag-on); border-color:var(--cyan);}
   .fk-pk-n{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;} .fk-pk-n .nm{font-weight:600; color:var(--heading);} .fk-pk-n .cls{color:var(--text-dim); margin-left:6px;}
   .fk-pk-s{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .fk-pk-r{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font:400 12px var(--sans); color:var(--text-dim);}   /* 038: the region */
   .fk-pk-a, .fk-pk-t{text-align:right; font:400 12px var(--mono); color:var(--text-dim); white-space:nowrap;} .fk-pk-l{justify-self:end;} .fk-pk-l .it-kl{margin-left:0;}
   @media (max-width:599px){ button.fk-kg-h{min-height:44px; flex-wrap:nowrap;} button.fk-kg-h[aria-expanded="true"]{flex-wrap:wrap;} .fk-kg-m{min-width:0; overflow:hidden; text-overflow:ellipsis;}
     button.fk-kg-h .fk-kg-x{display:none;} button.fk-kg-h[aria-expanded="true"] .fk-kg-x{display:flex; flex-basis:100%; margin-left:22px;} .fk-kg-r{padding-left:0;}
     button.fk-kg-h .fk-kg-hulls{display:none;} button.fk-kg-h[aria-expanded="true"] .fk-kg-hulls{display:inline-flex; flex-basis:100%; margin-left:22px; order:5;}   /* v2026.11.04.2: open only, up to 3 */
     .fk-kg-hl[data-k="4"], .fk-kg-more[data-n="4"]{display:none;} .fk-kg-more[data-n="3"]{display:inline;} }   /* v2026.11.01.6: one line; ISK, age and victims on a second line when open */
-  @media (max-width:599px){ .fk-picks{--fk-pk-h:46px;} button.fk-pk{grid-template-columns:16px minmax(0,1fr) auto auto; row-gap:2px; min-height:44px;} .fk-pk > svg{grid-row:1 / span 2;} .fk-pk .fk-pk-n{grid-column:2; grid-row:1;} .fk-pk .fk-pk-s{grid-column:2; grid-row:2;} .fk-pk .fk-pk-t{grid-column:3 / span 2; grid-row:1;} .fk-pk .fk-pk-a{grid-column:3; grid-row:2;} .fk-pk .fk-pk-i{grid-column:4; grid-row:2;} .fk-pk .fk-pk-l{display:none;} }
+  @media (max-width:599px){ .fk-picks{--fk-pk-h:46px;} button.fk-pk{grid-template-columns:16px minmax(0,1fr) auto auto; row-gap:2px; min-height:44px;} .fk-pk > svg{grid-row:1 / span 2;} .fk-pk .fk-pk-n{grid-column:2; grid-row:1;} .fk-pk .fk-pk-s{grid-column:2; grid-row:2;} .fk-pk .fk-pk-t{grid-column:3 / span 2; grid-row:1;} .fk-pk .fk-pk-a{grid-column:3; grid-row:2;} .fk-pk .fk-pk-i{grid-column:4; grid-row:2;} .fk-pk .fk-pk-l, .fk-pk .fk-pk-r{display:none;} }
   /* v2026.10.31.1: the victim, a tag in the line under the title; opens them in the Pilot Analyzer on the ship they lost */
   button.fk-vbtn{display:inline-flex; align-items:center; gap:6px; min-height:0; padding:1px 8px; margin:0 2px; border:1px solid transparent; border-radius:4px; background:var(--tag-fill); color:var(--heading); font:600 13px var(--sans); cursor:pointer; vertical-align:baseline;}
   button.fk-vbtn:hover, button.fk-vbtn:focus-visible{background:var(--tag-fill-hover); border-color:var(--accent-edge);}
@@ -2434,7 +2436,7 @@
     .pdk{grid-template-columns:auto minmax(0,1fr) auto; grid-template-areas:"f v l" ". g g" ". w w"; row-gap:3px; column-gap:10px; padding:8px 0;}
     .pdk > button.pdk-fb{grid-area:f; position:static; transform:none; width:40px; height:40px; align-self:start;}
     .pdk > .pdk-v{grid-area:v;} .pdk > .pdk-l{grid-area:l; align-self:start;} .pdk > .pdk-g{grid-area:g;} .pdk > .pdk-w{grid-area:w; color:var(--text-dim); font-size:11.5px;}
-    .pdk > .pdk-t, .pdk > .pdk-s, .pdk > .pdk-x, .pdk > .pdk-val{display:none;}
+    .pdk > .pdk-t, .pdk > .pdk-s, .pdk > .pdk-r, .pdk > .pdk-x, .pdk > .pdk-val{display:none;}
     .pdk-m{display:inline;}
     .pdk-l a:not(.zk-ic){display:inline-flex; align-items:center; min-height:40px;}
     .pdk-more button, .sa-cmore button, button.lk-more, .sa-pilots button.sa-link[data-more]{min-height:44px;}
@@ -2781,9 +2783,12 @@
   button.it-an{display:inline-flex; align-items:center; justify-content:center; width:26px; height:24px; min-height:0; padding:0; border:1px solid transparent; border-radius:4px; background:transparent; color:var(--text-dim); cursor:pointer;}
   button.it-an:hover, button.it-an:focus-visible{border-color:var(--accent-edge); background:var(--tag-fill-hover); color:var(--heading);} button.it-an svg{width:14px; height:14px;}
   .it-gtag.clr{color:var(--it-clear); background:color-mix(in srgb, var(--it-clear) 18%, transparent);}
-  .it-nb.dd{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-sys-w, 121px) minmax(0,1fr) auto; grid-template-areas:"j an sys tg age" ". . kb kb kb" "rt . wl wl wl";
+  .it-nb.dd{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-sys-w, 121px) var(--it-rg-w, 120px) minmax(0,1fr) auto; grid-template-areas:"j an sys rg tg age" ". . kb kb kb kb" "rt . wl wl wl wl";
     column-gap:10px; row-gap:4px; align-items:center;}
-  .it-nb.dd.nokb{grid-template-areas:"j an sys tg age" "rt . wl wl wl";}
+  .it-nb.dd.nokb{grid-template-areas:"j an sys rg tg age" "rt . wl wl wl wl";}
+  /* build queue 038: the Region column after the system (--it-rg-w, the widest region name, itSysWidths); plain dim text, no hover */
+  .it-rg{min-width:0; font:400 12px var(--sans); color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .it-nb.dd > .it-rg{grid-area:rg; line-height:18px;} .it-fd.fe .it-rg{grid-area:rg;}
   .it-nb.dd > .j{grid-area:j; line-height:18px;} .it-nb.dd > .sys{grid-area:sys; line-height:18px;} .it-nb.dd > .it-an, .it-nb.dd > .it-an-none{grid-area:an;}
   .it-nb.dd > .tg{grid-area:tg; min-width:0; display:flex; flex-wrap:wrap; gap:4px 6px; align-items:center;} .it-nb.dd > .tg > *{margin-left:0;}
   .it-nb.dd > .age{grid-area:age; display:block; justify-self:end; white-space:nowrap; line-height:18px;}
@@ -2792,9 +2797,9 @@
   .it-nb.dd > .wl{grid-area:wl; min-width:0; line-height:18px; font-size:11.5px; color:var(--text-dim);}
   .it-nb.dd .wl .st{display:inline; font-size:12.5px;} .it-nb.dd .wl .sep{color:var(--text-dim);}
   .it-nb.dd .wl .who{display:inline; white-space:normal; overflow:visible; text-overflow:clip;}
-  .it-fd.fe{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-fsys-w, 132px) minmax(0,1fr) auto; grid-template-areas:"fj an sys tg ag" "rt . c1 c1 c1";
+  .it-fd.fe{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-fsys-w, 132px) var(--it-rg-w, 120px) minmax(0,1fr) auto; grid-template-areas:"fj an sys rg tg ag" "rt . c1 c1 c1 c1";
     column-gap:10px; row-gap:5px; align-items:center;}
-  .it-fd.fe.two{grid-template-areas:"fj an sys tg ag" "rt . c1 c1 c1" ". . c2 c2 c2";} .it-fd.fe.noc{grid-template-areas:"fj an sys tg ag" "rt . . . .";}
+  .it-fd.fe.two{grid-template-areas:"fj an sys rg tg ag" "rt . c1 c1 c1 c1" ". . c2 c2 c2 c2";} .it-fd.fe.noc{grid-template-areas:"fj an sys rg tg ag" "rt . . . . .";}
   .it-fd.fe .it-an{grid-area:an;}
   .it-fd.fe > .it-fh{display:contents;}
   .it-fd.fe .fj{grid-area:fj;} .it-fd.fe .fsys{grid-area:sys; min-width:0; display:block;} .it-fd.fe .it-age{grid-area:ag; justify-self:end; white-space:nowrap;}
@@ -2816,6 +2821,7 @@
     .it-fd.fe{grid-template-columns:max(var(--it-jw, 66px), 64px) auto minmax(0,1fr) auto; grid-template-areas:"fj sys sys ag" ". tg tg tg" "rt c1 c1 c1"; column-gap:8px;}
     .it-fd.fe.two{grid-template-areas:"fj sys sys ag" ". tg tg tg" "rt c1 c1 c1" ". c2 c2 c2";} .it-fd.fe.noc{grid-template-areas:"fj sys sys ag" ". tg tg tg" "rt . . .";}
     .it-fd.fe .ftg:empty{display:none;} .it-fd.fe .it-rawt{width:32px; height:32px; align-self:center;}
+    .it-nb.dd > .it-rg, .it-fd.fe .it-rg{display:none;}   /* build queue 038: phones show the system only */
     .it-fd.fe > .it-raw, .it-fd.fe > .it-toast{margin-left:0;}
     .fsz-m{display:inline;}
   }
@@ -3039,7 +3045,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -12591,7 +12597,7 @@ function pdHtml(d){
   const hmax = Math.max(1, ...hrs);
   const hours = hrs.map((n, i) => `<i style="height:${n ? Math.max(3, Math.round(n / hmax * 30)) : 1}px" title="${String(i).padStart(2, '0')}:00–${String((i + 1) % 24).padStart(2, '0')}:00, your time: ${n} kill${n === 1 ? '' : 's'}" data-pd-h="${n}"></i>`).join('');
   const sys = [...d.systems].sort((a, b) => b[1] - a[1]);
-  const sysTop = sys.slice(0, 3).map(([id, n]) => `<b>${sysNameHtml(id, d.sysNames.get(id) || `system ${id}`)}</b> ${n}`).join(' · ');
+  const sysTop = sys.slice(0, 3).map(([id, n]) => `<b>${sysNameHtml(id, d.sysNames.get(id) || `system ${id}`)}</b>${pdRegionHtml(id)} ${n}`).join(' · ');   // 038: each with its region
   const sysRest = sys.slice(3).reduce((s, x) => s + x[1], 0);
   const span = d.from ? `, ${day(d.from)} – ${day(d.to)}` : '';
   const rowsBody = rows.length ? rows.map(rowHtml).join('') : `<div class="pr-msg pd-msg">${pd.mode === 'all' ? 'No ships among their recent kills and losses (capsules, shuttles and rookie ships aren’t counted).' : `No ${PD_SIZES.find(x => x[0] === pd.mode)[1].toLowerCase()} kills among their newest ${d.nKills}.`}</div>`;
@@ -12606,6 +12612,9 @@ function pdHtml(d){
       <div><div class="k">Solo / gang</div><div class="v" data-pd="split"><b>${d.sizes.solo}</b> solo · <b>${d.sizes.small}</b> small gang · <b>${d.sizes.fleet}</b> fleet</div></div>
     </div>`;
 }
+// build queue 038: a dossier kill's Region cell (its name on hover too, as fkPickRegionHtml), and a usual system's region, dim, after its name
+function pdkRegionHtml(id){ const r = sysRegion(id); return `<span class="pdk-r" title="${escapeHtml(r)}">${escapeHtml(r)}</span>`; }
+function pdRegionHtml(id){ const r = sysRegion(id); return r ? ` <span class="pd-dim">(${escapeHtml(r)})</span>` : ''; }
 // v2026.11.01.5: the pinned row's tag (why it's first, and where it ranks) and the line under the rows
 function pdOrd(n){ const t = n % 100; return n + (t >= 11 && t <= 13 ? 'th' : ({1: 'st', 2: 'nd', 3: 'rd'})[n % 10] || 'th'); }
 function pdPinHtml(d, h, rank, of){
@@ -12632,7 +12641,7 @@ function pdKillList(h){
   return [...h.kills, ...pd.older.filter(k => k.hull === h.id)].filter(k => pd.mode === 'all' || k.size === pd.mode).sort((a, b) => b.t - a.t);
 }
 const PD_RECENT_MS = 4 * 3600 * 1000;   // v2026.10.31.3 (the owner: "timestamps in the WHEN column within the past 4 hours should be in amber")
-const PD_KHEAD = '<div class="pdk pdk-h" aria-hidden="true"><span>When</span><span>Victim</span><span title="How many pilots were on the kill">Fleet size</span><span>System</span><span>Their weapon</span><span>With them</span><span class="pdk-val">Value</span><span></span></div>';
+const PD_KHEAD = '<div class="pdk pdk-h" aria-hidden="true"><span>When</span><span>Victim</span><span title="How many pilots were on the kill">Fleet size</span><span>System</span><span>Region</span><span>Their weapon</span><span>With them</span><span class="pdk-val">Value</span><span></span></div>';
 // v2026.11.07.5 (build queue 011): past PD_SHOW_STEP rows they scroll inside a box PD_SHOW_STEP rows tall (pdKlFit measures it), the
 // heading row inside it (sticky, so the columns stay over theirs beside the scrollbar), with "Show fewer" beside "Show 10 more"
 function pdKlOpenHtml(h, n){ return n > PD_SHOW_STEP ? `<div class="pd-kl" data-pd-kl="${Number(h.id)}">${PD_KHEAD}` : PD_KHEAD; }
@@ -12662,7 +12671,7 @@ function pdKillsHtml(h){
     return `<div class="pdk${recent}" data-pdk="${k.id}"><button type="button" class="pdk-fb" data-pd-fleet="${k.id}" title="${escapeHtml(fleetT)}" aria-label="${escapeHtml(fleetT)}">${FLEET_ICON}</button><span class="pdk-t"><b>${day}</b><span class="pd-dim">${hm} your time</span></span>
       <span class="pdk-v"><span><b>${escapeHtml(nm(k.victim) || `type ${k.victim}`)}</b> <span class="pd-dim">${escapeHtml(cls(k.victim))}</span></span><span class="pd-dim">${pdVictimHtml(k, who)} ${orgTickerHtml('corporation', k.vcorp)}<span class="pdk-m"> · <span class="pdk-when">${day} ${hm}</span></span></span></span>
       <span class="pdk-g">${fleetSizeMarkHtml(k.n)}<span class="pdk-m pd-dim"> ${k.n === 1 ? 'pilot' : 'pilots'}, ${PD_SIZE_WORD[k.size]} · ${k.sys ? sysNameHtml(k.sys, sys) : ''} · ${isk}</span></span>
-      <span class="pdk-s">${k.sys ? sysNameHtml(k.sys, sys) : ''}</span>
+      <span class="pdk-s">${k.sys ? sysNameHtml(k.sys, sys) : ''}</span>${pdkRegionHtml(k.sys)}
       <span class="pdk-w">${escapeHtml(nm(k.weapon) || '—')}<span class="pdk-m">${mates ? ` · with ${escapeHtml(mates)}` : ''}</span></span>
       <span class="pdk-x">${escapeHtml(mates) || '<span class="pd-dim">alone</span>'}</span>
       <span class="pdk-val">${isk}</span>
@@ -23359,12 +23368,10 @@ function saRender(){
       <div class="sa-sum-top"><span class="sa-total">${tot}</span><span class="sa-total-l">in local</span></div>
       <div class="sa-bar" role="img" aria-label="${S.h} hostile, ${S.n} neutral, ${S.f} friendly">${['h', 'n', 'f'].filter(k => S[k]).map(k => `<i class="${k}" style="flex:${S[k]}"></i>`).join('')}</div>
       <div class="sa-keys">${['h', 'n', 'f'].map(k => `<span class="sa-key">${SIDE_MARK_BY_WORD[k]}${SIDE_WORD[k]} <b>${S[k]}</b></span>`).join('')}</div>
-      <div class="sa-mode">${threat > rows ? `<span class="sa-pill">${threat} hostile + neutral</span>${ctxHtml(`over ${rows}: shown by group`)}`
-                                          : `<span class="sa-pill">Small gang: ${threat} hostile + neutral</span>${ctxHtml(`${rows} or fewer`)}`}${evLine}${threat > 0 && small ? saViewSwitchHtml('pilots') : ''}</div>
+      <div class="sa-mode">${saModeHtml(threat, rows)}${evLine}${saViewSwitchHtml('pilots', threat > 0 && small)}</div>
       ${notes}
     </div>
-    ${small && sa.view !== 'groups' ? `<div class="card pr-card" id="saPilots">${saPilotsCardHtml(G)}</div>`
-      : `<div class="sa-cols">${saColHtml('h', G.h)}${saColHtml('n', G.n)}</div>`}
+    ${saBodyHtml(G, small)}
     <details class="sa-g sa-friendly" data-sa-g="friendly"${sa.friendOpen ? ' open' : ''}><summary>${SIDE_MARK.f}<span class="sa-gname"><span class="nm">${escapeHtml(cardName('friendly'))}</span><span class="ctx sa-ftk">${G.f.slice(0, 6).map(g => g.kind ? orgTickerHtml(g.kind, g.id) : '').join(' ')}</span></span><span class="sa-gn">${S.f}</span><span class="sa-chev" aria-hidden="true">▶</span></summary>
       <div class="sa-friendly-body">${G.f.length ? G.f.map(g => saGroupHtml(g, 'f')).join('') : '<div class="sa-empty">None in local.</div>'}</div></details>`;
   fillOrgTickers(host);
@@ -23372,6 +23379,14 @@ function saRender(){
   if(fk){ const f = host.querySelector(fk); if(f) f.focus({preventScroll: true}); }
   saMoreSoon();
   if(small && sa.view !== 'groups') saPumpRows();
+}
+// build queue 038 (the hidden fleet view taken out): the line's pill, and the pilot rows (a small gang) or the columns
+function saModeHtml(threat, rows){
+  return threat > rows ? `<span class="sa-pill">${Number(threat)} hostile + neutral</span>${ctxHtml(`over ${rows}: shown by group`)}`
+    : `<span class="sa-pill">Small gang: ${Number(threat)} hostile + neutral</span>${ctxHtml(`${rows} or fewer`)}`;
+}
+function saBodyHtml(G, small){
+  return small && sa.view !== 'groups' ? `<div class="card pr-card" id="saPilots">${saPilotsCardHtml(G)}</div>` : `<div class="sa-cols">${saColHtml('h', G.h)}${saColHtml('n', G.n)}</div>`;
 }
 function saAgo(ts){ const m = Math.round((Date.now() - ts) / 60000); return m < 1 ? 'just now' : `from ${m} min ago`; }
 // v2026.11.07.5 (build queue 011; roadmap/list-caps-plan.md item 1): a selector for the focused control, to find it again after a redraw
@@ -23428,7 +23443,8 @@ function saShowGroup(d){
 // by DPS.
 const SA_ROW_KILLS = 5, SA_ROW_LOSSES = 10, SA_RECENT_DAYS = 30, SA_ROWS_PER_BATCH = 15, SA_ROW_WORKERS = 3;
 const DAY_MS = 86400000;
-function saViewSwitchHtml(kind){   // kind: 'pilots' (a small gang) against 'groups' (build queue 038 took out the hidden 'fleet' kind)
+function saViewSwitchHtml(kind, show = true){   // kind: 'pilots' (a small gang) against 'groups' (build queue 038 took out the hidden 'fleet' kind)
+  if(!show) return '';
   return `<span class="pr-seg" role="group" aria-label="Show ${kind} or groups">${[[kind, cardName(kind)], ['groups', 'Groups']].map(([v, l]) => {
     const on = (v === 'groups') === (sa.view === 'groups');
     return `<button type="button" data-sa-view="${v}" aria-pressed="${on}"${on ? ' class="on"' : ''}>${escapeHtml(l)}</button>`; }).join('')}</span>`;
@@ -23650,7 +23666,7 @@ function saUpdatePilots(){
 // tab (their group's common fit for a hull). The group's newest SA_FLEET_LOSSES losses in that hull (1 request) give the fit: losses
 // grouped by their exact set of fitted modules (drone types included, cargo not), up to SA_VARIANTS variants of SA_VARIANT_MIN+
 // losses with what differs from the first; the charge in each weapon is the most common one among that variant's losses; no
-// variant: the newest loss ("fits vary"). Numbers through the same engine as everywhere.
+// variant: the newest loss ("fits vary"). Numbers through the same engine as everywhere. LESSON #159: kept when the view went.
 const SA_FLEET_LOSSES = 20, SA_VARIANT_MIN = 2, SA_VARIANTS = 3;
 const KM_SLOT_FLAG = (f) => (f >= 11 && f <= 34) || (f >= 92 && f <= 99) || (f >= 125 && f <= 132);   // low, mid, high, rigs, subsystems
 const KM_DRONE_FLAG = 87, KM_FIGHTER_FLAG = 158;
@@ -25549,6 +25565,8 @@ function fkFocusKey(el){
   return null;
 }
 function fkFocusBack(el, sel){ if(!sel) return; const f = el.querySelector(sel); if(f && document.activeElement !== f) f.focus({preventScroll: true}); }
+// The head line's system: " · <b>E-VKJV</b> (Querious)" (build queue 038: with its region)
+function fkSubSysHtml(){ return fk.sys ? ` · <b>${sysNameHtml(fk.km.solar_system_id, fk.sys)}</b>${escapeHtml(sysBracket(fk.km.solar_system_id))}` : ''; }
 function fkRender(){
   const el = document.getElementById('fleetPanel');
   if(!el) return;
@@ -25563,7 +25581,7 @@ function fkRender(){
     // v2026.10.31.1: the victim, a tag that opens them in the Pilot Analyzer on the ship they lost (the owner: "include victims")
     const vr = v.id ? sideOf(v.corp, v.alliance, sideSets(), sa.evidence, v.id) : {side: 'n'}, vs = vr.side;
     const vBtn = vName ? `<button type="button" class="fk-vbtn" data-fk-pilot="${escapeHtml(vName)}" data-fk-type="${v.type}" title="${escapeHtml(`${vName}: open in the Pilot Analyzer, on the ${v.name}`)}">${standMark(vs, v.corp, v.alliance, sideWhyText(vr))}<span class="nm std-n ${vs}">${escapeHtml(vName)}</span><span class="pr-chev" aria-hidden="true">›</span></button>` : '';
-    sub = `<div class="fk-sub">${from} · killed ${vBtn ? `${vBtn} in a` : 'a'} <b>${escapeHtml(v.name || '')}</b>${v.cls ? ` (${escapeHtml(v.cls)})` : ''} · ${when}${fk.sys ? ` · <b>${sysNameHtml(fk.km.solar_system_id, fk.sys)}</b>` : ''} · <b>${fk.players}</b> pilot${fk.players === 1 ? '' : 's'} on the kill, <b>${fk.members.length}</b> in ships</div>`;
+    sub = `<div class="fk-sub">${from} · killed ${vBtn ? `${vBtn} in a` : 'a'} <b>${escapeHtml(v.name || '')}</b>${v.cls ? ` (${escapeHtml(v.cls)})` : ''} · ${when}${fkSubSysHtml()} · <b>${fk.players}</b> pilot${fk.players === 1 ? '' : 's'} on the kill, <b>${fk.members.length}</b> in ships</div>`;
   }
   const head = `<div class="card fk-head"><div class="fk-top"><h2>${escapeHtml(cardName('fleet'))} on a kill</h2>${acts}</div>${sub}${fkPicksHtml()}${fk.err ? `<div class="pr-msg err">${escapeHtml(fk.err)}</div>` : ''}${!fk.km && !fk.err ? `<div class="pr-msg"><span class="busy-spin" aria-hidden="true"></span>Reading killmail ${fk.killId || ''} from ESI…</div>` : ''}</div>`;
   if(!fk.km){ const focused = fkFocusKey(el), keep = fkPicksTop(el); el.innerHTML = head; fkPicksKeep(el, keep); fkFocusBack(el, focused); return; }
@@ -25715,7 +25733,7 @@ function fkGroups(){
 // sits under its fleet heading's
 function fkPickHtml(p, i){
   const kind = {f: 'good', h: 'bad'};
-  return `<button type="button" class="fk-pk" data-fk-pick="${i}" aria-pressed="${p.id === fk.killId}" title="${escapeHtml(`Analyze the kill of ${p.name || 'no pilot'}'s ${p.ship || 'ship'}`)}">${standIcon(kind[p.v] || 'neu')}<span class="fk-pk-n"><span class="nm std-n ${p.v === 'f' || p.v === 'h' ? p.v : 'n'}">${escapeHtml(p.name || 'no pilot')}</span><span class="cls">${escapeHtml(p.ship || '')}</span></span><span class="fk-pk-s">${p.sysId ? sysNameHtml(p.sysId, p.sys) : escapeHtml(p.sys || '')}</span><span class="fk-pk-a">${p.ships === 1 ? 'solo' : p.ships ? `${p.ships} pilots` : 'NPCs'}</span><span class="fk-pk-i"${p.isk ? ` title="${escapeHtml(`${Math.round(p.isk).toLocaleString('en-US')} ISK (zKillboard's value)`)}"` : ''}>${p.isk ? `${itIsk(p.isk)}` : ''}</span><span class="fk-pk-t">${escapeHtml(itAgo(p.t))} ago</span><span class="fk-pk-l"><span class="it-kl ${p.word[0]}">${escapeHtml(p.word[1])}</span></span></button>`;
+  return `<button type="button" class="fk-pk" data-fk-pick="${i}" aria-pressed="${p.id === fk.killId}" title="${escapeHtml(`Analyze the kill of ${p.name || 'no pilot'}'s ${p.ship || 'ship'}`)}">${standIcon(kind[p.v] || 'neu')}<span class="fk-pk-n"><span class="nm std-n ${p.v === 'f' || p.v === 'h' ? p.v : 'n'}">${escapeHtml(p.name || 'no pilot')}</span><span class="cls">${escapeHtml(p.ship || '')}</span></span><span class="fk-pk-s">${p.sysId ? sysNameHtml(p.sysId, p.sys) : escapeHtml(p.sys || '')}</span>${fkPickRegionHtml(p.sysId)}<span class="fk-pk-a">${p.ships === 1 ? 'solo' : p.ships ? `${p.ships} pilots` : 'NPCs'}</span><span class="fk-pk-i"${p.isk ? ` title="${escapeHtml(`${Math.round(p.isk).toLocaleString('en-US')} ISK (zKillboard's value)`)}"` : ''}>${p.isk ? `${itIsk(p.isk)}` : ''}</span><span class="fk-pk-t">${escapeHtml(itAgo(p.t))} ago</span><span class="fk-pk-l"><span class="it-kl ${p.word[0]}">${escapeHtml(p.word[1])}</span></span></button>`;
 }
 function fkGroupHtml(g){
   const P = fk.picks, open = fk.kgOpen.has(g.key), here = g.idx.some(i => P[i].id === fk.killId), k = g.idx.length;
@@ -25725,11 +25743,19 @@ function fkGroupHtml(g){
   const tip = `${g.name}: ${who.replace(' · ', ', ')}${g.isk ? `, ${itIsk(g.isk)} ISK` : ''}, ${k === 1 ? '' : 'newest '}${itAgo(g.newest)} ago. ${g.loose ? FK_KG_LOOSE_TIP : g.one ? 'The pilots on this one kill.' : FK_KG_TIP}${g.loose ? '' : ` ${FK_KG_HULLS_TIP}`}`;
   return `<div class="fk-kg${g.loose ? ' loose' : ''}"><button type="button" class="fk-kg-h" data-fk-kg="${g.key}" aria-expanded="${open}"${open ? ` aria-controls="fkkg-${g.key}"` : ''} title="${escapeHtml(tip)}"><span class="fk-kg-c" aria-hidden="true">${IT_CHEV}</span><span class="fk-kg-t">${escapeHtml(g.name)}</span><span class="fk-kg-m">${who}</span>${here ? '<span class="fk-kg-here">analyzing</span>' : ''}${fkHullsHtml(g)}<span class="fk-kg-x">${isk}<span class="fk-kg-a">${k === 1 ? '' : 'newest '}${escapeHtml(itAgo(g.newest))} ago</span>${vic}</span></button>${open ? `<div class="fk-kg-r" id="fkkg-${g.key}" role="group" aria-label="${escapeHtml(`${g.name}: its kills`)}">${g.idx.map(i => fkPickHtml(P[i], i)).join('')}</div>` : ''}</div>`;
 }
+// build queue 038: a kill picker row's Region cell; its name on hover too, as the column narrows on a smaller window (only Near You and the
+// Feed were to have no hover: "7. yes but not in the hover text", "8. yes but not on hover")
+function fkPickRegionHtml(id){ const r = sysRegion(id); return `<span class="fk-pk-r" title="${escapeHtml(r)}">${escapeHtml(r)}</span>`; }
+// " in E-VKJV (Querious)" when every kill is in one system (build queue 038: with its region)
+function fkPicksWhereHtml(P, where){
+  if(where.length !== 1 || !where[0]) return '';
+  return P[0].sysId ? ` in ${sysNameHtml(P[0].sysId, where[0])}${escapeHtml(sysBracket(P[0].sysId))}` : ` in ${escapeHtml(where[0])}`;
+}
 function fkPicksHtml(){
   const P = fk.picks;
   if(!P || !P.length) return '';   // v2026.11.04.2: one Intel kill gets the list too (was: 2 or more)
   const G = fkGroups(), where = [...new Set(P.map(p => p.sys))], nf = G.fleets.length, one = P.length === 1;
-  return `<div class="fk-pk-h">${P.length} kill${one ? '' : 's'}${where.length === 1 && where[0] ? ` in ${P[0].sysId ? sysNameHtml(P[0].sysId, where[0]) : escapeHtml(where[0])}` : ''} from ${escapeHtml(cardName('intel'))}${one ? '' : ` · <span title="${escapeHtml(FK_KG_TIP)}">${nf} fleet${nf === 1 ? '' : 's'} by shared pilots</span>`} · as ${one ? 'it was' : 'they were'} when you opened this</div>
+  return `<div class="fk-pk-h">${P.length} kill${one ? '' : 's'}${fkPicksWhereHtml(P, where)} from ${escapeHtml(cardName('intel'))}${one ? '' : ` · <span title="${escapeHtml(FK_KG_TIP)}">${nf} fleet${nf === 1 ? '' : 's'} by shared pilots</span>`} · as ${one ? 'it was' : 'they were'} when you opened this</div>
     <div class="fk-picks" role="group" aria-label="Kill to analyze">${G.all.map(fkGroupHtml).join('')}</div>`;
 }
 // The victim, from the killmail's own fit: the same facts as the fleet's summary (no time to kill, LESSON #108)
@@ -26052,6 +26078,39 @@ async function itLoadNames(){
   try{ return await it.namesBusy; }finally{ it.namesBusy = null; }
 }
 function itSysName(id){ return it.names && it.names.byId.get(id) || String(id); }
+// ---- build queue 038 (Project doc roadmap/region-names-plan.md; the owner's picks from the review of the 27 places a system is named,
+// mockup Claude outputs/region_names_mockup.html: "A: own column", phones "System only", sentences "Yes, as drawn") ----
+// A system's region, from the map's table already in the page (INTEL_MAP.reg / .regions, CCP's static data by tools/jump_table_update.py),
+// in INTEL_JUMPS's order (itGraphGet). Only the region bytes are unpacked, once (not the map's whole table). '' for a system the table
+// doesn't cover ([stated] "we dont need region names for wormhole space"; Jove space too) and while INTEL_MAP doesn't match INTEL_JUMPS
+// (after a jump-table update, until the map table is made again): no region is shown then, and nothing else changes.
+let sysRegTab;
+function sysRegTable(){
+  if(sysRegTab !== undefined) return sysRegTab;
+  sysRegTab = null;
+  try{
+    if(typeof INTEL_MAP === 'undefined' || !INTEL_MAP || INTEL_MAP.jumps !== INTEL_JUMPS.md5 || INTEL_MAP.systems !== INTEL_JUMPS.systems) return null;
+    const bin = atob(INTEL_MAP.reg), r = new Uint8Array(bin.length);   // one byte per system (itB64 reads 16-bit numbers)
+    for(let i = 0; i < bin.length; i++) r[i] = bin.charCodeAt(i);
+    if(r.length === INTEL_MAP.systems && Array.isArray(INTEL_MAP.regions)) sysRegTab = {reg: r, names: INTEL_MAP.regions};
+  }catch(e){ sysRegTab = null; }
+  return sysRegTab;
+}
+function sysRegion(id){
+  const T = sysRegTable(), n = Number(id);
+  if(!T || !n) return '';
+  const i = itGraphGet().at.get(n);
+  return i === undefined ? '' : T.names[T.reg[i]] || '';
+}
+// A sentence's bracket after a system's name (plain text; the caller escapes): " (Querious)", with jumps " (Querious, 4 jumps)", with
+// no region today's " (4 jumps)" or nothing. One place, so the sentences can't drift apart (the owner: "8-YNBE (Querious, 4 jumps)").
+function sysBracket(id, j = null){
+  const parts = [sysRegion(id), j === null || j === undefined ? '' : `${j} jump${j === 1 ? '' : 's'}`].filter(Boolean);
+  return parts.length ? ` (${parts.join(', ')})` : '';
+}
+// Near You's and the Feed's Region column (A): plain dim text, no hover ([stated] "7. yes but not in the hover text"); empty when there's
+// no region, so nothing else on the row moves; hidden under 600 px ([stated] "phones only get system name")
+function itRgHtml(sys){ return `<span class="it-rg">${escapeHtml(sysRegion(sys))}</span>`; }
 
 // ---- ships (INTEL_SHIPS: English and Chinese names from pyfa's data) ----
 let itShipMap = null;
@@ -27384,7 +27443,7 @@ function itAlert(st, e){
   const played = it.set.sound ? itPlaySound(j === 0 ? 'here' : 'near') : false;   // v2026.11.01.8: In system at 0 jumps (kills too), Near you otherwise
   if(it.set.notify && typeof Notification !== 'undefined' && Notification.permission === 'granted'){
     const body = e.kind === 'kill' ? `${itKillWord(e)[1]}: ${e.kill.victim.name} lost a ${e.kill.victim.ship ? e.kill.victim.ship.name : 'ship'}${e.kill.value ? ` (${itIsk(e.kill.value)} ISK)` : ''}` : `${e.who}: ${e.raw}`;
-    try{ new Notification(`${itSysName(st.sys)} · ${j} jump${j === 1 ? '' : 's'}`, {body: body.slice(0, 180), tag: `intel-${st.sys}`, silent: played}); }catch(err){ /* not shown */ }   // silent: the page's own sound already played
+    try{ new Notification(`${itSysName(st.sys)}${sysBracket(st.sys)} · ${j} jump${j === 1 ? '' : 's'}`, {body: body.slice(0, 180), tag: `intel-${st.sys}`, silent: played}); }catch(err){ /* not shown */ }   // silent: the page's own sound already played
   }
 }
 
@@ -27837,7 +27896,7 @@ function itNearRowHtml({st, j}){
   // the content looking misaligned"): the analyze icon in its own column right after the jumps, then the system; a row with nothing to
   // analyze leaves that cell empty, and nothing else moves. On a phone it sits under the jumps, beside the toggle.
   const row = `<div class="it-nb dd${kb ? '' : ' nokb'}${tags ? '' : ' notg'}${alert ? ' alert' : ''}${open ? ' open' : ''}" data-it-sys="${st.sys}">${jt}`
-    + (can ? itAnalyzeHtml(st.sys, `its reported pilots and ships`) : '<span class="it-an-none"></span>') + itSysBtnHtml(st.sys, 'sys it-sn')
+    + (can ? itAnalyzeHtml(st.sys, `its reported pilots and ships`) : '<span class="it-an-none"></span>') + itSysBtnHtml(st.sys, 'sys it-sn') + itRgHtml(st.sys)
     + `<span class="tg">${tags}${itMapPinTag(st.sys)}</span><span class="age">${itAgo(st.t)}</span>${kb ? `<span class="kb">${kb}</span>` : ''}`
     + `<button type="button" class="it-rawt" data-it-nbo="${st.sys}" aria-expanded="${open}" aria-label="${open ? 'Hide' : 'Show'} what this row is built from" title="${open ? 'Hide' : 'Show'} the reports and kills behind this row">${IT_CHEV}</button>`
     + `<span class="wl">${st.kind === 'clear' ? '' : `<span class="st ${wcls}"><b>${escapeHtml(word)}</b></span><span class="sep"> · </span>`}<span class="who"${cap}>${who}</span></span></div>`;
@@ -27962,14 +28021,18 @@ function itSysWidths(el){
   if(!el || !el.style || typeof document === 'undefined' || !document.createElement || !it.names) return;
   const a = el.querySelector('#itNearList .it-nb .sys'), f = el.querySelector('#itFeedList .it-fh .it-sn');
   const jn = el.querySelector('#itNearList .it-nb .j'), jf = el.querySelector('#itFeedList .it-fh .fj');
+  const rg = el.querySelector('#itNearList .it-nb .it-rg, #itFeedList .it-fh .it-rg');   // build queue 038: the Region column
   // v2026.11.01.4: the key no longer reads four computed fonts on every draw (~15 ms): what changes the widths is the font loading
   // (itFontEpoch), the width class (a phone's smaller fonts) and the table; which lists are on the card decides what can be measured
-  const key = `${itFontEpoch}|${typeof innerWidth === 'number' && innerWidth < 600 ? 'n' : 'w'}|${!!a}${!!f}${!!jn}${!!jf}|${it.names.list.length}`;
+  const key = `${itFontEpoch}|${typeof innerWidth === 'number' && innerWidth < 600 ? 'n' : 'w'}|${!!a}${!!f}${!!jn}${!!jf}${!!rg}|${it.names.list.length}`;
   if(itSysW && itSysW.key === key){ itSysW.apply(el); return; }
   let c; try{ c = document.createElement('canvas').getContext('2d'); }catch(e){ return; }
   if(!c) return;
   const widest = (font) => { if(!font) return 0; c.font = font; let m = 0; for(const n of it.names.byId.values()) m = Math.max(m, c.measureText(n).width); return Math.ceil(m + 2); };
   const wa = widest(a && getComputedStyle(a).font), wf = widest(f && getComputedStyle(f).font);
+  // build queue 038 ([stated] "A: own column"): as wide as the widest region name, measured as the cell draws it, as the system column is
+  // sized (CLAUDE.md "Intel lists"); 0 when the page has no region table (nothing would show in it)
+  const RT = rg && sysRegTable(), wr = RT ? (() => { c.font = getComputedStyle(rg).font; let m = 0; for(const n of RT.names) m = Math.max(m, c.measureText(n).width); return Math.ceil(m + 2); })() : 0;
   // v2026.10.31.7 (the owner: "just have to account for double digit jumps"): the jump column, one width for both lists so their system
   // names line up across the card: "88 Jumps" or the In system callout, whichever is wider, measured as the cells draw them
   let wj = 0;
@@ -27978,7 +28041,7 @@ function itSysWidths(el){
     j.parentNode.appendChild(x); wj = Math.max(wj, x.getBoundingClientRect().width); x.remove();
   }
   wj = Math.ceil(wj);
-  itSysW = {key, apply: (x) => { if(wa) x.style.setProperty('--it-sys-w', `${wa}px`); if(wf) x.style.setProperty('--it-fsys-w', `${wf}px`); if(wj) x.style.setProperty('--it-jw', `${wj}px`); }};
+  itSysW = {key, apply: (x) => { if(wa) x.style.setProperty('--it-sys-w', `${wa}px`); if(wf) x.style.setProperty('--it-fsys-w', `${wf}px`); if(wj) x.style.setProperty('--it-jw', `${wj}px`); if(rg) x.style.setProperty('--it-rg-w', `${wr}px`); }};
   itSysW.apply(el);
 }
 // v.100 (the owner: "let's go ahead and use the format of 'x Jumps'", and "a callout like 'IN SYSTEM'" for your own system)
@@ -28058,7 +28121,7 @@ function itFeedRowHtml(e){
   const tog = e.kind === 'kill' ? '' : `<button type="button" class="it-rawt" data-it-raw="${e.id}" aria-expanded="${open}" aria-label="${open ? 'Hide' : 'Show'} the line as typed" title="${open ? 'Hide' : 'Show'} the line as it was typed, and who sent it">${IT_CHEV}</button>`;
   const an = e.kind !== 'kill' && e.kind !== 'clear' && s0 && itCanAnalyze(s0.id) ? itAnalyzeHtml(s0.id, `everything reported there in the last ${it.set.forget} min (not only this line)`) : '';   // v2026.10.31.7
   if(s0) tags.push(itMapPinTag(s0.id));   // v2026.11.02.4: its route kept on the map
-  const hd = `<div class="it-fh"><span class="fj">${j0 === null ? '' : itJumpsHtml(j0)}</span>${an}<span class="fsys">${sysB}</span><span class="ftg">${tags.join('')}</span><span class="it-age" title="your time ${itClock(e.t)}">${itAgo(e.t)}</span>${tog || '<span class="tg-none"></span>'}</div>`;
+  const hd = `<div class="it-fh"><span class="fj">${j0 === null ? '' : itJumpsHtml(j0)}</span>${an}<span class="fsys">${sysB}</span>${itRgHtml(s0 ? s0.id : 0)}<span class="ftg">${tags.join('')}</span><span class="it-age" title="your time ${itClock(e.t)}">${itAgo(e.t)}</span>${tog || '<span class="tg-none"></span>'}</div>`;
   if(e.kind === 'kill'){   // v.99: who lost what, and who killed them
     const k = e.kill, a = e.pilots[0];
     const l1 = `${itPilotChip(k.victim, e)}<span class="it-by">lost a</span>${k.victim.ship ? itShipChip({id: k.victim.ship.typeId, name: k.victim.ship.name, n: 1}) : '<span class="it-by">ship</span>'}${k.value ? `<span class="it-isk">${itIsk(k.value)} ISK</span>` : ''}`;
@@ -28136,6 +28199,7 @@ function itGrpIn(e, g){
 function itSearchText(e){
   const who = [...e.pilots, ...(e.kill ? [e.kill.victim] : [])], parts = [e.raw, e.who];
   for(const s of e.p.sys) parts.push(itSysName(s.id));
+  parts.push(...new Set(e.p.sys.map(s => sysRegion(s.id))));   // build queue 038 ([stated] "17. yes"): a region's name finds the reports in it
   for(const s of e.p.ships) parts.push(s.name);
   if(e.kill && e.kill.victim.ship) parts.push(e.kill.victim.ship.name);
   for(const x of who){
@@ -28147,7 +28211,7 @@ function itSearchText(e){
 }
 function itFeedBarHtml(){
   const f = it.set.feed, sel = (k, opts) => `<select data-it-f="${k}">${opts.map(([v, l]) => `<option value="${v}"${String(f[k]) === String(v) ? ' selected' : ''}>${l}</option>`).join('')}</select>`;
-  return itFlBarAfter(`<div class="it-fbar"><label>Types ${sel('types', IT_FEED_TYPES)}</label><label>Distance ${sel('dist', IT_FEED_DIST.map(d => [d, d ? `≤ ${d} jump${d === 1 ? '' : 's'}` : 'any']))}</label><label>Sort ${sel('sort', IT_FEED_SORT)}</label><input type="search" data-it-q placeholder="Search pilot, corp, ship, system" aria-label="Search the ${escapeHtml(cardName('itfeed'))}" value="${escapeHtml(it.q)}"></div>`);
+  return itFlBarAfter(`<div class="it-fbar"><label>Types ${sel('types', IT_FEED_TYPES)}</label><label>Distance ${sel('dist', IT_FEED_DIST.map(d => [d, d ? `≤ ${d} jump${d === 1 ? '' : 's'}` : 'any']))}</label><label>Sort ${sel('sort', IT_FEED_SORT)}</label><input type="search" data-it-q placeholder="Search pilot, corp, ship, system, region" aria-label="Search the ${escapeHtml(cardName('itfeed'))}" value="${escapeHtml(it.q)}"></div>`);
 }
 function itFlBarAfter(bar){ return bar + itFlBarHtml(); }   // v2026.11.07.1: the chips on their own line under the bar
 function itFeedWhy(){   // v2026.11.06.6 (015): why no new kills come, the most important first; '' when they do
@@ -28263,7 +28327,7 @@ function itOpenPilot(id, pair, sys, t){
   if(!x) return;
   if(pair) saOpenRow(x.name, pair.name, 'all', pair.typeId); else saOpenRow(x.name, '', null);
   const j = sys ? itJumps(itMySys(), sys) : null;
-  const where = sys ? ` at <b>${escapeHtml(itSysName(sys))}</b>${j === null ? '' : ` (${j} jump${j === 1 ? '' : 's'})`}` : '';
+  const where = sys ? ` at <b>${escapeHtml(itSysName(sys))}</b>${escapeHtml(sysBracket(sys, j))}` : '';   // build queue 038: "(Delve, 1 jump)"
   const n = document.getElementById('pilotFromIntel');
   it.fromPilot = x.name;
   n.innerHTML = itFromIntelHtml(`<b>From ${escapeHtml(cardName('intel'))}</b> · ${escapeHtml(x.name)} reported${pair ? ` in a <b>${escapeHtml(pair.name)}</b>` : ''}${where}${t ? ` · ${escapeHtml(itAgo(t))} ago` : ''}`, false);
@@ -28293,7 +28357,7 @@ function itAssess(sys){
   const j = itJumps(itMySys(), sys), nS = L.ships.reduce((a, b) => a + b.n, 0);
   const paired = [...pairs].map(([k, v]) => `${escapeHtml(L.pilots.find(x => x.name.toLowerCase() === k).name)} in the ${escapeHtml(v.name)}`).join(', ');
   const n = document.getElementById('saFromIntel');
-  n.innerHTML = itFromIntelHtml(`<b>From ${escapeHtml(cardName('intel'))}</b> · <b>${escapeHtml(itSysName(sys))}</b>${j === null ? '' : ` (${j} jump${j === 1 ? '' : 's'})`}, reported in the last ${it.set.forget} min: ${L.pilots.length} pilot${L.pilots.length === 1 ? '' : 's'}${L.extra ? ` +${L.extra} unnamed` : ''}, ${nS} ship${nS === 1 ? '' : 's'}${paired ? ` (${paired})` : ''}${it.saved ? ' · your own Local and D-Scan paste was replaced' : ''}`, !!it.saved);
+  n.innerHTML = itFromIntelHtml(`<b>From ${escapeHtml(cardName('intel'))}</b> · <b>${escapeHtml(itSysName(sys))}</b>${escapeHtml(sysBracket(sys, j))}, reported in the last ${it.set.forget} min: ${L.pilots.length} pilot${L.pilots.length === 1 ? '' : 's'}${L.extra ? ` +${L.extra} unnamed` : ''}, ${nS} ship${nS === 1 ? '' : 's'}${paired ? ` (${paired})` : ''}${it.saved ? ' · your own Local and D-Scan paste was replaced' : ''}`, !!it.saved);
   n.hidden = false;
   switchTab('dscan');
   runSystemAnalyzer(false);
@@ -28366,7 +28430,9 @@ function itKillStatus(){
 }
 function itStatusLine(){
   if(!it.on) return '';
-  const me = it.me ? `${it.me.name} in ${(itGlSys() ? itSysName(itGlSys()) : it.me.sys) || 'an unknown system'}` : 'choose which character is you';
+  const mid = itGlSys() || itMySys(), mnm = (itGlSys() ? itSysName(itGlSys()) : it.me && it.me.sys) || '';
+  const mrg = mnm && mid && itSysName(mid) === mnm ? sysBracket(mid) : '';   // build queue 038: "… in 1DQ1-A (Delve)"
+  const me = it.me ? `${it.me.name} in ${mnm ? mnm + mrg : 'an unknown system'}` : 'choose which character is you';
   // v2026.10.30.1 (the owner: "do not include the intel channel name in any of the output for now. security reasons"): the channels
   // are named only under the gear, where they are chosen; elsewhere their count
   const n = it.set.channels.length, ch = `${n} channel${n === 1 ? '' : 's'}`;
@@ -28580,6 +28646,7 @@ function itExWidths(f){   // the system and jump columns as wide as the example'
   const w = (sel) => Math.ceil(Math.max(0, ...[...f.querySelectorAll(sel)].map(x => x.scrollWidth)));
   const a = w('.itx-near .it-nb .sys'), b = w('.itx-feed .it-fh .it-sn'), j = w('.itx-near .it-nb .j, .itx-feed .it-fh .fj');
   if(a) f.style.setProperty('--it-sys-w', `${a + 2}px`); if(b) f.style.setProperty('--it-fsys-w', `${b + 2}px`); if(j) f.style.setProperty('--it-jw', `${Math.max(j, 54)}px`);
+  const r = w('.itx-near .it-nb .it-rg, .itx-feed .it-fh .it-rg'); f.style.setProperty('--it-rg-w', `${r ? r + 2 : 0}px`);   // build queue 038: the example's own widest region
 }
 function itExPlace(f){
   const W = f.querySelector('.itx-wrap'); if(!W) return;
