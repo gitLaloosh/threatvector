@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8xXaLokR6xoj4KDoyUBbgnW7yHQY7WEf9cxSvY/LAbA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-+tpXysS2A9DQkFaWFdqSkkNQxiavUoiFUCSr2ZgRn7A='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -29695,11 +29695,12 @@ function itPtBind(ov){
   });
   ov.addEventListener('keydown', (e) => { if(e.key === 'Escape' && itPt.pin >= 0){ e.stopPropagation(); itPt.pin = -1; itPtLight(); } });
 }
-// the system under the pointer (or focused), else the one pressed: every gate toward you and back toward what feeds it, for the sources
-// whose routes go through it; the rest fades
+// the system under the pointer (or focused), else a Near You or Feed row's system under the pointer (the map's heading: "hover a system or
+// a row for its route to you"), else the one pressed: every gate toward you and back toward what feeds it, for the sources whose routes go
+// through it; the rest fades
 function itPtLight(){
   const ov = itPt.ov, G = itPt.G; if(!ov || !G) return;
-  const f = itPt.hover >= 0 ? itPt.hover : itPt.pin, inn = ov.querySelector('.pt-in'), keepN = new Set(), keepE = new Set();
+  const f = itPt.hover >= 0 ? itPt.hover : itm.rowHover >= 0 && G.nodes.has(itm.rowHover) ? itm.rowHover : itPt.pin, inn = ov.querySelector('.pt-in'), keepN = new Set(), keepE = new Set();
   const tr = f >= 0 && f !== itm.home && G.nodes.has(f);
   if(tr){
     const hs = G.nodes.get(f).from, E = [...G.edges.values()].filter(e => [...e.from].some(h => hs.has(h)));

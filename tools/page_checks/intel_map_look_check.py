@@ -186,7 +186,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         pg.mouse.move(5, 5)
     if 'info' in parts or 'routes' in parts:
         it_ = pg.evaluate("() => [CARD_INFO.intel.join(' '), rsLabel(RS.mapReach), RS.mapReach.title()]")
-        if "**{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route to you." not in it_[0] or 'The bottom bar picks the colours.' not in it_[0] or '(solo, 2–10, 11+)' not in it_[0]: out.append('the info text (intel) is not the owner\'s pick')
+        if "**{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route to you." not in it_[0] or 'The bottom bar picks what it shows; Paths to you draws the routes from hostiles in your alert range as a tree.' not in it_[0] or '(solo, 2–10, 11+)' not in it_[0]: out.append('the info text (intel) is not the owner\'s pick')
         if it_[1] != 'Map: within' or not it_[2].startswith('Reports and names show this many jumps from you'): out.append(f'the stepper: {it_[1:]}')
         tm = pg.evaluate("() => { it.set.mapReach = 30; itm.W = 0; itMapRefresh(true); const a = [itm.layoutMs, itm.vis.length]; itMapZoom(itm.W / 2, itm.H / 2, 1e-6); const t = performance.now(); for(let k = 0; k < 10; k++) itMapDraw(); a.push((performance.now() - t) / 10); it.set.mapReach = null; itm.W = 0; itMapRefresh(true); return a; }")
         print(f'TIMING: layout at a 30-jump reach ({tm[1]} systems) {tm[0]:.1f} ms; a redraw of the whole galaxy {tm[2]:.1f} ms')

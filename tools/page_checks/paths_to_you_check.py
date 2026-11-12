@@ -19,7 +19,7 @@ named PTnn-Z here; every pilot and line is made up. The expected tree is worked 
     grey gate tag (a gate named without camp words);
   * the top line "N systems with hostiles"; the legend line "Paths to you ... within 4 jumps (your alert range)"; the map's zoom buttons
     and canvas hidden, its drag help still shown;
-  * hover traces a source's routes (worked out here); a press keeps it, Escape and a press on you clear it; + / − / Fit, the wheel, a
+  * hover traces a source's routes (worked out here), and so does its Near You row; a press keeps it, Escape and a press on you clear it; + / − / Fit, the wheel, a
     drag (which presses nothing);
   * redrawn only when what it shows changed: map draws and refreshes with nothing new write nothing; a new report joins (once); a jump
     rebuilds from the new system; Security brings the map back;
@@ -182,6 +182,9 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
             pg.hover(f'.pt-b[data-pt="{i}"]'); pg.wait_for_timeout(150)
             lit = {x['id'] for x in pg.evaluate(TREE)['nodes'] if x['lit']}
             if lit != lit_for(f, SRC): out.append(f'hover {SYSNAME[f]}: lit {sorted(SYSNAME[s] for s in lit)} (want {sorted(SYSNAME[s] for s in lit_for(f, SRC))})')
+        pg.mouse.move(5, 5); pg.hover(f'#itNearList > .it-nb[data-it-sys="{S4}"]'); pg.wait_for_timeout(200)   # a Near You row lights its system's routes
+        lit = {x['id'] for x in pg.evaluate(TREE)['nodes'] if x['lit']}
+        if lit != lit_for(S4, SRC): out.append(f'hover the Near You row of {SYSNAME[S4]}: lit {sorted(SYSNAME[s] for s in lit)}')
         pg.click(f'.pt-b[data-pt="{ids[0]}"]'); pg.mouse.move(5, 5); pg.wait_for_timeout(150)
         T2 = pg.evaluate(TREE); lit = {x['id'] for x in T2['nodes'] if x['lit']}; pr = [x['id'] for x in T2['nodes'] if x['pressed'] == 'true']
         if lit != lit_for(S4, SRC) or pr != [S4]: out.append(f'a press keeps the trace: lit {len(lit)}, pressed {[SYSNAME[s] for s in pr]}')
