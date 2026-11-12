@@ -380,7 +380,7 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   List | Map switch in Near You on a phone, `it.set.nearView`). `INTEL_MAP` (CCP position2D /1e14, security in hundredths, region)
   comes only from `tools/jump_table_update.py`, aligned to `INTEL_JUMPS` (its `jumps` = the jump table's md5; `gen_intel_tables.py`
   keeps it and says when it no longer fits). One canvas (`itm`), made once and moved into each card (`#itMapSlot`); drawn only when
-  what it shows changed (`itMapRefresh`'s key), never while hidden. Reach: Jumps shown from Near You's reach to `IT_MAP_MAX` (the
+  what it shows changed (`itMapRefresh`'s key), never while hidden. Reach ("Map: within" since 039): from Near You's reach to `IT_MAP_MAX` (the
   Feed's largest), following the Feed until set; Near You's reach is a setting (`nearRange`, alert range to the Feed's, default
   alert + 5). Rings: standing colour, gang size (1 / 2–10 / 11+). Routes: one per system (BFS, neighbours in index order), hover
   dashed, press kept. One stepper for every range (`RS`, `rsHtml`, `rsPaint`). `intel_map_check.py`.
@@ -389,6 +389,16 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   (`itMapPinDraw`), the only filled label (YOU · name), a 1.6 s beacon on its own canvas (`itMapBeacon`; first draw and a jump
   seen while Intel was in front, `it.me.sysAt`; none with reduced motion), the "You" edge arrow (`itMapYouArrow`); the
   crosshair centers at the same zoom (`itMapCenter`); a jump keeps the zoom and centers. `intel_map_you_check.py`.
+  Build queue 039 (roadmap/map-look-plan.md, mockup `Claude outputs/map_look_mockup.html`; the owner: "is there any way to make it look
+  more alike"): EVE's 2D map. Every system at CCP's position2D through `itMapXY` (one helper, so wormholes can be placed later), one
+  scale, k = 1 the whole galaxy; only the reach pushed apart to `IT_MAP_GAP` (12 px) at the start zoom, through a grid (never pair by
+  pair: 8-10 s at a 30-jump reach in the mockup); opens on you with a median gate `IT_MAP_START_GATE` (16 px; `itMapStartView`), ⤢ the
+  reach (`itMapFitView`). Zoom stages by `itMapGatePx`: dots, circles with the security number (`itMapSecText`) from 34 px, names from
+  80 px (`itm.stage`); gates between regions dotted; region names (`itMapRegionNames`) after the system names and giving way to them.
+  The filter bar (`IT_MAP_FILTERS`, `itm.filter`, not saved; `itMapFcol`, `itMapDimmed`; scales `IT_MAP_JUMPS`, `IT_MAP_REGION` by
+  `itMapRegCol`): its name line fades by one timeout per press; on a phone one 44 px button opens the row. The legend's filter line
+  (`itMapFLegHtml`) is one line of one height for every filter, so Near You (as tall as the map's column) never moves. Past the reach:
+  faint, no reports, but hover and press give routes (the owner: "yes"). `mapReach` reads "Map: within". `intel_map_look_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a

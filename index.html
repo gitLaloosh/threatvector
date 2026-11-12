@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MB+UGBB3ICnAvQaBhbYzaybKApFB/WDyeQNvzo4trpA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XtiK3FRZH04FLkZuTO1nWxa05pdhMQ4fi38pjz1ChtI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2681,6 +2681,30 @@
   .it-map-leg i.ln{display:inline-block; width:14px; height:3px; border-radius:2px; background:var(--danger);}
   .it-map-leg i.dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--amber); opacity:.5;}
   .it-map-row{display:flex; flex-wrap:wrap; align-items:center; gap:6px 16px; margin-top:8px;}
+  /* build queue 039 (roadmap/map-look-plan.md): the filter bar, bottom centre inside the map like the game's; its name line fades (one
+     timeout per change, opacity only); on a phone one 44 px button opens the row. The legend's filter line: always one line, the same
+     height for every filter (Near You beside the map is as tall as the map's column) */
+  .it-map-fb{position:absolute; left:50%; bottom:8px; transform:translateX(-50%); z-index:2; display:flex; flex-direction:column; align-items:center; gap:4px; max-width:calc(100% - 16px); pointer-events:none;}
+  .it-map-fb > button, .it-map-fbtns{pointer-events:auto;}
+  .it-map-fn{max-width:100%; padding:3px 8px; border:1px solid var(--line); border-left:3px solid var(--cyan); border-radius:4px; background:rgba(12,16,20,.9); font:400 11.5px/1.35 var(--sans); color:var(--text-dim); text-align:center; opacity:0; transition:opacity .3s;}
+  .it-map-fn b{color:var(--heading); font-weight:700;}
+  .it-map-fb.named .it-map-fn, .it-map-fb:hover .it-map-fn, .it-map-fb:has(:focus-visible) .it-map-fn{opacity:1;}   /* keyboard focus only: a clicked button keeps focus */
+  .it-map-fbtns{display:flex; gap:2px; padding:3px; border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92);}
+  .it-map-fbtns button, button.it-map-fcur{display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; min-height:32px; margin:0; padding:0; border:0; border-radius:4px; background:transparent; color:var(--text-dim); cursor:pointer;}
+  .it-map-fbtns button:hover, button.it-map-fcur:hover{color:var(--heading); background:var(--tag-fill-hover);}
+  .it-map-fbtns button[aria-pressed="true"]{color:var(--heading); background:var(--tag-on);}
+  .it-map-fbtns button:focus-visible, button.it-map-fcur:focus-visible{outline:2px solid var(--cyan); outline-offset:-2px;}
+  .it-map-fbtns svg, button.it-map-fcur svg{display:block;}
+  button.it-map-fcur{display:none;}
+  .it-map-leg .it-map-fl{flex:1 0 100%; display:flex; align-items:center; gap:6px; height:16px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;}
+  .it-map-leg .it-map-fl b{color:var(--text); font-weight:600;}
+  .it-map-leg .it-map-fl .sw{display:inline-flex; gap:1px;} .it-map-leg .it-map-fl .sw i{display:inline-block; width:9px; height:9px; border-radius:2px;}
+  @media (prefers-reduced-motion: reduce){ .it-map-fn{transition:none;} }
+  @media (max-width: 599px){
+    .it-map-fbtns button, button.it-map-fcur{width:44px; height:44px; min-height:44px;}
+    button.it-map-fcur{display:inline-flex; border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92); color:var(--heading);}
+    .it-map-fb:not(.open) .it-map-fbtns{display:none;} .it-map-fb.open button.it-map-fcur{display:none;}
+  }
   .it-map-help{font:400 11.5px var(--sans); color:var(--text-dim);} .it-map-help.phone{display:none;}
   #itNearList > .it-nb.it-map-lit, #itFeedList > .it-fd.it-map-lit{outline:1px solid var(--cyan); outline-offset:-1px;}
   .it-map-rtag{display:inline-block; padding:0 6px; border-radius:3px; font:700 10px/16px var(--sans); text-transform:uppercase; letter-spacing:.4px; background:color-mix(in srgb, var(--cyan) 16%, #151b20); color:var(--cyan); white-space:nowrap;}
@@ -3051,7 +3075,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.12.3</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3423,12 +3447,12 @@ const CARD_INFO = {
  ],
  "intel": [
   "**{card:itnear}:** systems with reports or kills within its range (Intel settings), nearest first. An amber edge means within your alert range: the sound and notification (if on) and the profile's Intel lamp (N near, or In system), from any tab.",
-  "**{card:itfeed}:** every report and kill as it comes in. **{card:itmap}:** the systems around you; hover one, or a row, for its route to you.",
+  "**{card:itfeed}:** every report and kill as it comes in. **{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route to you.",
   "[How a line is read] Systems, ship names, counts (+5, x2) and words like clr and nv; the rest is looked up on ESI as pilot names, coloured by your {card:side}. A word it can't place stays plain text. To report a line read wrong, its copy button copies the line's shape with the names replaced.",
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear (hide friendlies, in Intel settings, leaves out systems with only friendlies).",
   "[Kills] zKillboard's live feed within the Feed's kill range (10 jumps unless you change it), no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11 or more); ✕ counts kills. Systems past {card:itnear}'s range are faded.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks the colours. Systems past {card:itnear}'s range are faded.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate only (no jump bridges or wormholes).",
   "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI, and none of it is kept after you close the page. Intel runs in one tab at a time; another tab can take it over with Move Intel here.",
   "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit; the logs are read every 2 seconds, also in a hidden tab."
@@ -28613,9 +28637,13 @@ function itExMapPic(w){
     const cv = document.createElement('canvas'), you = document.createElement('span'), dpr = window.devicePixelRatio || 1, h = Math.round(Math.max(IT_MAP_MIN_H, Math.min(560, w * 0.72)));
     you.innerHTML = '<svg></svg>';
     try{
-      Object.assign(itm, {cv, you, W: w, H: h, reach: IT_EXAMPLE.mapReach, home, hover: -1, rowHover: -1, pinned: new Set()});
+      Object.assign(itm, {cv, you, W: w, H: h, reach: IT_EXAMPLE.mapReach, home, hover: -1, rowHover: -1, pinned: new Set(), filter: 'sec'});
       cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-      itMapBfs(home); itMapLayout(); itm.rep = itMapReports(); itMapDraw();
+      itMapBfs(home); itMapLayout(); itm.rep = itMapReports();
+      // 039: the map opens on you, zoomed in; the example shows every report it has, so it opens on the whole reach when one would be out of view
+      const v = itm.view, out = [...itm.rep.keys()].some(i => { const x = itm.P[2 * i] * v.k + v.tx, y = itm.P[2 * i + 1] * v.k + v.ty; return x < 40 || x > w - 40 || y < 30 || y > h - 30; });
+      if(out) itMapFitView();
+      itMapDraw();
       url = cv.toDataURL('image/png');
     }finally{ for(const k of Object.keys(itm)) if(!(k in keep)) delete itm[k]; Object.assign(itm, keep); }
   });
@@ -28892,7 +28920,7 @@ function itMapLy(i, j){
 function itMapLyText(d){ return (Math.ceil(d * 100 - 1e-9) / 100).toFixed(2); }   // 1e-9: float noise on an exact value doesn't push it up a step
 function itMapSecClass(s100){ return s100 <= 0 ? 0 : Math.max(1, Math.min(10, Math.round(s100 / 10))); }
 function itMapTier(n){ return n <= 1 ? 'solo' : n <= 10 ? 'small' : 'fleet'; }
-const itm = {el: null, home: -1, reach: 0, W: 0, H: 0, P: null, Q: null, vis: [], D: null, par: null, view: {k: 1, tx: 0, ty: 0}, hover: -1, rowHover: -1,
+const itm = {el: null, home: -1, reach: 0, W: 0, H: 0, P: null, Q: null, vis: [], D: null, G: 1, kMin: 1, kMax: 12, filter: 'sec', par: null, view: {k: 1, tx: 0, ty: 0}, hover: -1, rowHover: -1,
   pinned: new Set(), key: '', draws: 0, layouts: 0, layoutMs: 0, drag: null, pinch: null, justDragged: false, rep: new Map(), stale: false,
   beacon: 0, beacons: 0, beaconDone: false};
 // what the map shows for each system with a report or a kill in the time set, within the map's reach (Near You's rule for friendlies)
@@ -28913,12 +28941,42 @@ function itMapReports(){
   return out;
 }
 function itMapReach(){ return Math.max(itNearReach(), Math.min(IT_MAP_MAX, it.set.mapReach == null ? itKillRange() : it.set.mapReach)); }
+// 039: the filter bar, bottom centre inside the map (the game's place): the filter's name and a line over the buttons, shown when it
+// changes or the bar is hovered or focused, then faded (one timeout per change, CSS opacity; LESSON #120: no redraw); on a phone one
+// 44 px button showing the filter's icon opens the row, and picking one, Escape or a press outside closes it (the owner: "Bar stays;
+// name line fades")
+function itMapFbarHtml(){
+  return `<div class="it-map-fb"><div class="it-map-fn" aria-hidden="true"></div><button type="button" class="it-map-fcur" aria-expanded="false" aria-haspopup="true"></button>`
+    + `<div class="it-map-fbtns" role="toolbar" aria-label="Map colours">${itMapFbtnsHtml()}</div></div>`;
+}
+function itMapFbtnsHtml(){ return IT_MAP_FILTERS.map(f => `<button type="button" data-im-f="${escapeHtml(f.k)}" title="${escapeHtml(f.name)}: ${escapeHtml(f.note)}" aria-label="${escapeHtml(f.name)}" aria-pressed="false">${itMapIconHtml(f.k)}</button>`).join(''); }
+function itMapIconHtml(k){ return (IT_MAP_FILTERS.find(f => f.k === k) || IT_MAP_FILTERS[0]).icon; }
+function itMapFbarPaint(changed){
+  const fb = itm.el && itm.el.querySelector('.it-map-fb'); if(!fb) return;
+  const f = IT_MAP_FILTERS.find(x => x.k === itm.filter) || IT_MAP_FILTERS[0];
+  fb.querySelector('.it-map-fn').innerHTML = `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(f.note)}</span>`;
+  for(const b of fb.querySelectorAll('[data-im-f]')) b.setAttribute('aria-pressed', String(b.dataset.imF === f.k));
+  const cur = fb.querySelector('.it-map-fcur'); cur.innerHTML = itMapIconHtml(f.k); cur.title = `Map colours: ${f.name}`; cur.setAttribute('aria-label', `Map colours: ${f.name}`);
+  if(changed){ fb.classList.add('named'); clearTimeout(itm.fnT); itm.fnT = setTimeout(() => fb.classList.remove('named'), IT_MAP_NAME_MS); }
+}
+function itMapFbarOpen(open){
+  const fb = itm.el && itm.el.querySelector('.it-map-fb'); if(!fb) return;
+  fb.classList.toggle('open', open); fb.querySelector('.it-map-fcur').setAttribute('aria-expanded', String(open));
+  if(itm.fbOut){ document.removeEventListener('pointerdown', itm.fbOut, true); itm.fbOut = null; }
+  if(open){ itm.fbOut = (e) => { if(!fb.contains(e.target)) itMapFbarOpen(false); }; document.addEventListener('pointerdown', itm.fbOut, true);
+    const b = fb.querySelector('[aria-pressed="true"]'); if(b) b.focus(); }
+}
+function itMapFilterSet(k){
+  if(!IT_MAP_FILTERS.some(f => f.k === k)) return;
+  const changed = k !== itm.filter; itm.filter = k;
+  itMapFbarPaint(true); itMapLegend(); if(changed) itMapDraw();
+}
 function itMapMake(){
   if(itm.el) return itm.el;
   const el = document.createElement('div'); el.className = 'it-map';
   el.innerHTML = `<div class="it-map-box"><div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button></div>`
     + `<button type="button" class="it-map-clr" hidden>Hide all routes</button><canvas role="img" aria-label="Map of the systems around you, with the reported pilots and their routes to you"></canvas><canvas class="it-map-fx" aria-hidden="true"></canvas>`
-    + `<button type="button" class="it-map-you" hidden title="You're off the map here: press to center on your system" aria-label="Center on your system"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>You</button><div class="it-map-tip" hidden></div><div class="it-map-hint" aria-hidden="true">Use two fingers to move the map</div><div class="it-map-msg" hidden></div></div>`
+    + `<button type="button" class="it-map-you" hidden title="You're off the map here: press to center on your system" aria-label="Center on your system"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>You</button><div class="it-map-tip" hidden></div><div class="it-map-hint" aria-hidden="true">Use two fingers to move the map</div><div class="it-map-msg" hidden></div>${itMapFbarHtml()}</div>`
     + `<div class="it-map-leg"></div><div class="it-map-row"><span class="it-map-rs"></span><span class="it-map-help wide">drag to move · wheel to zoom</span><span class="it-map-help phone">two fingers move and zoom the map; one finger scrolls the page</span></div>`;
   itm.el = el; itm.box = el.querySelector('.it-map-box'); itm.cv = el.querySelector('canvas'); itm.tip = el.querySelector('.it-map-tip'); itm.hint = el.querySelector('.it-map-hint');
   itm.fx = el.querySelector('canvas.it-map-fx'); itm.you = el.querySelector('.it-map-you');
@@ -28934,7 +28992,7 @@ function itMapMount(root){
   if(!slot || typeof document === 'undefined' || !document.createElement) return;
   const made = !!itm.el;
   slot.appendChild(itMapMake());
-  if(!made) itm.el.querySelector('.it-map-rs').innerHTML = rsHtml('mapReach');
+  if(!made){ itm.el.querySelector('.it-map-rs').innerHTML = rsHtml('mapReach'); itMapFbarPaint(false); }
   rsPaint(itm.el); itMapRefresh();   // moving the canvas keeps its picture: drawn again only if something changed
 }
 function itMapVisible(){ return !!(itm.el && itm.el.isConnected && itShown() && itm.box.clientWidth > 0); }
@@ -29008,7 +29066,11 @@ function itMapYouArrow(){
   const i = itm.home, W = itm.W, H = itm.H, x = itm.Q[2 * i], y = itm.Q[2 * i + 1];
   if(i < 0 || (x >= 6 && x <= W - 6 && y >= 6 && y <= H - 6)){ b.hidden = true; return; }
   const cx = W / 2, cy = H / 2, dx = x - cx, dy = y - cy, s = Math.min((W / 2 - 34) / Math.max(1e-9, Math.abs(dx)), (H / 2 - 24) / Math.max(1e-9, Math.abs(dy)));
-  b.hidden = false; b.style.left = (cx + dx * s) + 'px'; b.style.top = (cy + dy * s) + 'px';
+  let ax = cx + dx * s, ay = cy + dy * s;
+  const fb = itm.el && b.parentNode === itm.box && itm.box.querySelector('.it-map-fbtns, .it-map-fcur:not([hidden])');   // 039: not over the filter bar (not in the Intel example's picture)
+  if(fb){ const br = itm.box.querySelector('.it-map-fb').getBoundingClientRect(), bx = itm.box.getBoundingClientRect(), top = br.top - bx.top - 16;
+    if(ay > top && Math.abs(ax - (br.left + br.right) / 2 + bx.left) < br.width / 2 + 40) ay = top; }
+  b.hidden = false; b.style.left = ax + 'px'; b.style.top = ay + 'px';
   b.querySelector('svg').style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
 }
 function itSysNamesReady(){ return it.names ? it.names.list.length : 0; }
@@ -29018,99 +29080,240 @@ function itMapBfs(home){
   for(let h = 0; h < q.length; h++){ const x = q[h]; for(const y of T.adj[x]) if(D[y] < 0){ D[y] = D[x] + 1; par[y] = x; q.push(y); } }
   itm.D = D; itm.par = par;
 }
-// CCP's flat map for the systems in reach, fitted to the box, then spread apart (gate springs, systems pushing each other away through a
-// grid, a weak pull back home), then fitted again. Only when your system, the reach or the size changes (4,049 systems: ~0.1 s in the test
-// container; mockup v3); the view is reset.
+// Build queue 039 (Project doc roadmap/map-look-plan.md; mockup Claude outputs/map_look_mockup.html): the map laid out like EVE's own 2D
+// map (the owner: "is there any way to make it look more alike so players know what they're looking at"). Every system in the table at
+// CCP's flat-map place (position2D, what the in-game 2D map uses: developers.eveonline.com/docs/guides/map-data/), one uniform scale for
+// x and y, k = 1 showing the whole galaxy in the box. Only the systems within the map's reach are pushed apart, to a 12 px gap at the
+// starting zoom (the owner: "small push apart seems fine"), each pulled back toward its own place; the rest stay where CCP put them.
+// The push compares neighbours through a grid (a pair-by-pair push took 8-10 s at a 30-jump reach in the build review). The map opens
+// centred on you with a typical gate (the reach's median) about IT_MAP_START_GATE px long. Only when your system, the reach or the size
+// changes; the view is reset to the start.
+const IT_MAP_START_GATE = 16, IT_MAP_GAP = 12, IT_MAP_MAX_GATE = 220;   // px: a gate at the start, the push's gap there, a gate at the most zoomed in
+// a system's place on the flat map (CCP's units, y down): the one place positions are read, so systems that aren't on CCP's flat map
+// (wormholes, later) can be given one here
+function itMapXY(T, i){ return [T.xs[i], -T.ys[i]]; }
 function itMapLayout(){
-  const t0 = performance.now(), T = itMapTable(), W = itm.W, H = itm.H, R = itm.reach, pad = 34, vis = [];
-  for(let i = 0; i < T.n; i++) if(itm.D[i] >= 0 && itm.D[i] <= R) vis.push(i);
-  const n = vis.length, px = new Float64Array(n), py = new Float64Array(n), ox = new Float64Array(n), oy = new Float64Array(n), fx = new Float64Array(n), fy = new Float64Array(n);
+  const t0 = performance.now(), T = itMapTable(), W = itm.W, H = itm.H, R = itm.reach, pad = 24, n = T.n, vis = [];
+  for(let i = 0; i < n; i++) if(itm.D[i] >= 0 && itm.D[i] <= R) vis.push(i);
+  const P = new Float64Array(n * 2);
   let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-  for(const i of vis){ const x = T.xs[i], y = -T.ys[i]; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
-  const fit = (a0, a1, b0, b1, extra) => { let sx = (W - 2 * pad) / Math.max(1, a1 - a0), sy = (H - 2 * pad + extra) / Math.max(1, b1 - b0); const s = Math.min(sx, sy); sx = Math.min(sx, s * 1.4); sy = Math.min(sy, s * 1.4); return [sx, sy, (W - (a1 - a0) * sx) / 2, (H - (b1 - b0) * sy) / 2]; };
-  { const [sx, sy, qx, qy] = fit(x0, x1, y0, y1, 0); vis.forEach((i, k) => { px[k] = ox[k] = qx + (T.xs[i] - x0) * sx; py[k] = oy[k] = qy + (-T.ys[i] - y0) * sy; }); }
-  const loc = new Int32Array(T.n).fill(-1); vis.forEach((i, k) => { loc[i] = k; });
-  const EA = [], EB = []; vis.forEach((i, k) => { for(const j of T.adj[i]) if(j > i && loc[j] >= 0){ EA.push(k); EB.push(loc[j]); } });
-  const L = Math.sqrt(W * H / Math.max(1, n)) * 0.55, cell = 3 * L, c2 = cell * cell, LL = L * L * 0.04, it_ = n > 1500 ? 60 : n > 500 ? 100 : 160;
-  const gw = Math.ceil(W / cell) + 5, gh = Math.ceil(H / cell) + 5, head = new Int32Array(gw * gh), next = new Int32Array(n);
-  const cl = (v, hi) => v < 0 ? 0 : v > hi ? hi : v;
-  for(let t = 0; t < it_; t++){
-    fx.fill(0); fy.fill(0); head.fill(-1);
-    for(let k = 0; k < n; k++){ const g = cl(Math.floor(px[k] / cell) + 2, gw - 1) * gh + cl(Math.floor(py[k] / cell) + 2, gh - 1); next[k] = head[g]; head[g] = k; }
-    for(let gx = 0; gx < gw; gx++) for(let gy = 0; gy < gh; gy++) for(let a = head[gx * gh + gy]; a >= 0; a = next[a]){
+  for(let i = 0; i < n; i++){ const [x, y] = itMapXY(T, i); P[2 * i] = x; P[2 * i + 1] = y; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  const s = Math.min((W - 2 * pad) / Math.max(1, x1 - x0), (H - 2 * pad) / Math.max(1, y1 - y0)), qx = (W - (x1 - x0) * s) / 2, qy = (H - (y1 - y0) * s) / 2;
+  for(let i = 0; i < n; i++){ P[2 * i] = qx + (P[2 * i] - x0) * s; P[2 * i + 1] = qy + (P[2 * i + 1] - y0) * s; }
+  // a typical gate: the median length of the gates inside the reach (at k = 1)
+  const lens = [];
+  for(const i of vis) for(const j of T.adj[i]) if(j > i && itm.D[j] >= 0 && itm.D[j] <= R) lens.push(Math.hypot(P[2 * i] - P[2 * j], P[2 * i + 1] - P[2 * j + 1]));
+  lens.sort((a, b) => a - b);
+  const G = Math.max(1e-3, lens.length ? lens[lens.length >> 1] : 1), k0 = Math.max(1, IT_MAP_START_GATE / G);
+  // the push: reach systems at least IT_MAP_GAP px apart at the starting zoom, through a grid of that size (LESSON #160)
+  const m = vis.length, dmin = IT_MAP_GAP / k0, d2min = dmin * dmin, px = new Float64Array(m), py = new Float64Array(m), ox = new Float64Array(m), oy = new Float64Array(m), fx = new Float64Array(m), fy = new Float64Array(m);
+  vis.forEach((i, a) => { px[a] = ox[a] = P[2 * i]; py[a] = oy[a] = P[2 * i + 1]; });
+  const gw = Math.ceil(W / dmin) + 3, gh = Math.ceil(H / dmin) + 3, cl = (v, hi) => v < 0 ? 0 : v > hi ? hi : v, cells = new Map(), next = new Int32Array(m);
+  for(let t = 0; t < 120; t++){
+    fx.fill(0); fy.fill(0); cells.clear(); let moved = 0;
+    for(let a = 0; a < m; a++){ const g = cl(Math.floor(px[a] / dmin) + 1, gw - 1) * gh + cl(Math.floor(py[a] / dmin) + 1, gh - 1); next[a] = cells.has(g) ? cells.get(g) : -1; cells.set(g, a); }
+    for(const [g, head] of cells){
+      const gx = Math.floor(g / gh), gy = g % gh;
       for(let ddx = 0; ddx <= 1; ddx++) for(let ddy = -1; ddy <= 1; ddy++){
-        if(ddx === 0 && ddy < 0) continue; const hx = gx + ddx, hy = gy + ddy; if(hx >= gw || hy < 0 || hy >= gh) continue;
-        for(let b = ddx === 0 && ddy === 0 ? next[a] : head[hx * gh + hy]; b >= 0; b = next[b]){
-          const dx = px[a] - px[b], dy = py[a] - py[b], d2 = dx * dx + dy * dy + 0.01; if(d2 > c2) continue; const f = LL / d2;
-          fx[a] += dx * f; fy[a] += dy * f; fx[b] -= dx * f; fy[b] -= dy * f;
+        if(ddx === 0 && ddy < 0) continue;
+        const h2 = cells.get((gx + ddx) * gh + gy + ddy); if(h2 === undefined) continue;
+        for(let a = head; a >= 0; a = next[a]) for(let b = ddx === 0 && ddy === 0 ? next[a] : h2; b >= 0; b = next[b]){
+          const dx = px[a] - px[b], dy = py[a] - py[b], d2 = dx * dx + dy * dy;
+          if(d2 >= d2min) continue;
+          let ex = dx, ey = dy, f;
+          if(d2 > 0){ const d = Math.sqrt(d2); f = (dmin - d) / d * 0.25; }
+          else { const u = ((a + b) % 8) * Math.PI / 4; ex = Math.cos(u); ey = Math.sin(u); f = dmin * 0.25; }   // two systems on one spot: apart in a fixed direction
+          fx[a] += ex * f; fy[a] += ey * f; fx[b] -= ex * f; fy[b] -= ey * f; moved++;
         }
       }
     }
-    for(let e = 0; e < EA.length; e++){ const i = EA[e], j = EB[e], dx = px[j] - px[i], dy = py[j] - py[i], d = Math.sqrt(dx * dx + dy * dy) + 0.01, f = (d - L) / d * 0.06; fx[i] += dx * f; fy[i] += dy * f; fx[j] -= dx * f; fy[j] -= dy * f; }
-    const cap = 6 * (1 - t / it_) + 0.3;
-    for(let k = 0; k < n; k++){ let gx = fx[k] + (ox[k] - px[k]) * 0.03, gy = fy[k] + (oy[k] - py[k]) * 0.03; const m = Math.sqrt(gx * gx + gy * gy); if(m > cap){ gx *= cap / m; gy *= cap / m; } px[k] += gx; py[k] += gy; }
+    if(!moved) break;   // nothing closer than the gap: done (the pull home only runs while something is pushed)
+    for(let a = 0; a < m; a++){ px[a] += fx[a] + (ox[a] - px[a]) * 0.02; py[a] += fy[a] + (oy[a] - py[a]) * 0.02; }
   }
-  let a0 = Infinity, a1 = -Infinity, b0 = Infinity, b1 = -Infinity;
-  for(let k = 0; k < n; k++){ a0 = Math.min(a0, px[k]); a1 = Math.max(a1, px[k]); b0 = Math.min(b0, py[k]); b1 = Math.max(b1, py[k]); }
-  const [kx, ky, qx, qy] = fit(a0, a1, b0, b1, 20), P = new Float64Array(T.n * 2).fill(NaN);
-  vis.forEach((i, k) => { P[2 * i] = qx + (px[k] - a0) * kx; P[2 * i + 1] = qy + 6 + (py[k] - b0) * ky; });
-  itm.P = P; itm.Q = new Float64Array(T.n * 2); itm.vis = vis; itm.view = {k: 1, tx: 0, ty: 0};
+  vis.forEach((i, a) => { P[2 * i] = px[a]; P[2 * i + 1] = py[a]; });
+  const rc = new Float64Array(T.regions.length * 3);   // each region's middle (its systems' mean), for its name
+  for(let i = 0; i < n; i++){ rc[3 * T.reg[i]] += P[2 * i]; rc[3 * T.reg[i] + 1] += P[2 * i + 1]; rc[3 * T.reg[i] + 2]++; }
+  itm.regC = rc;
+  itm.P = P; itm.Q = new Float64Array(n * 2); itm.vis = vis; itm.G = G; itm.kMin = 1; itm.kMax = Math.max(k0 * 2, IT_MAP_MAX_GATE / G);
+  itMapStartView();
   itm.layouts++; itm.layoutMs = performance.now() - t0;
 }
+// the start: your system in the middle, a typical gate IT_MAP_START_GATE px long
+function itMapStartView(){
+  const k = Math.min(itm.kMax, Math.max(itm.kMin, IT_MAP_START_GATE / itm.G)), i = itm.home;
+  itm.view = {k, tx: itm.W / 2 - itm.P[2 * i] * k, ty: itm.H / 2 - itm.P[2 * i + 1] * k};
+}
+// ⤢: every system within the reach in view (as before 039)
+function itMapFitView(){
+  const P = itm.P, pad = 30; let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for(const i of itm.vis){ x0 = Math.min(x0, P[2 * i]); x1 = Math.max(x1, P[2 * i]); y0 = Math.min(y0, P[2 * i + 1]); y1 = Math.max(y1, P[2 * i + 1]); }
+  const k = Math.min(itm.kMax, Math.max(itm.kMin, Math.min((itm.W - 2 * pad) / Math.max(1e-6, x1 - x0), (itm.H - 2 * pad - 40) / Math.max(1e-6, y1 - y0))));
+  itm.view = {k, tx: itm.W / 2 - (x0 + x1) / 2 * k, ty: (itm.H - 40) / 2 - (y0 + y1) / 2 * k};
+}
+// a typical gate's length on screen now: what the zoom stages go by
+function itMapGatePx(){ return itm.G * itm.view.k; }
 function itMapRoute(i){ const r = []; let x = i; while(x !== itm.home && itm.par[x] >= 0){ r.push([x, itm.par[x]]); x = itm.par[x]; } return r; }
 function itMapCol(name, d){ const v = typeof getComputedStyle === 'function' ? getComputedStyle(document.documentElement).getPropertyValue(name).trim() : ''; return v || d; }
+// 039: the map's filter bar (the owner: "can you add a filter bar near the bottom like the in-game map?"): one filter at a time decides
+// each system's colour; Security status first and on every visit (not kept, like the dossier's sort). The scales are named here, beside
+// IT_MAP_SEC: jumps 0 to 10+ (IT_MAP_JUMPS), regions (IT_MAP_REGION, given so that no two regions joined by a gate share one).
+const IT_MAP_JUMPS = ['#ffffff', '#4acff3', '#62daa6', '#71e452', '#eeff83', '#de6a0c', '#ce4611', '#bb1014', '#8f2f69', '#7a4a6e', '#6a5a78'];
+const IT_MAP_REGION = ['#4fc3d9', '#d99a3c', '#9b7bd8', '#5fbf7f', '#d9687f', '#c9c35a', '#5f8fd9', '#c98fd0'];
+const IT_MAP_NONE = '#4a535b', IT_MAP_KILL = '#d99a3c', IT_MAP_FAINT = 0.22, IT_MAP_DIM = 0.16, IT_MAP_NAME_MS = 4000;
+const IT_MAP_FILTERS = [
+  {k: 'sec', name: 'Security status', note: 'each system in its security colour, as in the game',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6.5"/><path d="M9 2.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>'},
+  {k: 'jumps', name: 'Jumps from you', note: 'by stargate jumps from your system; zoomed in, the number',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="3.5" cy="13.5" r="2"/><circle cx="9" cy="5.5" r="2"/><circle cx="14.5" cy="11.5" r="2"/><path d="M4.7 11.8l3.1-4.5M10.6 6.9l2.6 3.1"/></svg>'},
+  {k: 'region', name: 'Region', note: 'one colour per region; neighbouring regions differ',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="5.5" height="5.5" fill="currentColor"/><rect x="10" y="2.5" width="5.5" height="5.5"/><rect x="2.5" y="10" width="5.5" height="5.5"/><rect x="10" y="10" width="5.5" height="5.5" fill="currentColor"/></svg>'},
+  {k: 'reports', name: 'Intel reports', note: 'systems with a report or a kill in Intel bright, the rest dimmed',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3.5h13v8.5H8L4.5 15v-3h-2z"/></svg>'},
+  {k: 'kills', name: 'Kills from Intel', note: 'systems with kills in Intel in amber, the rest dimmed',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke-width="2.2"/></svg>'}
+];
+let itMapRegColTab = null;   // region index -> colour index, made once per table
+function itMapRegCol(T){
+  if(itMapRegColTab && itMapRegColTab.T === T) return itMapRegColTab.c;
+  const R = T.regions.length, nb = Array.from({length: R}, () => new Set());
+  for(let i = 0; i < T.n; i++) for(const j of T.adj[i]) if(T.reg[i] !== T.reg[j]){ nb[T.reg[i]].add(T.reg[j]); nb[T.reg[j]].add(T.reg[i]); }
+  const order = [...Array(R).keys()].sort((a, b) => nb[b].size - nb[a].size || a - b), c = new Int8Array(R).fill(-1);
+  for(const r of order){ let k = 0; while([...nb[r]].some(q => c[q] === k)) k++; c[r] = k % IT_MAP_REGION.length; }   // greedy: the busiest regions first
+  itMapRegColTab = {T, c};
+  return c;
+}
+// the number in a zoomed-in circle, and the hover's: rounded the way the dot's colour is picked (itMapSecClass: a system above 0.0 never
+// shows 0.0)
+function itMapSecText(s100){ const v = s100 > 0 ? itMapSecClass(s100) / 10 : Math.round(s100 / 10) / 10; return (Object.is(v, -0) || v === 0 ? 0 : v).toFixed(1); }
+function itMapFcol(i){
+  const T = itMapTable(), f = itm.filter;
+  if(f === 'jumps') return itm.D[i] < 0 ? IT_MAP_NONE : IT_MAP_JUMPS[Math.min(IT_MAP_JUMPS.length - 1, itm.D[i])];
+  if(f === 'region') return IT_MAP_REGION[itMapRegCol(T)[T.reg[i]]];
+  if(f === 'kills') return (itm.rep.get(i) || {}).kills ? IT_MAP_KILL : IT_MAP_NONE;
+  return IT_MAP_SEC[itMapSecClass(T.sec[i])];
+}
+function itMapDimmed(i){
+  if(i === itm.home) return false;
+  if(itm.filter === 'reports') return !itm.rep.has(i);
+  if(itm.filter === 'kills') return !(itm.rep.get(i) || {}).kills;
+  return false;
+}
 function itMapDraw(){
   if(!itm.P || itm.home < 0) return;
   itm.draws++;
-  const T = itMapTable(), c = itm.cv.getContext('2d'), dpr = window.devicePixelRatio || 1, W = itm.W, H = itm.H, v = itm.view, P = itm.P, Q = itm.Q, D = itm.D, R = itm.reach, near = itNearReach();
-  const C = {hostile: itMapCol('--danger', '#c65b4e'), neutral: '#b9c3ca', friendly: itMapCol('--side-friendly', '#4f8fe0'), cyan: itMapCol('--cyan', '#4fc3d9'), amber: itMapCol('--amber', '#d99a3c'), clear: itMapCol('--it-clear', '#3fb950'), gate: '#26303b'};
+  const T = itMapTable(), n = T.n, c = itm.cv.getContext('2d'), dpr = window.devicePixelRatio || 1, W = itm.W, H = itm.H, v = itm.view, P = itm.P, Q = itm.Q, D = itm.D, R = itm.reach, near = itNearReach();
+  const C = {hostile: itMapCol('--danger', '#c65b4e'), neutral: '#b9c3ca', friendly: itMapCol('--side-friendly', '#4f8fe0'), cyan: itMapCol('--cyan', '#4fc3d9'), amber: itMapCol('--amber', '#d99a3c'), clear: itMapCol('--it-clear', '#3fb950'), gate: '#26303b', gateX: '#3a4753'};
   c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
-  for(const i of itm.vis){ Q[2 * i] = P[2 * i] * v.k + v.tx; Q[2 * i + 1] = P[2 * i + 1] * v.k + v.ty; }
-  const on = (i) => D[i] >= 0 && D[i] <= R, X = (i) => Q[2 * i], Y = (i) => Q[2 * i + 1], dotR = itm.vis.length > 900 ? 2 : 3;
+  for(let i = 0; i < n; i++){ Q[2 * i] = P[2 * i] * v.k + v.tx; Q[2 * i + 1] = P[2 * i + 1] * v.k + v.ty; }
+  const on = (i) => D[i] >= 0 && D[i] <= R, X = (i) => Q[2 * i], Y = (i) => Q[2 * i + 1], m = 30;
+  const seen = (i) => Q[2 * i] > -m && Q[2 * i] < W + m && Q[2 * i + 1] > -m && Q[2 * i + 1] < H + m;
+  const g = itMapGatePx(), big = g >= 34, r = big ? Math.max(9, Math.min(15, g * 0.2)) : 0, names = g >= 80 && !!it.names;
+  const alpha = (i) => itMapDimmed(i) ? IT_MAP_DIM : !on(i) ? IT_MAP_FAINT : D[i] > near ? 0.45 : 1;
   // the alert range: a soft amber under the systems inside it
   c.fillStyle = 'rgba(217,154,60,.07)';
-  for(const i of itm.vis) if(D[i] <= it.set.range){ c.beginPath(); c.arc(X(i), Y(i), 22 * Math.min(1.6, Math.sqrt(v.k)), 0, 6.283); c.fill(); }
-  // the gates
-  c.lineWidth = 1; c.strokeStyle = C.gate; c.beginPath();
-  for(const i of itm.vis) for(const j of T.adj[i]) if(j > i && on(j)){ c.moveTo(X(i), Y(i)); c.lineTo(X(j), Y(j)); }
-  c.stroke();
-  // routes: none until asked; the hovered system's (the map or a row) dashed, the pressed ones solid, hostile drawn last
-  const focus = itm.hover >= 0 ? itm.hover : itm.rowHover, onRoute = new Set(), g = itGraphGet();
-  const show = new Set([...itm.pinned].map(id => g.at.get(id)).filter(i => i !== undefined && on(i)));
-  if(focus >= 0 && focus !== itm.home && on(focus)) show.add(focus);
+  for(const i of itm.vis) if(D[i] <= it.set.range && seen(i)){ c.beginPath(); c.arc(X(i), Y(i), big ? r + 9 : 22 * Math.min(1.4, Math.sqrt(g / IT_MAP_START_GATE)), 0, 6.283); c.fill(); }
+  // the gates: inside the reach or faint past it; between two regions dotted, as the game draws them
+  const paths = [[], [], [], []];
+  for(let i = 0; i < n; i++){
+    const xi = X(i), yi = Y(i);
+    for(const j of T.adj[i]){
+      if(j < i) continue;
+      const xj = X(j), yj = Y(j);
+      if((xi < 0 && xj < 0) || (xi > W && xj > W) || (yi < 0 && yj < 0) || (yi > H && yj > H)) continue;
+      paths[(on(i) && on(j) ? 0 : 2) + (T.reg[i] !== T.reg[j] ? 1 : 0)].push(i, j);
+    }
+  }
+  c.lineWidth = big ? 1.5 : 1;
+  paths.forEach((p, k) => { if(!p.length) return; c.strokeStyle = k & 1 ? C.gateX : C.gate; c.globalAlpha = k & 2 ? 0.55 : 1; c.setLineDash(k & 1 ? (big ? [3, 4] : [2, 3]) : []);
+    c.beginPath(); for(let e = 0; e < p.length; e += 2){ c.moveTo(X(p[e]), Y(p[e])); c.lineTo(X(p[e + 1]), Y(p[e + 1])); } c.stroke(); });
+  c.setLineDash([]); c.globalAlpha = 1;
+  // routes: none until asked; the hovered system's (the map or a row) dashed, the pressed ones solid, hostile drawn last. Any system with
+  // a gate route to you has one (the owner at the build review, "yes": past the reach too)
+  const focus = itm.hover >= 0 ? itm.hover : itm.rowHover, onRoute = new Set(), gr = itGraphGet();
+  const show = new Set([...itm.pinned].map(id => gr.at.get(id)).filter(i => i !== undefined && D[i] > 0));
+  if(focus >= 0 && D[focus] > 0) show.add(focus);
   const reps = [...show].map(i => [i, itm.rep.get(i)]).sort((a, b) => (a[1] && a[1].side === 'hostile' ? 1 : 0) - (b[1] && b[1].side === 'hostile' ? 1 : 0));
-  for(const [i, r] of reps){
+  for(const [i, rp] of reps){
     const route = itMapRoute(i), lit = focus === i;
     route.forEach(([a, b]) => { onRoute.add(a); onRoute.add(b); });
     c.globalAlpha = focus >= 0 && !lit ? 0.35 : 0.9;
-    c.strokeStyle = r && r.side !== 'clear' ? C[r.side] : C.cyan;
-    c.lineWidth = (r && r.n ? Math.min(7, 1.5 + Math.log2(r.n + 1)) : 2) + (lit ? 1.5 : 0);
-    c.setLineDash(itm.pinned.has(g.ids[i]) ? [] : [6, 4]); c.lineCap = 'round';
+    c.strokeStyle = rp && rp.side !== 'clear' ? C[rp.side] : C.cyan;
+    c.lineWidth = (rp && rp.n ? Math.min(7, 1.5 + Math.log2(rp.n + 1)) : 2) + (lit ? 1.5 : 0);
+    c.setLineDash(itm.pinned.has(gr.ids[i]) ? [] : [6, 4]); c.lineCap = 'round';
     c.beginPath(); for(const [a, b] of route){ c.moveTo(X(a), Y(a)); c.lineTo(X(b), Y(b)); } c.stroke();
   }
   c.setLineDash([]); c.globalAlpha = 1;
-  // the systems, one path per security colour; past Near You's reach faded
-  const by = IT_MAP_SEC.map(() => [[], []]);
-  for(const i of itm.vis) if(i !== itm.home && !itm.rep.has(i)) by[itMapSecClass(T.sec[i])][D[i] > near ? 1 : 0].push(i);
-  by.forEach((pair, k) => pair.forEach((list, far) => { if(!list.length) return; c.fillStyle = IT_MAP_SEC[k]; c.globalAlpha = far ? 0.45 : 1; c.beginPath(); for(const i of list){ c.moveTo(X(i) + dotR, Y(i)); c.arc(X(i), Y(i), dotR, 0, 6.283); } c.fill(); }));
-  c.globalAlpha = 1;
-  // the reports: a ring in the standing's colour, as large as the gang (a clear report: no ring, its CLEAR label)
-  for(const [i, r] of itm.rep){
-    if(r.side !== 'clear'){
-      const col = C[r.side], rad = IT_MAP_RING[itMapTier(Math.max(1, r.n))];
-      c.save(); c.shadowColor = col; c.shadowBlur = 10; c.strokeStyle = col; c.lineWidth = 2.2; c.globalAlpha = 0.95; c.beginPath(); c.arc(X(i), Y(i), rad, 0, 6.283); c.stroke(); c.restore();
-      c.fillStyle = col; c.globalAlpha = 0.12; c.beginPath(); c.arc(X(i), Y(i), rad, 0, 6.283); c.fill(); c.globalAlpha = 1;
+  // the systems: zoomed out a dot each, one path per colour and fade; zoomed in (a gate 34 px or longer) the game's circles with the
+  // security number (in Jumps from you, the jumps), from 80 px the name under each circle
+  itm.nameBoxes = []; itm.stage = names ? 2 : big ? 1 : 0;   // the zoom stage: dots, circles, circles with names
+  if(!big){
+    const dotR = g < 5 ? 1.4 : g < 10 ? 2 : 3, by = new Map();
+    for(let i = 0; i < n; i++){ if(i === itm.home || itm.rep.has(i) || !seen(i)) continue; const key = itMapFcol(i) + '|' + alpha(i); (by.get(key) || by.set(key, []).get(key)).push(i); }
+    for(const [key, list] of by){ const [col, a] = key.split('|'); c.fillStyle = col; c.globalAlpha = Number(a); const rr = Number(a) === IT_MAP_FAINT ? Math.max(1.2, dotR - 0.6) : dotR;
+      c.beginPath(); for(const i of list){ c.moveTo(X(i) + rr, Y(i)); c.arc(X(i), Y(i), rr, 0, 6.283); } c.fill(); }
+  } else {
+    c.save(); c.textAlign = 'center'; c.textBaseline = 'middle';
+    const ids = gr.ids, tf = `700 ${Math.round(r * 0.75)}px system-ui, sans-serif`, nf = '600 10px system-ui, sans-serif', taken = new Set([itm.home, ...itm.rep.keys(), ...onRoute]);
+    if(focus >= 0) taken.add(focus);
+    for(let i = 0; i < n; i++){
+      if(!seen(i)) continue;
+      const x = X(i), y = Y(i), a = alpha(i);
+      c.globalAlpha = a; c.fillStyle = itMapFcol(i); c.beginPath(); c.arc(x, y, r, 0, 6.283); c.fill();
+      c.globalAlpha = 1; c.lineWidth = 1.5; c.strokeStyle = '#0c1014'; c.stroke();
+      c.globalAlpha = Math.max(a, 0.35); c.font = tf; c.fillStyle = '#fff';
+      c.fillText(itm.filter === 'jumps' ? (D[i] < 0 ? '–' : String(D[i])) : itMapSecText(T.sec[i]), x, y + 0.5);
+      if(names && !taken.has(i)){ const nm = it.names.byId.get(ids[i]); if(nm){ c.font = nf; c.fillStyle = '#b7c1c8'; c.globalAlpha = Math.max(a, 0.4); c.fillText(nm, x, y + r + 9); const w = c.measureText(nm).width; itm.nameBoxes.push([x - w / 2, y + r + 3, x + w / 2, y + r + 15]); } }
     }
-    c.fillStyle = IT_MAP_SEC[itMapSecClass(T.sec[i])]; c.beginPath(); c.arc(X(i), Y(i), 4.5, 0, 6.283); c.fill();
+    c.restore(); c.globalAlpha = 1;
   }
-  const fq = itFlSys() !== undefined ? g.at.get(itFlSys()) : undefined;   // v2026.11.07.1: the system chip
-  if(fq !== undefined && on(fq)){ c.strokeStyle = C.cyan; c.lineWidth = 2; c.beginPath(); c.arc(X(fq), Y(fq), 19, 0, 6.283); c.stroke(); }
-  if(focus >= 0 && on(focus)){ c.strokeStyle = C.cyan; c.lineWidth = 1.5; c.beginPath(); c.arc(X(focus), Y(focus), 21, 0, 6.283); c.stroke(); }
-  // v2026.11.04.1: your system, drawn last so nothing covers it: its security dot, and a white pin standing on it (was a white ring, drawn
-  // before the search and hover rings, and easy to lose among the reports)
-  { const i = itm.home; c.fillStyle = IT_MAP_SEC[itMapSecClass(T.sec[i])]; c.beginPath(); c.arc(X(i), Y(i), 6, 0, 6.283); c.fill(); itMapPinDraw(c, X(i), Y(i) - 6); }
-  itMapLabels(c, focus, onRoute, C);
+  // the reports: a ring in the standing's colour, as large as the gang (a clear report: no ring, its CLEAR label); zoomed in, around the circle
+  const grow = {solo: 0, small: 3, fleet: 6};
+  for(const [i, rp] of itm.rep){
+    const tier = itMapTier(Math.max(1, rp.n));
+    if(rp.side !== 'clear'){
+      const col = C[rp.side], rad = big ? r + 4 + grow[tier] : IT_MAP_RING[tier];
+      c.save(); c.shadowColor = col; c.shadowBlur = 10; c.strokeStyle = col; c.lineWidth = big ? 2.5 : 2.2; c.globalAlpha = 0.95; c.beginPath(); c.arc(X(i), Y(i), rad, 0, 6.283); c.stroke(); c.restore();
+      if(!big){ c.fillStyle = col; c.globalAlpha = 0.12; c.beginPath(); c.arc(X(i), Y(i), rad, 0, 6.283); c.fill(); c.globalAlpha = 1; }
+    }
+    if(!big){ c.globalAlpha = itMapDimmed(i) ? IT_MAP_DIM : 1; c.fillStyle = itMapFcol(i); c.beginPath(); c.arc(X(i), Y(i), 4.5, 0, 6.283); c.fill(); c.globalAlpha = 1; }
+  }
+  const fq = itFlSys() !== undefined ? gr.at.get(itFlSys()) : undefined;   // v2026.11.07.1: the system chip
+  if(fq !== undefined && on(fq)){ c.strokeStyle = C.cyan; c.lineWidth = 2; c.beginPath(); c.arc(X(fq), Y(fq), big ? r + 10 : 19, 0, 6.283); c.stroke(); }
+  if(focus >= 0){ c.strokeStyle = C.cyan; c.lineWidth = 1.5; c.beginPath(); c.arc(X(focus), Y(focus), big ? r + 12 : 21, 0, 6.283); c.stroke(); }
+  // v2026.11.04.1: your system, drawn last so nothing covers it: its dot (zoomed in, its circle), and a white pin standing on it
+  { const i = itm.home; if(!big){ c.fillStyle = itMapFcol(i); c.beginPath(); c.arc(X(i), Y(i), 6, 0, 6.283); c.fill(); } itMapPinDraw(c, X(i), Y(i) - (big ? r : 6)); }
+  itm.fbBox = null;   // the filter bar's place in the box: no name goes under it
+  { const fb = itm.box && itm.cv.parentNode === itm.box && itm.box.querySelector('.it-map-fbtns, .it-map-fcur');
+    if(fb){ const bx = itm.box.getBoundingClientRect(), rr = [...itm.box.querySelectorAll('.it-map-fbtns, .it-map-fcur')].map(e => e.getBoundingClientRect()).filter(q => q.width > 0)[0];
+      if(rr) itm.fbBox = [rr.left - bx.left - 4, rr.top - bx.top - 4, rr.right - bx.left + 4, rr.bottom - bx.top + 4]; } }
+  itMapLabels(c, focus, onRoute, C, r);
+  itMapRegionNames(c);
   itMapYouArrow();
+}
+// 039: region names as the game writes them, spaced capitals at the region's middle (its systems' mean; when that is out of view, the
+// middle of its systems in view, 3 or more); yours white, the others grey. None near the box's edge, over another region's name, a
+// system's name, your pin or the filter bar: drawn after the names, so they give way to them.
+function itMapRegionNames(c){
+  const T = itMapTable(), Q = itm.Q, W = itm.W, H = itm.H, v = itm.view, rc = itm.regC, acc = new Map(), mine = T.reg[itm.home];
+  for(let i = 0; i < T.n; i++){ const x = Q[2 * i], y = Q[2 * i + 1]; if(x < 0 || y < 0 || x > W || y > H) continue; const a = acc.get(T.reg[i]) || acc.set(T.reg[i], [0, 0, 0]).get(T.reg[i]); a[0] += x; a[1] += y; a[2]++; }
+  c.save(); c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = '600 11px system-ui, sans-serif';
+  const spaced = 'letterSpacing' in c; if(spaced) c.letterSpacing = '4px';
+  const hx = Q[2 * itm.home], hy = Q[2 * itm.home + 1];
+  const used = [[hx - 16, hy - 34, hx + 16, hy + 16], ...(itm.labels || []).map(l => l.slice(1)), ...(itm.nameBoxes || []), ...(itm.fbBox ? [itm.fbBox] : [])]; itm.regLabels = [];
+  for(const [rg, a] of [...acc].sort((p, q) => (q[0] === mine) - (p[0] === mine) || q[1][2] - p[1][2])){
+    if(a[2] < 3) continue;
+    const t = spaced ? T.regions[rg].toUpperCase() : T.regions[rg].toUpperCase().split('').join(' '), w = c.measureText(t).width;
+    const mids = [[rc[3 * rg] / rc[3 * rg + 2] * v.k + v.tx, rc[3 * rg + 1] / rc[3 * rg + 2] * v.k + v.ty], [a[0] / a[2], a[1] / a[2]]], free = (bx) => !used.some(u => bx[0] < u[2] && bx[2] > u[0] && bx[1] < u[3] && bx[3] > u[1]);
+    let cx, cy, bx = null;
+    for(const dy of [0, -24, 24, -48, 48]) for(const [mx, my] of mids){   // the middle, else a little above or below it
+      if(bx) break; const y = my + dy, b = [mx - w / 2, y - 8, mx + w / 2, y + 8];
+      if(b[0] >= 6 && b[2] <= W - 6 && y >= 14 && y <= H - 14 && free(b)){ bx = b; cx = mx; cy = y; } }
+    if(!bx) continue;
+    used.push(bx); itm.regLabels.push([rg, Math.round(cx), Math.round(cy)]);
+    c.globalAlpha = 0.9; c.lineWidth = 3; c.strokeStyle = '#0c1014'; c.strokeText(t, cx, cy);
+    c.fillStyle = rg === mine ? '#ffffff' : '#8f9ba5'; c.fillText(t, cx, cy);
+  }
+  c.restore();
 }
 // a map pin, 14 px wide and 20 tall, its tip at (x, tip): white, a dark outline so it reads on anything, a dark hole in its head
 function itMapPinPath(c, x, tip){ const cy = tip - 13; c.beginPath(); c.moveTo(x, tip); c.bezierCurveTo(x - 1.5, tip - 4, x - 7, tip - 8, x - 7, cy); c.arc(x, cy, 7, Math.PI, 0); c.bezierCurveTo(x + 7, tip - 8, x + 1.5, tip - 4, x, tip); c.closePath(); }
@@ -29123,23 +29326,26 @@ function itMapPinDraw(c, x, tip){
 }
 // names: you, the reported systems (nearest first, the hovered one first), then the systems on a shown route where there is room; the rest on
 // hover. Each label tries 8 places around its dot, then the same 8 a little farther out; a grid keeps the overlap test cheap.
-function itMapLabels(c, focus, onRoute, C){
+function itMapLabels(c, focus, onRoute, C, cr = 0){   // cr: the circles' radius when zoomed in (039), else 0
   const W = itm.W, H = itm.H, Q = itm.Q, D = itm.D, cs = 40, grid = new Map(); itm.labels = [];
   const cells = (r, f) => { for(let gx = Math.floor(r[0] / cs); gx <= Math.floor(r[2] / cs); gx++) for(let gy = Math.floor(r[1] / cs); gy <= Math.floor(r[3] / cs); gy++) if(f(gx + ',' + gy)) return true; return false; };
   const add = (r) => cells(r, (k) => { (grid.get(k) || grid.set(k, []).get(k)).push(r); });
   const hit = (r) => cells(r, (k) => (grid.get(k) || []).some(q => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]));
-  for(const i of itm.vis){ const x = Q[2 * i], y = Q[2 * i + 1]; if(x < -10 || y < -10 || x > W + 10 || y > H + 10) continue; const rr = itm.rep.has(i) ? 6 : 4; add([x - rr, y - rr, x + rr, y + rr]); }
-  const hx = Q[2 * itm.home], hy = Q[2 * itm.home + 1], pin = [hx - 9, hy - 29, hx + 9, hy];   // your pin's box: no name goes over it (v2026.11.04.1)
+  for(let i = 0; i < itm.D.length; i++){ const x = Q[2 * i], y = Q[2 * i + 1]; if(x < -10 || y < -10 || x > W + 10 || y > H + 10) continue; const rr = cr || (itm.rep.has(i) ? 6 : 4); add([x - rr, y - rr, x + rr, y + rr]); }
+  for(const b of itm.nameBoxes || []) add(b);   // 039: the names under the circles
+  if(itm.fbBox) add(itm.fbBox);   // and the filter bar
+  const hx = Q[2 * itm.home], hy = Q[2 * itm.home + 1] - (cr ? cr - 6 : 0), pin = [hx - 9, hy - 29, hx + 9, hy + (cr ? 2 * cr - 6 : 0)];   // your pin's box: no name goes over it (v2026.11.04.1)
   add(pin);
   c.textBaseline = 'middle';
   const wOf = (p) => { c.font = p.font; return c.measureText(p.t).width + (p.bg ? 8 : 0); };
   const put = (i, pieces, force, pref) => {
-    const w = pieces.reduce((s, p) => s + wOf(p) + 4, -4), h = 14, x = Q[2 * i], y = Q[2 * i + 1], o = itm.rep.has(i) ? 10 : 7, spots = pref ? pref(w) : [];
+    const w = pieces.reduce((s, p) => s + wOf(p) + 4, -4), h = 14, x = Q[2 * i], y = Q[2 * i + 1], o = cr ? cr + 4 : itm.rep.has(i) ? 10 : 7, spots = pref ? pref(w) : [];
     for(const m of [0, 12]) spots.push([x + o + m, y - 16 - m / 2], [x + o + m, y + 2 + m / 2], [x - o - w - m, y - 16 - m / 2], [x - o - w - m, y + 2 + m / 2], [x - w / 2, y - 26 - m], [x - w / 2, y + 12 + m], [x + o + 2 + m, y - 7], [x - o - 2 - w - m, y - 7]);
     if(x < 0 || y < 0 || x > W || y > H) return;   // v2026.11.04.1: a system moved out of view isn't named (its name was pinned to the edge, piled up with others); you: the "You" arrow
     const inside = ([sx, sy]) => sx >= 2 && sx + w <= W - 2 && sy >= 2 && sy + h <= H - 2;
     let s = spots.find(p => inside(p) && !hit([p[0], p[1], p[0] + w, p[1] + h]));
-    if(!s){ if(!force) return; s = spots.find(inside) || [Math.max(2, Math.min(W - w - 2, spots[0][0])), Math.max(2, Math.min(H - h - 2, spots[0][1]))]; }   // you and the reports: always named, inside the box
+    const offPin = ([sx, sy]) => i === itm.home || !(sx < pin[2] && sx + w > pin[0] && sy < pin[3] && sy + h > pin[1]);   // 039: forced names still keep off your pin (a closer start view packs reports tighter)
+    if(!s){ if(!force) return; s = spots.find(p => inside(p) && offPin(p)) || spots.find(inside) || [Math.max(2, Math.min(W - w - 2, spots[0][0])), Math.max(2, Math.min(H - h - 2, spots[0][1]))]; }   // you and the reports: always named, inside the box
     add([s[0], s[1], s[0] + w, s[1] + h]); itm.labels.push([i, s[0], s[1], s[0] + w, s[1] + h]); let px = s[0]; const py = s[1] + h / 2;
     for(const p of pieces){ const pw = wOf(p); c.font = p.font;
       if(p.bg){ c.fillStyle = p.bg; c.fillRect(px, py - 7, pw, 14); c.fillStyle = p.col; c.fillText(p.t, px + 4, py + 0.5); }
@@ -29160,21 +29366,40 @@ function itMapLabels(c, focus, onRoute, C){
     (w) => [[hx + 11, hy - 26], [hx - 11 - w, hy - 26], [hx - w / 2, hy - 47], [hx + 11, hy - 7], [hx - 11 - w, hy - 7], [hx - w / 2, hy + 10]]);
   const order = [...itm.rep.keys()].filter(i => i !== itm.home).sort((a, b) => a === focus ? -1 : b === focus ? 1 : D[a] - D[b]);
   for(const i of order) put(i, [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}, ...tags(itm.rep.get(i))], true);
-  if(focus >= 0 && focus !== itm.home && !itm.rep.has(focus) && D[focus] >= 0 && D[focus] <= itm.reach) put(focus, [{t: nm(focus), col: C.cyan, font: F}], true);
-  for(const i of itm.vis) if(i !== itm.home && i !== focus && !itm.rep.has(i) && onRoute.has(i)) put(i, [{t: nm(i), col: '#6f7c86', font: '10px system-ui, sans-serif'}], false);
+  if(focus >= 0 && focus !== itm.home && !itm.rep.has(focus)) put(focus, [{t: nm(focus), col: C.cyan, font: F}], true);   // 039: any system, past the reach too
+  for(const i of onRoute) if(i !== itm.home && i !== focus && !itm.rep.has(i)) put(i, [{t: nm(i), col: '#6f7c86', font: '10px system-ui, sans-serif'}], false);
+}
+// 039: the filter's own line in the legend, first and always one line (the same height for every filter, so Near You, as tall as the map's
+// column beside it, doesn't move when the filter changes: the build review, LESSON #113)
+function itMapSwIsHtml(cols){ return cols.map(col => `<i style="background:${escapeHtml(col)}"></i>`).join(''); }
+function itMapSwHtml(cols){ return `<span class="sw">${itMapSwIsHtml(cols)}</span>`; }
+function itMapFLegHtml(){
+  switch(itm.filter){
+    case 'jumps': return `<b>Jumps</b> 0 ${itMapSwHtml(IT_MAP_JUMPS)} 10+ · grey: no gate route`;
+    case 'region': return '<b>Region</b> a colour each; neighbours differ';
+    case 'reports': return '<b>Intel reports</b> bright: a report · dim: none';
+    case 'kills': return `<b>Kills</b> ${itMapSwHtml([IT_MAP_KILL])} kills in Intel · dim: none`;
+    default: return `<b>Security</b> 1.0 ${itMapSwHtml(IT_MAP_SEC.slice().reverse())} 0.0`;
+  }
+}
+function itMapFLegTitle(){
+  return {jumps: 'Jumps by stargate from your system, 0 to 10 or more; grey: no gate route to you', region: 'One colour per region; two regions joined by a gate never share one',
+    reports: 'Systems with a report or a kill in Intel bright, the rest dimmed', kills: 'Systems with kills in Intel in amber, the rest dimmed'}[itm.filter] || 'Each system in its security colour, 1.0 to 0.0 and below';
 }
 function itMapLegend(){
   const leg = itm.el.querySelector('.it-map-leg'), ring = (col, r) => `<i class="ring" style="width:${r * 2}px;height:${r * 2}px;border-color:${col}"></i>`;
-  const h = `<span><svg class="pin" width="11" height="15" viewBox="-1 -1 16 22" aria-hidden="true"><path d="M7 20C5.5 16 0 12 0 7a7 7 0 0 1 14 0c0 5-5.5 9-7 13z" fill="#fff" stroke="#0c1014" stroke-width="2"/><circle cx="7" cy="7" r="2.6" fill="#0c1014"/></svg>you</span><span>${ring('var(--danger)', 6)}hostile</span><span>${ring('#b9c3ca', 6)}neutral</span><span>${ring('var(--side-friendly)', 6)}friendly</span><span class="sz">${ring('#9aa6ae', 4)}solo ${ring('#9aa6ae', 6)}2–10 ${ring('#9aa6ae', 8.5)}11+</span>`
-    + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span><span><i class="dot"></i>within your alert range (${it.set.range})</span><span>faded: past ${escapeHtml(cardName('itnear'))} (${itNearReach()})</span><span>✕ kills</span>`;
+  const h = `<div class="it-map-fl" title="${escapeHtml(itMapFLegTitle())}">${itMapFLegHtml()}</div><span><svg class="pin" width="11" height="15" viewBox="-1 -1 16 22" aria-hidden="true"><path d="M7 20C5.5 16 0 12 0 7a7 7 0 0 1 14 0c0 5-5.5 9-7 13z" fill="#fff" stroke="#0c1014" stroke-width="2"/><circle cx="7" cy="7" r="2.6" fill="#0c1014"/></svg>you</span><span>${ring('var(--danger)', 6)}hostile</span><span>${ring('#b9c3ca', 6)}neutral</span><span>${ring('var(--side-friendly)', 6)}friendly</span><span class="sz">${ring('#9aa6ae', 4)}solo ${ring('#9aa6ae', 6)}2–10 ${ring('#9aa6ae', 8.5)}11+</span>`
+    + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span><span><i class="dot"></i>within your alert range (${it.set.range})</span><span>faded: past ${escapeHtml(cardName('itnear'))} (${itNearReach()})</span><span>faint: past ${escapeHtml(cardName('itmap'))}: within (${Number(itMapReach())})</span><span>✕ kills</span>`;
   if(leg._h !== h){ leg.innerHTML = h; leg._h = h; }
 }
-function itMapPick(x, y){ let best = -1, bd = 14 * 14; for(const i of itm.vis){ const d = (itm.Q[2 * i] - x) ** 2 + (itm.Q[2 * i + 1] - y) ** 2; if(d < bd){ bd = d; best = i; } } return best; }
+// 039: any system on the map, past the reach too (its tip and route); zoomed in, anywhere on its circle
+function itMapPick(x, y){ const g = itMapGatePx(), rr = g >= 34 ? Math.max(14, Math.min(15, g * 0.2) + 2) : 14; let best = -1, bd = rr * rr; for(let i = 0; i < itm.D.length; i++){ const d = (itm.Q[2 * i] - x) ** 2 + (itm.Q[2 * i + 1] - y) ** 2; if(d < bd){ bd = d; best = i; } } return best; }
 function itMapTip(i, x, y){
   const tip = itm.tip;
   if(i < 0){ tip.hidden = true; return; }
-  const T = itMapTable(), ids = itGraphGet().ids, r = itm.rep.get(i), d = itm.D[i], s = T.sec[i] / 100;
-  let h = `<b>${escapeHtml(itSysName(ids[i]))}</b> <span class="d">${escapeHtml(T.regions[T.reg[i]] || '')} · ${s.toFixed(1)} · ${d === 0 ? 'you are here' : `${d} jump${d === 1 ? '' : 's'}`}</span>`;
+  const T = itMapTable(), ids = itGraphGet().ids, r = itm.rep.get(i), d = itm.D[i];
+  const where = d === 0 ? 'you are here' : d < 0 ? 'no gate route to you' : `${d} jump${d === 1 ? '' : 's'}`;
+  let h = `<b>${escapeHtml(itSysName(ids[i]))}</b> <span class="d">${escapeHtml(T.regions[T.reg[i]] || '')} · ${escapeHtml(itMapSecText(T.sec[i]))} · ${escapeHtml(where)}</span>`;
   // v2026.11.04.1: how far in light-years, as a jump drive measures it (the owner: "the distance in LY (from the player's current system)")
   const ly = i !== itm.home ? itMapLy(i, itm.home) : null;
   if(ly !== null) h += `<br><span class="ly"><b>${itMapLyText(ly)} LY</b> <span class="d">from ${escapeHtml(itSysName(ids[itm.home]))}</span></span>`;
@@ -29182,9 +29407,10 @@ function itMapTip(i, x, y){
     const word = r.side === 'clear' ? 'reported clear' : `<span class="${r.side}">${r.n ? r.n + ' ' : ''}${r.side}</span> · ${{solo: 'solo', small: 'small gang', fleet: 'fleet'}[itMapTier(Math.max(1, r.n))]}`;
     h += `<br>${word} <span class="d">· ${itAgo(r.t)} ago</span>`;
     if(r.kills) h += `<br><span class="d">✕ ${r.kills} kill${r.kills === 1 ? '' : 's'} here</span>`;
-  } else if(i !== itm.home) h += `<br><span class="d">nothing reported in the last ${it.set.forget} min</span>`;
+  } else if(d > itm.reach || d < 0) h += `<br><span class="d">past ${escapeHtml(cardName('itmap'))}: within (${Number(itm.reach)}): reports aren’t shown here</span>`;
+  else if(i !== itm.home) h += `<br><span class="d">nothing reported in the last ${it.set.forget} min</span>`;
   if(d > itKillRange()) h += `<br><span class="d">past the Feed's kill range (${itKillRange()}): its kills aren’t read</span>`;
-  if(i !== itm.home){
+  if(d > 0){
     const rt = itMapRoute(i).map(([a]) => itSysName(ids[a])).concat(itSysName(ids[itm.home]));
     h += `<br><span class="d">route: ${escapeHtml(rt.length > 9 ? [...rt.slice(0, 4), '…', ...rt.slice(-3)].join(' → ') : rt.join(' → '))}</span><br><span class="d">press to ${itm.pinned.has(ids[i]) ? 'hide' : 'keep'} this route</span>`;
   }
@@ -29217,12 +29443,15 @@ function itMapRowSys(row){
   if(row.matches('.it-nb')) return Number(row.dataset.itSys) || null;
   const b = row.querySelector('[data-it-fsys]'); return b && it.names ? it.names.byLower.get(b.dataset.itFsys.toLowerCase()) || null : null;
 }
-function itMapZoom(x, y, f){ const v = itm.view, k = Math.max(0.7, Math.min(12, v.k * f)); f = k / v.k; if(f === 1) return; v.tx = x - (x - v.tx) * f; v.ty = y - (y - v.ty) * f; v.k = k; itMapTip(-1); itMapDraw(); }
+function itMapZoom(x, y, f){ const v = itm.view, k = Math.max(itm.kMin, Math.min(itm.kMax, v.k * f));   // 039: out to the whole galaxy, in to a gate IT_MAP_MAX_GATE px long
+  f = k / v.k; if(f === 1) return; v.tx = x - (x - v.tx) * f; v.ty = y - (y - v.ty) * f; v.k = k;
+  if(k <= itm.kMin){ v.tx = 0; v.ty = 0; }   // all the way out: the whole galaxy, wherever the zoom started
+  itMapTip(-1); itMapDraw(); }
 function itMapBind(){
   const cv = itm.cv, el = itm.el, local = (e) => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   cv.addEventListener('mousemove', (e) => { if(itm.drag && itm.drag.moved) return; const [x, y] = local(e), i = itMapPick(x, y); cv.style.cursor = i >= 0 ? 'pointer' : 'grab'; if(i !== itm.hover){ itm.hover = i; itMapLight(i); itMapDraw(); } itMapTip(i, x, y); });
   cv.addEventListener('mouseleave', () => { if(itm.hover !== -1){ itm.hover = -1; itMapLight(-1); itMapDraw(); } itMapTip(-1); });
-  cv.addEventListener('click', (e) => { if(itm.justDragged){ itm.justDragged = false; return; } const [x, y] = local(e), i = itMapPick(x, y); if(i < 0 || i === itm.home){ itMapTip(-1); return; } itMapPin(itGraphGet().ids[i]); itMapTip(i, x, y); });
+  cv.addEventListener('click', (e) => { if(itm.justDragged){ itm.justDragged = false; return; } const [x, y] = local(e), i = itMapPick(x, y); if(i < 0 || itm.D[i] <= 0){ itMapTip(i, x, y); return; } itMapPin(itGraphGet().ids[i]); itMapTip(i, x, y); });
   // the wheel zooms around the pointer (the owner asked for it: over the map the page doesn't scroll, LESSON #96 bent on purpose)
   cv.addEventListener('wheel', (e) => { e.preventDefault(); const [x, y] = local(e); itMapZoom(x, y, Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0015))); }, {passive: false});
   // a mouse drag moves the map; a press that didn't move keeps or hides a route
@@ -29240,9 +29469,13 @@ function itMapBind(){
     if(e.touches.length === 1){ itm.hint.classList.add('on'); clearTimeout(hintT); hintT = setTimeout(() => itm.hint.classList.remove('on'), 1300); }
   }, {passive: false});
   cv.addEventListener('touchend', (e) => { if(e.touches.length < 2) itm.pinch = null; if(!e.touches.length) setTimeout(() => { itm.justDragged = false; }, 350); });
+  el.addEventListener('keydown', (e) => { if(e.key === 'Escape' && itm.el.querySelector('.it-map-fb.open')){ e.stopPropagation(); itMapFbarOpen(false); itm.el.querySelector('.it-map-fcur').focus(); } });
   el.addEventListener('click', (e) => {
+    const fb = e.target.closest('[data-im-f]');
+    if(fb){ itMapFilterSet(fb.dataset.imF); if(itm.el.querySelector('.it-map-fb.open')){ itMapFbarOpen(false); itm.el.querySelector('.it-map-fcur').focus(); } return; }
+    if(e.target.closest('.it-map-fcur')){ itMapFbarOpen(!itm.el.querySelector('.it-map-fb.open')); return; }
     const z = e.target.closest('[data-im-z]');
-    if(z){ if(z.dataset.imZ === 'fit'){ itm.view = {k: 1, tx: 0, ty: 0}; itMapDraw(); } else if(z.dataset.imZ === 'me') itMapCenter(); else itMapZoom(itm.W / 2, itm.H / 2, z.dataset.imZ === 'in' ? 1.5 : 1 / 1.5); return; }
+    if(z){ if(z.dataset.imZ === 'fit'){ itMapFitView(); itMapTip(-1); itMapDraw(); } else if(z.dataset.imZ === 'me') itMapCenter(); else itMapZoom(itm.W / 2, itm.H / 2, z.dataset.imZ === 'in' ? 1.5 : 1 / 1.5); return; }
     if(e.target.closest('.it-map-you')){ itMapCenter(); return; }
     if(e.target.closest('.it-map-clr')){ itm.pinned.clear(); e.target.closest('.it-map-clr').hidden = true; itRenderLists(); itMapRefresh(true); }
   });
@@ -29256,7 +29489,7 @@ function itMapRowEvents(el){
     const r = rowOf(e.target); if(!r || !itm.P || itm.home < 0) return;
     if(e.target.closest('button, a, input, select, label, summary, details, .it-raw, .it-nbx')) return;
     const id = itMapRowSys(r), i = id ? itGraphGet().at.get(id) : undefined;
-    if(i === undefined || i === itm.home || itm.D[i] < 0 || itm.D[i] > itm.reach) return;
+    if(i === undefined || itm.D[i] <= 0) return;   // 039: past the reach too (the owner: "yes")
     itMapPin(id);
   });
 }
@@ -29273,7 +29506,8 @@ const RS = {
     note: () => it.set.nearRange == null ? (it.set.range + IT_NEAR_EXTRA > itKillRange() ? `(alert + ${IT_NEAR_EXTRA}, held at the Feed's range)` : `(alert + ${IT_NEAR_EXTRA})`) : ''},
   range: {label: 'Alert: within', title: () => 'The ring of being alert: a hostile or neutral this close sounds and notifies',
     steps: () => IT_RANGES, value: () => it.set.range, set: (v) => { it.set.range = v; }, why: (end) => end === 'lo' ? 'The smallest alert range' : 'The largest alert range'},
-  mapReach: {label: 'Jumps shown', title: () => 'How far the map reaches from your system', steps: () => itRangeList(itNearReach(), IT_MAP_MAX), value: () => itMapReach(),
+  // 039 (the owner: "\"Map: within\""; was "Jumps shown"): it limits reports and names now, not what's drawn
+  mapReach: {label: () => `${cardName('itmap')}: within`, title: () => 'Reports and names show this many jumps from you; systems farther out are drawn faint', steps: () => itRangeList(itNearReach(), IT_MAP_MAX), value: () => itMapReach(),
     set: (v) => { it.set.mapReach = v === itKillRange() ? null : v; },
     why: (end) => end === 'lo' ? `Can't be less than ${cardName('itnear')} (${itNearReach()}): every row there has its dot` : `The Feed's largest kill range (${IT_MAP_MAX})`,
     note: () => it.set.mapReach == null ? `follows the Feed (${itKillRange()})` : `yours · the Feed: ${itKillRange()}${itMapReach() > itKillRange() ? ', no kills read past it' : ''}`, unit: ''},

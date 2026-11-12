@@ -363,14 +363,23 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   volume; ▶ Test plays it. The desktop notification stays silent when the page plays its sound. With the Feed's
   Distance set, a report beyond both it and your alert range stays out of Near You. The profile's Intel lamp shows "N
   near" or "In system" from any tab.
-- **Map:** the systems around you, laid out from CCP's own flat map. A ring marks a system with a report: its colour is
+- **Map:** New Eden as EVE's own 2D map draws it: every system at CCP's flat-map place (the position the in-game 2D map
+  uses), one scale across and down, opening centred on you with a typical stargate about 16 px long. Only the systems
+  within the map's reach are nudged apart, to at least 12 px at that zoom, each staying close to its own place. Zoom out
+  for the whole galaxy, in for the game's circles with each system's security (from a gate about 34 px long) and their
+  names (from about 80 px); gates between two regions are dotted and region names are written in spaced capitals, yours
+  in white. The bar at the bottom of the map picks the colours: Security status, Jumps from you (0 to 10 or more; grey
+  with no gate route), Region (two regions joined by a gate never share a colour), Intel reports or Kills from Intel (the
+  rest dimmed); it opens on Security status every visit. A ring marks a system with a report: its colour is
   the standing (hostile red, neutral grey, friendly blue), its size the gang (solo, 2–10, 11 or more); ✕ counts its
-  kills. Hover a system, or a row in Near You or the Feed, for its route to you; press it to keep the route. Drag or two
+  kills. Hover a system, or a row in Near You or the Feed, for its route to you; press it to keep the route (past the
+  map's reach too). Drag or two
   fingers move it, the wheel or a pinch zooms it (over the map the wheel zooms instead of scrolling the page); on a
   phone, List | Map in Near You switches between the two. Near You's range (Intel settings): from your alert range to
-  the Feed's kill range, alert + 5 unless you set it. Jumps shown under the map: from Near You's range up to the Feed's
-  largest kill range (30); it follows the Feed's range until you change it. Systems past Near You's range are faded;
-  past the Feed's range a system's kills aren't read. A route is the shortest one by stargates (one for each system,
+  the Feed's kill range, alert + 5 unless you set it. Map: within, under the map: from Near You's range up to the Feed's
+  largest kill range (30); it follows the Feed's range until you change it, and reports and names show only within it.
+  Systems past Near You's range are faded, past the map's reach fainter still; past the Feed's range a system's kills
+  aren't read. A route is the shortest one by stargates (one for each system,
   always the same); jump bridges, cynos, filaments and wormholes aren't in CCP's data.
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location
   on, whichever is newer. Jumps are gate jumps from EVE's published stargate data (no jump bridges or wormholes); the

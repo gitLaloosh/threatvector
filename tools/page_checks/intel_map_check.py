@@ -66,12 +66,16 @@ _tail = r'''
     exp = {SA: ['hostile', 1], SB: ['hostile', 6], SC: ['hostile', 14], SD: ['neutral', 2], SE: ['clear', 0], S9: ['hostile', 1]}
     check(all(rep.get(k) == v for k, v in exp.items()), f'the reports on the map: standing and pilots {[(k, rep.get(k)) for k in exp]}')
     # the ring's radius: along 4 diagonals (the canvas's own pixels, transparent where nothing is drawn) from the system's dot, where the ring's colour is strongest (its glow fades either side)
-    RING = """(name) => { const g = itGraphGet(), i = g.at.get(it.names.byLower.get(name.toLowerCase())), x = itm.Q[2 * i], y = itm.Q[2 * i + 1], c = itm.cv.getContext('2d'), dpr = window.devicePixelRatio || 1;
-      return [1, 3, 5, 7, 0, 2, 4, 6].map(k => { const a = k * Math.PI / 4; let best = [0, 0, 0], bestR = 0, bestG = 0, gR = 0, maxA = 0;
+    # 039: the map opens zoomed in on you (a gate ~16 px), so reports sit closer together than the old spread put them: each ring is read with
+    # only its own report drawn and the other systems dimmed (Intel reports; all put back after), so a neighbour's ring or null-sec dot can't
+    # cross the rays; "solid" counts bright pixels only (the denser start view crosses more of the dark gate lines)
+    RING = """(name) => { const g = itGraphGet(), i = g.at.get(it.names.byLower.get(name.toLowerCase())), keep = itm.rep, kf = itm.filter; itm.rep = new Map([[i, keep.get(i)]]); itm.filter = 'reports'; itMapDraw();
+      const x = itm.Q[2 * i], y = itm.Q[2 * i + 1], c = itm.cv.getContext('2d'), dpr = window.devicePixelRatio || 1;
+      try{ return [1, 3, 5, 7, 0, 2, 4, 6].map(k => { const a = k * Math.PI / 4; let best = [0, 0, 0], bestR = 0, bestG = 0, gR = 0, maxA = 0;
         for(let r = 5; r <= 24; r += 0.5){ const d = c.getImageData(Math.round((x + r * Math.cos(a)) * dpr), Math.round((y + r * Math.sin(a)) * dpr), 1, 1).data;
           const w = d[3] / 255, red = (d[0] - (d[1] + d[2]) / 2) * w, grey = (Math.min(d[0], d[1], d[2]) - (Math.max(d[0], d[1], d[2]) - Math.min(d[0], d[1], d[2]))) * w;   // the canvas is see-through: weigh by alpha
-          if(red > best[0]){ best[0] = red; bestR = r; } if(grey > bestG){ bestG = grey; gR = r; } if(r >= 6 && r <= 18) maxA = Math.max(maxA, d[3]); }
-        return [bestR, Math.round(best[0]), gR, Math.round(bestG), maxA]; }); }"""
+          if(red > best[0]){ best[0] = red; bestR = r; } if(grey > bestG){ bestG = grey; gR = r; } if(r >= 6 && r <= 18 && Math.max(d[0], d[1], d[2]) > 90) maxA = Math.max(maxA, d[3]); }
+        return [bestR, Math.round(best[0]), gR, Math.round(bestG), maxA]; }); }finally{ itm.rep = keep; itm.filter = kf; itMapDraw(); } }"""
     def ring(name):
         rays = pg.evaluate(RING, name); drawn = sum(1 for r in rays if r[4] > 120)   # rays crossing anything solid 6-18 px out (a gate line or a label may cross 1-3)
         rays4 = rays[:4]
@@ -192,8 +196,9 @@ _tail = r'''
     m.click('[data-it-nv="map"]'); tick(m, 600)
     ph2 = m.evaluate("() => { const v = (s) => { const e = document.querySelector(s); return !!e && e.getClientRects().length > 0; }; return [v('#itNearList'), v('.it-map canvas'), itm.draws > 0, itm.rep.size, document.documentElement.scrollWidth]; }")
     check(not ph2[0] and ph2[1] and ph2[2] and ph2[3] >= 3 and ph2[4] <= 390, f'Map: the map with its reports, no list, no sideways scroll {ph2}')
+    m.click('.it-map-zoom [data-im-z="fit"]'); tick(m, 200)   # 039: the map opens zoomed in on you; ⤢ brings every report into view
     lb = m.evaluate("() => [itm.W, itm.H, itm.labels.length, itm.labels.filter(([i, x0, y0, x1, y1]) => x0 < 0 || y0 < 0 || x1 > itm.W || y1 > itm.H).length, itm.rep.size]")
-    check(lb[2] >= lb[4] + 1 and lb[3] == 0, f'a phone: you and every report named, every name inside the map (none cut off at its edge) {lb}')
+    check(lb[2] >= lb[4] + 1 and lb[3] == 0, f'a phone, ⤢: you and every report named, every name inside the map (none cut off at its edge) {lb}')
     cdp = ctx2.new_cdp_session(m)
     m.evaluate("() => window.scrollTo(0, document.querySelector('.it-map-box').getBoundingClientRect().top + scrollY - 200)"); tick(m, 300)
     bb = m.query_selector('.it-map-box canvas').bounding_box(); cx, cy = bb['x'] + bb['width'] / 2, bb['y'] + 120

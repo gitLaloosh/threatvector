@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-12 — The Intel map laid out like EVE's 2D map, with a filter bar</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The Intel map laid out like EVE's in-game 2D map, with a filter bar</h1>
+<p><span class="tag">Page</span> 2026-11-12 &middot; <code>v2026.11.12.3</code> &middot; build queue 039 &middot; plan: Project doc roadmap/map-look-plan.md &middot; mockup: <code>Claude outputs/map_look_mockup.html</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-11: "tool's galaxy map does not match eve's in-game galaxy map (2d version). is there any way to make it look more alike so players know what they're looking at for systems and regions that they're familiar with?"</li>
+<li>From the mockup: "small push apart seems fine", "Whole galaxy, centred on you", "No tint, like the game", "Faint, the rest of the regions in view", zoom stages, dotted gates between regions and region names (all three); "can you add a filter bar near the bottom like the in-game map?" and "Bar stays; name line fades".</li>
+<li>At the build review: "yes" to routes past the reach (after asking "is the route drawing an issue?": it isn't), the shorter info text that fits Intel's 410-word cap, and "Map: within" for the old "Jumps shown".</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li>Layout (<code>itMapLayout</code>): every one of the table's 5,268 systems at CCP's flat-map place (position2D, what the in-game 2D map uses; read through one helper, <code>itMapXY</code>), one scale for x and y, k = 1 showing the whole galaxy in the box. Only the systems within the map's reach are pushed apart, to 12 px at the starting zoom (<code>IT_MAP_GAP</code>), each pulled back toward its place; the push compares neighbours through a grid and stops once nothing is closer than the gap. Opens on you with the reach's median gate 16 px long (<code>itMapStartView</code>); ⤢ shows the whole reach (<code>itMapFitView</code>); zoomed all the way out, the whole galaxy, wherever the zoom started.</li>
+<li>Drawing: past the reach faint (dots and gates), past Near You's range faded as before; gates between two regions dotted; zoom stages by a typical gate's length on screen (<code>itMapGatePx</code>): dots, then from 34 px the game's circles with the security number (<code>itMapSecText</code>, rounded like the dot's colour), then from 80 px the name under each circle; report rings around the circle when zoomed in; region names in spaced capitals, yours white, placed after the system names and giving way to them, your pin and the bar.</li>
+<li>The filter bar, bottom centre inside the map: Security status (on every visit), Jumps from you (<code>IT_MAP_JUMPS</code>, 0 to 10+, grey with no gate route), Region (<code>IT_MAP_REGION</code>, assigned so no two regions joined by a gate share a colour), Intel reports and Kills from Intel (the rest dimmed). Its name line shows on a press, on hover or keyboard focus, and fades after 4 s (one timeout per press, opacity only; none with reduced motion). On a phone one 44 px button opens the row of five; a pick, Escape or a press outside closes it. The legend's first line is the filter's scale, always one line, so the map's column (and Near You beside it) keeps its height whichever filter is on.</li>
+<li>Routes past the reach (the owner: "yes"): hovering any system shows its route, a press keeps it; its hover says reports aren't shown there; a system with no gate route to you (Pochven from k-space) says so.</li>
+<li>"Jumps shown" is now "Map: within" (hover: "Reports and names show this many jumps from you; systems farther out are drawn faint"). The legend adds "faint: past Map: within (N)".</li>
+<li>The Intel example's picture: drawn by the same code, on the whole reach when the start view would leave a report out (it doesn't today: all seven show).</li>
+<li>Info text: checked; changed: intel ("**Map:** EVE's 2D map around you; hover one, or a row, for its route to you."; [Map] "(solo, 2–10, 11+)" and "The bottom bar picks the colours."; 409 of 410 words). METHODOLOGY.md's Map paragraph rewritten. No request, no stored data.</li>
+</ul>
+
+<h2>Timings (test container)</h2>
+<ul>
+<li>The mockup's push (every pair, 120 rounds): 55-108 ms at a 10-jump reach, 8.5-10.5 s at 30 jumps (3,324 systems around C-J6MT). The build's grid push: 3-10 ms at 30 jumps there, 4 ms around 1DQ1-A (801 systems).</li>
+<li>A redraw: 1.5-3.5 ms at the start view, 4-8 ms with the whole galaxy on screen (before: about 1 ms with only the reach).</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>tools/page_checks/intel_map_look_check.py</code>: the layout against CCP's flat map decoded by the check (one scale, order kept, 12 px in the reach, within 14 px of CCP's place, the start on you, ⤢, the whole galaxy), the zoom stages, the dotted gates and region-name colours (the canvas's own strokes and text read), each filter's colours against the check's own decoding (regions joined by a gate never share one), the bar, the name line, routes past the reach, Near You at 905 / 1000 / 1200 px with a busy row (the map column one height for every filter), the phone's one button, the timings; seven mutants.</li>
+<li><code>intel_map_check.py</code>: rings are read with only that report drawn and the rest dimmed (the closer start view puts neighbours inside the rays), "solid" counts bright pixels only; the phone's "every report named" after ⤢. <code>intel_map_you_check.py</code>: ⤢ means "every system within the reach in the box"; the phone's light-years tap first moves E-VKJV clear of the filter button.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #160: a timing measured at the default setting isn't the feature's timing. The plan's "7 ms" was the layout without its push, at a 10-jump reach; the push compared every pair and took 8-10 s at the stepper's largest reach. Time loops at the largest value each setting can take, and put the step that grows fastest through an index.</li>
+<li>LESSON #113 again: the legend under the map sets Near You's height beside it (905-1200 px windows), so a per-filter legend of different lengths would have moved Near You on every press. The filter's line is one fixed line, and the check presses every filter at those widths with a busy row.</li>
+</ul>
+</body>
+</html>

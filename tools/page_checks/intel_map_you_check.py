@@ -113,7 +113,8 @@ _tail = r'''
     ac = pg.evaluate("() => [itm.you.hidden, Math.abs(itm.Q[2 * itm.home] - itm.W / 2) <= 1 && Math.abs(itm.Q[2 * itm.home + 1] - itm.H / 2) <= 1]")
     check(ac == [True, True], f'pressing it centers on you, and it goes {ac}')
     pg.click('[data-im-z="fit"]'); tick(pg, 150)
-    check(pg.evaluate("() => [itm.view.k, itm.view.tx, itm.view.ty]") == [1, 0, 0], '⤢ still shows the whole area')
+    fit = pg.evaluate("() => { const out = itm.vis.filter(i => { const x = itm.Q[2 * i], y = itm.Q[2 * i + 1]; return x < 0 || y < 0 || x > itm.W || y > itm.H; }).length; return [itm.vis.length, out]; }")
+    check(fit[0] > 20 and fit[1] == 0, f'⤢ still shows the whole area: every system within the map\'s reach in the box {fit}')   # 039: k = 1 is now the whole galaxy
     # ---- a jump at 2.25×, and the beacon ----
     pg.evaluate("""() => { window.__raf = 0; const r = window.requestAnimationFrame.bind(window); window.requestAnimationFrame = (f) => { window.__raf++; return r(f); }; }""")
     pg.click('[data-im-z="in"]'); pg.click('[data-im-z="in"]'); tick(pg, 150)
@@ -171,6 +172,7 @@ _tail = r'''
     m.click('[data-it-nv="map"]'); tick(m, 600)
     m.evaluate("() => document.querySelector('.it-map-box').scrollIntoView({block: 'center'})"); tick(m, 300)
     bs = m.evaluate("() => [...document.querySelectorAll('.it-map-zoom button')].map(b => { const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; })")
+    m.evaluate("(id) => { const i = itGraphGet().at.get(id); itm.view.tx = itm.W / 2 - itm.P[2 * i] * itm.view.k; itm.view.ty = itm.H / 3 - itm.P[2 * i + 1] * itm.view.k; itMapDraw(); }", SYSID['E-VKJV'])   # 039: zoomed in on you, it may sit under the filter button
     x, y = m.evaluate("(id) => { const i = itGraphGet().at.get(id), r = itm.cv.getBoundingClientRect(); return [r.left + itm.Q[2 * i], r.top + itm.Q[2 * i + 1]]; }", SYSID['E-VKJV'])
     m.touchscreen.tap(x, y); tick(m, 400)
     pt = m.evaluate("() => [itm.tip.hidden, itm.tip.innerText.split('\\n')[1] || '']")

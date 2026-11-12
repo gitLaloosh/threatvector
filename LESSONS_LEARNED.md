@@ -156,6 +156,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #157 Two things that each replace the login (the return from EVE, a renewal) must never run at once: the later one waits for the earlier, and a stale answer is dropped, never acted on.
 - #158 Of several files that each could be the live one, pick by when it was last written, not when it started; and when moving between them, skip what the old one already gave.
 - #159 Deleting by name deletes what the name once meant: before removing a feature's code, checks or CSS, find every live caller and every class still drawn.
+- #160 A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it.
 
 **Checks and test machinery**
 
@@ -1066,6 +1067,17 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 160. A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it
+
+- **What happened (build queue 039, v2026.11.12.3):** the map-look plan gave its new layout as "7 ms". That was the layout without its
+  push-apart step, at the mockup's reach of 10 jumps. The mockup's push compared every pair of systems in the reach 120 times: 55-108 ms at
+  10 jumps, and 8.5-10.5 s at "Jumps shown" 30 (3,324 systems around C-J6MT), a frozen page on any jump, resize or reach change.
+- **How it was caught:** at the build review, the mockup was rebuilt on current `main` and timed at the default reach and at the largest
+  the stepper allows, before any code was written.
+- **Do this instead:** time a plan's loops at the largest value every setting they depend on can take (the reach's 30, the whole galaxy,
+  the longest list), and name the step that scales worst. A step comparing everything with everything goes through a grid or another
+  index. The check keeps the bound: `intel_map_look_check.py` times the layout at a 30-jump reach and a redraw of the whole galaxy.
 
 ## 159. Deleting by name deletes what the name once meant: before removing a feature's code, checks or CSS, find every live caller and every class still drawn
 
