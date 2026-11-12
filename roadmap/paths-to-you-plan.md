@@ -9,7 +9,8 @@
 6. **Drawing**: an HTML overlay (`itPt`, `itPtPaint`); the galaxy's canvases are hidden and not drawn while it's on. It is built from `itMapDraw` and, when the map's key didn't change, from `itMapRefresh`, and written only when its text changed; ages on the card's clock (`it.drawNow`).
 7. **The Intel example's picture** borrows `itm` with its own canvas: `itPtLive` answers only for the live canvas, so drawing the picture never hides the tree.
 8. **Shared rules**: `itEssTagHtml` (now Near You's too), `itGateTagHtml(st, now, true)` (Camp only, no grey gate tag, no "toward you"), `itKillBadges(ks, 0, true)` ("N kills").
-9. **The check** (`paths_to_you_check.py`) jumps to a made-up area 11 jumps from the stand-ins' 1DQ1-A, whose surroundings have no loop to test "every shortest route" on.
+9. **A row's hover**: hovering a Near You or Feed row lights its system's routes in the tree (`itm.rowHover`), so the map's heading ("hover a system or a row for its route to you") stays true; a row's press still keeps the map's route, not the tree's.
+10. **The check** (`paths_to_you_check.py`) jumps to a made-up area 11 jumps from the stand-ins' 1DQ1-A, whose surroundings have no loop to test "every shortest route" on.
 
 Status: PLANNED 2026-11-12 by a research session from main d227c9d (v2026.11.12.4, after build queue 040). QUEUED as 043 ([stated] "add it to the queue"; `claude/build-queue/043-paths-to-you.md`). All of the owner's questions answered. Mockup: `Claude outputs/paths_to_you_mockup.html` (sent to the owner 2026-11-12, five rounds; scripts in Project docs `claude/roadmap/paths-to-you-mockup/`, README there). Line numbers are approximate (main d227c9d); find things by name.
 
