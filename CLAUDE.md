@@ -418,6 +418,15 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   Near You as kind 'tag': its own row (no word, no alert, no map ring, never a tree source) or only its tag on a row that exists, never
   changing what that row was reported as (`st.rt`, the newest real report; `itNearDemote` turns a row tag-only once that is past
   "forget reports after"). A bare wormhole line gets no row. `tag_only_check.py`.
+  Build queue 044 (roadmap/wormhole-sig-ids-plan.md, mockup `Claude outputs/wormhole_sig_ids_mockup.html`): in a wormhole line only,
+  `itWhDetails(W, used)` runs in `itParse` before `itFindSystems` (`p.whd`: signature IDs whole or part, types from `IT_WH_TYPE`, which only
+  `tools/gen_wh_table.py` writes, the class, plain life / mass / size); an exact system name, or a dash part a system's name starts with,
+  stays a system. `tvWormholes` entries gain `sigs` (≤ `IT_WH_SIGS`, newest first; a part fitting two kept IDs stays its own), `info`,
+  Drifter per hole (`dr`, `drN`, `drNoId`; `itWhDrSet` keeps `drifter` for the older page), `goneSig` (× in the list; another line in the
+  same second or older can't bring it back; 48 h) and `raws` (≤ `IT_WH_RAW_MAX` lines as typed, each with `set`: build queue 046's
+  import reads it). Everything read back through `itWhEntryRead`; new fields only, so the older page still reads the store. The Add form
+  is `itWhAddFull`. A mixed system's rings split by kind (`itWhArcs`, `itWhRingDraw`); on the Wormholes filter its boldest mark too (the
+  disc's halves, the glowing ring) and its own report ring sits outside the marks (the owner's hand test). `wormhole_sig_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a

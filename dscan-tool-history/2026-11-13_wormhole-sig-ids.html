@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-13 — Signature IDs and hole details in Intel's wormhole reports</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Signature IDs and hole details in Intel's wormhole reports</h1>
+<p><span class="tag">Page</span><span class="tag">Intel</span> 2026-11-13 &middot; <code>v2026.11.13.1</code> &middot; build queue 044 &middot; plan: <code>roadmap/wormhole-sig-ids-plan.md</code> &middot; mockup: <code>Claude outputs/wormhole_sig_ids_mockup.html</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-12: "need the intel parser to be able to identify when someone reporting a wormhole also includes the ID of the cosmic signature and record that along w/ the wormhole. helps to know exactly what to scan when you get to the system it's in. important to note that someone might give a partial ID that's unique in the list of anomalies in that system."</li>
+<li>A real line of the shape "&lt;system&gt; wh rzl-429 z971 class 1-3 medium size less then 1 day less then 50% mass" showed "class" and "then" as pilots (real characters have those names) and guessed 1-3HWZ from "1-3".</li>
+<li>At the build review he added that each kept line also says what it set, for the coming export and import (046): "sure as long as it still works on the import/export."</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The reader</b> (<code>itWhDetails(W, used)</code>, in <code>itParse</code> before <code>itFindSystems</code>, wormhole lines only; <code>p.whd</code>): signature IDs whole ("RZL-429", "rzl429") or a part ("RZL-4", "RZL"; bare letters only beside wh / sig / a type), the type (<code>IT_WH_TYPE</code>, 102 codes from CCP's <code>wormholeTargetSystemClass</code>, written by the new <code>tools/gen_wh_table.py</code>, a step of the pyfa update chain), the class ("class 1-3", "c5"), and life / mass / size only when said plainly, in the game's steps (the worse of two). A word that is a system's name, or a dash part a system's name starts with, stays a system. Other lines read as before.</li>
+<li><b>Kept with the report</b> (<code>tvWormholes</code> entries): up to 8 IDs newest first (<code>sigs</code>; a part joins the one kept ID it fits, a part fitting two stays its own), system-level <code>info</code>, Drifter per hole (<code>dr</code>, <code>drN</code>, <code>drNoId</code>; <code>itWhDrSet</code> keeps 040's <code>drifter</code>), a removal mark per ID (<code>goneSig</code>, 48 h), and the last 10 lines as typed with what each set (<code>raws[].set</code>; for the newest 100 systems). All read back through <code>itWhEntryRead</code>.</li>
+<li><b>Where they show:</b> the Feed line (its own IDs, types, class and details), Near You's row (2 kept IDs), the list (4, each with ×; the lines as typed under Intel's chevron) and the map label ("DRIFTER ×2 XRT-331 +2 · 4 min", "WH RZL-429→C1 +1 · 2 min"). A system with both kinds of hole gets split rings (<code>itWhArcs</code>, <code>itWhRingDraw</code>), Drifter dashed.</li>
+<li><b>From the owner's hand test</b> ("systems with drifer and regular wormholes along with kills and or reports - you can't see the split ring for the two wormhole types"): the split lived only in the thin outer ring, while the disc and the glowing ring (the marks you see first) were one colour, and the system's own report ring sat on the same radius. On the Wormholes filter the disc (zoomed out) and the glowing ring (zoomed in) are now split by kind too, and a wormhole's own report ring goes outside its marks (zoomed out 13 / 16 / 19 px by gang size, zoomed in 9 px further out).</li>
+<li><b>The Add form</b> (<code>itWhAddFull</code>): Sig ID, "Type or class" with a hint as you type, Life, Mass and Size; a bad ID or an unknown type is refused at its own field. No probe scan paste (taken out before the build).</li>
+<li><b>Info text:</b> <code>intel</code> [Tags] gains "Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type." (409 of 410 words); METHODOLOGY.md's Intel section has the detail.</li>
+<li>No request, no new error code. Browser storage: new fields on <code>tvWormholes</code> entries only (safe both ways, see the pull request).</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>wormhole_sig_check.py</code>: the plan's six lines and the life / mass / size cases, the merges, Drifter per hole, the removal mark (re-read, older, same second, newer, reload, 48 h), the store read back with bad fields and an entry 040 wrote, the Feed / Near You / list / map tags and the split ring's two colours (and, on the Wormholes filter, the split disc and glowing ring, with the report ring outside), the Add form, the lines as typed, 390 px; six mutants (the reader after the systems, a part merged into the first of two, the removal mark off, no <code>set</code>, the boldest mark in one colour, a wormhole's report ring on its marks).</li>
+<li>The mockup's own test_sig.py again from main d227c9d: 110 checks, all passed.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #163: two of the first mutants survived. The check's made-up systems never start like "1-3" or "RZL-4", so the reader's order made no difference; and 040's older rules already skipped every re-read line, so the removal mark never decided anything. Two made-up null-sec names ("1-3QQZ", "ZXB-4Q") and a line in the same second as the removed ID's report gave each guard the one case only it decides.</li>
+</ul>
+</body>
+</html>
