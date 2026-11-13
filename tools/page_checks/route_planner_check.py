@@ -25,7 +25,7 @@ address (http://localhost:8000/) with intel_check.py's made-up folder and Intel.
     sent; back from EVE with it: the EVE tab's switch on, "press again"; without it: SSO-07 and the switch off; EVE's route: one request with
     clear_other_waypoints=true and add_to_beginning=false, the token and X-Compatibility-Date; Threat Vector's route: one request per jump, in
     order, the first clearing, never two at once; a failure stops the rest (ROUTE-01, how far it got), 403 turns the switch off (SSO-07), 401
-    SSO-08; a press while sending is refused; nothing sent without a press;
+    SSO-08 and nothing more until a new login; a press while sending is refused; nothing sent without a press;
   * storage: tvRoute and tvRouteSend only, dscanIntel's keys unchanged; mutants, each must fail; no page errors.
 """
 import sys, os, re, json, time, tempfile, urllib.parse
@@ -268,6 +268,8 @@ def cases(b, html, phone=True):
     wreset(fail_at=1, fail=401); go('eve', d['i']); pg.wait_for_timeout(100)
     pg.wait_for_function("!itRp.busy", timeout=8000)
     if WREQ and 'SSO-08' not in pg.inner_text('.it-rp-note'): out.append(f"401: SSO-08 {pg.inner_text('.it-rp-note')!r}")
+    wreset(); go('eve', d['i']); pg.wait_for_timeout(300)
+    if WREQ or 'log in again' not in pg.inner_text('.it-rp-note'): out.append(f'after a 401 nothing more is sent until a new login (SSO-08): {len(WREQ)} {pg.inner_text(".it-rp-note")!r}')
     pg.click('.it-rp-note [data-it-rp-nx]')
     if pg.evaluate("!document.querySelector('.it-rp-note').hidden"): out.append('the note should close from its close button')
     # storage: only the new keys; dscanIntel keeps its keys

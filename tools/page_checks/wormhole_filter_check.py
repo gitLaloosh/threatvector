@@ -294,7 +294,7 @@ MUTANTS = [
     ('a removal not setting gone', "if(w){ st.gone[id] = Math.max(w.t, st.gone[id] || 0); delete st.rep[id];", "if(w){ delete st.rep[id];", ('list',)),
     ('kept ones faint past the reach', "whF && itm.wh.kept.has(i) ? 1 : !on(i)", "!on(i)", ('filter',)),
     ('the example reading the store', "  itWhSt = itWhBlank(); itWhAside = true;", "", ('example',)),
-    ('the map\'s key without the wormholes', "|${itMapWhKey(itMapWh())}`;", "`;", ('key',)),
+    ('the map\'s key without the wormholes', "|${itMapWhKey(itMapWh())}|rp:", "|rp:", ('key',)),   # 047: Threat Vector's route's key follows it
     ('hand-added ones shown as live reports', "if(w.src === 'intel' && w.t >= fresh", "if(w.t >= fresh", ('list',)),
     ('045: reports faded on every filter', "      const fade = whF && !itm.wh.kept.has(i);", "      const fade = !itm.wh.kept.has(i);", ('stand',)),
     ('045: wormhole labels forced over others', "(live && !whS) || i === focus); if(whS", "true); if(whS", ('stand',)),
