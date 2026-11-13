@@ -384,6 +384,7 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   Feed's largest), following the Feed until set; Near You's reach is a setting (`nearRange`, alert range to the Feed's, default
   alert + 5). Rings: standing colour, gang size (1 / 2–10 / 11+). Routes: one per system (BFS, neighbours in index order), hover
   dashed, press kept. One stepper for every range (`RS`, `rsHtml`, `rsPaint`). `intel_map_check.py`.
+  047: `INTEL_MAP.band`, each system's security band from CCP's unrounded value (2 bits; `itMapBand`), for the route planner.
   v2026.11.04.1 (roadmap/map-ly-hover-plan.md): `INTEL_MAP.p3` holds CCP's 3D positions (0.0001 LY, int24) for the hover's
   "N.NN LY from <you>" (`itMapLy`, `itMapLyText`: rounded UP to 0.01, the owner). Your system: a pin drawn last
   (`itMapPinDraw`), the only filled label (YOU · name), a 1.6 s beacon on its own canvas (`itMapBeacon`; first draw and a jump
@@ -435,6 +436,22 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   beats a `you` line (a newer one is a `note`, "!"), a value with no line is kept, `goneSig` / `gone` win unless newer, the cap keeps lines
   that decide a detail; names loaded first (`itLoadNames`). Stored: lines gain `n` (repeats, also your own), `k: 'shared'`, `via`; IDs `note`,
   `via`; entries `via`. Imported holes act as Intel's (the owner); titles say "from a shared list" (`itWhByTxt`). `wormhole_share_check.py`.
+  047: the card's redraw takes the map box (and the open Wormholes list) out of the page until `itMapMount` puts it back, so `itRender`
+  keeps the list's scroll and puts it back (the owner: "the user keeps losing their place in the list"); focus already followed (`mf`).
+  Build queue 047 (roadmap/route-planner-plan.md, mockup `Claude outputs/route_planner_mockup.html`; the owner: "seeing the route in the tool
+  doesn't help much if i have to manually set 25+ systems"): Threat Vector's route (`itRpUpdate`, one search from you on (flagged systems,
+  EVE's cost, jumps), again only when `itRp.key` changes: your system, Intel settings → Routes (`tvRoute`), the flags; in `itMapKey`).
+  Fewest flagged systems first, however long (the owner: "keep my rule"); the destination and you never count; flags (`itRpFlags`) from every
+  system Intel holds within "forget reports after": camps, bubbles, hostiles / neutrals (the map ring's side), kills, ESS, your avoid list.
+  The cost is CCP's route guide's (exp(0.15 x penalty), into null 2p, low p or 0.90, high 0.90 or p) by `INTEL_MAP.band` (CCP's unrounded
+  security, `tools/jump_table_update.py`; never the rounded sec: 19 systems show 0.45 and are low), matched against ESI's POST /route on 40
+  routes at the build review. Only the drawn route and the tooltip's route list follow it (`itMapRoute` via `itRpParNow`); every jump number
+  stays `itm.D`; the Intel example keeps the shortest (`itRpAside`). The map's search box (`.it-rp-search`, a combobox), a right-click menu
+  (`itRpMenuOpen`: no close button, Esc / outside / pick), on a phone the pressed system's tooltip carries the buttons (`it-rp-act`, 44 px).
+  Set destination (`itRpGo`): EVE's route one `POST /ui/autopilot/waypoint` (clear_other_waypoints=true), Threat Vector's route one per jump,
+  in order, each waiting for the last, through `esiFetch(…, 'waypoints', {scope: SSO_WP})`; needs the login and Waypoints (`SSO_WP`, the EVE
+  tab's "Set my destination in EVE", `tvRouteSend`); without them a note with Continue to EVE, then "press again" (never sent by itself on
+  return). A failure stops the rest (ROUTE-01; 403 SSO-07 off; 401 SSO-08). `route_planner_check.py` (stand-in SSO and ESI).
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a
@@ -536,7 +553,7 @@ still gets its own targeted check and mutants.
 **How the numbers are worked out, for people:** `METHODOLOGY.md` (was the "How effective HP and DPS are
 calculated" note on the page, removed in v2026.10.14.51); each card's short version is its ⓘ panel (`CARD_INFO`).
 Change both when a calculation's assumptions change. Since build queue 036 (v2026.11.11.3) the panels are short (`check_subtext.py`:
-85 words open, 210 in all, Intel 410), the detail is in METHODOLOGY.md (its Intel, Who's in the
+85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"), the detail is in METHODOLOGY.md (its Intel, Who's in the
 system and Sides sections too), and nothing on the page links to it (build queue 037 took 036's footer link out, the owner: "i dont want that link displayed"). A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
 panel never inherits a heading's case or spacing (`.info-body`; `info_panels_check.py`).
 

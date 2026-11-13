@@ -395,6 +395,19 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   it; press it again, press your system or Esc to clear. Drag or two fingers move it, the wheel or a pinch zooms it;
   + / − / Fit at its top right. It's built from what Intel already has, nothing is asked of anyone, and it's drawn again
   only when what it shows changes.
+- **Routes and setting your destination** (build queue 047): the map's drawn route and its tooltip's route list follow Threat
+  Vector's route, from Intel settings → Routes; every jump count (Near You, alerts, the Feed, Jumps from you, Paths to you, the
+  tooltip's "N jumps") stays the shortest by stargate. The route passes the fewest flagged systems it can, however long the detour,
+  then costs what EVE's own route would (CCP's route guide, developers.eveonline.com/docs/guides/route-calculation/: Prefer shorter 1
+  a jump; Prefer safer and Prefer less secure with p = exp(0.15 × the security penalty): into null sec 2p, into low sec p or 0.90,
+  into high sec 0.90 or p), then has the fewest jumps. Null, low and high come from CCP's unrounded security (0.0 or below, below
+  0.45, the rest), not the map's rounded number: 19 systems show 0.45 and are low sec. Compared with ESI's own route on 40 routes at
+  the build (every one the cheapest by this rule). Flagged: a gate camp, a bubble, hostiles, neutrals, a kill or the ESS reported
+  within "forget reports after" (each a setting), and your avoid list; the destination and your own system never count; a clear
+  report flags nothing. Set destination (EVE's route) sends EVE the destination only, and EVE plans the route with your game's
+  settings (jump bridges and your game's avoidance list included); Set destination (Threat Vector's route) sends every system as a
+  waypoint, in order, one at a time, so EVE flies that route (with Disable Autopilot at Each Waypoint on, it stops at each). Both use
+  your EVE login with the Waypoints permission; a send that fails stops there, and the waypoints already sent stay in EVE.
 - **Wormholes** (build queue 040): a line that says wh, wormhole or drifter (intel words, never looked up as pilots) with a
   system keeps that system as a wormhole (a Drifter one with drifter), with the line's time and who sent it, in this
   browser only (localStorage `tvWormholes`; nothing is sent anywhere), for 24 hours unless you change "keep wormhole

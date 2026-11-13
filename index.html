@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-CpiRRGOqrPh9FphsKwFQjL7M0MMiJOAO+kpFTT3Tf2w='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-tTMuYOHHynjJnGnlPjacmPujwlnU2rguySir2tTt1kM='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2674,6 +2674,35 @@
   .it-map-tip{position:absolute; pointer-events:none; z-index:3; min-width:150px; max-width:280px; padding:7px 9px; border:1px solid #2c3842; border-radius:6px; background:var(--panel-2); box-shadow:0 8px 22px rgba(0,0,0,.5); font:400 12px/1.4 var(--sans); color:var(--text); overflow-wrap:anywhere;}
   .it-map-tip[hidden]{display:none;} .it-map-tip b{color:var(--heading);} .it-map-tip .d{color:var(--text-dim);}
   .it-map-tip .hostile{color:#f08b7e; font-weight:600;} .it-map-tip .neutral{color:#c3ccd2; font-weight:600;} .it-map-tip .friendly{color:#8fb6ee; font-weight:600;}
+  /* build queue 047: the route planner (roadmap/route-planner-plan.md; mockup Claude outputs/route_planner_mockup.html): the search box top
+     left of the map ("Hide all routes" below it), the right-click menu, the phone tooltip's buttons, the note after a press, the Routes box */
+  .it-rp-search{position:absolute; left:8px; top:8px; z-index:4; width:210px;}
+  .it-rp-search input{width:100%; box-sizing:border-box; height:32px; min-height:32px;}
+  .it-rp-sug{list-style:none; margin:2px 0 0; padding:3px 0; border:1px solid #2c3842; border-radius:6px; background:var(--panel-2); box-shadow:0 8px 22px rgba(0,0,0,.5); max-height:260px; overflow:auto;}
+  .it-rp-sug[hidden]{display:none;}
+  .it-rp-sug li{padding:5px 9px; font:400 12px/1.3 var(--sans); cursor:pointer; color:var(--text);} .it-rp-sug li.on, .it-rp-sug li:hover{background:#1d2731;}
+  .it-rp-sug li .d, .it-rp-menu .d, .it-rp-note .d, .it-rp-box .d{color:var(--text-dim);}
+  .it-map-box button.it-map-clr{top:46px;}
+  .it-rp-menu{position:absolute; z-index:6; min-width:230px; max-width:calc(100% - 8px); box-sizing:border-box; padding:6px; border:1px solid #2c3842; border-radius:6px; background:var(--panel-2); box-shadow:0 8px 22px rgba(0,0,0,.55); font:400 12px/1.35 var(--sans); color:var(--text);}
+  .it-rp-mh{padding:3px 6px 6px; border-bottom:1px solid var(--line); margin-bottom:4px;} .it-rp-mh b{color:var(--heading);}
+  .it-rp-btns{display:flex; flex-direction:column; gap:2px;}
+  .it-rp-btns button{display:block; width:100%; text-align:left; min-height:30px; padding:4px 8px; border:0; border-radius:4px; background:transparent; color:var(--text); font:600 12px/1.3 var(--sans); cursor:pointer;}
+  .it-rp-btns button span{font-weight:400; color:var(--text-dim);} .it-rp-btns button small{display:block; font:400 11px var(--sans); color:var(--text-dim);}
+  .it-rp-btns button:hover:not([disabled]), .it-rp-btns button:focus-visible{background:#1d2731; outline:1px solid var(--cyan); outline-offset:-1px;}
+  .it-rp-btns button[disabled]{opacity:.45; cursor:default;} .it-rp-btns .it-rp-av{border-top:1px solid var(--line); border-radius:0 0 4px 4px;}
+  .it-map-tip.it-rp-act{pointer-events:auto; z-index:5;} .it-rp-intip{margin-top:6px;} .it-rp-intip button{min-height:44px; border:1px solid var(--line); margin-top:4px;}
+  .it-rp-w{color:var(--amber);} .it-rp-n b{color:var(--heading);}
+  .it-rp-note{position:absolute; left:8px; right:8px; bottom:52px; z-index:5; padding:8px 40px 8px 10px; border:1px solid var(--cyan); border-radius:6px; background:rgba(18,23,28,.96); font:400 12px/1.4 var(--sans); color:var(--text);}
+  .it-rp-note.warn{border-color:var(--amber);} .it-rp-note[hidden]{display:none;} .it-rp-note b{color:var(--heading);}
+  .it-rp-note button.x-close{position:absolute; right:4px; top:4px;} .it-rp-nb{margin-top:6px;}
+  .it-rp-box .it-rp-pref{display:flex; flex-wrap:wrap; gap:4px 12px;} .it-rp-avk{margin-top:6px; color:var(--text-dim); font-size:12px;}
+  .it-rp-pen{display:flex; align-items:center; gap:8px;} .it-rp-pen input[type=range]{flex:0 1 160px; min-width:80px;} .it-rp-pen output{min-width:3ch; font-weight:600;}
+  .it-rp-list{list-style:none; margin:6px 0; padding:0;} .it-rp-list li{display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:12px; min-height:28px;}
+  .it-rp-add{display:flex; gap:6px;} .it-rp-add input{flex:1; min-width:0;} .it-rp-msg{min-height:16px; margin:4px 0; color:var(--text-dim); font-size:12px;}
+  @media (max-width: 599px){
+    .it-rp-search{top:60px; right:8px; width:auto;} .it-rp-search input{height:44px; min-height:44px; font-size:16px;}
+    .it-map-box button.it-map-clr{top:112px; min-height:44px;} .it-rp-note{bottom:64px;} .it-rp-list li{min-height:44px;} .it-rp-list li button, .it-rp-add button, .it-rp-add input{min-height:44px;}
+  }
   .it-map-hint{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); padding:8px 12px; border-radius:6px; background:rgba(10,13,16,.85); color:var(--heading); font:600 13px var(--sans); opacity:0; transition:opacity .2s; pointer-events:none;}
   .it-map-hint.on{opacity:1;}
   @media (prefers-reduced-motion: reduce){ .it-map-hint{transition:none;} }
@@ -3160,7 +3189,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.13.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.13.3</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3485,7 +3514,7 @@ const CARD_INFO = {
  ],
  "side#sso": [
   "Logging in with EVE tells Threat Vector which character you are and fills Your pilot; on its own it asks EVE for no permissions.",
-  "**Features:** the EVE tab lists those that need more from EVE (location, online status, standings). Pick them before you log in and EVE asks for exactly those; one turned on later waits until you press Continue to EVE.",
+  "**Features:** the EVE tab lists those that need more from EVE (location, online status, standings, waypoints). Pick them before you log in and EVE asks for exactly those; one turned on later waits until you press Continue to EVE.",
   "[How long it lasts] The login is for this tab: a reload keeps it, a new tab asks again (usually one click, as EVE remembers you), closing the tab forgets it. Nothing is sent to or kept on a Threat Vector server; there isn't one.",
   "[Log out] Ends the login and its permissions with EVE in this tab and clears Your pilot; your picks stay for the next login. It doesn't sign you out of EVE's own website. You can also remove Threat Vector there (Manage on EVE's site)."
  ],
@@ -3532,13 +3561,15 @@ const CARD_INFO = {
  ],
  "intel": [
   "**{card:itnear}:** systems with reports or kills within its range (Intel settings), nearest first. An amber edge means within your alert range: the sound and notification (if on) and the profile's Intel lamp (N near, or In system), from any tab.",
-  "**{card:itfeed}:** every report and kill as it comes in. **{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route to you.",
+  "**{card:itfeed}:** every report and kill as it comes in. **{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route (your route settings); right-click a system to set your destination in EVE.",
   "[How a line is read] Systems, ship names, counts (+5, x2) and words like clr and nv; the rest is looked up on ESI as pilot names, coloured by your {card:side}. A word it can't place stays plain text.",
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
   "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks what it shows; Paths to you draws the routes from hostiles in your alert range as a tree. Wormholes: reported, kept 24 h; its list edits and shares them. On the Wormholes filter the rest fades, one reported in the last 30 minutes pulses, and the chip steps through them. Systems past {card:itnear}'s range are faded.",
-  "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate only (no jump bridges or wormholes).",
+  "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate only (no jump bridges or wormholes). The map's drawn route follows Intel settings → Routes; jump counts stay the shortest by stargate.",
+  "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, systems with reported hostiles, neutrals, kills or ESS, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route.",
+  "[Set destination] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab).",
   "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI; only wormhole reports are kept after you close the page.",
   "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit."
  ],
@@ -4228,16 +4259,25 @@ const ERROR_CODES = {
  },
  "SSO-07": {
   "title": "EVE didn't give the permission",
-  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1); your profile, {card:side}, Use my corporation's and alliance's EVE standings (since v2026.11.09.2)",
+  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1); your profile, {card:side}, Use my corporation's and alliance's EVE standings (since v2026.11.09.2); the Intel map's Set destination and the profile's Set my destination in EVE (since v2026.11.13.3)",
   "trigger": "The token from EVE doesn't list the permission the switch needs (its scp claim), or ESI answered 403 for it (the permission was taken back). The switch turns off.",
   "check": "Turn the switch on again and agree on EVE's page; on EVE's site, check that Threat Vector still has the permission.",
   "why": "A switch works only with the permission EVE gave; the page never asks ESI for something it wasn't allowed.",
   "since": "v2026.11.08.4",
   "doc": "2026-11-08_sso-game-location.html"
  },
+ "ROUTE-01": {
+  "title": "EVE didn't take the destination",
+  "where": "The Intel map, after Set destination (since v2026.11.13.3)",
+  "trigger": "Setting your destination in EVE (POST /ui/autopilot/waypoint) got an answer other than 204, or no answer. Nothing more is sent: the waypoints sent before it stay in EVE, and the note says how far it got.",
+  "check": "Check that your character is logged in to the game, then press Set destination again. EVE's daily downtime (11:00 UTC) stops it too.",
+  "why": "Each waypoint goes in order, one after another, so a route sent with one missing would send the autopilot somewhere else; a failed one stops the rest and is never retried by itself (ESI's error limit counts every failure).",
+  "since": "v2026.11.13.3",
+  "doc": "2026-11-13_route-planner.html"
+ },
  "SSO-08": {
   "title": "ESI refused the login",
-  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1); your profile, {card:side}, Use my corporation's and alliance's EVE standings (since v2026.11.09.2)",
+  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1); your profile, {card:side}, Use my corporation's and alliance's EVE standings (since v2026.11.09.2); the Intel map's Set destination (since v2026.11.13.3)",
   "trigger": "ESI answered 401 to a call made with the login. That feature stops and isn't asked again until you log in again.",
   "check": "Log in again. If it keeps happening, EVE's login may be having trouble.",
   "why": "Every refused call counts against ESI's error limit for everyone on this address (100 a minute), so a refused login is never retried by itself.",
@@ -4502,7 +4542,7 @@ function zkbRetryStep(now){   // one step of every Retry countdown; true while o
 // the panel is open, never in a hidden tab; the zKillboard count ages out on one timeout set for the next expiry (bgAgeArm).
 // ESI is counted by kind of lookup, not by feature (the owner 2026-11-04, "let's go with your recommendation"): the calls sit in
 // helpers that every feature and Intel's background lookups share, so only the kind is known where the request is made.
-const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location', online: 'Your online status', contacts: 'Your standings'};
+const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location', online: 'Your online status', contacts: 'Your standings', waypoints: 'Your destination'};   // waypoints: build queue 047
 const ESI_USE_KEY = 'dscanEsiUse', ESI_USE_MIN = 15, ESI_ERR_LIMIT = 100, ESI_ERR_WARN = 50, ESI_GROUP_WARN = 0.2;
 const ZKB_WHO_KEY = 'dscanZkbWho', ZKB_WARN_AT = 80;   // amber from 80 of 100 (the planner's default, kept by the owner 2026-11-04)
 let bgEsiPend = null, bgEsiFlushT = 0, bgOpen = false, bgTimer = 0, bgAgeT = 0, bgRaf = 0, bgLastSegs = '', bgLastBody = '', bgR2Times = [];
@@ -22057,6 +22097,7 @@ function pfFeats(){
     online: {on: pfTry(() => !!ssoOn.show, false), held: held(pfTry(() => SSO_ON, ''))},
     loc: {on: pfTry(() => !!it.set.gameLoc, false), held: held(pfTry(() => SSO_LOC, ''))},
     stand: {on: pfTry(() => !!sideEve.on, false), held: held(pfTry(() => SSO_SC, '')) && held(pfTry(() => SSO_SA, '')), npc: !!(pfTry(() => side.rec.pilot, null) && !g.corporation && !g.alliance)},
+    wp: {on: pfTry(() => itRpSendOn(), false), held: held(pfTry(() => SSO_WP, ''))},   // 047
   };
 }
 // One object for the active pilot (the plan's section 10: a second pilot later is a second one of these, and a switcher on the card)
@@ -24038,8 +24079,8 @@ function sideEveRefused(){
 // with being redirected to eve every time i wanted to turn something on. your design solved that problem."). Logged out, the switches
 // only record the choice and the login asks EVE for exactly those; logged in, a feature turned on without its permission waits (the EVE
 // lamp amber) for one Continue to EVE, which asks for every feature on (a new authorization's token carries only what it asked for).
-const SSO_FEAT_NAME = {online: "Show when I'm online in EVE", loc: 'Use my game location', stand: "Use my corporation's and alliance's EVE standings"};
-function eveFeatInfoHtml(k){ return k === 'online' ? infoBtnHtml('side#online') : k === 'loc' ? infoBtnHtml('intel#game') : infoBtnHtml('side#eve'); }
+const SSO_FEAT_NAME = {online: "Show when I'm online in EVE", loc: 'Use my game location', stand: "Use my corporation's and alliance's EVE standings", wp: 'Set my destination in EVE'};   // wp: build queue 047
+function eveFeatInfoHtml(k){ return k === 'online' ? infoBtnHtml('side#online') : k === 'loc' ? infoBtnHtml('intel#game') : k === 'wp' ? infoBtnHtml('intel') : infoBtnHtml('side#eve'); }   // wp (047): Intel's [Set destination]
 function eveFeatLine(k, f, m){
   if(!ssoClientId()) return {t: 'Works on threatvector.space', s: 'off'};
   if(!m.eve){
@@ -24047,8 +24088,9 @@ function eveFeatLine(k, f, m){
     return f.on ? {t: 'EVE will ask for this when you log in', s: 'lit'} : {t: 'Not asked for', s: 'off'};
   }
   if(k === 'stand' && f.npc) return {t: 'NPC corporation: typed lists are used', s: 'off'};
-  if(!f.on) return {t: k === 'loc' ? 'Off: Intel counts jumps from your Local log' : k === 'stand' ? 'Off: your typed lists are used' : 'Off', s: 'off'};
+  if(!f.on) return {t: k === 'loc' ? 'Off: Intel counts jumps from your Local log' : k === 'stand' ? 'Off: your typed lists are used' : k === 'wp' ? "Off: the Intel map's Set destination asks for it" : 'Off', s: 'off'};
   if(!f.held) return {t: "Needs EVE's OK: one trip to EVE, then it starts", s: 'warn'};
+  if(k === 'wp') return {t: 'From the Intel map: right-click a system (on a phone, press it)', s: 'lit'};   // 047
   if(k === 'online'){
     if(ssoOn.stop) return {t: 'Stopped', s: 'warn'};
     const v = ssoOnShown();
@@ -24075,7 +24117,7 @@ function eveFeatLine(k, f, m){
 function eveLineHtml(L){ return escapeHtml(L.t) + (!L.at ? '' : L.span === 'data-it-glat' ? `<span data-it-glat>${escapeHtml(L.at)}</span> UTC` : `<span data-sso-onat>${escapeHtml(L.at)}</span> UTC`); }
 function eveAgainHtml(again){ return again ? ' <button type="button" data-sso="eve-go">Log in again</button>' : ''; }
 function eveFeatMsgHtml(k){
-  const msg = k === 'online' ? ssoOn.msg : k === 'loc' ? itGl.msg : sideEve.msg;
+  const msg = k === 'online' ? ssoOn.msg : k === 'loc' ? itGl.msg : k === 'wp' ? itRp.msg : sideEve.msg;
   return msg ? `<div class="status side-msg${itOnHtml(msg.err, 'err')}">${escapeHtml(msg.text)}${eveAgainHtml(msg.again)}</div>` : '';
 }
 function eveFeatHtml(k, m){
@@ -24084,10 +24126,10 @@ function eveFeatHtml(k, m){
     <div class="pp-fs" data-l="${escapeHtml(L.s)}">${eveLineHtml(L)}</div>${eveFeatMsgHtml(k)}</div>
     <input type="checkbox" class="mys-sw" role="switch" id="ppSw-${escapeHtml(k)}" data-sso="${escapeHtml(k)}"${itOnHtml(f.on && !npc, 'checked')}${itOnHtml(!ssoClientId() || npc, 'disabled')}></div>`;
 }
-function eveFeatsHtml(m){ return ['online', 'loc', 'stand'].map(k => eveFeatHtml(k, m)).join(''); }
+function eveFeatsHtml(m){ return ['online', 'loc', 'stand', 'wp'].map(k => eveFeatHtml(k, m)).join(''); }
 function eveGoHtml(m){
   if(!m.pend.length) return '';
-  const what = m.pend.map(k => ({online: 'online status', loc: 'location', stand: 'the contacts'})[k]).join(' and ');
+  const what = m.pend.map(k => ({online: 'online status', loc: 'location', stand: 'the contacts', wp: 'waypoints'})[k]).join(' and ');
   return `<div class="pp-go"><button type="button" class="mys-primary" data-sso="eve-go"${itOnHtml(sso.busy || sso.starting, 'disabled')}>Continue to EVE</button>${ctxHtml(`One trip: EVE asks for ${what}`)}</div>`;
 }
 function eveTabHtml(){
@@ -24158,7 +24200,9 @@ const SSO_ON = 'esi-location.read_online.v1';   // v2026.11.09.1 (029): Show whe
 // v2026.11.09.2 (030): Use my corporation's and alliance's EVE standings (both registered on the dev app; production's alliance scope: the
 // owner's hand test). Personal contacts (esi-characters.read_contacts.v1) are not read (the owner).
 const SSO_SC = 'esi-corporations.read_contacts.v1', SSO_SA = 'esi-alliances.read_contacts.v1';
-const SSO_SCOPE_NAMES = {[SSO_LOC]: 'Location', [SSO_ON]: 'Online status', [SSO_SC]: 'Corporation contacts', [SSO_SA]: 'Alliance contacts'};
+// build queue 047: Set my destination in EVE (the route planner; registered on both apps, claude/reference/eve-sso-apps.md)
+const SSO_WP = 'esi-ui.write_waypoint.v1';
+const SSO_SCOPE_NAMES = {[SSO_LOC]: 'Location', [SSO_ON]: 'Online status', [SSO_SC]: 'Corporation contacts', [SSO_SA]: 'Alliance contacts', [SSO_WP]: 'Waypoints'};
 const SSO_EARLY_MS = 60000, SSO_BACKOFF_S = [30, 60, 120, 300], SSO_BACK_MS = 30000;
 const SSO_APPS_URL = 'https://developers.eveonline.com/authorized-apps';
 const SSO_BTN_IMG = 'data:image/png;base64,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';   // CCP's "Log in with EVE Online", black, large (DLA 7.2, unaltered)
@@ -24206,6 +24250,7 @@ function ssoWant(){
   try{ if(it.set.gameLoc) w.push(SSO_LOC); }catch(e){ }
   try{ if(ssoOn.show) w.push(SSO_ON); }catch(e){ }
   try{ if(sideEve.on) w.push(SSO_SC, SSO_SA); }catch(e){ }   // 030
+  try{ if(itRpSendOn()) w.push(SSO_WP); }catch(e){ }   // 047
   return w;
 }
 function ssoHeld(scope){ return !!(sso.scp && sso.scp.includes(scope)); }
@@ -24215,9 +24260,10 @@ function ssoMsg(from, text, err){
   if(from === 'loc' && sso.who){ itGl.msg = text ? {text, err: !!err} : null; itRender(true); renderEveTab(); }
   else if(from === 'online' && sso.who){ ssoOn.msg = text ? {text, err: !!err} : null; ssoOnRedraw(); }
   else if(from === 'stand' && sso.who){ sideEve.msg = text ? {text, err: !!err} : null; renderSidePanel(); }   // 030: the Standings section's line
+  else if(from === 'wp' && sso.who){ itRp.msg = text ? {text, err: !!err} : null; renderSidePanel(); }   // 047: Set my destination in EVE
   else { sso.note = text ? {text, err: !!err} : null; renderSidePanel(); }
 }
-const SSO_FROM = ['loc', 'online', 'stand', 'eve'];   // where a trip to EVE started (032: 'eve', the profile's EVE tab)
+const SSO_FROM = ['loc', 'online', 'stand', 'eve', 'wp'];   // 047: 'wp', the Intel map's Set destination   // where a trip to EVE started (032: 'eve', the profile's EVE tab)
 // want: the permissions a feature needs; the request asks for those, the ones this tab holds and the ones of the features that are on,
 // because EVE gives a later login only what it asks for (the owner's hand test, 2026-11-08: a login asking for nothing came back with no scp)
 async function ssoStart(want, from){
@@ -24389,6 +24435,7 @@ async function ssoFinish(ret){
     ssoOn.stop = ''; ssoOn.next = 0;   // 029: a new login: the online check starts again
     if(want.includes(SSO_ON)) ssoOnGranted();
     if(want.includes(SSO_SC)) sideEveGranted();   // 030: on only with both contacts permissions (else SSO-07)
+    if(want.includes(SSO_WP)) itRpGranted();   // 047
     renderSidePanel(); ssoOnPump(); ssoOnHello();
   }catch(e){
     if(!had) ssoEnd(); else sso.busy = false;
@@ -24479,6 +24526,7 @@ function ssoInit(panel){
     else if(k === 'online') ssoOnToggle(now);   // 029
     else if(k === 'loc') itGlToggle({checked: now});   // 028, on the EVE tab since 032
     else if(k.startsWith('st')) sideEveAction(k, b, now);   // 030: Use my corporation's and alliance's EVE standings
+    else if(k === 'wp') itRpSendToggle(now);   // 047: Set my destination in EVE
   });
   ssoOnInit();
   sideEveInit();   // 030
@@ -26004,7 +26052,7 @@ const IT_NEAR_EXTRA = 5;
 function itNearDefault(){ return Math.max(it.set.range, Math.min(itKillRange(), it.set.range + IT_NEAR_EXTRA)); }
 function itNearReach(){ return it.set.nearRange == null ? itNearDefault() : Math.max(it.set.range, Math.min(itKillRange(), it.set.nearRange)); }
 function itNearCtx(){ return itMySys() ? `last ${it.set.forget} min, within ${itNearReach()} jumps, nearest first` : `last ${it.set.forget} min, nearest first`; }
-function itMapCtx(){ return `around you, ${itMapReach()} jumps · hover a system or a row for its route to you; press to keep it`; }
+function itMapCtx(){ return `around you, ${itMapReach()} jumps · hover a system or a row for its route to you; press to keep it; right-click to set destination`; }   // 047
 const IT_ALERT_GAP_MS = 30000;               // one alert per system per 30 s
 // v2026.11.01.8 (the owner: "volume control for the intel alerts. they're a little quiet"; "add ability for user to pick their own
 // alert sound"; plan: Project doc roadmap/alert-sound-plan.md): two slots, Near You (1 jump up to the alert range) and In system
@@ -28560,6 +28608,7 @@ function itSettingsHtml(numbered){
     <div class="it-box${itWaitHtml('cls')}">${n(2, 'Intel channels')}${itWaitHtml('note')}${itChansHtml(chans)}</div>
     <div class="it-box">${n(3, 'You')}${itCharsHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
     <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
+    ${numbered ? '' : itRpBoxHtml()}
     ${numbered ? '' : itAliasBoxHtml()}
     ${leaveHosts().length ? `<div class="it-box">${n(5, 'Links outside this site')}<div class="c">${escapeHtml(leaveHosts().map(leaveName).join(', '))} open${leaveHosts().length === 1 ? 's' : ''} without asking (you chose “Don't ask again”).</div><button type="button" data-it-act="leaveask">Ask again</button></div>` : ''}
   </div>`;
@@ -28686,6 +28735,7 @@ function itExSandbox(fn){
   const rec = side.rec, eid = itEntryId, can = itAnCan, fz = itFrozenNow, pins = itm.pinned, hov = [itm.hover, itm.rowHover];
   const whSt = itWhSt, whAside = itWhAside;   // build queue 040: the example never reads or writes the user's wormholes (LESSON #162)
   itWhSt = itWhBlank(); itWhAside = true;
+  const rpAside = itRpAside; itRpAside = true;   // 047: its map keeps the shortest stargate routes (the build review)
   const X = IT_EXAMPLE, now = Date.now(), byLower = new Map(), byId = new Map(), T = itMapTable(), g = itGraphGet();
   try{
     for(const [id, n] of Object.entries(X.sys)){ byLower.set(n.toLowerCase(), Number(id)); byId.set(Number(id), n); }
@@ -28723,7 +28773,7 @@ function itExSandbox(fn){
   }finally{
     for(const k of keys){ if(has[k]) it[k] = save[k]; else delete it[k]; }
     side.rec = rec; itEntryId = eid; itAnCan = can; itFrozenNow = fz; itm.pinned = pins; [itm.hover, itm.rowHover] = hov; itExOrg = null;
-    itWhSt = whSt; itWhAside = whAside;
+    itWhSt = whSt; itWhAside = whAside; itRpAside = rpAside;
   }
 }
 // The example's frame (cached: the rows don't change, and their ages were worked out once when drawn); its map picture and markers
@@ -29032,7 +29082,7 @@ function itMapTable(){
   const xs = new Int16Array(raw(INTEL_MAP.x).buffer), ys = new Int16Array(raw(INTEL_MAP.y).buffer), sec = new Int8Array(raw(INTEL_MAP.sec).buffer), reg = raw(INTEL_MAP.reg);
   if(xs.length !== INTEL_MAP.systems || ys.length !== xs.length || sec.length !== xs.length || reg.length !== xs.length) return null;
   const g = itGraphGet(), adj = g.adj.map(a => a.slice().sort((p, q) => p - q));   // neighbours in index order: one route per system, always the same
-  itMapTab = {xs, ys, sec, reg, regions: INTEL_MAP.regions, adj, n: xs.length, p3: itMapP3(raw, xs.length)};
+  itMapTab = {xs, ys, sec, reg, regions: INTEL_MAP.regions, adj, n: xs.length, p3: itMapP3(raw, xs.length), band: itMapBand(raw, xs.length)};
   return itMapTab;
 }
 // v2026.11.04.1: each system's place in space (CCP's geographic position, not the flat map's), x then y then z for every system, 3 bytes
@@ -29042,6 +29092,14 @@ function itMapP3(raw, n){
   const b = raw(INTEL_MAP.p3); if(b.length !== n * 9) return null;
   const v = new Int32Array(n * 3);
   for(let k = 0; k < n * 3; k++){ const x = b[3 * k] | b[3 * k + 1] << 8 | b[3 * k + 2] << 16; v[k] = x & 0x800000 ? x - 0x1000000 : x; }
+  return v;
+}
+// build queue 047: each system's security band from CCP's unrounded security (0 null, 1 low, 2 high; tools/jump_table_update.py), 2 bits a
+// system, four to a byte, the first in the lowest bits; null when missing (the route planner then uses the rounded sec)
+function itMapBand(raw, n){
+  if(!INTEL_MAP.band) return null;
+  const b = raw(INTEL_MAP.band); if(b.length !== Math.ceil(n / 4)) return null;
+  const v = new Uint8Array(n); for(let i = 0; i < n; i++) v[i] = (b[i >> 2] >> ((i & 3) * 2)) & 3;
   return v;
 }
 // light-years between two systems (CCP's light-year, 9.46e15 m: the table's units are made from it), or null without the table
@@ -29112,13 +29170,13 @@ function itMapMake(){
   if(itm.el) return itm.el;
   const el = document.createElement('div'); el.className = 'it-map';
   el.innerHTML = `<div class="it-map-box"><div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button></div>`
-    + `<button type="button" class="it-map-clr" hidden>Hide all routes</button><canvas role="img" aria-label="Map of the systems around you, with the reported pilots and their routes to you"></canvas><canvas class="it-map-fx" aria-hidden="true"></canvas><div class="it-map-whp" aria-hidden="true"></div><button type="button" class="it-map-whn" data-it-whn hidden></button>`
+    + itRpSearchHtml() + `<button type="button" class="it-map-clr" hidden>Hide all routes</button><canvas role="img" aria-label="Map of the systems around you, with the reported pilots and their routes to you"></canvas><canvas class="it-map-fx" aria-hidden="true"></canvas><div class="it-map-whp" aria-hidden="true"></div><button type="button" class="it-map-whn" data-it-whn hidden></button>`
     + `<button type="button" class="it-map-you" hidden title="You're off the map here: press to center on your system" aria-label="Center on your system"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>You</button><div class="it-map-tip" hidden></div><div class="it-map-hint" aria-hidden="true">Use two fingers to move the map</div><div class="it-map-msg" hidden></div>${itMapFbarHtml()}</div>`
     + `<div class="it-map-leg"></div><div class="it-map-row"><span class="it-map-rs"></span><span class="it-map-help wide">drag to move · wheel to zoom</span><span class="it-map-help phone">two fingers move and zoom the map; one finger scrolls the page</span></div>`;
   itm.el = el; itm.box = el.querySelector('.it-map-box'); itm.cv = el.querySelector('canvas'); itm.tip = el.querySelector('.it-map-tip'); itm.hint = el.querySelector('.it-map-hint');
   itm.fx = el.querySelector('canvas.it-map-fx'); itm.you = el.querySelector('.it-map-you');
   itm.whp = el.querySelector('.it-map-whp'); itm.whn = el.querySelector('.it-map-whn'); itm.whn.addEventListener('click', itMapWhChipNext);   // 045
-  itMapBind();
+  itMapBind(); itRpSearchBind();   // 047: the search box
   // v2026.11.08.3 (026, plan section 5): on the next frame, once a frame; redrawing inside the observer's callback changed layout in the
   // same frame ("ResizeObserver loop completed with undelivered notifications"), as the Intel example's observer already avoids
   if(typeof ResizeObserver !== 'undefined'){ let raf = 0; new ResizeObserver(() => { if(raf) return; raf = requestAnimationFrame(() => { raf = 0; itMapRefresh(); }); }).observe(itm.box); }
@@ -29164,6 +29222,7 @@ function itMapRefresh(force){
   }
   if(beacon){ itm.beaconDone = true; itm.beaconPending = true; }
   itm.rep = itMapReports();
+  itRpUpdate();   // 047: Threat Vector's route, only when your system, the Routes settings or the flagged systems changed
   const key = itMapKey();
   if(force || laid || itm.stale || key !== itm.key){ itm.key = key; itm.stale = false; itMapDraw(); }
   else if(itPtLive()) itPtPaint();   // build queue 043: the tree shows more than the map's key holds (ships, ages, tags); it compares its own text
@@ -29173,7 +29232,7 @@ function itMapRefresh(force){
 // their labels' ages, so a label that ages or a wormhole whose time is up redraws the map through the refreshes it already has (no timer)
 function itMapKey(){
   const fq = itFlSys();
-  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}`;
+  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|rp:${itRpAside ? '' : itRp.key}`;   // 047: Threat Vector's route
 }
 // slide the map so your system is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
 function itMapCenter(draw = true){
@@ -29214,6 +29273,9 @@ function itMapYouArrow(){
   const fb = itm.el && b.parentNode === itm.box && itm.box.querySelector('.it-map-fbtns, .it-map-fcur:not([hidden])');   // 039: not over the filter bar (not in the Intel example's picture)
   if(fb){ const br = itm.box.querySelector('.it-map-fb').getBoundingClientRect(), bx = itm.box.getBoundingClientRect(), top = br.top - bx.top - 16;
     if(ay > top && Math.abs(ax - (br.left + br.right) / 2 + bx.left) < br.width / 2 + 40) ay = top; }
+  const sb = itm.el && b.parentNode === itm.box && itm.box.querySelector('.it-rp-search');   // 047: nor under the search box
+  if(sb){ const sr = sb.getBoundingClientRect(), bx = itm.box.getBoundingClientRect(), r = [sr.left - bx.left - 40, sr.top - bx.top, sr.right - bx.left + 40, sr.bottom - bx.top + 16];
+    if(sr.width > 0 && ax > r[0] && ax < r[2] && ay < r[3]) ay = r[3]; }
   b.hidden = false; b.style.left = ax + 'px'; b.style.top = ay + 'px';
   b.querySelector('svg').style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
 }
@@ -29296,7 +29358,8 @@ function itMapFitView(){
 }
 // a typical gate's length on screen now: what the zoom stages go by
 function itMapGatePx(){ return itm.G * itm.view.k; }
-function itMapRoute(i){ const r = []; let x = i; while(x !== itm.home && itm.par[x] >= 0){ r.push([x, itm.par[x]]); x = itm.par[x]; } return r; }
+// build queue 047: Threat Vector's route (Intel settings → Routes), the shortest by stargate in the Intel example; jump numbers stay itm.D's
+function itMapRoute(i){ const par = itRpParNow(), r = []; let x = i; while(x !== itm.home && par[x] >= 0 && r.length <= par.length){ r.push([x, par[x]]); x = par[x]; } return r; }
 function itMapCol(name, d){ const v = typeof getComputedStyle === 'function' ? getComputedStyle(document.documentElement).getPropertyValue(name).trim() : ''; return v || d; }
 // 039: the map's filter bar (the owner: "can you add a filter bar near the bottom like the in-game map?"): one filter at a time decides
 // each system's colour; Security status first and on every visit (not kept, like the dossier's sort). The scales are named here, beside
@@ -29818,7 +29881,8 @@ function itMapTip(i, x, y){
     const rt = itMapRoute(i).map(([a]) => itSysName(ids[a])).concat(itSysName(ids[itm.home]));
     h += `<br><span class="d">route: ${escapeHtml(rt.length > 9 ? [...rt.slice(0, 4), '…', ...rt.slice(-3)].join(' → ') : rt.join(' → '))}</span><br><span class="d">press to ${itm.pinned.has(ids[i]) ? 'hide' : 'keep'} this route</span>`;
   }
-  tip.innerHTML = h; tip.hidden = false;
+  const rp = itRpTipHtml(i); h += rp.h;   // 047: Threat Vector's route, what it couldn't avoid, the right-click hint or (a phone) the buttons
+  tip.innerHTML = h; tip.hidden = false; tip.classList.toggle('it-rp-act', rp.act);
   const tw = tip.offsetWidth, th = tip.offsetHeight;
   tip.style.left = Math.max(4, Math.min(itm.W - tw - 6, x + 14)) + 'px'; tip.style.top = (y + th + 18 > itm.H ? Math.max(4, y - th - 12) : y + 14) + 'px';
 }
@@ -30719,6 +30783,338 @@ function itMapPin(id){
   if(keep){ const row = document.querySelector(`#itNearList > .it-nb[data-it-sys="${id}"]`); if(row) itNearShow(row); }
 }
 function itMapPinTag(id){ return itm.pinned.has(id) ? '<span class="it-map-rtag" title="Its route is kept on the map: press the row again to hide it">Route shown</span>' : ''; }
+// ==== Build queue 047: THE ROUTE PLANNER (Project doc roadmap/route-planner-plan.md; mockup Claude outputs/route_planner_mockup.html) ====
+// The owner (2026-11-12): "I'd like the option to set it in game for convenience. seeing the route in the tool doesn't help much if i have to
+// manually set 25+ systems to a route manually to match the tool's route", and "a search box w/ predictive text like the in-game search on the
+// map ... right click gives you the option to do in-game route generation or the tool's method that sets waypoints for everything but allows
+// them to utilize options like "avoid gate camps"". So:
+//  * Threat Vector's route (itRpUpdate): one search from your system over the map table's gates, again only when your system, the Routes
+//    settings or the flagged systems change (itRp.key, in itMapKey). Fewest flagged systems on the way first, however long the detour (the
+//    owner: "keep my rule. they just have to turn off a setting for what to avoid if they want a shorter route"); then EVE's own cost; then
+//    fewest jumps. The cost (CCP's route guide, developers.eveonline.com/docs/guides/route-calculation/, matched against ESI's POST /route on
+//    40 sample routes at the build review, 2026-11-13): Shorter 1 a jump; Safer / Less Secure with p = exp(0.15 x penalty): into null 2p,
+//    into low p (Safer) or 0.90 (Less Secure), into high 0.90 or p. Null, low and high by the map table's band (CCP's unrounded security:
+//    tools/jump_table_update.py), never its rounded sec. The destination and your own system never count as flagged.
+//  * the map's drawn route and the tooltip's route list follow it (itMapRoute); every jump number stays the shortest by stargate (itm.D).
+//  * a search box on the map, a right-click menu on any system (on a phone, the same buttons in a pressed system's tooltip), and the
+//    destination set in EVE: one waypoint (EVE's route, the game's own settings) or every system of Threat Vector's route, one request at a
+//    time, each waiting for the last (POST /ui/autopilot/waypoint, the Waypoints permission esi-ui.write_waypoint.v1, through esiFetch).
+//  * Stored: localStorage tvRoute (the Routes settings and your avoid list, system ids) and tvRouteSend (true/false: the profile's EVE tab's
+//    "Set my destination in EVE"); dscanIntel doesn't change, so an older page reads what this one writes and ignores the new keys.
+//  * The Intel example's map keeps the shortest stargate routes (itRpAside, set in itExSandbox): it never depends on your settings or Intel.
+const IT_RP_KEY = 'tvRoute', IT_RP_SEND = 'tvRouteSend', IT_RP_PREFS = ['Shorter', 'Safer', 'LessSecure'], IT_RP_LIST_MAX = 200, IT_RP_PICK_GATE = 40;
+const IT_RP_PREF_NAME = {Shorter: 'Prefer shorter', Safer: 'Prefer safer', LessSecure: 'Prefer less secure'};
+const IT_RP_DEF = {pref: 'Shorter', pen: 50, camp: true, bub: true, host: true, mine: true, list: []};
+const itRp = {set: null, key: '', home: -1, par: null, f: null, len: null, flags: new Map(), menu: null, opener: null, out: null, sel: -1, busy: false, wait: false, prog: null, note: null, msg: null, sends: 0};
+let itRpAside = false;   // inside the Intel example's sandbox: the shortest stargate routes (itm.par)
+function itRpRead(){
+  const s = {...IT_RP_DEF, list: []}, g = itGraphGet();
+  let o = null;
+  try{ o = typeof localStorage === 'undefined' ? null : JSON.parse(localStorage.getItem(IT_RP_KEY) || 'null'); }catch(e){ o = null; }
+  if(o && typeof o === 'object'){
+    if(IT_RP_PREFS.includes(o.pref)) s.pref = o.pref;
+    if(Number.isInteger(o.pen) && o.pen >= 0 && o.pen <= 100) s.pen = o.pen;
+    for(const k of ['camp', 'bub', 'host', 'mine']) if(typeof o[k] === 'boolean') s[k] = o[k];
+    if(Array.isArray(o.list)) s.list = [...new Set(o.list.filter(id => Number.isInteger(id) && g.at.has(id)))].slice(0, IT_RP_LIST_MAX);
+  }
+  return s;
+}
+function itRpSet(){ if(!itRp.set) itRp.set = itRpRead(); return itRp.set; }
+function itRpSave(){ try{ localStorage.setItem(IT_RP_KEY, JSON.stringify(itRpSet())); }catch(e){ } }
+// the EVE tab's switch (read from storage each time: ssoWant may ask before this part of the script has run)
+function itRpSendOn(){ try{ return localStorage.getItem(IT_RP_SEND) === 'true'; }catch(e){ return false; } }
+function itRpSendSave(on){ try{ localStorage.setItem(IT_RP_SEND, on ? 'true' : 'false'); }catch(e){ } }
+// a system's band: 0 null, 1 low, 2 high (the table's band; a page whose table has none falls back to the rounded number)
+function itRpBand(T, i){ if(T.band) return T.band[i]; const s = T.sec[i]; return s <= 0 ? 0 : s < 45 ? 1 : 2; }
+function itRpCost(T, y, pref, p){
+  if(pref === 'Shorter') return 1;
+  const b = itRpBand(T, y);
+  if(b === 0) return 2 * p;
+  if(b === 1) return pref === 'Safer' ? p : 0.9;
+  return pref === 'Safer' ? 0.9 : p;
+}
+// what the avoid options flag, per map index: its reasons, for the tooltip's words. Every system Intel holds within "forget reports after"
+// (the owner: "every report that has hostiles, neutrals, camps, bubbles, kills or ess"), wherever it is; a clear report flags nothing.
+function itRpFlags(){
+  const out = new Map(), s = itRpSet(), g = itGraphGet(), now = Date.now(), keep = now - it.set.forget * 60000;
+  const add = (i, w) => { if(i === undefined) return; const a = out.get(i); if(!a) out.set(i, [w]); else if(!a.includes(w)) a.push(w); };
+  if(s.camp || s.bub || s.host) for(const st of it.near.values()){
+    if(st.t < keep || st.kind === 'clear') continue;
+    const i = g.at.get(st.sys); if(i === undefined) continue;
+    itNearDemote(st, keep);
+    if(s.camp && itGateTagHtml(st, now, true)) add(i, 'camp');
+    if(s.bub && itBubTagHtml(st, now)) add(i, 'bubble');
+    if(!s.host) continue;
+    if(st.kind !== 'tag'){   // the side as the map's ring gives it (itMapReports); friendlies only flag nothing
+      const L = itLive(st, now);
+      if(!L.friendlyOnly && (L.pilots.length || L.ships.length || L.extra || L.count)) add(i, L.pilots.some(x => x.side === 'h') || (!L.pilots.length && !(L.count && L.countKind === 'neut')) ? 'hostiles' : 'neutrals');
+    }
+    if((st.kills || []).some(x => x.t >= keep)) add(i, 'kills');
+    if(itEssTagHtml(st, now)) add(i, 'ESS');
+  }
+  if(s.mine) for(const id of s.list) add(g.at.get(id), 'avoid list');
+  return out;
+}
+// Threat Vector's route from your system to every system (a search on (flagged, cost, jumps), neighbours in index order: one route each)
+function itRpUpdate(){
+  if(itRpAside || !itm.P || itm.home < 0) return false;
+  const T = itMapTable(); if(!T) return false;
+  const s = itRpSet(), flags = itRpFlags(), home = itm.home, pen = s.pref === 'Shorter' ? 0 : s.pen;
+  const key = `${home}|${s.pref}|${pen}|${[...flags].map(([i, w]) => `${i}:${w.join('+')}`).sort().join(',')}`;
+  if(key === itRp.key && itRp.par && itRp.home === home){ itRp.flags = flags; return false; }
+  const n = T.n, p = Math.exp(0.15 * pen), f = new Int32Array(n).fill(1 << 30), c = new Float64Array(n).fill(Infinity), len = new Int32Array(n).fill(-1), par = new Int32Array(n).fill(-1), done = new Uint8Array(n);
+  f[home] = 0; c[home] = 0; len[home] = 0;
+  const near = (a, b) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a));
+  const less = (a, b) => f[a] < f[b] || (f[a] === f[b] && (near(c[a], c[b]) ? len[a] < len[b] : c[a] < c[b]));
+  const h = [home];
+  const up = (k) => { while(k > 0){ const q = (k - 1) >> 1; if(!less(h[k], h[q])) break; [h[k], h[q]] = [h[q], h[k]]; k = q; } };
+  const down = (k) => { for(;;){ const l = 2 * k + 1, r = l + 1; let m = k; if(l < h.length && less(h[l], h[m])) m = l; if(r < h.length && less(h[r], h[m])) m = r; if(m === k) break; [h[k], h[m]] = [h[m], h[k]]; k = m; } };
+  while(h.length){
+    const x = h[0], last = h.pop(); if(h.length){ h[0] = last; down(0); }
+    if(done[x]) continue; done[x] = 1;
+    const fx = f[x] + (x !== home && flags.has(x) ? 1 : 0);   // a system counts once you go through it: the destination never does
+    for(const y of T.adj[x]){
+      if(done[y]) continue;
+      const cy = c[x] + itRpCost(T, y, s.pref, p), ly = len[x] + 1;
+      if(fx < f[y] || (fx === f[y] && (near(cy, c[y]) ? ly < len[y] : cy < c[y]))){ f[y] = fx; c[y] = cy; len[y] = ly; par[y] = x; h.push(y); up(h.length - 1); }
+    }
+  }
+  Object.assign(itRp, {key, home, par, f, len, flags});
+  return true;
+}
+// the parents the map's routes follow: Threat Vector's route, or the shortest by stargate in the Intel example (and before it is worked out)
+function itRpParNow(){ return !itRpAside && itRp.par && itRp.home === itm.home ? itRp.par : itm.par; }
+// Threat Vector's route to i, you first and i last (map indexes), or null (no gate route)
+function itRpPath(i){
+  const par = itRpParNow(); if(!par || i < 0 || itm.home < 0) return null;
+  const out = []; let x = i;
+  while(x >= 0 && x !== itm.home && out.length <= par.length){ out.push(x); x = par[x]; }
+  if(x !== itm.home) return null;
+  out.push(itm.home); return out.reverse();
+}
+// the flagged systems a route passes (not you, not the destination), as "X (camp, kills)"
+function itRpWarn(path){ if(!path || itRpAside) return []; const ids = itGraphGet().ids; return path.slice(1, -1).filter(x => itRp.flags.has(x)).map(x => `${itSysName(ids[x])} (${itRp.flags.get(x).join(', ')})`); }
+function itRpWarnText(w){ return `⚠ No route avoids all: passes ${w.join(', ')}`; }
+function itRpTouch(){ return typeof matchMedia === 'function' && (matchMedia('(hover: none)').matches || matchMedia('(max-width: 599px)').matches); }
+// the tooltip's lines (itMapTip): Threat Vector's route when it differs from the shortest, what it couldn't avoid, the avoid list, the
+// right-click hint; on a phone, once its route is kept (a press), the three buttons
+function itRpTipHtml(i){
+  if(itRpAside || i < 0 || i === itm.home) return {h: '', act: false};
+  const ids = itGraphGet().ids, gid = ids[i], d = itm.D[i], path = d > 0 ? itRpPath(i) : null;
+  let h = '', act = false;
+  if(path && path.length - 1 !== d) h += `<br><span class="it-rp-n">Threat Vector's route: <b>${path.length - 1} jumps</b> <span class="d">(shortest ${d})</span></span>`;
+  const w = itRpWarn(path);
+  if(w.length) h += `<br><span class="it-rp-w">${escapeHtml(itRpWarnText(w))}</span>`;
+  if(itRpSet().list.includes(gid)) h += '<br><span class="d">on your avoid list</span>';
+  if(d >= 0){
+    if(!itRpTouch()) h += '<br><span class="d">right-click: set destination</span>';
+    else if(itm.pinned.has(gid)){ h += itRpBtnsHtml(i, true); act = true; }
+  }
+  return {h, act};
+}
+// the menu's (and the phone tooltip's) three buttons
+function itRpBtnsHtml(i, inTip){
+  const ids = itGraphGet().ids, gid = ids[i], d = itm.D[i], can = d > 0, path = can ? itRpPath(i) : null, w = itRpWarn(path), on = itRpSet().list.includes(gid);
+  const role = inTip ? '' : ' role="menuitem"';
+  return `<div class="it-rp-btns${inTip ? ' it-rp-intip' : ''}"${inTip ? ` role="group" aria-label="${escapeHtml(itSysName(gid))}"` : ''}>`
+    + `<button type="button"${role} data-it-rp-go="eve" data-it-rp-i="${Number(i)}"${can ? '' : ' disabled'}>Set destination <span>(EVE's route)</span></button>`
+    + `<button type="button"${role} data-it-rp-go="tv" data-it-rp-i="${Number(i)}"${can ? '' : ' disabled'}>Set destination <span>(Threat Vector's route)</span>${path ? `<small>${path.length - 1} jump${path.length === 2 ? '' : 's'}${w.length ? ` · ⚠ ${w.length} flagged` : ''}</small>` : ''}</button>`
+    + `<button type="button"${role} class="it-rp-av" data-it-rp-av="${Number(gid)}"${i === itm.home ? ' disabled' : ''}>${on ? 'Stop avoiding' : 'Avoid this system'}</button></div>`;
+}
+// ---- the right-click menu (a menu: no close button; Esc, a press outside or a pick close it; the focus back where it came from)
+function itRpMenuOpen(i, x, y, opener){
+  itRpMenuClose(false);
+  if(i < 0 || !itm.box || itRpAside) return;
+  const ids = itGraphGet().ids, m = document.createElement('div');
+  m.className = 'it-rp-menu'; m.setAttribute('role', 'menu'); m.setAttribute('aria-label', `${itSysName(ids[i])}: set destination`);
+  m.innerHTML = `<div class="it-rp-mh"><b>${escapeHtml(itSysName(ids[i]))}</b>${i === itm.home ? ' <span class="d">· you are here</span>' : itm.D[i] < 0 ? ' <span class="d">· no gate route</span>' : ''}</div>${itRpBtnsHtml(i, false)}`;
+  itm.box.appendChild(m); itRp.menu = m; itRp.opener = opener || null;
+  const mw = m.offsetWidth, mh = m.offsetHeight;
+  m.style.left = Math.max(4, Math.min(itm.W - mw - 4, x)) + 'px'; m.style.top = Math.max(4, Math.min(itm.H - mh - 4, y)) + 'px';
+  itMapTip(-1);
+  const b = m.querySelector('button:not([disabled])'); if(b) b.focus({preventScroll: true});
+  itRp.out = (e) => { if(itRp.menu && !itRp.menu.contains(e.target)) itRpMenuClose(false); };
+  document.addEventListener('pointerdown', itRp.out, true);
+}
+function itRpMenuClose(back = true){
+  if(!itRp.menu) return;
+  itRp.menu.remove(); itRp.menu = null;
+  document.removeEventListener('pointerdown', itRp.out, true);
+  if(back && itRp.opener && itRp.opener.isConnected) itRp.opener.focus({preventScroll: true});
+  itRp.opener = null;
+}
+function itRpMenuKey(e){
+  if(!itRp.menu) return false;
+  if(e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); itRpMenuClose(); return true; }
+  if(e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Home' || e.key === 'End'){
+    const bs = [...itRp.menu.querySelectorAll('button:not([disabled])')], k = bs.indexOf(document.activeElement);
+    const nx = e.key === 'Home' ? 0 : e.key === 'End' ? bs.length - 1 : (k + (e.key === 'ArrowDown' ? 1 : -1) + bs.length) % bs.length;
+    if(bs[nx]) bs[nx].focus({preventScroll: true});
+    e.preventDefault(); return true;
+  }
+  if(e.key === 'Tab'){ itRpMenuClose(false); return false; }
+  return false;
+}
+// ---- the note after a press (in the map box; its close button; role=status)
+function itRpNoteHtml(){
+  const n = itRp.note; if(!n) return '';
+  if(n.ask) return `<b>Setting your destination needs your EVE login with the Waypoints permission.</b><br><span class="d">One trip to EVE: it asks for Waypoints${sso.who ? '' : ' and logs you in'}. Then press Set destination again.</span><div class="it-rp-nb"><button type="button" class="mys-primary" data-it-rp-eve${ssoClientId() && !sso.busy && !sso.starting ? '' : ' disabled'}>Continue to EVE</button></div>`;
+  return `${n.head ? `<b>${escapeHtml(n.head)}</b>` : ''}${(n.lines || []).map(([cls, t]) => `<br><span class="${escapeHtml(cls)}">${escapeHtml(t)}</span>`).join('')}`;
+}
+function itRpNotePaint(){
+  if(!itm.box) return;
+  let el = itm.box.querySelector('.it-rp-note');
+  if(!itRp.note){ if(el) el.hidden = true; return; }
+  if(!el){ el = document.createElement('div'); el.className = 'it-rp-note'; el.setAttribute('role', 'status'); itm.box.appendChild(el); }
+  el.classList.toggle('warn', !!itRp.note.warn);
+  el.innerHTML = `${itRpNoteHtml()}<button type="button" class="x-close" data-it-rp-nx aria-label="Close" title="Close">×</button>`;
+  el.hidden = false;
+}
+function itRpNote(n){ itRp.note = n; itRpNotePaint(); }
+// ---- setting the destination in EVE (the owner: "both buttons", "(EVE's route) and (Threat Vector's route)")
+async function itRpGo(mode, i){
+  itRpMenuClose(false); itMapTip(-1);
+  const g = itGraphGet(), gid = g.ids[i];
+  if(i < 0 || i === itm.home || !(itm.D[i] > 0)) return;
+  if(itRp.busy){ itRp.wait = true; if(itRp.prog) itRp.prog(); return; }   // refused: the line stays in the progress note until the send ends
+  if(!ssoClientId()){ itRpNote({head: 'Setting your destination in EVE works on threatvector.space', lines: [], warn: true}); return; }
+  if(!sso.who || !ssoHeld(SSO_WP)){ itRpNote({ask: true}); return; }   // the build review's choice: one trip to EVE, then "press again"
+  let path = null;
+  if(mode === 'tv'){ itRpUpdate(); path = itRpPath(i); if(!path) return; if(!itm.pinned.has(gid)) itMapPin(gid); }
+  const legs = mode === 'tv' ? path.slice(1).map(x => g.ids[x]) : [gid], w = mode === 'tv' ? itRpWarn(path) : [], name = itSysName(gid);
+  let done = 0, err = null;
+  itRp.prog = () => itRpNote({head: `Setting your destination: ${name}…`, lines: [...(legs.length > 1 ? [['d', done ? `waypoint ${done} of ${legs.length}` : `${legs.length} waypoints, one after another`]] : []),
+    ...(itRp.wait ? [['it-rp-w', 'Still setting this destination: wait for it to finish, then press again.']] : [])]});
+  itRp.busy = true; itRp.wait = false; itRp.prog();
+  try{
+    for(const id of legs){
+      const q = new URLSearchParams({add_to_beginning: 'false', clear_other_waypoints: done === 0 ? 'true' : 'false', destination_id: String(id)});
+      const r = await esiFetch(`${ESI}/ui/autopilot/waypoint/?${q}`, {method: 'POST'}, 'waypoints', {scope: SSO_WP});
+      if(r.status === 204 || r.ok){ done++; itRp.prog(); continue; }
+      err = r.status; break;
+    }
+  }catch(e){ err = e; }
+  itRp.busy = false; itRp.wait = false; itRp.prog = null;
+  if(err === null){
+    itRp.sends++; if(!itRpSendOn()){ itRpSendSave(true); renderSidePanel(); }   // set on the first send that worked: the EVE tab shows it
+    const lines = mode === 'eve' ? [['d', "EVE plans the route with your game's autopilot settings."]]
+      : [...(w.length ? [['it-rp-w', itRpWarnText(w)]] : []), ['d', 'Every system is a waypoint: with Disable Autopilot at Each Waypoint on, the autopilot stops at each.']];
+    itRpNote({head: mode === 'eve' ? `Destination set: ${name}` : `Destination set: ${name}, ${legs.length} jump${legs.length === 1 ? '' : 's'}`, lines, warn: w.length > 0});
+    return;
+  }
+  // what stopped it: the waypoints that went in stay in EVE
+  const at = done ? ` It stopped after waypoint ${done} of ${legs.length} (${itSysName(legs[done - 1])}).` : '';
+  if(err === 401) itRpNote({head: withCode('ESI refused the login, so nothing more was sent.' + at, 'SSO-08'), lines: [['d', 'Log in again on the profile\'s EVE tab.']], warn: true});
+  else if(err === 403){ itRpSendSave(false); renderSidePanel(); itRpNote({head: withCode("EVE didn't give this login the Waypoints permission, so Set my destination in EVE is off." + at, 'SSO-07'), lines: [], warn: true}); }
+  else if(err && err.code) itRpNote({head: withCode(err.message + at, err.code), lines: [], warn: true});
+  else itRpNote({head: withCode(`EVE didn't take the destination (${typeof err === 'number' ? `ESI answered ${err}` : 'ESI couldn\'t be reached'}).${at}`, 'ROUTE-01'), lines: [['d', 'Check that your character is logged in to the game, then press again.']], warn: true});
+}
+// back from EVE's page (ssoFinish): the switch stays on only with its permission
+function itRpGranted(){
+  if(ssoHeld(SSO_WP)){ itRpSendSave(true); itRp.msg = {text: 'Ready: press Set destination on the Intel map again.'}; itRp.note = null; }
+  else { itRpSendSave(false); itRp.msg = {text: withCode("EVE didn't give the Waypoints permission, so Set my destination in EVE is off.", 'SSO-07'), err: true}; }
+  renderSidePanel();
+}
+function itRpSendToggle(on){ itRpSendSave(on); itRp.msg = null; renderSidePanel(); }
+function itRpAvoid(gid){
+  const s = itRpSet(), k = s.list.indexOf(gid);
+  if(k >= 0) s.list.splice(k, 1); else if(s.list.length < IT_RP_LIST_MAX && itGraphGet().at.has(gid)) s.list.push(gid);
+  itRpSave(); itRpMenuClose(false); itRpRefresh();
+}
+// a setting or the list changed: the routes again, the map, and the Routes box if it is on screen
+function itRpRefresh(focusSel){
+  itRp.key = '';
+  if(typeof itm !== 'undefined' && itm.el) itMapRefresh(true);
+  const box = document.querySelector('[data-it-rp-box]');
+  if(box){ box.outerHTML = itRpBoxHtml(); const nb = document.querySelector('[data-it-rp-box]'); if(nb){ nb.querySelectorAll('input[type=range]').forEach(rangeFillSet); if(focusSel){ const f = nb.querySelector(focusSel); if(f) f.focus({preventScroll: true}); } } }
+}
+// ---- the search box (top left of the map; on a phone under the zoom buttons): suggestions as you type, like the game's map search
+function itRpSearchHtml(){
+  return '<div class="it-rp-search"><input type="search" placeholder="Search systems" aria-label="Search systems" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="itRpSug" aria-autocomplete="list" maxlength="40"><ul id="itRpSug" class="it-rp-sug" role="listbox" aria-label="Systems" hidden></ul></div>';
+}
+function itRpSearchBind(){
+  const f = itm.el && itm.el.querySelector('.it-rp-search'); if(!f || f.dataset.bound) return; f.dataset.bound = '1';
+  const inp = f.querySelector('input'), ul = f.querySelector('ul');
+  let opts = [], cur = -1;
+  const close = () => { ul.hidden = true; inp.setAttribute('aria-expanded', 'false'); inp.removeAttribute('aria-activedescendant'); cur = -1; };
+  const show = () => {
+    const q = inp.value.trim().toLowerCase(), T = itMapTable(), g = itGraphGet(); cur = -1;
+    if(!q || !it.names || !T || !itm.D){ opts = []; close(); return; }
+    const a = [], b = [];
+    for(const nm of it.names.list){ if(nm.startsWith(q)) a.push(nm); else if(b.length < 8 && nm.includes(q)) b.push(nm); }
+    opts = [...a.sort(), ...b.sort()].slice(0, 8).map(nm => it.names.byLower.get(nm)).filter(id => g.at.get(id) !== undefined);
+    ul.innerHTML = opts.map((id, k) => { const i = g.at.get(id), d = itm.D[i]; return `<li role="option" id="itRpo${k}" data-it-rp-pick="${Number(id)}" aria-selected="false"><span class="it-sn ${escapeHtml(itSecClass(id))}">${escapeHtml(itSysName(id))}</span> <span class="d">${escapeHtml(T.regions[T.reg[i]] || '')} · ${escapeHtml(d === 0 ? 'you' : d < 0 ? 'no gate route' : `${d} j`)}</span></li>`; }).join('')
+      || '<li class="d" role="option" aria-disabled="true">No system by that name</li>';
+    ul.hidden = false; inp.setAttribute('aria-expanded', 'true');
+  };
+  const mark = () => { [...ul.children].forEach((li, k) => { li.classList.toggle('on', k === cur); li.setAttribute('aria-selected', String(k === cur)); }); if(cur >= 0) inp.setAttribute('aria-activedescendant', `itRpo${cur}`); else inp.removeAttribute('aria-activedescendant'); };
+  inp.addEventListener('input', show);
+  inp.addEventListener('focus', () => { if(inp.value.trim()) show(); });
+  inp.addEventListener('blur', () => setTimeout(() => { if(document.activeElement !== inp) close(); }, 150));
+  inp.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowDown' && opts.length){ if(ul.hidden) show(); cur = Math.min(opts.length - 1, cur + 1); mark(); e.preventDefault(); }
+    else if(e.key === 'ArrowUp' && opts.length){ cur = Math.max(0, cur - 1); mark(); e.preventDefault(); }
+    else if(e.key === 'Enter'){ if(opts.length && !ul.hidden){ itRpPick(opts[Math.max(0, cur)]); close(); } e.preventDefault(); }
+    else if(e.key === 'Escape' && !ul.hidden){ close(); e.preventDefault(); e.stopPropagation(); }
+    else if((e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey)) && itRp.sel >= 0 && itm.Q){ e.preventDefault(); itRpMenuOpen(itRp.sel, itm.Q[2 * itRp.sel] + 10, itm.Q[2 * itRp.sel + 1] + 10, inp); }
+  });
+  ul.addEventListener('mousedown', (e) => { const li = e.target.closest('[data-it-rp-pick]'); if(li){ e.preventDefault(); itRpPick(Number(li.dataset.itRpPick)); close(); } });
+}
+// a system picked: the map centred on it (zoomed in to a gate at least IT_RP_PICK_GATE px), its route kept, its tooltip open
+function itRpPick(id){
+  const i = itGraphGet().at.get(id); if(i === undefined || !itm.P) return;
+  const inp = itm.el.querySelector('.it-rp-search input'); if(inp) inp.value = itSysName(id);
+  itRp.sel = i;
+  const v = itm.view, gp = itMapGatePx(); if(gp < IT_RP_PICK_GATE) v.k = Math.min(itm.kMax, v.k * IT_RP_PICK_GATE / Math.max(1e-6, gp));
+  v.tx = itm.W / 2 - itm.P[2 * i] * v.k; v.ty = itm.H / 2 - itm.P[2 * i + 1] * v.k;
+  if(itm.D[i] > 0 && !itm.pinned.has(id)) itMapPin(id); else itMapDraw();
+  itMapTip(i, itm.Q[2 * i], itm.Q[2 * i + 1]);
+}
+// ---- Intel settings → Routes (after "Range and alerts"; not in the Intel example's numbered setup)
+function itRpBoxHtml(){
+  const s = itRpSet(), ck = (k, t) => `<label><input type="checkbox" data-it-rp-set="${k}"${s[k] ? ' checked' : ''}> ${t}</label>`;
+  const rows = s.list.map(id => `<li><span class="it-sn ${escapeHtml(itSecClass(id))}">${escapeHtml(itSysName(id))}</span><button type="button" data-it-rp-av="${Number(id)}" aria-label="${escapeHtml(`Remove ${itSysName(id)}`)}">Remove</button></li>`).join('');
+  return `<div class="it-box it-rp-box" data-it-rp-box><div class="k">Routes</div>`
+    + `<div class="it-rp-pref" role="radiogroup" aria-label="Route preference">${IT_RP_PREFS.map(p => `<label><input type="radio" name="itRpPref" value="${p}" data-it-rp-set="pref"${s.pref === p ? ' checked' : ''}> ${IT_RP_PREF_NAME[p]}</label>`).join('')}</div>`
+    + `<label class="it-rp-pen">security penalty <input type="range" min="0" max="100" step="1" value="${Number(s.pen)}" data-it-rp-set="pen" aria-label="Security penalty"${s.pref === 'Shorter' ? ' disabled' : ''}> <output>${Number(s.pen)}</output></label>`
+    + `<div class="it-rp-avk">avoid</div>${ck('camp', 'gate camps')}${ck('bub', 'bubbles')}${ck('host', 'systems with reported hostiles, neutrals, kills or ESS')}${ck('mine', 'systems on my avoid list')}`
+    + `<ul class="it-rp-list">${rows || '<li class="d">Your avoid list is empty. Right-click a system on the map to add it.</li>'}</ul>`
+    + `<form class="it-rp-add" autocomplete="off"><input type="text" name="sys" placeholder="System, e.g. 8BA-RA" aria-label="System to avoid" maxlength="40" spellcheck="false"><button type="submit">Avoid</button></form><div class="it-rp-msg" role="status"></div>`
+    + `<div class="c">For the map's routes and “Set destination (Threat Vector's route)”. EVE's route uses your game settings.</div></div>`;
+}
+// the card's events (bound once, from the Intel panel's start-up): the Routes box, the map's menu, buttons and note
+function itRpBind(el){
+  el.addEventListener('change', (e) => {
+    const t = e.target.closest && e.target.closest('[data-it-rp-set]'); if(!t) return;
+    const s = itRpSet(), k = t.dataset.itRpSet;
+    if(k === 'pref'){ if(IT_RP_PREFS.includes(t.value)) s.pref = t.value; }
+    else if(k === 'pen') s.pen = Math.max(0, Math.min(100, Math.round(Number(t.value)) || 0));
+    else s[k] = !!t.checked;
+    itRpSave(); itRpRefresh(k === 'pref' ? `[data-it-rp-set="pref"][value="${s.pref}"]` : `[data-it-rp-set="${k}"]`);
+  });
+  el.addEventListener('input', (e) => { const t = e.target.closest && e.target.closest('[data-it-rp-set="pen"]'); if(t){ const o = t.parentNode.querySelector('output'); if(o) o.textContent = t.value; } });
+  el.addEventListener('submit', (e) => {
+    const f = e.target.closest && e.target.closest('.it-rp-add'); if(!f) return; e.preventDefault();
+    const v = String(f.sys.value || '').trim(), id = v && it.names ? it.names.byLower.get(v.toLowerCase()) : undefined, msg = f.parentNode.querySelector('.it-rp-msg');
+    if(!v){ if(msg) msg.textContent = 'Type a system name.'; return; }
+    if(!it.names){ if(msg) msg.textContent = 'System names are still loading; try again in a moment.'; return; }
+    if(!id || !itGraphGet().at.has(id)){ if(msg) msg.textContent = `“${v}” isn’t a system on the map.`; f.sys.setAttribute('aria-invalid', 'true'); return; }
+    const s = itRpSet();
+    if(!s.list.includes(id)){ if(s.list.length >= IT_RP_LIST_MAX){ if(msg) msg.textContent = `Your avoid list holds ${IT_RP_LIST_MAX} systems at most.`; return; } s.list.push(id); itRpSave(); }
+    itRpRefresh('.it-rp-add input[name=sys]');
+  });
+  el.addEventListener('click', (e) => {
+    const go = e.target.closest && e.target.closest('[data-it-rp-go]');
+    if(go){ e.preventDefault(); if(!go.disabled) itRpGo(go.dataset.itRpGo, Number(go.dataset.itRpI)); return; }
+    const av = e.target.closest && e.target.closest('[data-it-rp-av]');
+    if(av){ e.preventDefault(); const inBox = !!av.closest('[data-it-rp-box]'); itRpAvoid(Number(av.dataset.itRpAv)); if(inBox){ const b = document.querySelector('[data-it-rp-box] [data-it-rp-av]') || document.querySelector('[data-it-rp-box] input[name=sys]'); if(b) b.focus({preventScroll: true}); } return; }
+    if(e.target.closest && e.target.closest('[data-it-rp-nx]')){ itRpNote(null); return; }
+    if(e.target.closest && e.target.closest('[data-it-rp-eve]')){ itRpSendSave(true); itRpNote(null); ssoStart(ssoWant(), 'wp'); }
+  });
+  el.addEventListener('keydown', (e) => { itRpMenuKey(e); }, true);   // before the card's own Escape
+}
+// another tab changed the Routes settings: read them again
+if(typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('storage', (e) => { if(e.key === IT_RP_KEY){ itRp.set = null; itRpRefresh(); } });
 // a row (Near You or the Feed) for the map: its system id, or null
 function itMapRowSys(row){
   if(row.matches('.it-nb')) return Number(row.dataset.itSys) || null;
@@ -30731,8 +31127,12 @@ function itMapZoom(x, y, f){ const v = itm.view, k = Math.max(itm.kMin, Math.min
 function itMapBind(){
   const cv = itm.cv, el = itm.el, local = (e) => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   cv.addEventListener('mousemove', (e) => { if(itm.drag && itm.drag.moved) return; const [x, y] = local(e), i = itMapPick(x, y); cv.style.cursor = i >= 0 ? 'pointer' : 'grab'; if(i !== itm.hover){ itm.hover = i; itMapLight(i); itMapDraw(); } itMapTip(i, x, y); });
-  cv.addEventListener('mouseleave', () => { if(itm.hover !== -1){ itm.hover = -1; itMapLight(-1); itMapDraw(); } itMapTip(-1); });
+  cv.addEventListener('mouseleave', (e) => { if(e.relatedTarget && itm.tip.contains(e.relatedTarget)) return;   // 047: into the phone tooltip's buttons
+    if(itm.hover !== -1){ itm.hover = -1; itMapLight(-1); itMapDraw(); } itMapTip(-1); });
   cv.addEventListener('click', (e) => { if(itm.justDragged){ itm.justDragged = false; return; } const [x, y] = local(e), i = itMapPick(x, y); if(i < 0 || itm.D[i] <= 0){ itMapTip(i, x, y); return; } itMapPin(itGraphGet().ids[i]); itMapTip(i, x, y); });
+  // 047 (the owner: "right click on a system in the map ... could also give the option to set destination"): its menu; no system under the
+  // pointer leaves the browser's own menu
+  cv.addEventListener('contextmenu', (e) => { const [x, y] = local(e), i = itMapPick(x, y); if(i < 0) return; e.preventDefault(); itRpMenuOpen(i, x, y); });
   // the wheel zooms around the pointer (the owner asked for it: over the map the page doesn't scroll, LESSON #96 bent on purpose)
   cv.addEventListener('wheel', (e) => { e.preventDefault(); const [x, y] = local(e); itMapZoom(x, y, Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0015))); }, {passive: false});
   // a mouse drag moves the map; a press that didn't move keeps or hides a route
@@ -30861,7 +31261,7 @@ function rsBind(root){
   document.getElementById('tabBtnIntel').addEventListener('click', () => switchTab('intel'));
   el.addEventListener('change', (e) => { if(e.target && e.target.id === 'intelSw') itToggle(e.target.checked); });   // v2026.10.29.1: the switch on the card
   // v2026.11.02.4: the map's links with the rows, the range steppers, and the phone's List | Map
-  itMapRowEvents(el); rsBind(el);
+  itMapRowEvents(el); rsBind(el); itRpBind(el);   // 047: the Routes box, the map's menu, buttons and note
   el.addEventListener('click', (e) => { const b = e.target.closest('[data-it-nv]'); if(!b) return; it.set.nearView = b.dataset.itNv === 'map' ? 'map' : 'list'; itWriteSet(); itRender(true); const again = el.querySelector(`[data-it-nv="${it.set.nearView}"]`); if(again) again.focus({preventScroll: true}); });
   // v.98: the "From Intel" lines
   document.getElementById('pilotFromIntel').addEventListener('click', (e) => { const b = e.target.closest('[data-fi-act]'); if(b) switchTab('intel'); });

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-13 — The route planner</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+table{border-collapse:collapse; margin:8px 0;} td,th{border:1px solid #ddd; padding:4px 8px; text-align:left; font-size:14px;} th{background:#f6f6f6;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The route planner: plan in the tool, set the destination in EVE</h1>
+<p><span class="tag">Intel</span><span class="tag">EVE login</span> 2026-11-13 &middot; <code>v2026.11.13.3</code> &middot; build queue 047 &middot; <code>roadmap/route-planner-plan.md</code></p>
+
+<h2>Why</h2>
+<p>The owner: "seeing the route in the tool doesn't help much if i have to manually set 25+ systems to a route manually to match the tool's route", and "a search box w/ predictive text like the in-game search on the map ... right click gives you the option to do in-game route generation or the tool's method that sets waypoints for everything but allows them to utilize options like "avoid gate camps"". He chose both ways ("both buttons"), their names ("(EVE's route) and (Threat Vector's route)"), and the detour rule from the mockup ("keep my rule. they just have to turn off a setting for what to avoid if they want a shorter route").</p>
+<p>Also in this delivery, from his live test of 046 with another player: "when the feed updates and the page re-draws, the wormhole list automatically scrolls to the top and the user keeps losing their place in the list".</p>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Threat Vector's route</b> (<code>itRpUpdate</code>): one search from your system, the fewest flagged systems on the way first, however long the detour, then EVE's own cost, then the fewest jumps. Flagged (Intel settings → Routes): gate camps, bubbles, systems with reported hostiles, neutrals, kills or ESS (every system Intel holds within "forget reports after"), and your avoid list. The destination and your own system never count. Worked out again only when your system, the settings or the flagged systems change.</li>
+<li><b>The cost</b> is CCP's route guide's: Prefer shorter 1 a jump; Prefer safer and Prefer less secure with p = exp(0.15 × the security penalty): into null 2p, into low p or 0.90, into high 0.90 or p. Null, low and high come from a new band per system in the map's table, worked out from CCP's unrounded security (<code>INTEL_MAP.band</code>, written by <code>tools/jump_table_update.py</code>). The table's security is rounded to hundredths, and 19 systems show 0.45 while really just under it: low sec.</li>
+<li><b>The map</b>: the drawn route (hover and kept) and the tooltip's route list follow Threat Vector's route; every jump number stays the shortest by stargate. The tooltip adds "Threat Vector's route: N jumps (shortest M)", "⚠ No route avoids all: passes …", "on your avoid list" and "right-click: set destination". The Intel example's map keeps the shortest routes.</li>
+<li><b>Search box</b> top left of the map (on a phone under the zoom buttons, 44 px): suggestions as you type, names starting with the text first; arrows, Enter, Esc; a pick centres the map on the system, zooms in, keeps its route and opens its tooltip; Shift+F10 opens its menu. "Hide all routes" moved below it.</li>
+<li><b>Right-click menu</b> on any system: Set destination (EVE's route), Set destination (Threat Vector's route) with its jumps and flagged count, Avoid this system / Stop avoiding. A menu: no close button; Esc, a press outside or a pick close it. On a phone, a pressed system's tooltip carries the same three buttons, 44 px each.</li>
+<li><b>Setting the destination</b> (<code>itRpGo</code>): EVE's route is one waypoint (<code>POST /ui/autopilot/waypoint</code>, clearing the others), and EVE plans it with your game's settings; Threat Vector's route sends every system as a waypoint, in order, one request at a time, each waiting for the last. It needs your EVE login with a new permission, Waypoints (<code>esi-ui.write_waypoint.v1</code>), a fourth feature on the profile's EVE tab: "Set my destination in EVE". Without them a note offers Continue to EVE, and you press again after the trip (the owner: "go with your recommendation"; nothing is sent by itself on the return). A failure stops the rest and says how far it got (ROUTE-01; 403 turns the switch off, SSO-07; 401, SSO-08).</li>
+<li><b>Intel settings → Routes</b>: the three preferences, the security penalty (the site's slider, off while Prefer shorter), the four avoid options and your avoid list (Avoid and Remove). Not in the Intel example's numbered setup.</li>
+<li><b>Stored</b>: localStorage <code>tvRoute</code> (the Routes settings, the avoid list as system ids) and <code>tvRouteSend</code> (true/false). <code>dscanIntel</code> is unchanged, so an older page ignores the new keys and reads what this one writes.</li>
+<li><b>The Wormholes list</b>: the card's redraw took the map's box, and the open list in it, out of the page until it was put back, and an element taken out loses its scroll. <code>itRender</code> now keeps the list's scroll and puts it back; focus was already kept.</li>
+<li><b>Info text</b>: <code>intel</code>'s Map line, [Jumps and your system], and new [Routes] and [Set destination] parts (575 words; its cap raised from 410 to 600, the owner: "push the cap to 600 and add what you need to"); <code>side#sso</code>'s feature list adds waypoints; the map's context line adds "right-click to set destination".</li>
+</ul>
+
+<h2>The build review</h2>
+<ul>
+<li>The cost rule (UNVERIFIED in the plan, from a community-written guide) was compared with ESI's own route: 40 routes from the owner's built-in browser (10 pairs across high, low and null; each preference at penalty 50, Prefer safer at 0 and 100 on five). With the table's rounded security, 36 matched and the 4 others passed systems shown as 0.45; with the band from CCP's unrounded security (build 3682781's static data, downloaded in the same browser and checked against its SHA-256), all 40.</li>
+<li>The waypoint call is in CCP's spec at the page's compatibility date (2025-08-26) as well as today's, so the header didn't change.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>route_planner_check.py</code> (stand-in SSO and ESI at the dev app's address; made-up characters and tokens): the search's rules on a made-up graph (each preference, penalty 0 and 50, the band not the rounded number, a detour round a flagged system, the fewest flagged when none is clean, the destination and you never counted); the real map (jump numbers unchanged, the drawn route and the tooltip's lines, the example's map); the search box and keyboard; the menu; the Routes box; setting the destination (asked for, Waypoints requested, one request for EVE's route, one per jump in order and never two at once for Threat Vector's, a failure, 403, 401, a press while sending, nothing without a press); a phone's tooltip buttons. Seven mutants, all caught.</li>
+<li><code>wormhole_share_check.py</code>: a long list scrolled down and the Add field being typed in, then a new Intel line: the scroll, the focus and the text kept; a mutant without the fix fails ("scroll 350 → 0").</li>
+<li>The mockup (rebuilt from main 60d75f1, the page it was made from): its test_rp.py, 39 of 39.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>A page check that runs its cases once on the page and again for each mutant must reset its stand-ins' request logs at the start of each run. Without that, the request the real run left behind made three mutants "fail" on "nothing should be sent without a press", which says nothing about the mutation. Read each mutant's failure line, not only that it failed.</li>
+<li>On a phone the map's tooltip with buttons is tall enough to open over the pressed point; the canvas then gets a <code>mouseleave</code> into it, which hid it. A tooltip that takes presses must not be hidden by the pointer moving into it.</li>
+</ul>
+</body>
+</html>
