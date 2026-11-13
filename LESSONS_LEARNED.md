@@ -190,6 +190,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #133 A data source's name says what it's about, not what's in it: open one real file before a plan counts on it (CCP's "changes" files hold IDs, not values).
 - #134 A plan's promises about the code are guesses until checked against it: who knows the answer, when a timer runs, when text is built. See also #132, #133.
 - #136 A replace checked for one match before the edit can match twice after it: check the count where the replace runs (a moved line is a duplicate until the old one is gone).
+- #163 A mutant that survives can mean the made-up world never holds the input the code guards against: give the test data that shape, and find the one case only the guard decides.
 
 **Intel and live data (chat logs, zKillboard's feed)**
 
@@ -1069,6 +1070,17 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 163. A mutant that survives can mean the made-up world never holds the input the code guards against: give the test data that shape, and find the one case only the guard decides
+
+- **What happened (build queue 044, v2026.11.13.1):** two of wormhole_sig_check's first mutants passed. Moving the wormhole reader after
+  the system reader changed nothing, because the check's made-up system names ("N30000123") never start like the words a wormhole line
+  holds ("1-3" in "class 1-3", "RZL-4"); in the real galaxy many null-sec names do. Turning off the per-ID removal mark changed nothing,
+  because every line the check re-read was already skipped by 040's older rules (a line older than the entry, the same line again).
+- **How it was caught:** the mutants, before delivery.
+- **Do this instead:** when a mutant survives, ask what input would make the guarded code decide, and put it in the test world: here
+  two made-up null-sec names starting "1-3" and "ZXB-4", and another line in the same second as the removed ID's report (the one line
+  only the mark can keep out). If no such input exists, say what the guard is for (here, also the coming import) rather than dropping it.
 
 ## 162. A sandbox that sets state aside by a list of names doesn't cover state added later: new state the sandboxed builders read (a new store) joins the list in the same change
 

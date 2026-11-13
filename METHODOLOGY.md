@@ -409,6 +409,33 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   bottom left moves the view to each in turn, nearest by gate jumps first, then newest. The list button beside Wormholes adds a system by
   hand (kept the set hours from then; shown only on the filter and in the list) or removes one; a removed one isn't
   brought back by the same line read again, only by a newer one.
+- **Signature IDs and hole details** (build queue 044): in a wormhole line only, a reader runs before the system and pilot
+  readers and takes what describes the hole, so none of it is looked up as a pilot or guessed as a system ("class",
+  "then", "1-3" in "class 1-3"). A word that is exactly a system's name stays a system, and so does a part like "ZXB-4"
+  when a system's name starts with it. It takes:
+  - **Signature IDs:** whole ("RZL-429", "rzl429") or a part ("RZL-4", "RZL-"). Three bare letters count only right after
+    wh / wormhole / drifter / sig / signature, or beside a wormhole type, and never when they are an intel, filler or ship
+    word or a dragged-in name (so a three-letter pilot right after "wh" reads as an ID: the owner accepted that).
+  - **The type** ("Z971") and where it leads: from CCP's data, each wormhole type's target system class
+    (`wormholeTargetSystemClass`), written into the page by `tools/gen_wh_table.py`. K162 is the far end of a hole opened
+    from the other side ("exit"); a type whose class CCP's data doesn't fix shows "?". A type goes with the ID written
+    beside it, else with the only ID in the line.
+  - **The class** ("class 1-3", "c5").
+  - **Life, mass and size**, only when said plainly, in the game's own steps: life under a day, under 4 hours (EOL) or
+    under an hour; mass over 50%, under 50% or under 10% (critical); size small, medium, large or XL. "Fresh", "new",
+    "frig" or "caps" on their own are left out, because they can mean a ship in the line rather than the hole. Two steps of
+    one kind in a line: the worse.
+
+  Each system keeps up to 8 IDs, newest first, each with its type, class, details, Drifter mark and who reported it. An
+  ID past "keep wormhole reports for" is dropped. A part joins the kept ID it starts (and a whole ID its part); a part that
+  fits two kept IDs is kept on its own. A later line about one ID ("RZL crit") changes only what it says. Drifter is per
+  hole: every ID in a line with "drifter" is a Drifter hole. The system stays a Drifter one while any Drifter hole, or a
+  Drifter report with no ID, is kept, and the map's label counts them ("DRIFTER ×2"). A system with both kinds gets a
+  split ring. The tags show on the Feed's line, on Near You's row (Intel reports only), in the list and on the map's label.
+  In the list, × beside an ID removes it, and Drifter with it. The ID keeps a removal mark (for 48 hours), so the same line
+  read again, an older one, or another line in the same second can't bring it back; a newer report does. Each system also
+  keeps its last 10 lines as typed (for the newest 100 systems), with who sent them and what each set, under a chevron in
+  its row. The Add form takes every property; adding one by hand leaves an "Added by you" line.
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location
   on, whichever is newer. Jumps are gate jumps from EVE's published stargate data (no jump bridges or wormholes); the
   table is checked against each new EVE build every day.
