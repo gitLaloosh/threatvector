@@ -340,7 +340,10 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   is looked up on ESI as pilot names and coloured by your Standings. One word typed by hand is a pilot only in the
   name's own capitals, and report words like linked, drag, hot or kill only when dragged in from chat. A word it can't
   place stays plain text, never guessed. A report about the ESS tags the system in Near You: white when someone is at
-  it, red when they're linked to it; a bubble that isn't a gate camp is a tag too. When a line names two systems,
+  it, red when they're linked to it; a bubble that isn't a gate camp is a tag too. A line whose only news is such a tag (a
+  bubble, a camp or a gate, at the ESS, with no pilots: build queue 045) adds the tag to the system's row in Near You, or gives
+  the system a row of its own showing the tag and who reported it: no hostile or neutral word, no alert, no ring on the map, and
+  never a start of Paths to you; it never changes what a row was reported as. A bare wormhole line gets no row. When a line names two systems,
   they're placed where the line says they are ("on Y gate", "→ Y"), else in the one within range, else the nearer; the
   other shows as a note. The copy button on a line copies its shape, names replaced, to report a line read wrong.
 - **Gates and camps:** a short name before "gate" ("T5Z gate") is read among the gates of the system the line is in. A
@@ -386,7 +389,8 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   system at the top, one row per jump. Every shortest route counts, so a system reached two equally short ways has both
   gates; a system on several routes is drawn once, and a gate's line is thicker where more pilots come through it, with an
   arrow toward you. Under each name: the count, the ships (or "hostiles" / "neutrals") and how long ago; then Camp, ESS and
-  kills, the same rules as Near You's tags (the gate, who and the ISK in their hover). No security number: the name's
+  kills, the same rules as Near You's tags (the gate, who and the ISK in their hover), and since build queue 045 Bubble and a
+  short WH / DRIFTER badge (a wormhole Intel read within "forget reports after"); a tag never adds a system to the tree. No security number: the name's
   colour carries it, its hover the number. Hover or press a system to light its routes, toward you and back to what feeds
   it; press it again, press your system or Esc to clear. Drag or two fingers move it, the wheel or a pinch zooms it;
   + / − / Fit at its top right. It's built from what Intel already has, nothing is asked of anyone, and it's drawn again
@@ -397,7 +401,12 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   reports for" in Intel settings (1 to 48 hours; anything older than 48 hours is deleted). The map's last filter,
   Wormholes, colours every kept one anywhere in New Eden, past the map's reach too, and dims the rest; on the other filters
   a wormhole Intel read within "forget reports after" and the map's reach gets two thin rings and "WH · age", like a
-  report. Feed rows and Near You show a Wormhole (or Drifter WH) badge. The list button beside Wormholes adds a system by
+  report. Feed rows and Near You show a Wormhole (or Drifter WH) badge. On the Wormholes filter (build queue 045) the rest
+  steps back: other reports' rings at 20% with no glow, the alert range's wash lighter, labels only for wormholes and you
+  (a wormhole's tag a filled pill, its name where it fits, never over another label); each wormhole a filled disc with a
+  ring (zoomed in, a glowing ring around its circle), a Drifter hot pink with its outer ring dashed; one reported in the last
+  30 minutes sends out a slow ring every 2.2 seconds (none when the device asks for less motion); and "N wormholes ›" at the
+  bottom left moves the view to each in turn, nearest by gate jumps first, then newest. The list button beside Wormholes adds a system by
   hand (kept the set hours from then; shown only on the filter and in the list) or removes one; a removed one isn't
   brought back by the same line read again, only by a newer one.
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location

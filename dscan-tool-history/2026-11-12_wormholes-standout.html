@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-12 — Wormholes stand out on the Intel map; tag-only lines in Near You</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Wormholes stand out on the Intel map; tag-only lines in Near You</h1>
+<p><span class="tag">Page</span><span class="tag">Intel</span> 2026-11-12 &middot; <code>v2026.11.12.6</code> &middot; build queue 045 &middot; plan: <code>roadmap/wormholes-standout-plan.md</code> &middot; mockup: <code>Claude outputs/wormholes_standout_mockup.html</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-12: "wormholes are getting lost in the chaos here. anything we can do to help them stand out more than other reports while on the wormholes filter for the map?"; shown the mockup: "that looks fantastic. keep all of it. 1-4 and the chip."</li>
+<li>A bug he logged: "bubbles tag doesn't show up in near you list, only in feed", flagged for "the next intel delivery". At the build review he put 045 before 044 and gave it the bug ("yes", "yes"); a bubble-only system "gets its own row"; a bare wormhole line doesn't ("wormhole reports dont need near you rows by themselves."); the Paths to you tree gets Bubble and the short wormhole badge ("b"); two info sentences move to METHODOLOGY.md ("yes").</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The Wormholes filter</b> (only there): other reports' rings at 20% with no glow and a lighter alert-range wash (<code>IT_MAP_WH_FADE</code>); labels only for wormholes and you, a wormhole's tag a filled pill in its colour, its name where it fits, never forced over another label (a step further out, 24 px, allowed); each wormhole a bold mark (<code>itMapWhBold</code>): zoomed out a filled disc with a glow, a dark edge and a ring, zoomed in a glowing ring around its circle and a second outside it.</li>
+<li><b>The pulse</b> (<code>itMapWhPulse</code>): a hole reported within <code>IT_MAP_WH_FRESH_MS</code> (30 minutes) sends out one ring every 2.2 s: CSS rings in <code>.it-map-whp</code> over the canvas, transform and opacity only (LESSON #120), written only when their places change, ignoring presses; none on other filters, in the tree or with reduced motion. They end with the map's per-minute key (<code>itMapWhKey</code>), no timer of their own.</li>
+<li><b>"N wormholes ›"</b> (<code>button.it-map-whn</code>, <code>itMapWhChipPaint</code>, <code>itMapWhChipNext</code>): bottom left on the Wormholes filter; each press centres the view (same zoom) on the next one, nearest by gate jumps, then newest ("2/7 · L5-UWT ›"); counts again when the filter is picked again; takes room from the labels like the filter bar, lifted above the bar when they'd meet, hidden while a phone's filter row is open; 44 px on a phone.</li>
+<li><b>Drifter</b> hot pink: <code>--it-wh-drifter</code> #e4b5ff → #ff5fbf (044 D15) and <code>itMapWhCol</code>'s fallback; its outer ring dashed on every filter.</li>
+<li><b>Tag-only lines</b> (the Bubble bug): a line with no pilots whose news is a Bubble, Camp / gate or "at the ESS" (<code>itTagOnly</code>) was kind 'info', so <code>itReportNear</code> dropped it and only the Feed showed the tag. Now it reaches <code>itNearAdd</code> as kind 'tag': a system with no row gets one (jumps, system, the tag, its age, "reported by X"; no word, no amber edge, no analyze icon); a system with a row only gets the tag, and the row's word, count, alert and ring stay as reported (<code>st.rt</code>, the newest real report). It never alerts, never draws a map ring (<code>itMapReports</code> skips it) and is never a Paths to you source. A row whose real report passes "forget reports after" while its tag is fresh turns tag-only (<code>itNearDemote</code>). The Near You Bubble rule is one helper now (<code>itBubTagHtml</code>), shared with the tree; the row's word is <code>itNearWordHtml</code>.</li>
+<li><b>Paths to you</b>: Bubble and a short WH / DRIFTER badge (<code>itWhBadgeHtml(…, true)</code>, a wormhole Intel read within "forget reports after") on systems already in the tree; the tree's tags come from Near You's entry for each system (<code>it.near</code>), so a tag-only system on a route shows its tag.</li>
+<li><b>Info text:</b> <code>intel</code> [Map] gains "On the Wormholes filter the rest fades, one reported in the last 30 minutes pulses, and the chip steps through them."; [Tags] gains "Bubble: a bubble not at a gate."; two sentences moved to METHODOLOGY.md (it already had both). 399 of 410 words.</li>
+<li>Nothing new stored, no request, no new error code.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li><code>wormhole_filter_check.py</code> (part "stand"): on Security the report rings at 0.95, no pulse, no chip, a plain report labelled; on Wormholes the other reports at 0.2 with no glow and no label, a report in a wormhole system at 0.95 and named, no two labels overlapping (also with 40 more fresh holes crowded in), one pulse ring per fresh hole in view (none once they're 40 minutes old, none with reduced motion), the chip's count, its first press centring the nearest, its count again after the filter is picked again; 390 px: the chip 44 px and hidden while the filter row is open. Four new mutants. The far-system pixel test now samples the zoomed-in circle (zoomed out, the disc covers the dot). Drifter's colour in the check is #ff5fbf.</li>
+<li>New <code>tag_only_check.py</code>: "&lt;S&gt; bubbled", "gate camp", "ess" rows of their own; a hostile row keeping its word and edge with Bubble added; clear then bubbled; a bare "wh" line making no row; no alert (past the 30 s gap); no ring; tree sources and the tree's Bubble; the short WH badge; the profile's count; the demotion. Five mutants. The page before this delivery fails it.</li>
+<li>The run (tier all): 22 lints, the pyfa chain (0 steps failed; the expected notice that pyfa master has new commits) and 91 page checks in 37 min, 0 flaky; the served copy 2 steps + 6 page checks, 0 failed. Sizes: source 844,909 bytes gzipped, served 522,741 (ceiling 800,000). The Wormholes filter's draw at the largest settings (500 kept, 48 h, the whole galaxy): 17–29 ms.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>No new lesson. Worth knowing: a row's time (<code>st.t</code>) is also its life in Near You and on the map, so a tag that refreshes the time has to carry the newest real report separately (<code>st.rt</code>); otherwise a bubble line would keep a hostile row alive (and alerting) after its pilots were forgotten.</li>
+</ul>
+</body>
+</html>

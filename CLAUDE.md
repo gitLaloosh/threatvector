@@ -403,9 +403,21 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   Wormholes (always last, beside its list button `[data-it-whl]`): the galaxy's canvases hidden under an HTML overlay in `itm.box`
   (`itPt`, `itPtPaint`): a top-down tree of every shortest stargate route to you from each system with hostiles, neutrals or kills
   inside the alert range (`it.set.range`, never Near You's), each system a button; no security number; the count a 3 px tag (`.it-kl
-  kh/kn`); Camp / ESS / kills from Near You's own rules in short form (`itEssTagHtml`, `itGateTagHtml(st, now, true)`,
-  `itKillBadges(ks, 0, true)`). Written only when its text changes (from itMapDraw and itMapRefresh; ages on `it.drawNow`), never in
+  kh/kn`); Camp / ESS / Bubble / kills from Near You's own rules in short form (`itEssTagHtml`, `itGateTagHtml(st, now, true)`,
+  `itBubTagHtml`, `itKillBadges(ks, 0, true)`) and, since 045, a short WH / DRIFTER badge (`itWhNear`); a tag never makes a source.
+  Written only when its text changes (from itMapDraw and itMapRefresh; ages on `it.drawNow`), never in
   the Intel example's picture (`itPtLive`: the live canvas only). `paths_to_you_check.py`.
+  Build queue 045 (roadmap/wormholes-standout-plan.md, mockup `Claude outputs/wormholes_standout_mockup.html`): on the Wormholes filter only,
+  other reports' rings fade (`IT_MAP_WH_FADE`) and only wormholes and you are labelled (a wormhole's tag a filled pill, never forced over
+  another label); each wormhole a bold mark (`itMapWhBold`), a Drifter hot pink (`--it-wh-drifter` #ff5fbf) with its outer ring dashed (on
+  every filter); a hole reported within `IT_MAP_WH_FRESH_MS` pulses (`itMapWhPulse`: CSS rings in `.it-map-whp`, transform and opacity,
+  written only when their places change, none with reduced motion); "N wormholes ›" (`button.it-map-whn`, `itMapWhChipPaint` /
+  `itMapWhChipNext`) steps the view through them nearest first, lifted above the filter bar when they'd meet, hidden while a phone's
+  filter row is open. `wormhole_filter_check.py`.
+  Tag-only lines (045, the Bubble bug): a line with no pilots whose news is a Bubble, Camp / gate or "at the ESS" (`itTagOnly`) reaches
+  Near You as kind 'tag': its own row (no word, no alert, no map ring, never a tree source) or only its tag on a row that exists, never
+  changing what that row was reported as (`st.rt`, the newest real report; `itNearDemote` turns a row tag-only once that is past
+  "forget reports after"). A bare wormhole line gets no row. `tag_only_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a
