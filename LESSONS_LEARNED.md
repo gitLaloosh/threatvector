@@ -191,6 +191,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #134 A plan's promises about the code are guesses until checked against it: who knows the answer, when a timer runs, when text is built. See also #132, #133.
 - #136 A replace checked for one match before the edit can match twice after it: check the count where the replace runs (a moved line is a duplicate until the old one is gone).
 - #163 A mutant that survives can mean the made-up world never holds the input the code guards against: give the test data that shape, and find the one case only the guard decides.
+- #164 A text transform that will meet its own output must leave that output unchanged: test it on what it made (export, import, export again).
 
 **Intel and live data (chat logs, zKillboard's feed)**
 
@@ -1070,6 +1071,16 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 164. A text transform that will meet its own output must leave that output unchanged: test it on what it made (export, import, export again)
+
+- **What happened (build queue 046, v2026.11.13.2):** the plan's mockup redacted a wormhole line by splitting it at each "<a pilot>" already
+  in it and reading the pieces one by one. A line with no placeholder read right, but a shared line read again (exported after an import) lost
+  its signature words: the piece after the placeholder had no "wh" in it, so the wormhole reader never ran on it and "sig MKV crit" became
+  "<a pilot>". Every re-export would have taken more away, and the same report from two lists would no longer have matched.
+- **How it was caught:** the round-trip check (export, import into an empty list, export again, compare the lines).
+- **Do this instead:** when a transform's output can come back to it (a redaction, a normaliser, a formatter), make it idempotent and check
+  it on its own output: here the line is read whole, with each placeholder read as one word the reader can't place.
 
 ## 163. A mutant that survives can mean the made-up world never holds the input the code guards against: give the test data that shape, and find the one case only the guard decides
 

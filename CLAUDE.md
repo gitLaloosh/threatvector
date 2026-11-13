@@ -427,6 +427,14 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   import reads it). Everything read back through `itWhEntryRead`; new fields only, so the older page still reads the store. The Add form
   is `itWhAddFull`. A mixed system's rings split by kind (`itWhArcs`, `itWhRingDraw`); on the Wormholes filter its boldest mark too (the
   disc's halves, the glowing ring) and its own report ring sits outside the marks (the owner's hand test). `wormhole_sig_check.py`.
+  Build queue 046 (roadmap/wormholes-export-import-plan.md, mockup `Claude outputs/wormholes_share_mockup.html`): Export / Import under the
+  list's Add form (`itWhShareHtml`, `button.it-whp-xb` with IT_CHEV, one box at a time). The export (`itWhExportObj`, format `{tv:
+  'wormholes', v: 1, sys}`) redacts default-deny (`itWhRedact`: itParse(line, null) read whole, a "<a pilot>" in it read as one unplaceable
+  word; only placed words kept); hand lines travel as `set` (`itWhSetText`). The import (`itWhImportRead` checks everything, `itWhImportPlan`
+  / `itWhMergeOne` / `itWhDerive`): lines matched by redacted text (`itWhLineKey`), your own lines keep 044's newest-wins, a shared line never
+  beats a `you` line (a newer one is a `note`, "!"), a value with no line is kept, `goneSig` / `gone` win unless newer, the cap keeps lines
+  that decide a detail; names loaded first (`itLoadNames`). Stored: lines gain `n` (repeats, also your own), `k: 'shared'`, `via`; IDs `note`,
+  `via`; entries `via`. Imported holes act as Intel's (the owner); titles say "from a shared list" (`itWhByTxt`). `wormhole_share_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a
