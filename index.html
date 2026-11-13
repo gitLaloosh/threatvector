@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ScG95Zkaw2ggUpqeUmZoG/r05eNurqUfY9XLdxv3bbA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-GaChkOqIWiYryQJTLptypAuhcKVBpY5WE1EP66n9t/c='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2732,7 +2732,16 @@
   .it-gtag.it-whi{color:var(--text-dim); background:var(--tag-fill); text-transform:none;} .it-gtag.it-whi.warn{color:var(--amber);} .it-gtag.it-whi.bad{color:var(--danger);}
   button.it-sigx{all:unset; cursor:pointer; margin-left:5px; padding:0 3px; color:var(--text-dim); font:700 12px/14px var(--sans); border-radius:2px;} button.it-sigx:hover, button.it-sigx:focus-visible{color:var(--danger); outline:1px solid currentColor;}
   .it-whp-by .it-gtag{margin:0 6px 2px 0;} .it-whp-r .it-whp-by{position:relative;} .it-whp-r .it-whp-by > button.it-rawt{position:absolute; left:2px; top:0; margin:0; order:0; min-height:0; width:24px; height:20px; padding:0;}
-  .it-whp-raws{flex:1 1 100%; order:5; display:flex; flex-direction:column; gap:3px; margin-top:2px;} .it-whp-raws[hidden]{display:none;} .it-whp-raws .it-raw{margin:0; flex-wrap:wrap; row-gap:2px;}
+  .it-whp-raws{flex:1 1 100%; order:5; display:flex; flex-direction:column; gap:3px; margin-top:2px;} .it-whp-raws[hidden]{display:none;}
+  /* 046: Export and Import, a note */
+  .it-whp-share{display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 0;} button.it-whp-xb{display:inline-flex; align-items:center; gap:6px;} button.it-whp-xb svg{transition:transform .15s;} button.it-whp-xb[aria-expanded="true"] svg{transform:rotate(180deg);}
+  .it-whp-box{margin:6px 0 0; padding:8px; border:1px solid var(--line); border-radius:4px;} .it-whp-box[hidden], .it-whp-prev[hidden]{display:none;}
+  .it-whp-box textarea{display:block; width:100%; box-sizing:border-box; margin:4px 0 6px; font:12px/1.4 var(--mono, monospace); resize:vertical;}
+  .it-whp-bl, .it-whp-psk{color:var(--text-dim); font-size:12px;} .it-whp-brow{display:flex; flex-wrap:wrap; gap:6px; align-items:center;} .it-whp-bs{color:var(--amber); font-size:12px;}
+  .it-whp-prev{margin-top:8px; padding-top:6px; border-top:1px solid var(--line);} .it-whp-ph{margin-bottom:4px;} .it-whp-psk{margin-bottom:6px;}
+  .it-sig .it-signote{font-style:normal; font-weight:700; color:var(--amber); margin-left:4px; cursor:help;}
+  @media (prefers-reduced-motion: reduce){ button.it-whp-xb svg{transition:none;} }
+  @media (max-width: 599px){ button.it-whp-xb, .it-whp-brow button{min-height:44px;} .it-whp-box textarea{min-height:88px;} } .it-whp-raws .it-raw{margin:0; flex-wrap:wrap; row-gap:2px;}
   .it-whp-raws .it-raw .raw{flex:1 1 200px; min-width:0;} .it-whp-raws .it-raw.you .who{font-style:italic;} .it-whp-raws .it-age{margin-left:auto;}
   .it-whp-more{display:flex; flex-wrap:wrap; gap:6px; width:100%; margin-top:6px;} .it-whp-more input[name=sig]{flex:1 1 150px; min-width:0; font-family:var(--mono, monospace);}
   .it-whp-ty{display:inline-flex; gap:4px; align-items:center; flex:1 1 190px; min-width:0;} .it-whp-ty input{width:100%; min-width:0; font-family:var(--mono, monospace);} .it-whp-ty output{font:600 12px var(--sans); color:var(--text-dim); white-space:nowrap;}
@@ -3151,7 +3160,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.13.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.13.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3528,7 +3537,7 @@ const CARD_INFO = {
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks what it shows; Paths to you draws the routes from hostiles in your alert range as a tree. Wormholes: reported, kept 24 h; its list button edits them. On the Wormholes filter the rest fades, one reported in the last 30 minutes pulses, and the chip steps through them. Systems past {card:itnear}'s range are faded.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks what it shows; Paths to you draws the routes from hostiles in your alert range as a tree. Wormholes: reported, kept 24 h; its list edits and shares them. On the Wormholes filter the rest fades, one reported in the last 30 minutes pulses, and the chip steps through them. Systems past {card:itnear}'s range are faded.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate only (no jump bridges or wormholes).",
   "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI; only wormhole reports are kept after you close the page.",
   "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit."
@@ -29978,7 +29987,8 @@ function itWhSigMerge(old, add, t, who, src){
     if(same){
       if(n.sig.length > same.sig.length){ same.sig = n.sig; same.part = n.part; }
       if(n.type) same.type = n.type; if(n.info) same.info = itWhInfoMerge(same.info, n.info); if(n.dr) same.dr = true;
-      if(t >= same.t){ same.t = t; same.who = String(who || '').slice(0, 64); }
+      if(src === 'you') delete same.note;   // 046: you set it yourself
+      if(t >= same.t){ same.t = t; same.who = String(who || '').slice(0, 64); delete same.via; }
       list = [same, ...list.filter(s => s !== same)];
     } else list.unshift({...itWhSigNew(n.sig, n.part, n.type, n.dr, n.info), t, who: String(who || '').slice(0, 64), ...(src === 'you' ? {src: 'you'} : {})});
   }
@@ -29991,9 +30001,14 @@ function itWhDrSet(w){ const n = (w.sigs || []).filter(s => s.dr).length; w.drif
 // each line as typed (the owner: "let's have the rows for each system also preserve the raw report that lead to the wormhole being added ... in
 // case something is parsed incorrectly"), newest first, up to IT_WH_RAW_MAX, as long as the system is kept; a hand add leaves one too
 function itWhRawAdd(old, x){
-  const st = itWhStore(), cut = Date.now() - st.keepH * 3600e3, raw = String(x.raw || '').slice(0, 400);
+  const st = itWhStore(), cut = Date.now() - st.keepH * 3600e3, raw = String(x.raw || '').slice(0, 400), k = x.k === 'you' ? 'you' : 'intel';
   const l = (old && Array.isArray(old.raws) ? old.raws : []).filter(r => r.t >= cut).map(r => ({...r}));
-  if(!l.some(r => r.t === x.t && r.raw === raw)) l.unshift({t: x.t, who: String(x.who || '').slice(0, 64), raw, k: x.k === 'you' ? 'you' : 'intel', set: x.set});
+  if(!l.some(r => r.t === x.t && r.raw === raw)){
+    // 046 (the owner: "ok" to one line with the newest time and a count): the same words again later are one line, "×N"
+    const rep = l.find(r => r.k === k && !r.via && itWhNorm(r.raw) === itWhNorm(raw));
+    if(rep){ rep.n = (rep.n || 1) + 1; if(x.t > rep.t){ rep.t = x.t; rep.who = String(x.who || '').slice(0, 64); rep.raw = raw; rep.set = x.set; } }
+    else l.unshift({t: x.t, who: String(x.who || '').slice(0, 64), raw, k, set: x.set});
+  }
   return l.sort((a, b) => b.t - a.t).slice(0, IT_WH_RAW_MAX);
 }
 // where Intel takes a line (itAddReport): its first system, with the line's time and reporter. A line no newer than what's kept changes nothing,
@@ -30035,7 +30050,9 @@ function itWhSigRead(s, ok){
   const t = Number(s.t);
   if(ok && !ok(t)) return null;
   const o = itWhSigNew(s.sig, !/^[A-Z]{3}-\d{3}$/.test(s.sig), typeof s.type === 'string' && IT_WH_TYPE[s.type] ? s.type : '', s.dr === true, itWhInfoRead(s.info));
-  if(ok){ o.t = t; o.who = typeof s.who === 'string' ? s.who.slice(0, 64) : ''; if(s.src === 'you') o.src = 'you'; }
+  if(ok){ o.t = t; o.who = typeof s.who === 'string' ? s.who.slice(0, 64) : ''; if(s.src === 'you') o.src = 'you';
+    if(s.via === 'import') o.via = 'import';   // 046: from a shared list
+    const n = s.note; if(n && typeof n === 'object' && IT_WH_DET.includes(n.k) && typeof n.v === 'string' && ok(Number(n.t)) && itWhNoteTxt(n.k, n.v)) o.note = {k: n.k, v: n.v, t: Number(n.t)}; }
   return o;
 }
 function itWhEntryRead(w, ok){
@@ -30046,9 +30063,11 @@ function itWhEntryRead(w, ok){
   const gs = {}; for(const [k, t] of Object.entries(w.goneSig && typeof w.goneSig === 'object' ? w.goneSig : {}).slice(0, IT_WH_GONE_SIGS)) if(/^[A-Z]{3}(-\d{1,3})?$/.test(k) && ok(Number(t))) gs[k] = Number(t);
   if(Object.keys(gs).length) o.goneSig = gs;
   const raws = (Array.isArray(w.raws) ? w.raws : []).filter(r => r && typeof r === 'object' && typeof r.raw === 'string' && ok(Number(r.t))).slice(0, IT_WH_RAW_MAX)
-    .map(r => { const s = r.set && typeof r.set === 'object' ? r.set : null; return {t: Number(r.t), who: typeof r.who === 'string' ? r.who.slice(0, 64) : '', raw: r.raw.slice(0, 400), k: r.k === 'you' ? 'you' : 'intel',
-      set: s ? itWhSetOf((Array.isArray(s.sigs) ? s.sigs : []).map(x => itWhSigRead(x)).filter(Boolean).slice(0, IT_WH_SIGS), itWhInfoRead(s.info), s.drNoId === true) : undefined}; });
+    .map(r => { const s = r.set && typeof r.set === 'object' ? r.set : null, n = Math.floor(Number(r.n)); return {t: Number(r.t), who: typeof r.who === 'string' ? r.who.slice(0, 64) : '', raw: r.raw.slice(0, 400),
+      k: r.k === 'you' || r.k === 'shared' ? r.k : 'intel', set: s ? itWhSetOf((Array.isArray(s.sigs) ? s.sigs : []).map(x => itWhSigRead(x)).filter(Boolean).slice(0, IT_WH_SIGS), itWhInfoRead(s.info), s.drNoId === true) : undefined,
+      ...(n > 1 ? {n: Math.min(99, n)} : {}), ...(r.via === 'import' ? {via: 'import'} : {})}; });   // 046: a repeat's count, a shared list's lines
   if(raws.length) o.raws = raws;
+  if(w.via === 'import') o.via = 'import';
   return o;
 }
 // ---- how they show (a purple mono tag; a part ends in "…"; a Drifter one hot pink with "DR"; the title says what it is and who reported it)
@@ -30058,8 +30077,8 @@ function itWhSigDrHtml(s){ return s.dr ? '<i class="drm" aria-hidden="true">DR</
 function itWhSigHtml(s, rm){
   const shown = s.part ? `${s.sig}${s.sig.includes('-') ? '' : '-'}…` : s.sig;
   const title = `${s.dr ? 'Drifter wormhole. ' : ''}${s.part ? `Part of a signature ID: ${s.sig}, as reported (enough to tell it apart in that system’s scan)` : `Signature ${s.sig}`}`
-    + `${s.type ? `, a ${s.type} (leads to ${itWhDestTxt(s.type)[1]})` : ''}${s.src === 'you' ? '; added by you' : s.who ? `; reported by ${s.who}` : ''}${s.t ? `, ${itAgo(s.t)} ago` : ''}`;
-  return `<span class="it-gtag it-sig${escapeHtml(`${s.part ? ' part' : ''}${s.dr ? ' dr' : ''}`)}" title="${escapeHtml(title)}">${itWhSigDrHtml(s)}${escapeHtml(shown)}${itWhSigClsHtml(s)}${itWhSigRmHtml(s, rm)}</span>`;
+    + `${s.type ? `, a ${s.type} (leads to ${itWhDestTxt(s.type)[1]})` : ''}${s.src === 'you' ? '; added by you' : s.who ? `; ${s.via ? 'from a shared list, ' : ''}reported by ${s.who}` : ''}${s.t ? `, ${itAgo(s.t)} ago` : ''}`;
+  return `<span class="it-gtag it-sig${escapeHtml(`${s.part ? ' part' : ''}${s.dr ? ' dr' : ''}`)}" title="${escapeHtml(title)}">${itWhSigDrHtml(s)}${escapeHtml(shown)}${itWhSigClsHtml(s)}${itWhNoteHtml(s)}${itWhSigRmHtml(s, rm)}</span>`;
 }
 function itWhInfoTagHtml(k, v, age){
   const [a, b] = IT_WH_INFO_TXT[k][v], cls = v === 'eol' || v === 'lt1h' || v === 'critical' ? ' bad' : v === 'lt1d' || v === 'reduced' ? ' warn' : '';
@@ -30097,8 +30116,9 @@ function itWhRawTogHtml(w){
   return `<button type="button" class="it-rawt" data-it-whraw="${Number(w.id)}" aria-expanded="${escapeHtml(String(open))}" aria-label="${escapeHtml(lab)}" title="${escapeHtml(`${lab}, and who sent ${n === 1 ? 'it' : 'them'}`)}">${IT_CHEV}</button>`;
 }
 function itWhRawLineHtml(r){
-  return `<div class="it-raw it-whp-raw${escapeHtml(r.k === 'you' ? ' you' : '')}"><span class="who">${escapeHtml(r.k === 'you' ? 'Added by you' : r.who)}</span><span class="gt">&gt;</span><span class="raw">${escapeHtml(r.raw)}</span>`
-    + `<span class="it-age" title="${escapeHtml(`your time ${itClock(r.t)}`)}">${escapeHtml(itAgo(r.t))}</span></div>`;
+  const who = r.k === 'you' ? 'Added by you' : r.k === 'shared' ? 'Added by someone' : r.who, rep = r.n > 1 ? ` ×${r.n}` : '';
+  return `<div class="it-raw it-whp-raw${escapeHtml(r.k === 'intel' ? '' : ' you')}"><span class="who">${escapeHtml(who + (r.via ? ' (shared list)' : ''))}</span><span class="gt">&gt;</span><span class="raw">${escapeHtml(r.raw)}</span>`
+    + `<span class="it-age" title="${escapeHtml(`your time ${itClock(r.t)}${rep ? `; said ${r.n} times, the last ${itAgo(r.t)} ago` : ''}`)}">${escapeHtml(itAgo(r.t) + rep)}</span></div>`;
 }
 function itWhRawHtml(w){
   const l = w.raws || []; if(!l.length) return '';
@@ -30170,6 +30190,287 @@ function itWhListClick(e, p){
   }
   return false;
 }
+// ---- build queue 046 (roadmap/wormholes-export-import-plan.md; the owner: "plan a change to the wormholes list panel that allows you to export
+// from and import to your wormhole list. import should have de-dupe/merge logic to ensure that any pre-existing holes are only added to and not
+// duplicated or lose data."). Export copies the list as JSON (shown in a box in the list, [stated] "export - just copies json to the clipboard");
+// names are replaced with "<a pilot>" ([stated] "just replace names with placeholders like <a pilot>"); Import shows what it would add first. The
+// merge works from each system's lines as typed ([stated] "compare the raw report text shapes to determine what's new and what's not"): one line
+// per report, what you entered never overwritten, your removals win unless the report is newer, a repeat is one line with "×N".
+const IT_WH_PH = '<a pilot>', IT_WH_SHARE_MAX = 256 * 1024, IT_WH_DET = ['type', 'cls', 'life', 'mass', 'size'];
+// redaction, default-deny (D7): Intel's own reader reads the line (no "you", so it reads the same in every browser); a word it placed (system,
+// ship, keyword, count, filler, number, 044's signature / type / detail words) stays, every other word or run of words is one "<a pilot>"
+function itWhRedact(raw){
+  // a placeholder already in the line (a shared line read again) is one word the reader can't place, so the line is read whole and stays the same (LESSON #164)
+  const ph = IT_WH_PH, p = itParse(String(raw || '').split(ph).join(' \u00a7 '), null), W = p.W, U = p.used, out = [];
+  for(let i = 0; i < W.length; i++){
+    const u = U[i], w = W[i];
+    const keep = u && !(u === 'f' && !(IT_FILLER.has(w.lw) || /^\d+([.,]\d+)?$/.test(w.w) || IT_NOT_PILOT.has(w.lw)));
+    if(keep) out.push(w.w); else if(out[out.length - 1] !== ph) out.push(ph);
+  }
+  return out.join(' ').slice(0, 400);
+}
+function itWhNorm(s){ return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+// what a line set (044 stores it with each line; a line without it is read once with 044's reader)
+function itWhLineSet(r){
+  if(r.set) return r.set;
+  const p = itParse(String(r.raw || '').split(IT_WH_PH).join(' '), null), d = p.whd;
+  return (r.set = itWhSetOf(d ? d.sigs : [], d && d.info, itWhWord(p) === 'drifter' && !(d && d.sigs.length)));
+}
+function itWhSetKey(set){ return JSON.stringify([(set.sigs || []).map(s => [s.sig, s.type || '', !!s.dr, s.info || {}]), set.info || {}, !!set.drNoId]); }
+// a line added by hand, as text, from what it set (no names in it): "Tama GHI-123 C247 EOL <4h"; a Drifter mark with no ID: "Drifter"
+function itWhSetText(id, set){
+  const inf = (i) => !i ? [] : [i.cls || '', ...['life', 'mass', 'size'].filter(k => i[k] && IT_WH_INFO_TXT[k][i[k]]).map(k => IT_WH_INFO_TXT[k][i[k]][0])].filter(Boolean);
+  const words = [itSysName(id)];
+  for(const s of set.sigs || []) words.push(s.sig, ...(s.type ? [s.type] : []), ...inf(s.info), ...(s.dr ? ['Drifter'] : []));
+  words.push(...inf(set.info), ...(set.drNoId ? ['Drifter'] : []));
+  return words.join(' ');
+}
+// two lines are the same report (D6): Intel lines by their redacted text, lines added by hand by what they set
+function itWhLineKey(r){ return r.k === 'intel' ? 'i|' + itWhNorm(itWhRedact(r.raw)) : 'h|' + itWhSetKey(itWhLineSet(r)); }
+// ---- the export (D3): only systems inside your keep setting, by id, lines newest first; no reporter, no removals, no settings
+function itWhExportObj(){
+  const st = itWhStore(), cut = Date.now() - st.keepH * 3600e3, sys = [];
+  for(const w of Object.values(st.rep).filter(w => w.t >= cut).sort((a, b) => a.id - b.id)){
+    const raws = (w.raws || []).map(r => { const set = itWhSetOf((itWhLineSet(r).sigs || []), itWhLineSet(r).info, itWhLineSet(r).drNoId), hand = r.k !== 'intel';
+      return {t: r.t, k: hand ? 'hand' : 'intel', raw: hand ? itWhSetText(w.id, set) : itWhRedact(r.raw), set, n: r.n || 1}; });
+    sys.push({id: w.id, name: itSysName(w.id), t: w.t, ...(w.drNoId ? {drNoId: true} : {}), ...(w.info ? {info: w.info} : {}),
+      sigs: (w.sigs || []).map(s => ({...itWhSigNew(s.sig, s.part, s.type, s.dr, s.info), t: s.t})), raws});
+  }
+  return {tv: 'wormholes', v: 1, made: Date.now(), sys};
+}
+// ---- the import, checked (D9: someone else's text): this tool's format and version, systems on the map with their names, times inside the last
+// 48 h, IDs, types and details the page knows; text cut to 400 characters a line and read again with the redaction, so "<a pilot>" is the only name;
+// at most IT_WH_MAX systems, IT_WH_SIGS IDs and IT_WH_RAW_MAX lines each; anything else dropped and counted
+function itWhImportRead(text){
+  const s = String(text || '').trim();
+  if(!s) return {err: 'Paste a wormhole export first.'};
+  if(s.length > IT_WH_SHARE_MAX) return {err: 'That’s too long to be a wormhole export (256 KB at most).'};
+  let o; try{ o = JSON.parse(s); }catch(e){ return {err: 'That isn’t a wormhole export from this tool (it isn’t JSON).'}; }
+  if(!o || typeof o !== 'object' || o.tv !== 'wormholes') return {err: 'That isn’t a wormhole export from this tool.'};
+  if(o.v !== 1) return {err: 'That export is from a newer version of this tool: reload the page and try again.'};
+  const g = itGraphGet(), now = Date.now(), okT = (t) => Number.isFinite(t) && t >= now - IT_WH_MAX_H * 3600e3 && t <= now + 3600e3;
+  const sk = {unknown: 0, old: 0, bad: 0}, out = [], list = Array.isArray(o.sys) ? o.sys : [];
+  sk.bad += Math.max(0, list.length - IT_WH_MAX);
+  for(const x of list.slice(0, IT_WH_MAX)){
+    if(!x || typeof x !== 'object' || !Number.isInteger(x.id) || !g.at.has(x.id) || typeof x.name !== 'string' || itSysName(x.id).toLowerCase() !== x.name.toLowerCase()){ sk.unknown++; continue; }
+    const raws = [], rs = Array.isArray(x.raws) ? x.raws : [];
+    sk.bad += Math.max(0, rs.length - IT_WH_RAW_MAX);
+    for(const r of rs.slice(0, IT_WH_RAW_MAX)){
+      if(!r || typeof r !== 'object' || !okT(Number(r.t)) || (r.k !== 'intel' && r.k !== 'hand') || typeof r.raw !== 'string'){ sk.bad++; continue; }
+      const z = r.set && typeof r.set === 'object' ? r.set : {}, hand = r.k === 'hand';
+      const set = itWhSetOf((Array.isArray(z.sigs) ? z.sigs : []).map(y => itWhSigRead(y)).filter(Boolean).slice(0, IT_WH_SIGS), itWhInfoRead(z.info), z.drNoId === true);
+      const n = Math.max(1, Math.min(99, Math.floor(Number(r.n)) || 1)), raw = hand ? itWhSetText(x.id, set) : itWhRedact(r.raw.slice(0, 400));
+      raws.push({t: Number(r.t), who: IT_WH_PH, raw, k: hand ? 'shared' : 'intel', set, ...(n > 1 ? {n} : {}), via: 'import'});
+    }
+    const sigs = (Array.isArray(x.sigs) ? x.sigs : []).map(y => itWhSigRead(y, okT)).filter(Boolean).slice(0, IT_WH_SIGS);
+    const info = itWhInfoRead(x.info), drNoId = x.drNoId === true;
+    const t = Math.max(okT(Number(x.t)) ? Number(x.t) : 0, ...raws.map(r => r.t), ...sigs.map(y => y.t));
+    if(!t){ sk.old++; continue; }
+    // what the sender holds with no line behind it (an entry from before 044, or a line gone with the cap): one shared line carries it, so every
+    // detail has a line ("<name> (shared list)")
+    const seen = itWhDeriveSigs(raws), left = sigs.filter(y => !seen.some(q => q.sig === y.sig || q.sig.startsWith(y.sig)));
+    const known = raws.some(r => r.set.info) ? undefined : info, noId = drNoId && !raws.some(r => r.set.drNoId);
+    if(!raws.length || left.length || known || noId){
+      const set = itWhSetOf(left, known, noId);
+      raws.push({t: Math.max(0, ...left.map(y => y.t), raws.length ? 0 : t) || t, who: IT_WH_PH, raw: `${itSysName(x.id)} (shared list)`, k: 'shared', set, via: 'import'});
+    }
+    out.push({id: x.id, t, raws: raws.sort((a, b) => b.t - a.t)});
+  }
+  if(!out.length && !sk.unknown && !sk.old && !sk.bad) return {err: 'That export has no wormholes in it.'};
+  return {sys: out, sk};
+}
+// the IDs a set of lines names, merged as 044 merges them (a part joins the one ID it fits), oldest line first
+function itWhDeriveSigs(lines){
+  const sigs = [];
+  for(const r of lines.slice().sort((a, b) => a.t - b.t)) for(const n of (itWhLineSet(r).sigs || [])){
+    const h = sigs.filter(s => s.sig.startsWith(n.sig) || n.sig.startsWith(s.sig)), s = h.length === 1 ? h[0] : null;
+    if(!s) sigs.push({sig: n.sig, d: {}}); else if(n.sig.length > s.sig.length) s.sig = n.sig;
+    const q = s || sigs[sigs.length - 1], vals = {type: n.type, ...(n.info || {})};
+    for(const k of IT_WH_DET) if(vals[k]) q.d[k] = vals[k];
+  }
+  return sigs;
+}
+// a system's details worked out from all its lines (D5). Your own lines decide as Intel does today (the newest one that says it); a shared line
+// (imported) takes a detail only from an older report, never from a line you added by hand: a newer shared report that disagrees with your own
+// value becomes a note on that ID ("!"). A detail your entry holds with no line behind it (saved before 044, or its line gone with the cap) is
+// "source unknown": kept, never overwritten. Returns the lines that still decide a detail (the 10-line cap keeps them).
+function itWhDerive(w, lines, bare){
+  const sigs = [], sysd = {}, backing = new Set();
+  let drNoId = !!w.drNoId;
+  const find = (sig) => { const h = sigs.filter(s => s.sig.startsWith(sig) || sig.startsWith(s.sig)); return h.length === 1 ? h[0] : null; };
+  const put = (d, k, v, t, line) => {
+    const c = d[k], imp = !!line.via;
+    if(!c){ d[k] = {v, t, line}; return; }
+    if(!c.line) return;   // source unknown: kept
+    if(imp && c.line.k === 'you' && !c.line.via){ if(c.v !== v && t > c.t) c.note = {k, v, t}; return; }   // yours kept; theirs, newer, shown beside it
+    if(t >= c.t) d[k] = {v, t, line, note: c.note && c.note.v !== v ? c.note : undefined};
+  };
+  if(!bare){   // what your entry holds that its own lines don't explain: source unknown
+    const ex = itWhDerive({...w, sigs: [], info: undefined}, w.raws || [], true);
+    for(const s of w.sigs || []){
+      const o = ex.sigs.find(x => x.sig === s.sig), b = {sig: s.sig, part: !!s.part, dr: !!s.dr, t: s.t || 0, who: s.who || '', src: s.src, via: s.via, d: {}, note: s.note};
+      const vals = {type: s.type, ...(s.info || {})}, ov = o ? {type: o.type, ...(o.info || {})} : {};
+      for(const k of IT_WH_DET) if(vals[k] && ov[k] !== vals[k]) b.d[k] = {v: vals[k], t: s.t || 0};
+      sigs.push(b);
+    }
+    if(w.info) for(const k of ['cls', 'life', 'mass', 'size']) if(w.info[k] && !(ex.info && ex.info[k] === w.info[k])) sysd[k] = {v: w.info[k], t: w.t};
+  }
+  for(const r of lines.slice().sort((a, b) => a.t - b.t)){
+    const set = itWhLineSet(r);
+    for(const n of set.sigs || []){
+      if(itWhSigGone(w.goneSig, n.sig, r.t)) continue;   // removed by you after this line
+      let s = find(n.sig);
+      if(!s){ s = {sig: n.sig, part: !!n.part, dr: false, t: 0, who: '', d: {}}; sigs.push(s); }
+      if(n.sig.length > s.sig.length){ s.sig = n.sig; s.part = !!n.part; }
+      if(n.dr) s.dr = true;
+      if(r.t >= s.t){ s.t = r.t; s.who = r.k === 'you' ? '' : r.who; s.src = r.k === 'you' ? 'you' : undefined; s.via = r.via; }
+      const vals = {type: n.type, ...(n.info || {})};
+      for(const k of IT_WH_DET) if(vals[k]) put(s.d, k, vals[k], r.t, r);
+    }
+    if(set.info) for(const k of ['cls', 'life', 'mass', 'size']) if(set.info[k]) put(sysd, k, set.info[k], r.t, r);
+    if(set.drNoId) drNoId = true;
+  }
+  const out = sigs.sort((a, b) => b.t - a.t).slice(0, IT_WH_SIGS).map(s => {
+    const info = {}; for(const k of ['cls', 'life', 'mass', 'size']) if(s.d[k]) info[k] = s.d[k].v;
+    for(const k of IT_WH_DET) if(s.d[k] && s.d[k].line) backing.add(s.d[k].line);
+    const nk = IT_WH_DET.find(k => s.d[k] && s.d[k].note), note = nk ? s.d[nk].note : s.note && s.d[s.note.k] && s.d[s.note.k].v !== s.note.v ? s.note : null;
+    const o = {...itWhSigNew(s.sig, s.part, s.d.type ? s.d.type.v : '', s.dr, Object.keys(info).length ? info : undefined), t: s.t, who: s.who || ''};
+    if(s.src === 'you') o.src = 'you'; if(s.via) o.via = 'import'; if(note) o.note = note;
+    return o;
+  });
+  for(const k in sysd) if(sysd[k].line) backing.add(sysd[k].line);
+  const info = {}; for(const k of ['cls', 'life', 'mass', 'size']) if(sysd[k]) info[k] = sysd[k].v;
+  return {sigs: out, info: Object.keys(info).length ? info : undefined, drNoId, backing};
+}
+// one system merged (D5, D6, D10, D12): the lines joined (one per report; your copy kept with its names; the count the larger), the details
+// worked out again, the 10-line cap keeping every line that still decides a detail; the entry's time, reporter and source from its newest line
+function itWhMergeOne(mine, theirs){
+  const lines = (mine && mine.raws ? mine.raws : []).map(r => ({...r})), keys = new Map(lines.map(r => [itWhLineKey(r), r]));
+  let newLines = 0, gone = 0;
+  for(const r of theirs.raws){
+    const set = itWhLineSet(r), gs = mine && mine.goneSig;
+    if((set.sigs || []).length && !set.info && !set.drNoId && set.sigs.every(n => itWhSigGone(gs, n.sig, r.t))){ gone++; continue; }   // only IDs you removed after it
+    const k = itWhLineKey(r), have = keys.get(k);
+    if(have){ if(r.t > have.t) have.t = r.t; const n = Math.max(have.n || 1, r.n || 1); if(n > 1) have.n = n; continue; }
+    const x = {...r}; lines.push(x); keys.set(k, x); newLines++;
+  }
+  const base = mine || {id: theirs.id, t: 0, sigs: []}, d = itWhDerive(base, lines);
+  const sorted = lines.sort((a, b) => b.t - a.t), kept = [...sorted.filter(r => d.backing.has(r)), ...sorted.filter(r => !d.backing.has(r))].slice(0, IT_WH_RAW_MAX).sort((a, b) => b.t - a.t);
+  const top = kept[0], t = Math.max(top ? top.t : 0, mine ? mine.t : 0, theirs.t), fromTop = top && top.t >= (mine ? mine.t : 0);
+  const w = {...(mine || {}), id: theirs.id, t, sigs: d.sigs, raws: kept};
+  if(d.info) w.info = d.info; else delete w.info;
+  if(d.drNoId) w.drNoId = true; else delete w.drNoId;
+  if(!mine || fromTop){ w.who = top && top.k !== 'you' ? top.who : ''; w.src = top && top.k === 'you' ? 'you' : 'intel'; if(top && top.via) w.via = 'import'; else delete w.via; }
+  if(w.goneSig){ const gs = {...w.goneSig}; for(const r of kept) if(r.via) for(const n of itWhLineSet(r).sigs || []) for(const k in gs) if(gs[k] < r.t && (k === n.sig || k.startsWith(n.sig) || n.sig.startsWith(k))) delete gs[k];
+    if(Object.keys(gs).length) w.goneSig = gs; else delete w.goneSig; }   // a newer shared report of an ID takes its removal mark away, as Intel's do
+  itWhDrSet(w);
+  const old = (mine && mine.sigs) || [], newSigs = d.sigs.filter(s => !old.some(o => o.sig === s.sig || s.sig.startsWith(o.sig))).length;
+  return {w, newLines, newSigs, notes: d.sigs.filter(s => s.note && !old.some(o => o.sig === s.sig && o.note)).length, gone, dropped: Math.max(0, sorted.length - kept.length)};
+}
+// the preview (D8) and the same merge again at "Add to my list", against the store as it is then (another tab may have changed it)
+function itWhImportPlan(rd){
+  const st = itWhStore(), cut = Date.now() - st.keepH * 3600e3, res = {add: 0, addTo: 0, same: 0, newSigs: 0, newLines: 0, notes: 0, old: rd.sk.old, removed: 0, unknown: rd.sk.unknown, over: rd.sk.bad, out: []};
+  for(const x of rd.sys){
+    if(x.t < cut){ res.old++; continue; }
+    if((st.gone[x.id] || 0) >= x.t){ res.removed++; continue; }   // you removed it after its newest report
+    const mine = st.rep[x.id] && st.rep[x.id].t >= cut ? st.rep[x.id] : null, m = itWhMergeOne(mine, x);
+    res.over += m.dropped; res.removed += m.gone;
+    if(!mine){ res.add++; res.newSigs += m.newSigs; res.newLines += m.newLines; res.notes += m.notes; res.out.push(m.w); continue; }
+    if(!m.newLines && !m.newSigs){ res.same++; continue; }
+    res.addTo++; res.newSigs += m.newSigs; res.newLines += m.newLines; res.notes += m.notes; res.out.push(m.w);
+  }
+  return res;
+}
+function itWhImportApply(text){
+  const rd = itWhImportRead(text); if(rd.err) return {msg: rd.err};
+  const r = itWhImportPlan(rd), st = itWhStore();
+  for(const w of r.out){ st.rep[w.id] = w; delete st.gone[w.id]; }
+  itWhSave(); itWhChanged();
+  const pl = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  return {msg: r.out.length ? `Added ${pl(r.add, 'system', 'systems')} and added to ${r.addTo} (${pl(r.newSigs, 'new ID', 'new IDs')}, ${pl(r.newLines, 'new line', 'new lines')}).${r.notes ? ` Kept yours for ${r.notes}: see the ! notes.` : ''}` : 'Nothing new to add.', r};
+}
+function itWhPreviewHtml(r){
+  const pl = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const skip = [r.old && `${r.old} older than your ${itWhStore().keepH} h`, r.removed && `${r.removed} removed by you`, r.unknown && `${pl(r.unknown, 'not a system on the map', 'not systems on the map')}`, r.over && `${pl(r.over, 'line', 'lines')} over the limits`].filter(Boolean);
+  const head = r.out.length ? `Adds ${pl(r.add, 'system', 'systems')} · adds to ${r.addTo} (${pl(r.newSigs, 'new ID', 'new IDs')}, ${pl(r.newLines, 'new line', 'new lines')}) · already have ${r.same}${r.notes ? ` · kept yours for ${r.notes} (see the ! notes)` : ''}` : `Nothing new: you already have ${r.same}.`;
+  return `<div class="it-whp-ph">${escapeHtml(head)}</div>${itWhSkipHtml(skip)}${itWhPreviewBtnsHtml(r.out.length > 0)}`;
+}
+function itWhSkipHtml(skip){ return skip.length ? `<div class="it-whp-psk">${escapeHtml('Skipped: ' + skip.join(' · '))}</div>` : ''; }
+function itWhPreviewBtnsHtml(any){ return any ? '<div class="it-whp-brow"><button type="button" data-it-whadd>Add to my list</button><button type="button" data-it-whcancel>Cancel</button></div>' : ''; }
+// ---- the two buttons and their boxes (D1, D2, D8): fixed labels with Intel's chevron (the owner: "sounds good" to a fixed "Export" label), one box
+// open at a time, both inside the list panel; the list's repaint never touches them
+function itWhShareBtnHtml(k, label, box){ return `<button type="button" class="it-whp-xb" data-it-whxb="${escapeHtml(k)}" aria-expanded="false" aria-controls="${escapeHtml(box)}">${IT_CHEV}<span>${escapeHtml(label)}</span></button>`; }
+function itWhShareHtml(){
+  return `<div class="it-whp-share">${itWhShareBtnHtml('exp', 'Export', 'itWhExp')}${itWhShareBtnHtml('imp', 'Import', 'itWhImp')}</div>`
+    + '<div class="it-whp-box" id="itWhExp" hidden><div class="it-whp-bl"></div><textarea readonly rows="6" spellcheck="false" aria-label="Your wormhole list as text"></textarea>'
+    + '<div class="it-whp-brow"><button type="button" data-it-whcopy>Copy</button><span class="it-whp-bs" role="status"></span></div></div>'
+    + '<div class="it-whp-box" id="itWhImp" hidden><div class="it-whp-bl">Paste someone’s wormhole export; you see what it adds before anything changes.</div>'
+    + '<textarea rows="6" spellcheck="false" aria-label="A wormhole export to add to your list" placeholder="{&quot;tv&quot;: &quot;wormholes&quot;, …}"></textarea>'
+    + '<div class="it-whp-brow"><button type="button" data-it-whimp>Import</button><span class="it-whp-bs" role="status"></span></div><div class="it-whp-prev" hidden></div></div>';
+}
+// the system names first: Intel's reader needs them to tell a system from a name (without them every system would read as "<a pilot>")
+async function itWhNamesReady(bs){
+  try{ await itLoadNames(); return true; }catch(e){ bs.textContent = e && e.message ? e.message : String(e); return false; }
+}
+async function itWhBoxOpen(p, k, open){
+  for(const kk of ['exp', 'imp']){
+    const b = p.querySelector(kk === 'exp' ? '[data-it-whxb="exp"]' : '[data-it-whxb="imp"]'), box = p.querySelector(kk === 'exp' ? '#itWhExp' : '#itWhImp'), on = kk === k && open;
+    b.setAttribute('aria-expanded', String(on)); box.hidden = !on;
+  }
+  if(!open) return;
+  if(k === 'exp'){
+    const box = p.querySelector('#itWhExp'), ta = box.querySelector('textarea'), bs = box.querySelector('.it-whp-bs'), bl = box.querySelector('.it-whp-bl');
+    bs.textContent = ''; ta.value = ''; bl.textContent = 'Making the export…';
+    if(!(await itWhNamesReady(bs))){ bl.textContent = ''; return; }
+    if(box.hidden) return;
+    const o = itWhExportObj(), ids = o.sys.reduce((a, x) => a + x.sigs.length, 0);
+    ta.value = JSON.stringify(o);
+    bl.textContent = `${o.sys.length} system${o.sys.length === 1 ? '' : 's'}, ${ids} signature ID${ids === 1 ? '' : 's'}; names replaced with ${IT_WH_PH}.`;
+    ta.focus({preventScroll: true}); ta.select();
+  } else {
+    const box = p.querySelector('#itWhImp');
+    box.querySelector('.it-whp-prev').hidden = true; box.querySelector('.it-whp-bs').textContent = '';
+    box.querySelector('textarea').focus({preventScroll: true});
+  }
+}
+function itWhShareClick(e, p){
+  const xb = e.target.closest('[data-it-whxb]');
+  if(xb){ const k = xb.dataset.itWhxb, open = xb.getAttribute('aria-expanded') !== 'true'; itWhBoxOpen(p, k, open); if(!open) xb.focus(); return true; }
+  if(e.target.closest('[data-it-whcopy]')){
+    const ta = p.querySelector('#itWhExp textarea'), bs = p.querySelector('#itWhExp .it-whp-bs'), b = e.target.closest('[data-it-whcopy]');
+    ta.focus({preventScroll: true}); ta.select();
+    (async () => { try{ await navigator.clipboard.writeText(ta.value); b.textContent = 'Copied!'; bs.textContent = ''; setTimeout(() => { b.textContent = 'Copy'; }, 2000); }
+      catch(err){ bs.textContent = 'Press Ctrl+C (⌘C) to copy.'; ta.focus({preventScroll: true}); ta.select(); } })();
+    return true;
+  }
+  if(e.target.closest('[data-it-whimp]')){
+    const box = p.querySelector('#itWhImp'), ta = box.querySelector('textarea'), pv = box.querySelector('.it-whp-prev'), bs = box.querySelector('.it-whp-bs');
+    (async () => {
+      if(!(await itWhNamesReady(bs))) return;
+      const rd = itWhImportRead(ta.value);
+      if(rd.err){ bs.textContent = rd.err; pv.hidden = true; ta.setAttribute('aria-invalid', 'true'); ta.focus(); return; }
+      ta.removeAttribute('aria-invalid'); bs.textContent = '';
+      pv.innerHTML = itWhPreviewHtml(itWhImportPlan(rd)); pv.hidden = false;
+      const add = pv.querySelector('[data-it-whadd]'); (add || ta).focus();
+    })();
+    return true;
+  }
+  if(e.target.closest('[data-it-whadd]')){
+    const box = p.querySelector('#itWhImp'), ta = box.querySelector('textarea'), r = itWhImportApply(ta.value);
+    p.querySelector('.it-whp-msg').textContent = r.msg; ta.value = ''; box.querySelector('.it-whp-prev').hidden = true;
+    itWhBoxOpen(p, 'imp', false); p.querySelector('[data-it-whxb="imp"]').focus();
+    return true;
+  }
+  if(e.target.closest('[data-it-whcancel]')){ const box = p.querySelector('#itWhImp'); box.querySelector('.it-whp-prev').hidden = true; box.querySelector('textarea').focus(); return true; }
+  return false;
+}
+// a note (D5): a newer shared report disagrees with what you set yourself; yours is kept, theirs shown as "!" beside the ID
+function itWhNoteTxt(k, v){
+  if(k === 'type') return IT_WH_TYPE[v] ? `${v}→${itWhDestTxt(v)[0]}` : '';
+  if(k === 'cls') return IT_WH_CLS_RX.test(v) ? itWhClsTxt(v)[0] : '';
+  return IT_WH_INFO_TXT[k] && IT_WH_INFO_TXT[k][v] ? IT_WH_INFO_TXT[k][v][0] : '';
+}
+function itWhNoteHtml(s){ return s.note ? `<i class="it-signote" title="${escapeHtml(`A shared report from ${itAgo(s.note.t)} ago says ${itWhNoteTxt(s.note.k, s.note.v)}; yours is kept`)}">!</i>` : ''; }
 // ---- the map: a system's kinds of hole (plain purple solid, Drifter pink dashed) share its rings, clockwise from the top (the owner: "we could
 // have wormhole systems with more than one type show a ring w/ more than one color, couldn't we? like half purple and half another color?"); one kind:
 // whole rings. Any number of kinds works, so a later kind needs only a colour
@@ -30208,7 +30509,9 @@ function itWhNear(sys, now = Date.now()){
   return w && w.src === 'intel' && w.t >= now - it.set.forget * 60000 && w.t >= now - st.keepH * 3600e3 ? w : null;
 }
 function itWhBadgeHtml(drifter, title, short = false){ return `<span class="it-gtag it-wh${escapeHtml(drifter ? ' dr' : '')}" title="${escapeHtml(title)}">${escapeHtml(short ? (drifter ? 'DRIFTER' : 'WH') : drifter ? 'Drifter WH' : 'Wormhole')}</span>`; }   // short: the Paths to you tree (045)
-function itWhBadgeTitle(w){ const st = itWhStore(); return `${w.drifter ? 'A Drifter wormhole' : 'A wormhole'}: reported by ${w.who}, ${itAgo(w.t)} ago. The map’s Wormholes filter keeps it ${st.keepH} h`; }
+function itWhBadgeTitle(w){ const st = itWhStore(); return `${w.drifter ? 'A Drifter wormhole' : 'A wormhole'}: ${itWhByTxt(w)}, ${itAgo(w.t)} ago. The map’s Wormholes filter keeps it ${st.keepH} h`; }
+// who it's from: added by you, reported by someone, or (046) from a shared list (the owner: "I agree" to saying so)
+function itWhByTxt(w){ return w.src === 'you' ? 'added by you' : `${w.via ? 'from a shared list, ' : ''}reported by ${w.who}`; }
 // the map: the kept ones (map index -> entry), the live ones (Intel's, within "forget reports after" and "Map: within"), and which are marked
 // with the rings and labels (the Wormholes filter: every kept one; the other filters: the live ones, as reports)
 function itMapWh(){
@@ -30295,7 +30598,7 @@ function itMapWhLabel(w){
   return `${kind}${s ? ` ${s.sig}${s.part ? '…' : ''}${to}${w.sigs.length > 1 ? ` +${w.sigs.length - 1}` : ''}` : ''} · ${itWhAge(w.t)}`;
 }
 function itMapWhTipHtml(w){
-  const what = w.drifter ? 'Drifter wormhole' : 'Wormhole', by = w.src === 'you' ? 'added by you' : `reported by ${w.who}`;
+  const what = w.drifter ? 'Drifter wormhole' : 'Wormhole', by = itWhByTxt(w);
   return `<span class="it-whtip${escapeHtml(w.drifter ? ' dr' : '')}">${escapeHtml(what)}</span> <span class="d">· ${escapeHtml(`${by}, ${itAgo(w.t)} ago`)}</span>`;
 }
 // The list (the owner, 2026-11-12: "add a panel to manage the list (manually add/remove wormholes from the list in browser storage - for any
@@ -30322,10 +30625,11 @@ function itWhListOpen(open, back = true){
     p.className = 'it-whp'; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Wormhole list'); p.hidden = true;
     p.innerHTML = '<div class="it-whp-h"><h4>Wormholes</h4><span class="it-whp-keep"></span><button type="button" class="x-close" data-it-whx aria-label="Close" title="Close (Esc)">×</button></div>'
       + '<form class="it-whp-add" autocomplete="off"><input type="text" name="sys" placeholder="System, e.g. Tama" aria-label="System with a wormhole" maxlength="40" spellcheck="false"><label><input type="checkbox" name="dr"> Drifter</label><button type="submit">Add</button>' + itWhAddMoreHtml() + '</form>'
-      + '<div class="it-whp-msg" role="status"></div><div class="it-whp-rows"></div>';
+      + itWhShareHtml() + '<div class="it-whp-msg" role="status"></div><div class="it-whp-rows"></div>';   // 046: Export and Import
     p.addEventListener('click', (e) => {
       if(e.target.closest('[data-it-whx]')){ itWhListOpen(false); return; }
       if(itWhListClick(e, p)) return;   // 044: one ID's ×, a system's lines
+      if(itWhShareClick(e, p)) return;   // 046: Export and Import
       const rm = e.target.closest('[data-it-whrm]'); if(!rm) return;
       const id = Number(rm.dataset.itWhrm);
       itWhRemove(id); p.querySelector('.it-whp-msg').textContent = `Removed ${itSysName(id)}.`;
@@ -30366,7 +30670,7 @@ function itWhRowsHtml(){
   if(!list.length) return '<div class="it-whp-none">No wormholes kept. Intel lines that say wh, wormhole or drifter with a system land here, or add one above.</div>';
   return list.map(w => {
     const j = my ? itJumps(my, w.id) : null, left = Math.max(1, Math.ceil((w.t + st.keepH * 3600e3 - now) / 3600e3)), name = itSysName(w.id);
-    const by = `${w.src === 'you' ? 'added by you' : `reported by ${w.who}`} · ${itAgo(w.t)} ago · gone in ${left} h`;
+    const by = `${itWhByTxt(w)} · ${itAgo(w.t)} ago · gone in ${left} h`;
     return `<div class="it-whp-r"><span class="it-whp-j">${itJumpsHtml(j)}</span><span class="it-whp-s it-sn ${escapeHtml(itSecClass(w.id))}">${escapeHtml(name)}</span>${itWhBadgeHtml(w.drifter, '')}`
       + `<span class="it-whp-by">${itWhRawTogHtml(w)}${itWhSigsHtml(w.sigs, 4, w.id)}${itWhInfoHtml(w.info, w.t)}${escapeHtml(by)}</span><button type="button" data-it-whrm="${Number(w.id)}" aria-label="${escapeHtml(`Remove ${name}`)}">Remove</button>${itWhRawHtml(w)}</div>`;
   }).join('');

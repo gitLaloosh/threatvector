@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-13 — The Wormholes list's Export and Import</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The Wormholes list's Export and Import</h1>
+<p><span class="tag">Page</span><span class="tag">Intel</span> 2026-11-13 &middot; <code>v2026.11.13.2</code> &middot; build queue 046 &middot; plan: <code>roadmap/wormholes-export-import-plan.md</code> &middot; mockup: <code>Claude outputs/wormholes_share_mockup.html</code></p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-12: "plan a change to the wormholes list panel that allows you to export from and import to your wormhole list. import should have de-dupe/merge logic to ensure that any pre-existing holes are only added to and not duplicated or lose data."</li>
+<li>His decisions: export copies JSON only ("it's just json going to the clipboard"), in a box inside the list; fixed Export / Import labels with Intel's chevron; names replaced with "&lt;a pilot&gt;"; your removals win unless the report is newer; what you entered is never overwritten, worked out from the raw lines ("compare the raw report text shapes"); a repeat is one line with a count.</li>
+<li>At the build review: an imported hole acts like one of your own Intel reports ("i think so"), and its hover says it's from a shared list ("I agree").</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Export</b> (<code>itWhExportObj</code>): the list as <code>{tv: 'wormholes', v: 1, sys}</code>, only systems inside the keep setting, stable order; each line redacted default-deny by Intel's own reader (<code>itWhRedact</code>: a word it places stays, anything else is one "&lt;a pilot&gt;"); hand lines rebuilt from what they set (<code>itWhSetText</code>); no reporter, removals or settings. Shown selected in a read-only box with Copy (Ctrl+C line if the browser refuses).</li>
+<li><b>Import</b> (<code>itWhImportRead</code>, <code>itWhImportPlan</code>, <code>itWhMergeOne</code>, <code>itWhDerive</code>): checks everything (format, version, 256 KB, systems and names, times, IDs, types, details, limits); a preview first ("Adds … · adds to … · already have … · kept yours for …", "Skipped: …"), then Add to my list or Cancel. Lines are matched by their redacted text; details are worked out again from all lines (your own lines as Intel does today; a shared line never beats a value you set by hand, a newer one shows as "!"); a value with no line is kept; removals win unless newer; the 10-line cap keeps lines that decide a detail.</li>
+<li><b>Repeats:</b> the same words again later are one line, "×N" (your own Intel lines too).</li>
+<li><b>Shared holes</b> act like Intel's reports; their badge, map hover, list row and ID titles say "from a shared list, reported by &lt;a pilot&gt;".</li>
+<li><b>Info text:</b> <code>intel</code> [Map] "its list edits and shares them" (410 of 410 words); METHODOLOGY.md's Intel section has the detail.</li>
+<li>Stored: new fields only (<code>n</code>, <code>k: 'shared'</code>, <code>via</code> on lines; <code>note</code>, <code>via</code> on IDs; <code>via</code> on entries); no request, no new error code.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>wormhole_share_check.py</code>: two browsers. A's lines through Intel's made-up folder (a pilot, a ticker in brackets, a two-word name in wormhole lines), one hole added by hand; its export leaks none of them and keeps the systems, ships, IDs, types and detail words; the round trip into an empty B; importing again changes nothing; B's own list merged (your hand value kept with a "!" note, a part completed, a removed ID and system kept out by older reports and brought back by newer ones, a value with no line kept, the cap, one line per report with the larger count, someone's hand-added hole); bad input refused; Cancel; the boxes, focus, Esc and 390 px; five mutants.</li>
+<li>The mockup's own test_xi.py again from main 60d75f1: 82 checks, all passed.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #164: the mockup's redaction split a line at each "&lt;a pilot&gt;" and read the pieces alone, so a shared line exported again lost its signature words (the piece after the placeholder had no "wh"). The round-trip check caught it; the line is now read whole, the placeholder one word the reader can't place.</li>
+</ul>
+</body>
+</html>

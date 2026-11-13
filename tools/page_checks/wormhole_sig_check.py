@@ -238,7 +238,7 @@ MUTANTS = [
      "  const sys = itFindSystems(W, used, mySys, force);\n  const whd = itWhDetails(W, used);"),
     ('a part merged into the first of two matches', "same = hits.length === 1 ? hits[0] : null;", "same = hits.length >= 1 ? hits[0] : null;"),
     ('an older line bringing back a removed ID', "function itWhSigGone(gs, sig, t){ for(", "function itWhSigGone(gs, sig, t){ return false; for("),
-    ('no set on the lines', "k: x.k === 'you' ? 'you' : 'intel', set: x.set});", "k: x.k === 'you' ? 'you' : 'intel'});"),
+    ('no set on the lines', "raw, k, set: x.set});", "raw, k});"),   # 046 moved the line (itWhRawAdd's repeats)
 ]
 
 with sync_playwright() as p:

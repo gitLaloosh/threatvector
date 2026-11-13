@@ -436,7 +436,21 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   In the list, × beside an ID removes it, and Drifter with it. The ID keeps a removal mark (for 48 hours), so the same line
   read again, an older one, or another line in the same second can't bring it back; a newer report does. Each system also
   keeps its last 10 lines as typed (for the newest 100 systems), with who sent them and what each set, under a chevron in
-  its row. The Add form takes every property; adding one by hand leaves an "Added by you" line.
+  its row. The Add form takes every property; adding one by hand leaves an "Added by you" line. The same words arriving again
+  later are one line with a count ("×2").
+- **Export and Import** (build queue 046): two buttons under the list's Add form. **Export** shows your list as text (JSON), selected,
+  with a Copy button; the page sends it nowhere. It holds only the systems inside "keep wormhole reports for", their IDs and details,
+  and their lines as typed, with every name replaced by "<a pilot>": each line is read again by Intel's own reader, and only the
+  words it places (systems, ships, counts, keywords, signature IDs, types, the words describing the hole) are kept; anything else,
+  a pilot, a corporation or a ticker, becomes "<a pilot>". The reporter is never written, nor your removals or settings. Lines you
+  added by hand travel as what they set. **Import** reads someone's export (this tool's format only, at most 256 KB; systems on the
+  map with matching names, times inside the last 48 hours, IDs, types and details the page knows) and shows what it would add before
+  anything changes; "Add to my list" merges it. Two lines are the same report when their words match once names are replaced, so the
+  same report from both lists is one line (yours kept, with its names). Details are worked out again from all of a system's lines:
+  your own lines decide as Intel does (the newest that says it); a shared report fills in what yours don't say and replaces an older
+  report, but never a value you set by hand: a newer shared report that disagrees shows as "!" beside the ID. A value with no line
+  behind it is kept. A system or ID you removed comes back only with a report newer than the removal. A line that still decides a
+  detail is kept when a system has more than 10. Imported holes count like Intel's reports (their hover says "from a shared list").
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location
   on, whichever is newer. Jumps are gate jumps from EVE's published stargate data (no jump bridges or wormholes); the
   table is checked against each new EVE build every day.

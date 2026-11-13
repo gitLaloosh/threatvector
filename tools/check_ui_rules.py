@@ -120,7 +120,7 @@ for sel, body, ln in rules:
 # 6. one chevron for a list's expand / collapse (v2026.11.01.6, the kill picker's fleets; the open bug "expand/collapse looks and works
 #    differently" keeps the cards' own CC_CHEV for now): the list expanders built since v2026.10.31.6 (Intel's rows, the dossier's
 #    hull rows and "Show N more hulls", the kill picker's fleet headings) carry Intel's chevron, IT_CHEV, and no arrow glyph
-CHEV_BTN = re.compile(r'<button[^>]*?(?:class="(?:it-rawt|pd-exp|fk-kg-h)"|data-pd-allhulls=)')
+CHEV_BTN = re.compile(r'<button[^>]*?(?:class="(?:it-rawt|pd-exp|fk-kg-h|it-whp-xb)"|data-pd-allhulls=)')   # 046: the wormhole list's Export / Import
 n_chev = 0
 for m_ in CHEV_BTN.finditer(src):
     if css_start <= m_.start() <= css_start + len(css): continue
