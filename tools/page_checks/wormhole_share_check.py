@@ -19,7 +19,7 @@ its lines through the made-up folder, one hole added by hand) and B (another pla
   * the checks on import: wrong tv, newer v, 300 KB, an unknown system, a mismatched name, a time 3 days old, a time in the future, a bad ID, an
     unknown type, HTML in a line: refused or skipped and counted, nothing run, nothing saved; Cancel changes nothing;
   * the UI: the chevrons turn with aria-expanded, one box at a time, focus into the box and back, Esc closes the list, 44 px and no sideways scroll at
-    390 px;
+    390 px; a new Intel line redrawing the card keeps the open list where it was scrolled to and the Add field's focus and text (047);
   * mutants, each must fail: lines matched by time instead of text; theirs kept over yours; the cap dropping a line that decides a detail; the
     reporter written into the export; an older line bringing back a removed ID;
   * no page errors.
@@ -124,7 +124,8 @@ def cases(b, html, phone=True):
              ('Scout Alt', f'{N[A0]} wh {HOST} [MKRC] sig MKV crit rifter'),
              ('Gate Watcher', f'{N[A1]} drifter hole BKT772 Mk Friendly Name sabre'),
              ('Scout Alt', f'{N[A2]} wh'), ('Gate Watcher', f'{N[A2]} wh')]
-    W(pa, F_INTEL, ''.join(line(t + 2 * k, who, msg) for k, (who, msg) in enumerate(lines))); tick(pa, 3200)
+    body = ''.join(line(t + 2 * k, who, msg) for k, (who, msg) in enumerate(lines))
+    W(pa, F_INTEL, body); tick(pa, 3200)
     rep = pa.evaluate("(id) => (itWhStore().rep[id].raws || []).map(r => [r.n || 1, r.raw])", A2)
     if len(rep) != 1 or rep[0][0] != 2: out.append(f'a repeat of your own Intel line should be one line ×2: {rep}')
     open_list(pa)
@@ -150,6 +151,18 @@ def cases(b, html, phone=True):
     if st[:4] != [True, False, 'false', True] or st[4] in ('none', ''): out.append(f'one box at a time, focus into it, the chevron turned: {st}')
     pa.click('[data-it-whxb="imp"]'); pa.wait_for_timeout(150)
     if not pa.evaluate("document.activeElement === document.querySelector('[data-it-whxb=\"imp\"]')"): out.append('closing a box should return focus to its button')
+    # 047 (the owner, after 046: "when the feed updates and the page re-draws, the wormhole list automatically scrolls to the top and the user
+    # keeps losing their place in the list"): a long list scrolled down, the Add field being typed in, then a new Intel line redraws the card
+    many = [x for x in sorted(D0, key=lambda s: (D0[s], s)) if 5 <= D0[x] <= 9 and x not in taken][:30]
+    pa.evaluate("(ids) => { const st = itWhStore(), now = Date.now(); ids.forEach((id, k) => st.rep[id] = {id, t: now - (k + 1) * 1000, who: '', drifter: false, src: 'you'}); itWhSave(); itWhChanged(); }", many)
+    pa.evaluate("() => { itWhL.el.scrollTop = 0; }")
+    pa.click('.it-whp-add input[name=sys]'); pa.keyboard.type('Ta')
+    pa.evaluate("() => { itWhL.el.scrollTop = 350; }"); top0 = pa.evaluate("itWhL.el.scrollTop")
+    draws = pa.evaluate("window.__d = 0; const f = itRender; itRender = function(){ window.__d++; return f.apply(this, arguments); }; 0")
+    W(pa, F_INTEL, body + line(time.time(), 'Gate Watcher', f'{SYSNAME[near[0]]} Seren Ketter sabre')); tick(pa, 3200)
+    ks = pa.evaluate("[window.__d, itWhListShown(), itWhL.el.scrollTop, document.activeElement && document.activeElement.name, document.activeElement && document.activeElement.value]")
+    if top0 < 300 or ks[0] < 1: out.append(f'the scroll test needs a long list and a redraw: scrolled {top0}, redraws {ks[0]}')
+    elif not ks[1] or abs(ks[2] - top0) > 2 or ks[3] != 'sys' or ks[4] != 'Ta': out.append(f'a redraw while the list is open: shown {ks[1]}, scroll {top0} -> {ks[2]}, focus {ks[3]!r} {ks[4]!r}')
     pa.keyboard.press('Escape'); pa.wait_for_timeout(150)
     if pa.evaluate("itWhListShown()"): out.append('Esc should close the list')
     ca.close()
@@ -248,6 +261,7 @@ MUTANTS = [
     ('theirs kept over yours', "if(imp && c.line.k === 'you' && !c.line.via){", "if(false){"),
     ('the cap dropping a line that decides a detail', "kept = [...sorted.filter(r => d.backing.has(r)), ...sorted.filter(r => !d.backing.has(r))].slice(0, IT_WH_RAW_MAX)", "kept = sorted.slice(0, IT_WH_RAW_MAX)"),
     ('the reporter written into the export', "return {t: r.t, k: hand ? 'hand' : 'intel', raw:", "return {t: r.t, who: r.who, k: hand ? 'hand' : 'intel', raw:"),
+    ('a card redraw losing the open list\'s scroll (047)', "  if(whTop && itWhListShown()) itWhL.el.scrollTop = whTop;\n", ""),
     ('an older line bringing back a removed ID', "      if(itWhSigGone(w.goneSig, n.sig, r.t)) continue;   // removed by you after this line\n", ""),
 ]
 

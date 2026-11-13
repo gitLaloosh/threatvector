@@ -29,6 +29,12 @@ half up, int24 little-endian (the largest is about 54 LY: 540,000 units). 0.0001
 distances UP to 0.01 LY (the owner: "Round up to 0.01"), so the table's own error must stay far below that step; it cost
 4.1 KB gzipped more (measured on build 3665151).
 
+Build queue 047 (the route planner, roadmap/route-planner-plan.md change 1a): INTEL_MAP also holds band, each system's security band
+from CCP's unrounded securityStatus (0 null at 0.0 or below, 1 low below 0.45, 2 high), 2 bits a system, four to a byte (the first
+system in the lowest bits), base64. The sec column is rounded to hundredths, which puts systems just under 0.45 at "0.45": 19 of them
+in build 3682781, all low sec in EVE's own route (ESI's POST /route on 40 sample routes, compared at the 047 build review). The
+page's own route planner reads the band, never sec, for the 0.0 / 0.45 lines.
+
 Checked 2026-10-29 in the owner's browser: build 3660036's 13,978 gates make the same 6,989 connections as the page's
 table from the client's jumps.static (build 3654997), none missing either way.
 
@@ -134,6 +140,13 @@ def encode(conns, build):
 # v2026.11.02.4: the map's table, aligned to the jump table's sorted systems (see the top)
 LY_M, P3U = 9.46e15, 0.0001   # CCP's light-year in metres; the position table's unit in light-years (v2026.11.04.1)
 def jr(v): return math.floor(v + 0.5)   # half up, as JavaScript's Math.round (Python's round() rounds half to even)
+def sec_band(v): return 0 if v <= 0.0 else 1 if v < 0.45 else 2   # 047: CCP's route guide's lines, on the unrounded value
+def pack_band(bands):   # 2 bits a system, four to a byte, the first in the lowest bits (the page's rpBand reads it the same way)
+    b = bytearray((len(bands) + 3) // 4)
+    for i, v in enumerate(bands): b[i >> 2] |= v << ((i & 3) * 2)
+    return base64.b64encode(bytes(b)).decode()
+def unpack_band(t, n):
+    b = base64.b64decode(t); return [(b[i >> 2] >> ((i & 3) * 2)) & 3 for i in range(n)]
 def encode_map(conns, info, regions, build, jumps_md5):
     S = sorted({s for c in conns for s in c}); missing = [s for s in S if s not in info]
     assert not missing, f'{len(missing)} systems without a position2D: {missing[:5]}'
@@ -149,7 +162,8 @@ def encode_map(conns, info, regions, build, jumps_md5):
     assert all(-(1 << 23) <= v < (1 << 23) for v in p3)
     return {'build': build, 'jumps': jumps_md5, 'systems': len(S), 'x': b64('h', x), 'y': b64('h', y),
             'sec': b64('b', sec), 'reg': b64('B', reg), 'regions': [regions.get(r, str(r)) for r in rids],
-            'p3': base64.b64encode(b''.join((v & 0xFFFFFF).to_bytes(3, 'little') for v in p3)).decode(), 'p3u': P3U}
+            'p3': base64.b64encode(b''.join((v & 0xFFFFFF).to_bytes(3, 'little') for v in p3)).decode(), 'p3u': P3U,
+            'band': pack_band([sec_band(info[s][2]) for s in S])}
 def p3_values(t):   # the int24 values back (the checks and the diff count)
     b = base64.b64decode(t); return [int.from_bytes(b[i:i + 3], 'little', signed=True) for i in range(0, len(b), 3)]
 mp = re.search(r'^const INTEL_MAP = (.*);$', m.group(1), re.M)
@@ -170,13 +184,15 @@ added, gone = sorted(conns - page), sorted(page - conns)
 nm = lambda s: names.get(s, str(s))
 out('build', build)
 NM = encode_map(conns, info, regions, build, encode(conns, build)['md5'] if added or gone else J['md5'])   # 'jumps': the INTEL_JUMPS fingerprint it is aligned to
-same_map = PM is not None and all(PM.get(k) == NM[k] for k in ('jumps', 'systems', 'x', 'y', 'sec', 'reg', 'regions', 'p3', 'p3u'))
+same_map = PM is not None and all(PM.get(k) == NM[k] for k in ('jumps', 'systems', 'x', 'y', 'sec', 'reg', 'regions', 'p3', 'p3u', 'band'))
 if not same_map:   # how many systems moved, changed security or region (a jump-table change re-aligns every row)
     if PM and PM.get('systems') == NM['systems'] and PM.get('jumps') == NM['jumps']:
         dec = lambda t, f: struct.unpack('<%d%s' % (NM['systems'], f), base64.b64decode(t))
         diff = sum(1 for k, f in (('x', 'h'), ('y', 'h'), ('sec', 'b'), ('reg', 'B')) for a, b in zip(dec(PM[k], f), dec(NM[k], f)) if a != b)
         if PM.get('p3') and PM.get('p3u') == NM['p3u']: diff += sum(1 for a, b in zip(p3_values(PM['p3']), p3_values(NM['p3'])) if a != b)
         elif PM.get('p3') != NM['p3']: diff += NM['systems']   # positions missing (a page from before v2026.11.04.1) or in other units
+        if PM.get('band'): diff += sum(1 for a, b in zip(unpack_band(PM['band'], NM['systems']), unpack_band(NM['band'], NM['systems'])) if a != b)
+        else: diff += NM['systems']   # 047: no band yet (a page from before the route planner)
         map_msg = f'map table: {diff} value(s) differ from build {build}' + ('' if PM.get('regions') == NM['regions'] else ', region names changed')
     else: map_msg = 'map table: missing or made for another jump table'
     print(map_msg)
