@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-hYQuVSp+e5FuTWEk0iENEKIoGpbnJTaKSqTmHAYTDPg='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ScG95Zkaw2ggUpqeUmZoG/r05eNurqUfY9XLdxv3bbA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -29413,7 +29413,8 @@ function itMapDraw(){
   for(const [i, rp] of itm.rep){
     const tier = itMapTier(Math.max(1, rp.n));
     if(rp.side !== 'clear'){
-      const col = C[rp.side], rad = big ? r + 4 + grow[tier] : IT_MAP_RING[tier];
+      const out = whF && itm.wh.mark.has(i);   // 044: on the Wormholes filter a wormhole's own report goes outside its marks, never on them
+      const col = C[rp.side], rad = big ? r + 4 + grow[tier] + (out ? 9 : 0) : out ? 13 + grow[tier] : IT_MAP_RING[tier];
       const fade = whF && !itm.wh.kept.has(i);   // 045: on the Wormholes filter the other reports step back (the owner: "wormholes are getting lost in the chaos")
       c.save(); c.shadowColor = col; c.shadowBlur = fade ? 0 : 10; c.strokeStyle = col; c.lineWidth = big ? 2.5 : 2.2; c.globalAlpha = fade ? IT_MAP_WH_FADE : 0.95; c.beginPath(); c.arc(X(i), Y(i), rad, 0, 6.283); c.stroke(); c.restore();
       if(!big){ c.fillStyle = col; c.globalAlpha = fade ? 0.03 : 0.12; c.beginPath(); c.arc(X(i), Y(i), rad, 0, 6.283); c.fill(); c.globalAlpha = 1; }
@@ -30179,14 +30180,18 @@ function itWhKinds(w){
   if(w.drifter) k.push({col: itMapWhCol({drifter: true}), dash: [2.2, 1.8]});
   return k;
 }
-// one ring of radius r, its parts by kind; a Drifter part drawn with drDash ([] solid)
-function itWhRingDraw(c, x, y, r, w, drDash){
-  const parts = itWhKinds(w), n = parts.length, gap = n > 1 ? 0.22 : 0, top = -Math.PI / 2;
-  parts.forEach((p, j) => {
-    c.strokeStyle = p.col; c.setLineDash(p.dash ? drDash : []);
-    c.beginPath(); c.arc(x, y, r, top + j * 2 * Math.PI / n + gap / 2, top + (j + 1) * 2 * Math.PI / n - gap / 2); c.stroke();
-  });
-  c.setLineDash([]);
+// each kind's share of a circle, clockwise from the top (gap: the space left between two parts)
+function itWhArcs(w, gap){
+  const parts = itWhKinds(w), n = parts.length, g = n > 1 ? gap : 0, top = -Math.PI / 2;
+  return parts.map((p, j) => ({...p, a0: top + j * 2 * Math.PI / n + g / 2, a1: top + (j + 1) * 2 * Math.PI / n - g / 2}));
+}
+// one ring of radius r, its parts by kind; a Drifter part drawn with drDash ([] solid); glow: each part glows in its own colour
+function itWhRingDraw(c, x, y, r, w, drDash, glow){
+  for(const p of itWhArcs(w, 0.22)){
+    c.strokeStyle = p.col; c.setLineDash(p.dash ? drDash : []); if(glow){ c.shadowColor = p.col; c.shadowBlur = glow; }
+    c.beginPath(); c.arc(x, y, r, p.a0, p.a1); c.stroke();
+  }
+  c.setLineDash([]); if(glow) c.shadowBlur = 0;
 }
 // after a change made here (the list, the setting) or in another tab: the map (by its key), the lists' badges, the open list
 function itWhChanged(){
@@ -30224,16 +30229,20 @@ function itMapWhCol(w){ if(!itWhColC) itWhColC = [itMapCol('--it-wh', '#a98bd8')
 const IT_MAP_WH_FADE = 0.2, IT_MAP_WH_FRESH_MS = 30 * 60000;
 // the bolder mark: zoomed out a filled disc with a glow, a dark edge and a ring; zoomed in a glowing ring around the circle and a second one
 // outside it; a Drifter's outer ring dashed (044 D15)
+// 044 (the owner's hand test: "you can't see the split ring for the two wormhole types"): a system with both kinds splits its boldest
+// mark too, the disc (zoomed out) or the glowing ring (zoomed in), not only the thin outer ring
 function itMapWhBold(c, x, y, w, big, r){
-  const col = itWhKinds(w)[0].col;   // 044: a system with both kinds: the disc in the first, the outer ring split
+  const A = itWhArcs(w, 0);
   c.save();
   if(!big){
-    c.shadowColor = col; c.shadowBlur = 14; c.fillStyle = col; c.globalAlpha = 0.95; c.beginPath(); c.arc(x, y, 6, 0, 6.283); c.fill();
-    c.shadowBlur = 0; c.globalAlpha = 1; c.lineWidth = 1.5; c.strokeStyle = '#0c1014'; c.stroke();   // the dark edge keeps the disc apart from a dot under it
-    c.lineWidth = 2; itWhRingDraw(c, x, y, 10.5, w, [3, 2.5]);   // 044: the ring split by kind
+    c.globalAlpha = 0.95;
+    for(const p of A){ c.shadowColor = p.col; c.shadowBlur = 14; c.fillStyle = p.col; c.beginPath(); c.moveTo(x, y); c.arc(x, y, 6, p.a0, p.a1); c.closePath(); c.fill(); }
+    c.shadowBlur = 0; c.globalAlpha = 1; c.lineWidth = 1.5; c.strokeStyle = '#0c1014'; c.beginPath(); c.arc(x, y, 6, 0, 6.283); c.stroke();   // the dark edge keeps the disc apart from a dot under it
+    if(A.length > 1){ c.beginPath(); c.moveTo(x, y - 6); c.lineTo(x, y + 6); c.stroke(); }   // and the halves apart
+    c.lineWidth = 2; itWhRingDraw(c, x, y, 10.5, w, [3, 2.5]);
   } else {
-    c.shadowColor = col; c.shadowBlur = 14; c.strokeStyle = col; c.lineWidth = 3; c.beginPath(); c.arc(x, y, r + 4, 0, 6.283); c.stroke();
-    c.shadowBlur = 0; c.lineWidth = 1.5; itWhRingDraw(c, x, y, r + 9, w, [4, 3]);
+    c.lineWidth = 3; itWhRingDraw(c, x, y, r + 4, w, [], 14);
+    c.lineWidth = 1.5; itWhRingDraw(c, x, y, r + 9, w, [4, 3]);
   }
   c.restore();
 }

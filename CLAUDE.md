@@ -425,7 +425,8 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   Drifter per hole (`dr`, `drN`, `drNoId`; `itWhDrSet` keeps `drifter` for the older page), `goneSig` (× in the list; another line in the
   same second or older can't bring it back; 48 h) and `raws` (≤ `IT_WH_RAW_MAX` lines as typed, each with `set`: build queue 046's
   import reads it). Everything read back through `itWhEntryRead`; new fields only, so the older page still reads the store. The Add form
-  is `itWhAddFull`. `wormhole_sig_check.py`.
+  is `itWhAddFull`. A mixed system's rings split by kind (`itWhArcs`, `itWhRingDraw`); on the Wormholes filter its boldest mark too (the
+  disc's halves, the glowing ring) and its own report ring sits outside the marks (the owner's hand test). `wormhole_sig_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a

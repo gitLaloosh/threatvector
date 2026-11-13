@@ -11,7 +11,8 @@ Uses intel_check.py's made-up folder, mocks and names (you in 1DQ1-A); every pil
     BKT772", "wh lmn c3 fresh", "wormhole QDX-581 n110 eol"; life / mass / size only when plain; a line without a wormhole word unchanged;
     "wh the" no ID; the type table from CCP's data (C729 "?", K162 exit, R081 C4);
   * kept with the report: part -> whole, a part fitting two kept IDs on its own, newest first, at most 8, "RZL crit" changing only RZL-429's
-    mass; Drifter per hole (two Drifter IDs + a plain one: drN 2, "DRIFTER ×2"); a Drifter report with no ID surviving a plain "wh";
+    mass; Drifter per hole (two Drifter IDs + a plain one: drN 2, "DRIFTER ×2"; on the Wormholes filter the disc or glowing ring split by kind and
+    the system's own report ring outside the marks, from the owner's hand test); a Drifter report with no ID surviving a plain "wh";
     `set` on every kept line;
   * the removal mark: × removes one ID (and Drifter with it), the same line read again or an older one (or its part) doesn't bring it back,
     a newer report does; the mark survives a reload of the store;
@@ -20,7 +21,7 @@ Uses intel_check.py's made-up folder, mocks and names (you in 1DQ1-A); every pil
   * the Add form: every property, the hint as you type, a part updating a kept ID, refused fields; the lines as typed under the chevron;
   * 390 px: no sideways scroll with the list open, the × at least 44 px;
   * mutants, each must fail: the reader after the systems; a part merged into the first of two matches; an older line bringing back a
-    removed ID; no `set` on lines;
+    removed ID; no `set` on lines; the boldest mark in one colour; a wormhole's report ring on its marks;
   * no page errors.
 """
 import sys, os, json, time, tempfile
@@ -94,7 +95,7 @@ def cases(b, html, phone=True):
     def post(lines, wait=3200):
         nonlocal t
         W(pg, F_INTEL, ''.join(line(t + k, who, msg) for k, (who, msg) in enumerate(lines))); t += len(lines) + 1; tick(pg, wait)
-    post([('Gate Watcher', f'{N[F]} {HOST} sabre')])   # F gets a Near You row (a hostile), so its wormhole badge and IDs show there
+    post([('Gate Watcher', f'{N[F]} {HOST} sabre'), ('Gate Watcher', f'{N[Dd]} {HOST} rifter')])   # F gets a Near You row (a hostile), so its wormhole badge and IDs show there; Dd a report beside its two kinds of hole
     post([('Scout Alt', f'{N[A]} wh rzl-429 z971 class 1-3 medium size less then 1 day less then 50% mass'), ('Gate Watcher', f'{N[A]} wh sig MKV crit'),
           ('Gate Watcher', f'{N[B]} wh sig QDX'), ('Scout Alt', f'{N[C]} 2 wh xyz-123 h296 and pqr-4 k162'),
           ('Gate Watcher', f'{N[Dd]} drifter hole BKT772'), ('Scout Alt', f'{N[Dd]} drifter KLM-204 frig hole'), ('Gate Watcher', f'{N[Dd]} wh XRT-331'),
@@ -133,6 +134,28 @@ def cases(b, html, phone=True):
       const c = itm.cv.getContext('2d'), s0 = c.stroke, seen = new Set(); c.stroke = function(){ seen.add(String(this.strokeStyle).toLowerCase()); return s0.apply(this, arguments); };
       try{ itMapDraw(); itMapFilterSet('wh'); itMapDraw(); }finally{ c.stroke = s0; } itMapFilterSet('sec'); return [...seen]; }""", Dd)
     if '#a98bd8' not in ring or '#ff5fbf' not in ring: out.append(f'the split ring: colours stroked {ring}')
+    # the owner's hand test ("you can't see the split ring for the two wormhole types"): on the Wormholes filter the boldest mark is split too
+    # (the disc zoomed out, the glowing ring zoomed in), and the system's own report ring goes outside the wormhole's marks
+    SPY = """([id, z]) => { itMapFilterSet('wh'); const i = itGraphGet().at.get(id), k = z / itm.G; itm.view = {k, tx: itm.W / 2 - itm.P[2 * i] * k, ty: itm.H / 2 - itm.P[2 * i + 1] * k};
+      const c = itm.cv.getContext('2d'), o = {arc: c.arc, stroke: c.stroke, fill: c.fill, bp: c.beginPath}, rec = []; let arcs = [];
+      const cx = itm.W / 2, cy = itm.H / 2, at = (x, y) => Math.abs(x - cx) < 0.6 && Math.abs(y - cy) < 0.6;
+      c.beginPath = function(){ arcs = []; return o.bp.apply(this, arguments); };
+      c.arc = function(x, y, r){ if(at(x, y)) arcs.push(r); return o.arc.apply(this, arguments); };
+      c.stroke = function(){ if(arcs.length) rec.push(['s', String(this.strokeStyle).toLowerCase(), this.lineWidth, Math.max(...arcs)]); return o.stroke.apply(this, arguments); };
+      c.fill = function(){ if(arcs.length) rec.push(['f', String(this.fillStyle).toLowerCase(), 0, Math.max(...arcs)]); return o.fill.apply(this, arguments); };
+      try{ itMapDraw(); }finally{ Object.assign(c, o); }
+      const d = window.devicePixelRatio || 1, px = (dx) => Array.from(c.getImageData(Math.round((cx + dx) * d), Math.round(cy * d), 1, 1).data).slice(0, 3).join(',');
+      itMapFilterSet('sec'); return [rec, px(-3), px(3)]; }"""
+    rec, pl, pr = pg.evaluate(SPY, [Dd, 14])
+    discs = {r[1] for r in rec if r[0] == 'f' and r[3] == 6}
+    if discs != {'#a98bd8', '#ff5fbf'} or pl == pr: out.append(f'zoomed out, a mixed system\'s disc is split: fills {discs}, pixels {pl} / {pr}')
+    hostile = [r[3] for r in rec if r[0] == 's' and abs(r[2] - 2.2) < 0.01 and r[1] not in ('#a98bd8', '#ff5fbf')]
+    if not hostile or min(hostile) <= 11.5: out.append(f'zoomed out, its report ring should be outside the wormhole ring (10.5): {hostile}')
+    rec, pl, pr = pg.evaluate(SPY, [Dd, 44])
+    bold = {r[1] for r in rec if r[0] == 's' and abs(r[2] - 3) < 0.01}
+    whr = max([r[3] for r in rec if r[0] == 's' and r[1] in ('#a98bd8', '#ff5fbf')] or [0]); hostile = [r[3] for r in rec if r[0] == 's' and abs(r[2] - 2.5) < 0.01]
+    if bold != {'#a98bd8', '#ff5fbf'}: out.append(f'zoomed in, a mixed system\'s glowing ring is split: {bold}')
+    if not hostile or min(hostile) <= whr: out.append(f'zoomed in, its report ring ({hostile}) should be outside the wormhole rings ({whr})')
     # ---- the list: ×, the removal mark, the lines as typed, the Add form
     pg.evaluate("itMapFilterSet('wh'); itWhListOpen(true)"); pg.wait_for_timeout(300)
     if pg.locator('.it-whp-rows .it-sig').count() < 5: out.append('the list shows no IDs')
@@ -209,6 +232,8 @@ def cases(b, html, phone=True):
     return out, errs
 
 MUTANTS = [
+    ('a wormhole\'s report ring on its marks', "const out = whF && itm.wh.mark.has(i);", "const out = false;"),
+    ('the boldest mark in one colour', "  const A = itWhArcs(w, 0);\n", "  const A = itWhArcs(w, 0).slice(0, 1);\n"),
     ('the reader after the systems', "  const whd = itWhDetails(W, used);   // build queue 044: a wormhole line's signature IDs, type and the words describing the hole, before systems and pilots\n  const sys = itFindSystems(W, used, mySys, force);",
      "  const sys = itFindSystems(W, used, mySys, force);\n  const whd = itWhDetails(W, used);"),
     ('a part merged into the first of two matches', "same = hits.length === 1 ? hits[0] : null;", "same = hits.length >= 1 ? hits[0] : null;"),

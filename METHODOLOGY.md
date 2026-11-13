@@ -430,8 +430,9 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   ID past "keep wormhole reports for" is dropped. A part joins the kept ID it starts (and a whole ID its part); a part that
   fits two kept IDs is kept on its own. A later line about one ID ("RZL crit") changes only what it says. Drifter is per
   hole: every ID in a line with "drifter" is a Drifter hole. The system stays a Drifter one while any Drifter hole, or a
-  Drifter report with no ID, is kept, and the map's label counts them ("DRIFTER ×2"). A system with both kinds gets a
-  split ring. The tags show on the Feed's line, on Near You's row (Intel reports only), in the list and on the map's label.
+  Drifter report with no ID, is kept, and the map's label counts them ("DRIFTER ×2"). A system with both kinds gets split
+  rings, and on the Wormholes filter its disc (zoomed out) or glowing ring (zoomed in) is split too, with its own report's ring
+  moved outside the wormhole's marks so the two don't sit on each other. The tags show on the Feed's line, on Near You's row (Intel reports only), in the list and on the map's label.
   In the list, × beside an ID removes it, and Drifter with it. The ID keeps a removal mark (for 48 hours), so the same line
   read again, an older one, or another line in the same second can't bring it back; a newer report does. Each system also
   keeps its last 10 lines as typed (for the newest 100 systems), with who sent them and what each set, under a chevron in
