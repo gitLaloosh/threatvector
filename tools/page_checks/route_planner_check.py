@@ -29,6 +29,7 @@ address (http://localhost:8000/) with intel_check.py's made-up folder and Intel.
     clear_other_waypoints=true and add_to_beginning=false, the token and X-Compatibility-Date; Threat Vector's route: one request per jump, in
     order, the first clearing, never two at once; a failure stops the rest (ROUTE-01, how far it got), 403 turns the switch off (SSO-07), 401
     SSO-08 and nothing more until a new login; a press while sending is refused; nothing sent without a press;
+  * 048: kills on their own Routes box (kill; a setting saved without it keeps host's), ESS with hostiles and neutrals;
   * storage: tvRoute and tvRouteSend only, dscanIntel's keys unchanged; mutants, each must fail; no page errors.
 """
 import sys, os, re, json, time, tempfile, urllib.parse
@@ -206,7 +207,7 @@ def cases(b, html, phone=True):
         if st[0] != 'Safer' or st[1] == k0 or st[2] or st[3] != 'Safer': out.append(f'Prefer safer: saved, the route again, the slider on, the focus kept: {st}')
         pg.evaluate("() => { const r = document.querySelector('[data-it-rp-set=\"pen\"]'); r.value = '80'; r.dispatchEvent(new Event('input', {bubbles: true})); r.dispatchEvent(new Event('change', {bubbles: true})); }"); pg.wait_for_timeout(150)
         if pg.evaluate("[JSON.parse(localStorage.getItem('tvRoute')).pen, itRp.key.split('|')[2]]") != [80, '80']: out.append('the security penalty should save and change the route')
-        for kk in ('camp', 'bub', 'host', 'mine'):
+        for kk in ('camp', 'bub', 'host', 'kill', 'mine'):
             pg.uncheck(f'[data-it-rp-set="{kk}"]'); pg.wait_for_timeout(80)
             if pg.evaluate(f"JSON.parse(localStorage.getItem('tvRoute')).{kk}") is not False: out.append(f'{kk}: unticking should save')
         pg.fill('.it-rp-add input[name=sys]', 'Nowhere Special'); pg.click('.it-rp-add button'); pg.wait_for_timeout(100)
@@ -216,6 +217,18 @@ def cases(b, html, phone=True):
         pg.click('[data-it-rp-box] [data-it-rp-av]'); pg.wait_for_timeout(150)
         if pg.evaluate("JSON.parse(localStorage.getItem('tvRoute')).list.length") != 0: out.append('Remove should take it off')
     if pg.evaluate("itSettingsHtml(true).includes('data-it-rp-box')"): out.append("the Routes box shouldn't be in the Intel example's numbered setup")
+    # 048 (the owner: "separate kills as their own avoid option"): its own box; a setting saved before it keeps what `host` did for kills;
+    # hostiles, neutrals and ESS stay on `host` (the owner: "ESS by itself indicates someone is in it")
+    mg = pg.evaluate("""() => { const r = (o) => { localStorage.setItem('tvRoute', JSON.stringify(o)); itRp.set = null; return itRpSet().kill; };
+      const a = [r({host: false}), r({host: true}), r({host: true, kill: false}), r({host: false, kill: true})];
+      localStorage.removeItem('tvRoute'); itRp.set = null;
+      const near = it.near, id = itGraphGet().ids[itm.home === 1 ? 2 : 1], now = Date.now();
+      it.near = new Map([[id, {sys: id, t: now, kind: 'tag', kills: [{t: now}], essAt: [{t: now, who: 'Made Up'}]}]]);
+      const f = (o) => { itRp.set = Object.assign({}, IT_RP_DEF, {list: [], camp: false, bub: false}, o); return JSON.stringify([...itRpFlags().values()]); };
+      const b = [f({}), f({kill: false}), f({host: false}), f({host: false, kill: false})]; it.near = near; itRp.set = null; return [a, b]; }""")
+    if mg[0] != [False, True, False, True]: out.append(f'kills: a setting saved before 048 keeps what host did, a saved kill wins: {mg[0]}')
+    if mg[1] != ['[["kills","ESS"]]', '[["ESS"]]', '[["kills"]]', '[]']: out.append(f'kills on their own box, ESS with hostiles and neutrals: {mg[1]}')
+    if 'systems with kills' not in pg.evaluate("itRpBoxHtml(false)") or 'neutrals, kills' in pg.evaluate("itRpBoxHtml(false)"): out.append("the Routes box: a box for kills, the third box's label without kills")
     pg.evaluate("() => { localStorage.removeItem('tvRoute'); itRp.set = null; it.pop = false; itRpRefresh(); itRender(true); }")
     # ---- setting the destination
     n0 = len(WREQ); pg.wait_for_timeout(500)
@@ -334,6 +347,8 @@ MUTANTS = [
     ('the waypoints sent at once', "      const r = await esiFetch(`${ESI}/ui/autopilot/waypoint/?${q}`, {method: 'POST'}, 'waypoints', {scope: SSO_WP});\n      if(r.status === 204 || r.ok)",
      "      const r = {status: 204}; esiFetch(`${ESI}/ui/autopilot/waypoint/?${q}`, {method: 'POST'}, 'waypoints', {scope: SSO_WP});\n      if(r.status === 204 || r.ok)"),
     ("the Intel example on Threat Vector's route", "  const rpAside = itRpAside; itRpAside = true;   // 047: its map keeps the shortest stargate routes (the build review)", "  const rpAside = itRpAside;"),
+    ('kills still on the hostiles box (048, the owner)', "    if(s.kill && (st.kills || []).some(x => x.t >= keep)) add(i, 'kills');   // 048: its own box\n", "    if(s.host && (st.kills || []).some(x => x.t >= keep)) add(i, 'kills');\n"),
+    ('a saved setting without kill avoids kills (048)', "    s.kill = typeof o.kill === 'boolean' ? o.kill : s.host;\n", "    s.kill = typeof o.kill === 'boolean' ? o.kill : true;\n"),
     ('no permission check before sending', "  if(!sso.who || !ssoHeld(SSO_WP)){ itRpNote({ask: true}); return; }", "  if(!sso.who){ itRpNote({ask: true}); return; }"),
 ]
 

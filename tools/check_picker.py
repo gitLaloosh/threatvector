@@ -58,11 +58,14 @@ REGIONS = [
     (r'^// ---- PILOT AFFILIATION', ['pilot', 'system']),
     (r'^// ==== FLEET FROM A KILL', ['pilot', 'system', 'intel']),
     (r'^// ---- INTEL TABLES', ['intel']),
+    (r'^// ---- WORMHOLE TABLE', ['intel']),                      # 048: INTEL_WH (tools/jump_table_update.py)
     (r'^// ==== INTEL ', ['intel']),
+    (r'^// ==== WORMHOLES TAB', ['intel', 'layout']),            # 048: the Wormholes tab and the phone's More menu (the tab row)
 ]
 # CSS / markup class and id prefixes -> areas (the first part of the name, before - or _ or a capital)
 CSS = {
     'it': ['intel'], 'pt': ['intel'], 'nb': ['intel'], 'nbx': ['intel'], 'fe': ['intel'], 'fj': ['intel'], 'fsys': ['intel'], 'ftg': ['intel'],
+    'wh': ['intel'], 'whPanel': ['intel'], 'tabWh': ['intel'], 'tabBtnWh': ['intel'], 'tm': ['intel', 'layout'], 'tab': ['intel', 'layout'],   # 048
     'intel': ['intel'], 'intelPanel': ['intel'], 'intelSw': ['intel'], 'tabIntel': ['intel'],
     'sa': ['system'], 'side': ['system'], 'std': ['system'], 'vs': ['system', 'myship'], 'ds': ['system'], 'contacts': ['system'],
     'candidate': ['system'], 'candidates': ['system'], 'saResults': ['system'], 'tabDscan': ['system'],
@@ -81,6 +84,7 @@ CSS = {
 # Keyed text tables (card names, info panels, error codes): a changed entry belongs to its key's area (text can't change a number)
 TABLES = re.compile(r'^const (CARD_NAMES|CARD_INFO|ERROR_CODES)\b')
 KEYS = {
+    'whmap': ['intel'],
     'intel': ['intel'], 'itnear': ['intel'], 'itfeed': ['intel'], 'INTEL': ['intel'],
     'sysan': ['system'], 'side': ['system'], 'hostile': ['system', 'intel'], 'neutral': ['system', 'intel'], 'friendly': ['system', 'intel'],
     'onscan': ['system'], 'pilots': ['system'], 'vs': ['system', 'myship'], 'SA': ['system'], 'SIDE': ['system'], 'DSCAN': ['system'],

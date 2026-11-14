@@ -10,7 +10,7 @@ against pyfa by tools/independent_checks/check_damage_chart.py; this checks the 
     card) starts its columns level;
   * Fit Analyzer, no ship saved: the card charts against the cruiser
     preset (Caracal + 50MN Microwarpdrive II), the headline is the card's own point for the engagement range
-    (their optimal + falloff), both lines and the legend are drawn, "Show values" has the table, the Firepower card
+    (their optimal, 048), both lines and the legend are drawn, "Show values" has the table, the Firepower card
     links to it;
   * every control redraws the card without running the fit engine (estimateHpAndDps not called), and Reset puts
     the defaults back; the MWD switch off at the scram range changes nothing (scrammed either way), on vs off
@@ -165,8 +165,8 @@ def desktop(b):
     check('typical cruiser' in vs and pg.get_attribute(f'{C} .dmg-chip[data-preset="cruiser"]', 'aria-pressed') == 'true'
           and 'Caracal with a 50MN Microwarpdrive II' in pg.inner_text(f'{C} .dmg-presets'), f'no ship saved: the cruiser preset ({vs})')
     st = pg.evaluate(f"() => document.querySelector('{C}')._dmg.f.dmg")
-    rng = pg.evaluate(f"""() => {{ const app = document.querySelector('{C}')._dmg.f.estimate.application; const w = app.weapons.sort((a, b) => b.dps - a.dps)[0]; return Math.round((w.optimal + w.falloff) / 100) * 100; }}""")
-    check(st['range'] == rng and st['mode'] == 'orbit' and st['prop'] is True, f'defaults: their optimal + falloff ({st["range"]} m), orbiting, MWD on')
+    rng = pg.evaluate(f"""() => {{ const app = document.querySelector('{C}')._dmg.f.estimate.application; const w = app.weapons.sort((a, b) => b.dps - a.dps)[0]; return Math.round(w.optimal / 100) * 100; }}""")   # 048: their optimal alone (the owner: "we should have set it to their optimal range.")
+    check(st['range'] == rng and st['mode'] == 'orbit' and st['prop'] is True, f'defaults: their optimal ({st["range"]} m), orbiting, MWD on')
     check(head(pg) == pg.evaluate(EXPECT, C), f'headline = the card\'s point ({head(pg)} DPS)')
     check(pg.locator(f'{C} polyline.dmg-still').count() == 1 and pg.locator(f'{C} polyline.dmg-move').count() == 1
           and pg.locator(f'{C} .dmg-legend .dmg-key').count() == 2, 'two lines and a two-entry legend')

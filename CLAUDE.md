@@ -453,6 +453,18 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   tab's "Set my destination in EVE", `tvRouteSend`); without them a note with Continue to EVE, then "press again" (sent only while that switch is on: off with the permission held, a note with Turn it on, and nothing turns the switch on but the person, the owner's hand test; logged off in the game ESI still answers 204 and the game drops it, so known
   logged off (`ssoOnShown()` false) nothing is sent, a note with Retry (`itRp.force`; "Send anyway" until the hand test), and not known the note adds `IT_RP_OFF_NOTE`; Threat Vector's route's note and the Routes box say the game's avoidance list can't be read (`IT_RP_GAME_AVOID`; a game-avoided system stays a waypoint, the hand test); never sent by itself on
   return). A failure stops the rest (ROUTE-01; 403 SSO-07 off; 401 SSO-08). `route_planner_check.py` (stand-in SSO and ESI).
+- **The Wormholes tab** (v2026.11.14.1, build queue 048, part 1 of the Project doc roadmap/wormhole-mapping-plan.md; mockup `Claude outputs/
+  wormholes_tab_mockup.html` stays with the plan in Project docs until its last part): `#tabBtnWh` right after Intel (`TAB_PANELS`), "BETA" (the
+  page's `.it-gtag`) until the owner says it's done; its name is `CARD_NAMES.whmap`. The chain is `tvWhChain` `{v: 1, sys, links, pos}` (D32: its own
+  key, so the older page's `tvWormholes` reader never drops it), keyed by system id, nothing expires (D34). `whSeen(id or Local-log name, t, docked)`
+  takes every reading of your system (the Local log in `itTick` and the scan, EVE location in `itGameLoc`): newer wins; a change with a wormhole system
+  on either side links it to the last system recorded (the owner), unless EVE's answer says you're docked (a clone jump, a pod death); entering J-space
+  switches Intel → Wormholes (only from Intel; elsewhere `data-s="in"` on the button), leaving switches back. EVE location is also read while this tab is
+  in front with Intel off (`itGlAsk` / `whLocOn`, D19). In a hole Intel counts from your chain's k-space entrance (`whIntelSys` in `itMySys`, D14;
+  never inside the Intel example). `INTEL_WH` (its own block after the INTEL TABLES, written only by `tools/jump_table_update.py` from CCP's SDE:
+  names, class from the system / constellation / region, effect from mapSecondarySuns): `whTable`. The map (`whPaint` compares a key, LESSON #120;
+  `whDraw` on interactions), its corner buttons the Intel map's (D33), the System panel (`whSumHtml`; Signatures, Routes and Local say they come
+  later), + Add (`itWhTyOrCls`, `itWhOptHtml`), "Add a system here" on right-click. Phones: the More menu (`tm*`, D21). `wormhole_tab_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a

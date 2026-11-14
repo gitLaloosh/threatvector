@@ -30,6 +30,7 @@ PC = os.path.join(ROOT, 'tools', 'page_checks')
 
 # Each page check and the areas whose changes it guards. A new page check must be added here (--check-tags fails otherwise).
 AREAS = {
+    'wormhole_tab_check': ['intel', 'layout'],   # 048
     'affiliation_check': ['pilot'], 'assumed_charge_check': ['fit', 'calc'], 'busy_check': ['pilot'],
     'card_width_check': ['layout'], 'charges_check': ['fit', 'calc'], 'damage_chart_check': ['myship', 'calc'],
     'dossier_check': ['pilot'], 'intel_example_check': ['intel', 'layout'], 'sso_check': ['system', 'layout'], 'sso_game_check': ['intel', 'system', 'layout'], 'sso_online_check': ['intel', 'system', 'layout'], 'sso_standings_check': ['system', 'intel', 'pilot', 'layout'], 'intel_folder_check': ['intel', 'layout'], 'intel_logs_check': ['intel'], 'intel_one_tab_check': ['intel', 'layout'], 'list_caps_check': ['pilot', 'system', 'layout'], 'dossier_kills_check': ['pilot'], 'dossier_pin_check': ['pilot', 'system'], 'kill_groups_check': ['intel', 'pilot', 'system'], 'fleet_hulls_check': ['intel', 'pilot', 'system', 'layout'], 'game_data_check': ['calc', 'fit', 'myship', 'pilot', 'system', 'intel', 'layout'], 'alert_sound_check': ['intel', 'layout'], 'fleet_fit_budget_check': ['pilot', 'system', 'intel'], 'budget_gauge_check': ['pilot', 'system', 'intel', 'layout'], 'scan_rail_check': ['system', 'layout'], 'system_activity_check': ['system', 'intel'], 'extension_check': ['pilot', 'extension'],
@@ -50,7 +51,7 @@ AREAS = {
 NAMES = sorted({a for v in AREAS.values() for a in v})
 # v2026.10.31.7: a page check gets 5 minutes, these more (their longest run under load, x1.5); a hung check fails fast
 PAGE_TIMEOUT = 300
-SLOW = {'intel_kills_check': 600, 'wormhole_filter_check': 900, 'wormhole_sig_check': 900, 'wormhole_share_check': 900, 'route_planner_check': 900, 'intel_map_look_check': 600, 'region_names_check': 600, 'zkb_slow_check': 600, 'outage_check': 900}
+SLOW = {'intel_kills_check': 600, 'wormhole_tab_check': 900, 'wormhole_filter_check': 900, 'wormhole_sig_check': 900, 'wormhole_share_check': 900, 'route_planner_check': 900, 'intel_map_look_check': 600, 'region_names_check': 600, 'zkb_slow_check': 600, 'outage_check': 900}
 QUARANTINE_MAX_DAYS = 14
 # build queue 027 (Project doc roadmap/page-publish-plan.md): the page checks run on the served copy before every pull request.
 # The source-form checks (the PYFA CORE lock, the HTML-sink baseline, LESSON markers) read comments, so they stay on the source.
