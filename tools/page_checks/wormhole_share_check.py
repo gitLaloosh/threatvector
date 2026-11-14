@@ -19,9 +19,11 @@ its lines through the made-up folder, one hole added by hand) and B (another pla
   * the checks on import: wrong tv, newer v, 300 KB, an unknown system, a mismatched name, a time 3 days old, a time in the future, a bad ID, an
     unknown type, HTML in a line: refused or skipped and counted, nothing run, nothing saved; Cancel changes nothing;
   * the UI: the chevrons turn with aria-expanded, one box at a time, focus into the box and back, Esc closes the list, 44 px and no sideways scroll at
-    390 px;
+    390 px; a new Intel line redrawing the card keeps the open list where it was scrolled to and the Add field's focus and text (047), and the page where it was scrolled to (the map in
+    view, its top on screen with the list closed, down in the Feed, a short window; 047's hand test);
   * mutants, each must fail: lines matched by time instead of text; theirs kept over yours; the cap dropping a line that decides a detail; the
-    reporter written into the export; an older line bringing back a removed ID;
+    reporter written into the export; an older line bringing back a removed ID; the page creeping with each redraw (no fix), and the place put back
+    before the card is filled in;
   * no page errors.
 """
 import sys, os, json, time, tempfile
@@ -124,7 +126,8 @@ def cases(b, html, phone=True):
              ('Scout Alt', f'{N[A0]} wh {HOST} [MKRC] sig MKV crit rifter'),
              ('Gate Watcher', f'{N[A1]} drifter hole BKT772 Mk Friendly Name sabre'),
              ('Scout Alt', f'{N[A2]} wh'), ('Gate Watcher', f'{N[A2]} wh')]
-    W(pa, F_INTEL, ''.join(line(t + 2 * k, who, msg) for k, (who, msg) in enumerate(lines))); tick(pa, 3200)
+    body = ''.join(line(t + 2 * k, who, msg) for k, (who, msg) in enumerate(lines))
+    W(pa, F_INTEL, body); tick(pa, 3200)
     rep = pa.evaluate("(id) => (itWhStore().rep[id].raws || []).map(r => [r.n || 1, r.raw])", A2)
     if len(rep) != 1 or rep[0][0] != 2: out.append(f'a repeat of your own Intel line should be one line ×2: {rep}')
     open_list(pa)
@@ -150,7 +153,46 @@ def cases(b, html, phone=True):
     if st[:4] != [True, False, 'false', True] or st[4] in ('none', ''): out.append(f'one box at a time, focus into it, the chevron turned: {st}')
     pa.click('[data-it-whxb="imp"]'); pa.wait_for_timeout(150)
     if not pa.evaluate("document.activeElement === document.querySelector('[data-it-whxb=\"imp\"]')"): out.append('closing a box should return focus to its button')
+    # 047 (the owner, after 046: "when the feed updates and the page re-draws, the wormhole list automatically scrolls to the top and the user
+    # keeps losing their place in the list"): a long list scrolled down, the Add field being typed in, then a new Intel line redraws the card
+    many = [x for x in sorted(D0, key=lambda s: (D0[s], s)) if 5 <= D0[x] <= 9 and x not in taken][:30]
+    pa.evaluate("(ids) => { const st = itWhStore(), now = Date.now(); ids.forEach((id, k) => st.rep[id] = {id, t: now - (k + 1) * 1000, who: '', drifter: false, src: 'you'}); itWhSave(); itWhChanged(); }", many)
+    pa.evaluate("() => { itWhL.el.scrollTop = 0; }")
+    pa.click('.it-whp-add input[name=sys]'); pa.keyboard.type('Ta')
+    pa.evaluate("() => { itWhL.el.scrollTop = 350; }"); top0 = pa.evaluate("itWhL.el.scrollTop")
+    # 047, the owner's hand test ("it's like the page is slowly creeping up every time the feed refreshes"): the page scrolled into the map
+    pa.evaluate("() => { const r = itm.el.getBoundingClientRect(); window.scrollTo(0, scrollY + r.top + 120); }"); y0 = pa.evaluate("scrollY")
+    draws = pa.evaluate("window.__d = 0; const f = itRender; itRender = function(){ window.__d++; return f.apply(this, arguments); }; 0")
+    W(pa, F_INTEL, body + line(time.time(), 'Gate Watcher', f'{SYSNAME[near[0]]} Seren Ketter sabre')); tick(pa, 3200)
+    ks = pa.evaluate("[window.__d, itWhListShown(), itWhL.el.scrollTop, document.activeElement && document.activeElement.name, document.activeElement && document.activeElement.value]")
+    keep = "[scrollY, itm.el.getBoundingClientRect().top, document.querySelector('#itFeedList').getBoundingClientRect().top, window.__d]"
+    p0 = pa.evaluate(keep)
+    if y0 < 100 or abs(p0[0] - y0) > 1: out.append(f'a redraw should leave the page where it was scrolled to: {y0} -> {p0[0]}')
+    for k in range(3):
+        W(pa, F_INTEL, body + line(time.time(), 'Gate Watcher', f'{SYSNAME[near[k + 1]]} Seren Ketter sabre')); tick(pa, 3200)
+    p1 = pa.evaluate(keep)
+    if p1[3] - p0[3] < 3 or abs(p1[0] - p0[0]) > 1 or abs(p1[1] - p0[1]) > 1: out.append(f'the page should not creep with the feed\'s redraws: scrolled {p0[0]} -> {p1[0]}, map at {p0[1]:.0f} -> {p1[1]:.0f} ({p1[3] - p0[3]} redraws)')
+    # down in the Feed, and a short window with the map half above it
+    for vp, at in (({'width': 1440, 'height': 1000}, "document.querySelector('#itFeedList')"), ({'width': 1000, 'height': 600}, "itm.el")):
+        pa.set_viewport_size(vp); pa.wait_for_timeout(300)
+        pa.evaluate(f"() => {{ const r = {at}.getBoundingClientRect(); window.scrollTo(0, scrollY + r.top + 250); }}"); q0 = pa.evaluate(keep)
+        for k in range(2):
+            W(pa, F_INTEL, body + line(time.time(), 'Gate Watcher', f'{SYSNAME[near[k + 4 + (vp["height"] < 900) * 2]]} Seren Ketter sabre')); tick(pa, 3200)
+        q1 = pa.evaluate(keep)
+        if q1[3] == q0[3] or abs(q1[0] - q0[0]) > 1 or abs(q1[1] - q0[1]) > 1: out.append(f'{vp["width"]} x {vp["height"]}, scrolled into {at}: the page {q0[0]} -> {q1[0]}, map {q0[1]:.0f} -> {q1[1]:.0f} ({q1[3] - q0[3]} redraws)')
+    pa.set_viewport_size({'width': 1440, 'height': 1000}); pa.wait_for_timeout(200)
     pa.keyboard.press('Escape'); pa.wait_for_timeout(150)
+    # the owner's second look: the list closed, the page scrolled a little so the map's top is on screen (it went up 15 px a redraw to the top)
+    for y in (60, 200):
+        pa.set_viewport_size({'width': 1500, 'height': 900}); pa.wait_for_timeout(300); pa.evaluate(f"window.scrollTo(0, {y})"); pa.wait_for_timeout(200)
+        r0 = pa.evaluate(keep)
+        for k in range(3):
+            W(pa, F_INTEL, body + line(time.time(), 'Gate Watcher', f'{SYSNAME[near[(k + y) % 6]]} Seren Ketter sabre')); tick(pa, 3200)
+        r1 = pa.evaluate(keep)
+        if r1[3] - r0[3] < 2 or abs(r1[0] - r0[0]) > 1 or abs(r1[1] - r0[1]) > 1 or pa.evaluate("itWhListShown()"): out.append(f'the list closed, scrolled {y}: the page {r0[0]} -> {r1[0]}, map {r0[1]:.0f} -> {r1[1]:.0f} ({r1[3] - r0[3]} redraws)')
+    pa.set_viewport_size({'width': 1440, 'height': 1000}); pa.wait_for_timeout(200)
+    if top0 < 300 or ks[0] < 1: out.append(f'the scroll test needs a long list and a redraw: scrolled {top0}, redraws {ks[0]}')
+    elif not ks[1] or abs(ks[2] - top0) > 2 or ks[3] != 'sys' or ks[4] != 'Ta': out.append(f'a redraw while the list is open: shown {ks[1]}, scroll {top0} -> {ks[2]}, focus {ks[3]!r} {ks[4]!r}')
     if pa.evaluate("itWhListShown()"): out.append('Esc should close the list')
     ca.close()
     # ---- B: an empty list, then the round trip
@@ -248,6 +290,9 @@ MUTANTS = [
     ('theirs kept over yours', "if(imp && c.line.k === 'you' && !c.line.via){", "if(false){"),
     ('the cap dropping a line that decides a detail', "kept = [...sorted.filter(r => d.backing.has(r)), ...sorted.filter(r => !d.backing.has(r))].slice(0, IT_WH_RAW_MAX)", "kept = sorted.slice(0, IT_WH_RAW_MAX)"),
     ('the reporter written into the export', "return {t: r.t, k: hand ? 'hand' : 'intel', raw:", "return {t: r.t, who: r.who, k: hand ? 'hand' : 'intel', raw:"),
+    ('a card redraw losing the open list\'s scroll (047)', "  if(whTop && itWhListShown()) itWhL.el.scrollTop = whTop;\n", ""),
+    ('no fix: the page creeping with each redraw (047, the hand test)', [("  itKeepPlace(y0, a0);   // last", "  0;   // last"), ("  itAnchorOff();\n  el.innerHTML = html;", "  el.innerHTML = html;")]),
+    ('the place put back before the card is filled in (047, the second look)', [("  itKeepPlace(y0, a0);   // last", "  0;   // last"), ("  itExMount(el);   // v2026.11.07.7\n", "  itKeepPlace(y0, a0);\n  itExMount(el);   // v2026.11.07.7\n")]),
     ('an older line bringing back a removed ID', "      if(itWhSigGone(w.goneSig, n.sig, r.t)) continue;   // removed by you after this line\n", ""),
 ]
 
@@ -257,10 +302,13 @@ with sync_playwright() as p:
     for o in out: check(False, o)
     check(not out, 'Export and Import: the redaction, the round trip, the merge, the checks, the boxes')
     check(not errs, f'no page errors {errs[:3]}')
-    for name, old, new in (MUTANTS if not os.environ.get('SHARE_FAST') else []):
-        if PAGE.count(old) != 1: check(False, f'mutant "{name}": its line isn\'t in the page once'); continue
+    for mu in (MUTANTS if not os.environ.get('SHARE_FAST') else []):
+        name, pairs = mu[0], (mu[1] if isinstance(mu[1], list) else [mu[1:]])   # one edit, or a list of (old, new) edits
+        if any(PAGE.count(o) != 1 for o, _ in pairs): check(False, f'mutant "{name}": its line isn\'t in the page once'); continue
+        mt = PAGE
+        for o, n in pairs: mt = mt.replace(o, n)
         with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8', dir=os.path.dirname(HTML)) as f:
-            f.write(PAGE.replace(old, new)); mp = f.name
+            f.write(mt); mp = f.name
         try:
             try: mo, me = cases(b, mp, phone=False)
             except Exception as ex: mo, me = [f'stopped: {str(ex).splitlines()[0]}'], []

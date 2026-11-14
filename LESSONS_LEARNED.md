@@ -141,6 +141,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #114 Size a mockup the way the page sizes it, and test with names as long as the real ones: short made-up names hide gaps.
 - #118 A claim in a code comment is not a source: find what it rests on before repeating it to the owner.
 - #119 A redraw must carry over what the person was doing (focus, scroll) and compare with what it last drew, not with the new state.
+- #165 A redraw that keeps a scroll box's place must keep the page's place too: scroll the page into the redrawn part and redraw it several times. See also #119.
 - #120 A view rebuilt on a timer costs the machine even when nothing changed: build, compare, skip; draw only what can be seen.
 - #121 A list cut to its top rows must still show what was asked for, and its "N more" must open: a selection off screen is a hidden state.
 - #122 A heading pinned inside a scrolling list needs its own group box, must cover the list's padding, and whatever is scrolled into view must clear it.
@@ -1071,6 +1072,20 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 165. A redraw that keeps a scroll box's place must keep the page's place too: scroll the page into the redrawn part and redraw it several times
+
+- **What happened (build queue 047, v2026.11.13.3):** the fix for the Wormholes list (046's bug: a redraw scrolled it to the top) kept the list's
+  own scroll, and its check scrolled the list and redrew once with the page at the top. In the owner's hand test the list held, but the page
+  "slowly creeping up every time the feed refreshes": Intel's card takes the map's box out of the page for a moment while it redraws, and the
+  browser's scroll anchoring moved the page 15 px each time. One redraw at scroll 0 couldn't show it.
+  The first fix put the map back where it was on screen, but measured it before the card's status line was filled in (15 px short): with the
+  map's top on screen the page then went up 15 px a redraw, to the top (the owner's second look). The check had scrolled only into the map.
+- **How it was caught:** the owner's hand test, twice (screenshots: the page lower each time, then higher).
+- **Do this instead:** a check of "a redraw keeps the person's place" scrolls the page into the part that is redrawn, just above it, below
+  it, and on a short window, and redraws three times or more, comparing the page's scroll and the element's place on screen. A correction
+  measures only after everything the draw writes is written. Here the browser's scroll anchoring is off during the swap (`itAnchorOff`)
+  and `itKeepPlace` runs last in `itRender`.
 
 ## 164. A text transform that will meet its own output must leave that output unchanged: test it on what it made (export, import, export again)
 

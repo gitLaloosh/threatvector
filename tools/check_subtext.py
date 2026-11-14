@@ -12,7 +12,7 @@ limit is fine." The rule, enforced here as far as a static read can:
      entry is used, and every {card:key} in the text is a CARD_NAMES key; and (build queue 036, the owner: "Cap in
      check_subtext (Recommended)") a panel is short: at most INFO_OPEN_MAX (85) words in its open part (the paragraphs
      not folded under a "[Heading]") and INFO_ALL_MAX (210) in all, words counted after {card:key} is filled; Intel at
-     most 410 in all (the owner: "for now, let's allow it to go beyond the 350 cap"); `fleet` and `vs` exempt while
+     most 600 in all (410 until 047; the owner: "for now, let's allow it to go beyond the 350 cap"); `fleet` and `vs` exempt while
      their cards are hidden (INFO_CAP_EXEMPT);
   4. (nothing moves) is checked in the page: tools/page_checks/no_shift_check.py.
   6. (since v2026.10.14.50) no text coloured --text-faint (below 4.5:1 contrast on the cards), except a disabled
@@ -52,7 +52,7 @@ for k, paras in INFO.items():
             if ck not in NAMES: problems.append(f'CARD_INFO["{k}"]: {{card:{ck}}} is not a key in CARD_NAMES')
 # build queue 036: the length cap (Project doc roadmap/info-panels-plan.md, item 4)
 INFO_OPEN_MAX, INFO_ALL_MAX = 85, 210
-INFO_ALL_MAX_BY_KEY = {'intel': 410}   # the owner, 2026-11-11: "for now, let's allow it to go beyond the 350 cap"
+INFO_ALL_MAX_BY_KEY = {'intel': 600}   # the owner, 2026-11-11: "for now, let's allow it to go beyond the 350 cap"; 2026-11-13 (047): "push the cap to 600 and add what you need to"
 INFO_CAP_EXEMPT = {}   # build queue 038: the hidden 'fleet' and 'vs' panels were taken out with their cards
 def _name(ck):
     v = NAMES.get(ck, ck)
