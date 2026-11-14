@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-/DligdYpjt7wpmXSMeUsaXlJ4RKL4t5h/Y7dAvxPDFA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6Qo2Qs7Ff8cEOsTJaTTTl1dyCrsI4nFE7kwzEX3zIwQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -30983,6 +30983,7 @@ function itRpMenuKey(e){
 // ---- the note after a press (in the map box; its close button; role=status)
 function itRpNoteHtml(){
   const n = itRp.note; if(!n) return '';
+  if(n.off) return `<b>Set my destination in EVE is off.</b><br><span class="d">Turn it on to send destinations to EVE (your login already has the permission). Then press Set destination again.</span><div class="it-rp-nb"><button type="button" class="mys-primary" data-it-rp-on>Turn it on</button></div>`;
   if(n.ask) return `<b>Setting your destination needs your EVE login with the Waypoints permission.</b><br><span class="d">${escapeHtml(`One trip to EVE: it asks for Waypoints${sso.who ? '' : ' and logs you in'}. Then press Set destination again.`)}</span><div class="it-rp-nb"><button type="button" class="mys-primary" data-it-rp-eve${itOnHtml(!ssoClientId() || sso.busy || sso.starting, 'disabled')}>Continue to EVE</button></div>`;
   return `${n.head ? `<b>${escapeHtml(n.head)}</b>` : ''}${(n.lines || []).map(([cls, t]) => `<br><span class="${escapeHtml(cls)}">${escapeHtml(t)}</span>`).join('')}`;
 }
@@ -31004,6 +31005,7 @@ async function itRpGo(mode, i){
   if(itRp.busy){ itRp.wait = true; if(itRp.prog) itRp.prog(); return; }   // refused: the line stays in the progress note until the send ends
   if(!ssoClientId()){ itRpNote({head: 'Setting your destination in EVE works on threatvector.space', lines: [], warn: true}); return; }
   if(!sso.who || !ssoHeld(SSO_WP)){ itRpNote({ask: true}); return; }   // the build review's choice: one trip to EVE, then "press again"
+  if(!itRpSendOn()){ itRpNote({off: true}); return; }   // the owner's hand test: turned off on the EVE tab, nothing is sent (it was sent, and the switch turned itself back on)
   if(itRp.stop){ itRpNote({head: withCode('ESI refused this login, so nothing is sent until you log in again.', itRp.stop), lines: [['d', "Log out and in again on the profile's EVE tab."]], warn: true}); return; }
   let path = null;
   if(mode === 'tv'){ itRpUpdate(); path = itRpPath(i); if(!path) return; if(!itm.pinned.has(gid)) itMapPin(gid); }
@@ -31023,7 +31025,7 @@ async function itRpGo(mode, i){
   }catch(e){ err = e; }
   itRp.busy = false; itRp.wait = false; itRp.prog = null;
   if(err === null){
-    itRp.sends++; if(!itRpSendOn()){ itRpSendSave(true); renderSidePanel(); }   // set on the first send that worked: the EVE tab shows it
+    itRp.sends++;
     const lines = mode === 'eve' ? [['d', "EVE plans the route with your game's autopilot settings."]]
       : [...(w.length ? [['it-rp-w', itRpWarnText(w)]] : []), ['d', 'Every system is a waypoint: with Disable Autopilot at Each Waypoint on, the autopilot stops at each.']];
     itRpNote({head: mode === 'eve' ? `Destination set: ${name}` : `Destination set: ${name}, ${legs.length} jump${legs.length === 1 ? '' : 's'}`, lines, warn: w.length > 0});
@@ -31142,6 +31144,7 @@ function itRpBind(el){
     const av = e.target.closest && e.target.closest('[data-it-rp-av]');
     if(av){ e.preventDefault(); const inBox = !!av.closest('[data-it-rp-box]'); itRpAvoid(Number(av.dataset.itRpAv)); if(inBox){ const b = document.querySelector('[data-it-rp-box] [data-it-rp-av]') || document.querySelector('[data-it-rp-box] input[name=sys]'); if(b) b.focus({preventScroll: true}); } return; }
     if(e.target.closest && e.target.closest('[data-it-rp-nx]')){ itRpNote(null); return; }
+    if(e.target.closest && e.target.closest('[data-it-rp-on]')){ itRpSendSave(true); renderSidePanel(); itRpNote({head: 'Set my destination in EVE is on: press Set destination again.', lines: []}); return; }
     if(e.target.closest && e.target.closest('[data-it-rp-eve]')){ itRpSendSave(true); itRpNote(null); ssoStart(ssoWant(), 'wp'); }
   });
   el.addEventListener('keydown', (e) => { itRpMenuKey(e); }, true);   // before the card's own Escape

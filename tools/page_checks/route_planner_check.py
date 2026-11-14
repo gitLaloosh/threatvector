@@ -14,6 +14,7 @@ address (http://localhost:8000/) with intel_check.py's made-up folder and Intel.
     and your own system never count;
   * on the real map: jump numbers stay the shortest by stargate (itm.D), the drawn route follows Threat Vector's route, the tooltip says
     "Threat Vector's route: N jumps (shortest M)" and what it couldn't avoid; the Intel example's map keeps the shortest routes;
+  * the EVE tab's switch off: nothing sent even with the permission held, the note's Turn it on (047's hand test);
   * the search box: drawn as the site's one text field (the --bg fill, 4px corners); suggestions (names starting with the text first), the keyboard (arrows, Enter, Esc), a pick centres the map on the
     system, zooms in, keeps its route and opens its tooltip; Shift+F10 in the box opens the menu;
   * the right-click menu: the system's name, the three items, the focus on the first, arrows, Esc and a press outside close it, the items off
@@ -243,6 +244,14 @@ def cases(b, html, phone=True):
     ev = pg.evaluate("() => { const f = document.querySelector('#eveTab [data-feat=\"wp\"]'); return f ? [f.textContent.replace(/\\s+/g, ' '), document.querySelector('#ppSw-wp').checked] : null; }")
     if not ev or 'Set my destination in EVE' not in ev[0] or not ev[1]: out.append(f"the profile's EVE tab should show Set my destination in EVE, on: {ev}")
     pg.evaluate('closeProfile(false)'); pg.wait_for_timeout(100)
+    # the owner's hand test: the switch turned off while the login still holds Waypoints sent anyway and turned itself back on
+    wreset(); pg.evaluate("() => itRpSendToggle(false)"); go('eve', d['i']); pg.wait_for_timeout(300)
+    off = [len(WREQ), pg.evaluate("localStorage.getItem('tvRouteSend')"), pg.inner_text('.it-rp-note'), pg.locator('.it-rp-note [data-it-rp-on]').count()]
+    if off[0] or off[1] != 'false' or 'is off' not in off[2] or off[3] != 1: out.append(f'the switch off, Waypoints held: nothing sent, the switch stays off, a Turn it on button: {off}')
+    if off[3]: pg.click('.it-rp-note [data-it-rp-on]'); pg.wait_for_timeout(150)
+    else: pg.evaluate("() => itRpSendToggle(true)")
+    on = [len(WREQ), pg.evaluate("localStorage.getItem('tvRouteSend')"), pg.inner_text('.it-rp-note')]
+    if on[0] or on[1] != 'true' or 'press Set destination again' not in on[2]: out.append(f'Turn it on: the switch on, nothing sent until the next press: {on}')
     # EVE's route: one request
     wreset(); go('eve', d['i']); pg.wait_for_function("!itRp.busy", timeout=8000)
     if len(WREQ) != 1 or WREQ[0]['m'] != 'POST' or WREQ[0]['q'] != {'add_to_beginning': 'false', 'clear_other_waypoints': 'true', 'destination_id': str(d['id'])}:
@@ -268,6 +277,7 @@ def cases(b, html, phone=True):
         if len(WREQ) != 2 or 'ROUTE-01' not in nt or 'after waypoint 1 of' not in nt: out.append(f'a failure should stop the rest and say how far: {len(WREQ)} {nt!r}')
     wreset(fail_at=1, fail=403); go('eve', d['i']); pg.wait_for_function("!itRp.busy", timeout=8000)
     if 'SSO-07' not in pg.inner_text('.it-rp-note') or pg.evaluate("localStorage.getItem('tvRouteSend')") != 'false': out.append('403: SSO-07 and the switch off')
+    pg.evaluate("() => itRpSendToggle(true)")   # the 403 turned it off; nothing turns it on again by itself (the hand test)
     wreset(fail_at=1, fail=401); go('eve', d['i']); pg.wait_for_timeout(100)
     pg.wait_for_function("!itRp.busy", timeout=8000)
     if WREQ and 'SSO-08' not in pg.inner_text('.it-rp-note'): out.append(f"401: SSO-08 {pg.inner_text('.it-rp-note')!r}")
@@ -298,6 +308,7 @@ def cases(b, html, phone=True):
     return out, errs
 
 MUTANTS = [
+    ('sending with the switch off (047, the hand test)', "  if(!itRpSendOn()){ itRpNote({off: true}); return; }", "  if(false){ itRpNote({off: true}); return; }"),
     ('the search box drawn by the browser (047, the hand test)', "  input[type=text], input[type=search], select{", "  input[type=text], select{"),
     ('the rounded number instead of the band', "function itRpBand(T, i){ if(T.band) return T.band[i];", "function itRpBand(T, i){"),
     ('cost before the flagged count (no detours)', "    const fx = f[x] + (x !== home && flags.has(x) ? 1 : 0);   // a system counts once you go through it: the destination never does\n", "    const fx = 0;\n"),
