@@ -95,7 +95,7 @@ def desktop(b):
     ctx = b.new_context(bypass_csp=True, viewport={'width': 1440, 'height': 900}); pg = ctx.new_page()
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.removeItem('dscanMyShip')"); pg.reload()
-    pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
     check(vis(pg, f'{TV} .weak-generic') and not vis(pg, f'{TV} .weak-picks') and pg.locator(f'{R} .wp-tag').count() == 0 and title(pg, TV) == 'threat weaknesses',
           f'no ship saved: generic tiles, no picks, no tag, "{title(pg, TV)}"')
     pg.click('#profileFitL'); pg.fill('#myShipEft', VEXOR); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles'); pg.keyboard.press('Escape')
@@ -148,7 +148,7 @@ def desktop(b):
     check(vis(pg, f'{TV} .weak-generic') and not vis(pg, f'{TV} .weak-picks') and title(pg, TV) == 'threat weaknesses', '"Use in assessments" off: generic tiles back')
     pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape'); pg.wait_for_selector(f'{TV} .weak-picks .wp-stat', timeout=60000)
     # Pilot losses: their picks follow the visible tab
-    pg.click('#tabBtnPilot')
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
     run_async(pg, """async ([a, b]) => { const mk = async (text, day) => { const parsed = await parseEftFit(text);
         const est = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag);
         return {parsed, fit: { km: {killmail_time: day}, killmailId: 1, tally: parsed.tally, highSlotByFlag: parsed.highSlotByFlag, estimate: est,
@@ -167,7 +167,7 @@ def desktop(b):
     yp = tiles(pg, f'{V1} .mys-threat-view')
     check(yp == pg.evaluate(EXPECT, [V1, 'yours']) and len(yp) == 2, 'Pilot losses: your picks on the visible loss')
     # Viewing my ship (Fit Analyzer): no opponent, generic tiles
-    pg.click('#tabBtnFit'); pg.click('#profileFitL'); pg.click('#myShipPanel [data-act="open"]'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.click('#profileFitL'); pg.click('#myShipPanel [data-act="open"]'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
     pg.keyboard.press('Escape')
     check(vis(pg, f'{R} .weak-generic') and not vis(pg, f'{R} .weak-picks') and title(pg, R) == 'your weaknesses', f'"Viewing my ship": generic tiles (no opponent), "{title(pg, R)}"')
     check(not errs, f'desktop: no page errors {errs}')
@@ -180,7 +180,7 @@ def phone(b):
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.removeItem('dscanMyShip')"); pg.reload()
     pg.tap('#profileBtn'); pg.tap('#ppTab-fit'); pg.fill('#myShipEft', VEXOR); pg.tap('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles')
     pg.touchscreen.tap(W // 2, 40); pg.wait_for_timeout(200)
-    pg.tap('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{TV} .weak-picks .wp-stat', timeout=60000); settle(pg)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{TV} .weak-picks .wp-stat', timeout=60000); settle(pg)
     box = pg.locator(f'{TV} .weak-picks').bounding_box()
     check(vis(pg, f'{TV} .weak-picks .wp-stat') and box['x'] >= 0 and box['x'] + box['width'] <= W, f'phone: picks on the open Weaknesses card ({box["width"]:.0f} px wide)')
     sw = pg.evaluate('document.documentElement.scrollWidth'); check(sw <= W, f'phone: no sideways scroll ({sw})')

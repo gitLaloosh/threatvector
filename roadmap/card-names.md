@@ -15,6 +15,7 @@ types a name by hand.
 
 | Key | Name | Was / notes |
 |---|---|---|
+| `whmap` | Wormholes | build queue 048: the Wormholes tab's name and its ⓘ panel (the tab says BETA beside it) |
 | `weak` | Weaknesses | v2026.10.14.58 (the owner 2026-10-24): its title starts with whose they are, "Threat" (amber) or "Your" (cyan, My Fit Perspective and Viewing My Fit), drawn by `cardWhoHtml`; other text still says "Weaknesses" |
 | `ewar` | EWAR / Misc | some text said "EWAR card" |
 | `fp` | Firepower | |

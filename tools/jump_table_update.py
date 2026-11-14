@@ -38,6 +38,16 @@ page's own route planner reads the band, never sec, for the 0.0 / 0.45 lines.
 Checked 2026-10-29 in the owner's browser: build 3660036's 13,978 gates make the same 6,989 connections as the page's
 table from the client's jumps.static (build 3654997), none missing either way.
 
+Build queue 048 (the Wormholes tab, Project doc roadmap/wormhole-mapping-plan.md): INTEL_WH, the wormhole systems (IDs 31,000,000 to
+31,999,999, CCP's developer docs' ID ranges), in its own block after the INTEL TABLES (tools/gen_intel_tables.py rewrites that block from
+the lines it knows): sys = base64 of uint16 LE deltas of the sorted IDs (the first from 31000000); names = the English names, "|"-joined, in
+that order; cls = one character a system for its wormholeClassID (the system's own, else its constellation's, else its region's: in build
+3698585 only the five Drifter systems carry their own): 1-6, s shattered (13), t Thera (12), d a Drifter system (14-18); eff = one character
+a system for the effect its secondary sun's beacon gives (mapSecondarySuns.effectBeaconTypeID, named in types.jsonl "Class N <effect>
+Effects"): b Black Hole, c Cataclysmic Variable, m Magnetar, p Pulsar, r Red Giant, w Wolf-Rayet, "-" none; con = uint16 LE index a
+system into cons (constellation names, sorted by ID), conr = uint8 a constellation into regions (region names, sorted by ID). Build 3698585:
+2,604 systems, 1,038 with an effect. A change opens the same pull request as a gate change.
+
 Encoding as tools/gen_intel_tables.py: sys = base64 of uint16 LE deltas of the sorted system IDs (the first from
 30000000); edges = base64 of uint16 LE index pairs into sys, each connection once, sorted; md5 = the table's fingerprint
 (here the md5 of the sorted "a-b" lines; the page keys its cached system names by it, so new systems get their names).
@@ -83,9 +93,11 @@ def latest_build(text):
 def read_sde():
     files = {}
     if SDE and os.path.isdir(SDE):
-        for n in ('mapStargates.jsonl', 'mapSolarSystems.jsonl', 'mapRegions.jsonl', 'latest.jsonl'):
+        for n in ('mapStargates.jsonl', 'mapSolarSystems.jsonl', 'mapRegions.jsonl', 'mapConstellations.jsonl', 'mapSecondarySuns.jsonl', 'latest.jsonl'):
             p = os.path.join(SDE, n)
             if os.path.exists(p): files[n] = open(p, encoding='utf-8').read()
+        tp = os.path.join(SDE, 'types.jsonl')
+        types_lines = (lambda: open(tp, encoding='utf-8')) if os.path.exists(tp) else None
         build = latest_build(files['latest.jsonl']) if 'latest.jsonl' in files else int(opt('--build') or 0)
     else:
         if SDE: build, blob = int(opt('--build') or 0), open(SDE, 'rb').read()
@@ -93,25 +105,75 @@ def read_sde():
             build = latest_build(fetch(f'{BASE}/latest.jsonl').decode('utf-8'))
             blob = fetch(f'{BASE}/eve-online-static-data-{build}-jsonl.zip')
         with zipfile.ZipFile(io.BytesIO(blob)) as z:
-            for n in ('mapStargates.jsonl', 'mapSolarSystems.jsonl', 'mapRegions.jsonl'): files[n] = z.read(n).decode('utf-8')
+            for n in ('mapStargates.jsonl', 'mapSolarSystems.jsonl', 'mapRegions.jsonl', 'mapConstellations.jsonl', 'mapSecondarySuns.jsonl'): files[n] = z.read(n).decode('utf-8')
+        zb = blob
+        types_lines = lambda: io.TextIOWrapper(zipfile.ZipFile(io.BytesIO(zb)).open('types.jsonl'), encoding='utf-8')
     conns, gates = set(), 0
     for line in files['mapStargates.jsonl'].splitlines():
         if not line.strip(): continue
         g = json.loads(line); a = g['solarSystemID']; c = g['destination']['solarSystemID']; gates += 1
         assert a != c, g
         conns.add((min(a, c), max(a, c)))
-    names, info, regions = {}, {}, {}
+    names, info, regions, jsys = {}, {}, {}, {}
     for line in files.get('mapSolarSystems.jsonl', '').splitlines():
         if line.strip():
             o = json.loads(line); k = int(o['_key']); names[k] = (o.get('name') or {}).get('en', str(k))
+            if WH_LO <= k < WH_HI: jsys[k] = (names[k], int(o['constellationID']), int(o['regionID']), o.get('wormholeClassID'))
             if o.get('position2D') is not None:
                 p = o.get('position') or {}
                 info[k] = (o['position2D']['x'], o['position2D']['y'], float(o['securityStatus']), int(o['regionID']), tuple(p.get(a) for a in 'xyz'))
+    rcls = {}
     for line in files.get('mapRegions.jsonl', '').splitlines():
         if line.strip():
-            o = json.loads(line); regions[int(o['_key'])] = (o.get('name') or {}).get('en', str(o['_key']))
+            o = json.loads(line); regions[int(o['_key'])] = (o.get('name') or {}).get('en', str(o['_key'])); rcls[int(o['_key'])] = o.get('wormholeClassID')
     assert gates == 2 * len(conns), f'{gates} gates, {len(conns)} connections: a gate without its other end'
-    return build, conns, names, gates, info, regions
+    wh = read_wh(files, jsys, regions, rcls, types_lines)
+    return build, conns, names, gates, info, regions, wh
+
+# ---- 048: the wormhole systems (INTEL_WH)
+WH_LO, WH_HI = 31000000, 32000000
+WH_CLS = {1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 12: 't', 13: 's', 14: 'd', 15: 'd', 16: 'd', 17: 'd', 18: 'd'}
+WH_EFF = {'Black Hole': 'b', 'Cataclysmic Variable': 'c', 'Magnetar': 'm', 'Pulsar': 'p', 'Red Giant': 'r', 'Wolf Rayet': 'w'}
+def read_wh(files, jsys, regions, rcls, types_lines):
+    if not jsys: return None   # a copy without mapSolarSystems.jsonl
+    cons, ccls = {}, {}
+    for line in files.get('mapConstellations.jsonl', '').splitlines():
+        if line.strip():
+            o = json.loads(line); k = int(o['_key']); cons[k] = ((o.get('name') or {}).get('en', str(k)), int(o['regionID'])); ccls[k] = o.get('wormholeClassID')
+    beacon = {}
+    for line in files.get('mapSecondarySuns.jsonl', '').splitlines():
+        if line.strip():
+            o = json.loads(line)
+            if WH_LO <= int(o['solarSystemID']) < WH_HI and o.get('effectBeaconTypeID'): beacon[int(o['solarSystemID'])] = int(o['effectBeaconTypeID'])
+    bname = {}
+    if beacon:
+        assert types_lines, 'types.jsonl is needed to name the wormhole effects'
+        want = set(beacon.values())
+        with types_lines() as fh:
+            for line in fh:
+                if not line.strip() or not any(f'"_key": {b},' in line or f'"_key":{b},' in line for b in want): continue
+                o = json.loads(line)
+                if int(o['_key']) in want: bname[int(o['_key'])] = (o.get('name') or {}).get('en', '')
+    ids = sorted(jsys); cls, eff = [], []
+    for k in ids:
+        nm, c, r, own = jsys[k]
+        v = own or ccls.get(c) or rcls.get(r)
+        assert v in WH_CLS, f'{nm}: wormhole class {v!r}'
+        cls.append(WH_CLS[v])
+        if k in beacon:
+            mm_ = re.fullmatch(r'Class \d+ (.+) Effects', bname.get(beacon[k], ''))
+            assert mm_ and mm_.group(1) in WH_EFF, f'{nm}: effect beacon {beacon[k]} {bname.get(beacon[k])!r}'
+            eff.append(WH_EFF[mm_.group(1)])
+        else: eff.append('-')
+    cids = sorted({jsys[k][1] for k in ids}); ci = {c: i for i, c in enumerate(cids)}
+    rids = sorted({cons[c][1] for c in cids}); ri = {r: i for i, r in enumerate(rids)}
+    assert len(cids) < 65536 and len(rids) < 256 and all('|' not in jsys[k][0] for k in ids)
+    d = [ids[0] - WH_LO] + [ids[i] - ids[i - 1] for i in range(1, len(ids))]
+    assert all(0 <= v < 65536 for v in d)
+    b64 = lambda f, a: base64.b64encode(struct.pack('<%d%s' % (len(a), f), *a)).decode()
+    return {'systems': len(ids), 'sys': b64('H', d), 'names': '|'.join(jsys[k][0] for k in ids), 'cls': ''.join(cls), 'eff': ''.join(eff),
+            'con': b64('H', [ci[jsys[k][1]] for k in ids]), 'cons': [cons[c][0] for c in cids], 'conr': b64('B', [ri[cons[c][1]] for c in cids]),
+            'regions': [regions.get(r, str(r)) for r in rids]}
 
 # ---- the page's table ----
 src = open(HTML, encoding='utf-8').read()
@@ -168,12 +230,15 @@ def p3_values(t):   # the int24 values back (the checks and the diff count)
     b = base64.b64decode(t); return [int.from_bytes(b[i:i + 3], 'little', signed=True) for i in range(0, len(b), 3)]
 mp = re.search(r'^const INTEL_MAP = (.*);$', m.group(1), re.M)
 PM = json.loads(mp.group(1)) if mp else None
+WBEGIN, WEND = '// ---- WORMHOLE TABLE (tools/jump_table_update.py; do not edit by hand) ----', '// ---- END WORMHOLE TABLE ----'
+mw = re.search(re.escape(WBEGIN) + r'\nconst INTEL_WH = (.*);\n' + re.escape(WEND), src)
+PW = json.loads(mw.group(1)) if mw else None
 page = decode(J)
 # the encoding round-trips: the page's own connections encode to the page's own sys and edges
 t = encode(page, J['build']); assert (t['sys'], t['edges'], t['n'], t['systems']) == (J['sys'], J['edges'], J['n'], J['systems']), 'the encoding differs from gen_intel_tables.py'
 
 try:
-    build, conns, names, gates, info, regions = read_sde()
+    build, conns, names, gates, info, regions, NW = read_sde()
 except Exception as e:
     if CHECK and not SDE:   # the chain may run where CCP's site can't be reached: say so; the Action checks it twice a day
         print(f"jump table: skipped (CCP's static data not reachable from here: {type(e).__name__}); the GitHub Action checks it twice a day")
@@ -196,28 +261,41 @@ if not same_map:   # how many systems moved, changed security or region (a jump-
         map_msg = f'map table: {diff} value(s) differ from build {build}' + ('' if PM.get('regions') == NM['regions'] else ', region names changed')
     else: map_msg = 'map table: missing or made for another jump table'
     print(map_msg)
-if not added and not gone and same_map:
+if NW is not None: NW = dict(NW, build=build if PW is None or any(PW.get(k) != NW[k] for k in NW) else PW.get('build'))
+same_wh = NW is None or PW == NW
+if not same_wh:
+    wh_msg = 'wormhole table: missing' if PW is None else f"wormhole table: differs from build {build} ({PW.get('systems')} → {NW['systems']} systems)"
+    print(wh_msg)
+if not added and not gone and same_map and same_wh:
     msg = f"jump table matches CCP's build {build}: {len(conns)} connections ({gates} gates); the page's table is from build {J['build']}"
     print(msg); summary(f'**No stargate changed.** {msg}.'); out('changed', 'false')
     sys.exit(0)
-lines = [f'- added: {nm(a)} – {nm(c)}' for a, c in added] + [f'- removed: {nm(a)} – {nm(c)}' for a, c in gone] + ([] if same_map else [f'- {map_msg}'])
+lines = [f'- added: {nm(a)} – {nm(c)}' for a, c in added] + [f'- removed: {nm(a)} – {nm(c)}' for a, c in gone] + ([] if same_map else [f'- {map_msg}']) + ([] if same_wh else [f'- {wh_msg}'])
 msg = (f"jump table differs from CCP's build {build}: {len(added)} connection(s) added, {len(gone)} removed" if added or gone
-       else f"the map table differs from CCP's build {build} (no stargate changed)")
+       else f"the map table differs from CCP's build {build} (no stargate changed)" if not same_map
+       else f"the wormhole table differs from CCP's build {build} (no stargate changed)")
 print(msg); print('\n'.join(lines[:40])); out('changed', 'true')
 summary(f'**{msg}.**\n\n' + '\n'.join(lines))
 if WRITE:
     new = encode(conns, build) if added or gone else J
     blk = m.group(1)
     blk = blk[:mm.start()] + 'const INTEL_JUMPS = ' + json.dumps(new, separators=(',', ':')) + ';' + blk[mm.end():]
-    ml = 'const INTEL_MAP = ' + json.dumps(NM, ensure_ascii=False, separators=(',', ':')) + ';'
+    ml = 'const INTEL_MAP = ' + json.dumps(PM if same_map else NM, ensure_ascii=False, separators=(',', ':')) + ';'   # 048: kept as it is when only the wormhole table changed
     mp2 = re.search(r'^const INTEL_MAP = (.*);$', blk, re.M)
     blk = blk[:mp2.start()] + ml + blk[mp2.end():] if mp2 else blk + '\n' + ml
-    open(HTML, 'w', encoding='utf-8').write(csp_write(src[:m.start(1)] + blk + src[m.end(1):])[0])   # the CSP hash follows the new script
+    out_src = src[:m.start(1)] + blk + src[m.end(1):]
+    if NW is not None:   # 048: the wormhole table's own block, right after the INTEL TABLES
+        wl = WBEGIN + '\nconst INTEL_WH = ' + json.dumps(NW, ensure_ascii=False, separators=(',', ':')) + ';\n' + WEND
+        mw2 = re.search(re.escape(WBEGIN) + r'\n.*?\n' + re.escape(WEND), out_src, re.S)
+        if mw2: out_src = out_src[:mw2.start()] + wl + out_src[mw2.end():]
+        else:
+            e = out_src.index(END, m.start(1)) + len(END); out_src = out_src[:e] + '\n' + wl + out_src[e:]
+    open(HTML, 'w', encoding='utf-8').write(csp_write(out_src)[0])   # the CSP hash follows the new script
     print(f'written: {new["n"]} connections, {new["systems"]} systems' + (f', build {build}' if added or gone else ' (unchanged)') + f'; map table from build {build}')
     if BODY:
         open(BODY, 'w', encoding='utf-8').write(
-            f'EVE build {build} changed the stargates or the map. This updates the page\'s jump table (`INTEL_JUMPS`) and map table '
-            f'(`INTEL_MAP`) in index.html from CCP\'s published static data; nothing else changes.\n\n' + '\n'.join(lines) +
+            f'EVE build {build} changed the stargates, the map or the wormhole systems. This updates the page\'s jump table (`INTEL_JUMPS`), map table '
+            f'(`INTEL_MAP`) and wormhole table (`INTEL_WH`) in index.html from CCP\'s published static data; nothing else changes.\n\n' + '\n'.join(lines) +
             f'\n\nThe table now has {new["n"]} connections between {new["systems"]} systems. Made by '
             f'`.github/workflows/jump-table.yml` with `tools/jump_table_update.py`. After merging, run `git pull` before your next commit.\n')
 sys.exit(1 if CHECK else 0)

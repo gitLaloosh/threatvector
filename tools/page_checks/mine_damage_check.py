@@ -85,7 +85,7 @@ def desktop(b, W):
     ctx = b.new_context(bypass_csp=True, viewport={'width': W, 'height': 1000}); pg = ctx.new_page()
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
-    pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
     check(pg.locator(f'{MV} .fl-dmg').count() == 0, f'{W}: no ship saved, no card of yours')
     # v2026.10.14.56: the fight's range runs to the farther-reaching ship; with no ship saved, the threat's own reach
     # (the typical-class preset has no weapons and doesn't widen it)
@@ -208,7 +208,7 @@ def pilot(b):
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
     save_ship(pg); settle(pg, 300)
-    pg.click('#tabBtnPilot')
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
     run_async(pg, """async ([a, b]) => {
         const mk = async (text, day) => { const parsed = await parseEftFit(text);
           const est = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag);
@@ -238,7 +238,7 @@ def phone(b):
     ctx = b.new_context(bypass_csp=True, viewport={'width': W, 'height': 740}, is_mobile=True, has_touch=True); pg = ctx.new_page()
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
-    pg.tap('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
     save_ship(pg); settle(pg, 800)
     pg.tap(f'{R} .mys-sw-btn.is-mine .mys-sw-k'); pg.wait_for_selector(f'{MV} .fl-dmg'); settle(pg, 600)   # v.58: a tap on a time opens its why panel; v.65: one on the ship's name opens the ship menu
     check(pg.locator(f'{MV} .fl-dmg .cc-closed').count() == 1, 'phone: your card starts collapsed')

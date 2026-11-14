@@ -10,7 +10,7 @@ against pyfa by tools/independent_checks/check_damage_chart.py; this checks the 
     card) starts its columns level;
   * Fit Analyzer, no ship saved: the card charts against the cruiser
     preset (Caracal + 50MN Microwarpdrive II), the headline is the card's own point for the engagement range
-    (their optimal + falloff), both lines and the legend are drawn, "Show values" has the table, the Firepower card
+    (their optimal, 048), both lines and the legend are drawn, "Show values" has the table, the Firepower card
     links to it;
   * every control redraws the card without running the fit engine (estimateHpAndDps not called), and Reset puts
     the defaults back; the MWD switch off at the scram range changes nothing (scrammed either way), on vs off
@@ -138,7 +138,7 @@ def tablet(b):
     pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML)
     pg.evaluate("localStorage.removeItem('dscanMyShip'); localStorage.removeItem('dscanDmgPreset')"); pg.reload()
-    pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); ready(pg)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); ready(pg)
     b_ = {k: pg.locator(f'{R} .fl-{k}').bounding_box() for k in ('dmg', 'beat', 'fit', 'stats')}
     lay = pg.locator(f'{R} .fit-layout').bounding_box()
     check(abs(b_['dmg']['width'] - lay['width']) < 2 and b_['fit']['y'] >= b_['dmg']['y'] + b_['dmg']['height'] - 1 and abs(b_['fit']['y'] - b_['beat']['y']) < 2
@@ -154,7 +154,7 @@ def desktop(b):
     pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML)
     pg.evaluate("localStorage.removeItem('dscanMyShip'); localStorage.removeItem('dscanDmgPreset')"); pg.reload()
-    pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn')
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn')
     pg.wait_for_selector(f'{R} .fit-layout'); ready(pg)
     b_ = {k: pg.locator(f'{R} .fl-{k}').bounding_box() for k in ('dmg', 'beat', 'fit', 'stats')}
     check(abs(b_['dmg']['x'] - b_['fit']['x']) < 2 and abs(b_['dmg']['x'] + b_['dmg']['width'] - b_['stats']['x'] - b_['stats']['width']) < 2
@@ -165,8 +165,8 @@ def desktop(b):
     check('typical cruiser' in vs and pg.get_attribute(f'{C} .dmg-chip[data-preset="cruiser"]', 'aria-pressed') == 'true'
           and 'Caracal with a 50MN Microwarpdrive II' in pg.inner_text(f'{C} .dmg-presets'), f'no ship saved: the cruiser preset ({vs})')
     st = pg.evaluate(f"() => document.querySelector('{C}')._dmg.f.dmg")
-    rng = pg.evaluate(f"""() => {{ const app = document.querySelector('{C}')._dmg.f.estimate.application; const w = app.weapons.sort((a, b) => b.dps - a.dps)[0]; return Math.round((w.optimal + w.falloff) / 100) * 100; }}""")
-    check(st['range'] == rng and st['mode'] == 'orbit' and st['prop'] is True, f'defaults: their optimal + falloff ({st["range"]} m), orbiting, MWD on')
+    rng = pg.evaluate(f"""() => {{ const app = document.querySelector('{C}')._dmg.f.estimate.application; const w = app.weapons.sort((a, b) => b.dps - a.dps)[0]; return Math.round(w.optimal / 100) * 100; }}""")   # 048: their optimal alone (the owner: "we should have set it to their optimal range.")
+    check(st['range'] == rng and st['mode'] == 'orbit' and st['prop'] is True, f'defaults: their optimal ({st["range"]} m), orbiting, MWD on')
     check(head(pg) == pg.evaluate(EXPECT, C), f'headline = the card\'s point ({head(pg)} DPS)')
     check(pg.locator(f'{C} polyline.dmg-still').count() == 1 and pg.locator(f'{C} polyline.dmg-move').count() == 1
           and pg.locator(f'{C} .dmg-legend .dmg-key').count() == 2, 'two lines and a two-entry legend')
@@ -240,7 +240,7 @@ def desktop(b):
     # another preset, kept after a reload
     pg.click(f'{C} .dmg-chip[data-preset="battleship"]'); pg.wait_for_function(f"() => /battleship/.test(document.querySelector('{C} .dmg-vs').textContent)", timeout=60000); ready(pg)
     check('Raven with a 500MN Microwarpdrive II' in pg.inner_text(f'{C} .dmg-presets') and head(pg) == pg.evaluate(EXPECT, C), f'battleship preset ({head(pg)} DPS)')
-    pg.reload(); pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); ready(pg)
+    pg.reload(); pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); ready(pg)
     check('typical battleship' in pg.inner_text(f'{C} .dmg-vs'), 'preset kept after a reload')
     # collapse / open
     pg.click(f'{C} .cc-toggle[data-card="dmg"]'); pg.wait_for_timeout(100)
@@ -290,7 +290,7 @@ def desktop(b):
     pg.fill('#fitAnalyzerInput', BESTOWER); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{C} .dmg-note')
     check('No turrets, missiles' in pg.inner_text(f'{C}'), 'a fit with no weapons: nothing to chart')
     # Pilot losses
-    pg.click('#tabBtnPilot')
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
     n = run_async(pg, """async (text) => { const parsed = await parseEftFit(text);
         const mk = async (day) => { const est = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag);
           return { km: {killmail_time: day}, killmailId: 1, tally: parsed.tally, highSlotByFlag: parsed.highSlotByFlag, estimate: est,
@@ -360,7 +360,7 @@ def markers_at(b, W):
     pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML)
     pg.evaluate("localStorage.removeItem('dscanMyShip'); localStorage.removeItem('dscanDmgPreset')"); pg.reload()
-    pg.click('#tabBtnFit')
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     # 1. the Hecate (this file's: a scram, no web): 9 km in the tackle colour, your range in white
     pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout')
     if not pg.locator(C).count(): pg.click(f'{R} .fl-dmg .cc-toggle[data-card="dmg"]')
@@ -469,7 +469,7 @@ def phone(b):
     pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML)
     pg.evaluate("localStorage.removeItem('dscanMyShip'); localStorage.removeItem('dscanDmgPreset')"); pg.reload()
-    pg.tap('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout')
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout')
     check(pg.locator(f'{R} .fl-dmg .cc-closed').count() == 1, 'phone: the card starts collapsed')
     # v2026.10.14.47: a card that starts collapsed shows its headline at once (it used to say "damage applied to
     # you, by distance" until opened once)

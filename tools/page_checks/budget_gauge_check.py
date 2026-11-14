@@ -73,7 +73,7 @@ def seed(pg, n, who=None, extra=''):
     pg.evaluate("""([n, who]) => { const now = Date.now(); localStorage.setItem('dscanZkbBudget', JSON.stringify(Array.from({length: n}, (_, i) => now - 120000 - (n - i) * 1000)));
         localStorage.setItem('dscanZkbWho', JSON.stringify(Array.from({length: n}, (_, i) => [now - 120000 - (n - i) * 1000, who ? who[i % who.length] : 'Other']))); }""", [n, who])
 def analyze(pg):
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', 'Test Pilot'); pg.click('#fitBtn')
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', 'Test Pilot'); pg.click('#fitBtn')
     pg.wait_for_function("() => !document.getElementById('fitBtn').disabled", timeout=90000)
 
 with sync_playwright() as p:

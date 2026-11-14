@@ -108,7 +108,7 @@ with sync_playwright() as p:
     pg.evaluate("localStorage.removeItem('dscanMyShip')")
     seen = set()
     for name, fit in (('hecate', HECATE), ('vexor', VEXOR)):
-        pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', fit); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout')
+        pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', fit); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout')
         pg.wait_for_selector(f'{R} .fl-dmg [data-out="head"]:not(:empty)', timeout=60000); pg.wait_for_timeout(300)
         for _ in range(3):   # open every closed card (each open re-renders the layout)
             t = pg.locator(f'{R} button.cc-toggle[aria-expanded="false"]:not(.bay-toggle)')

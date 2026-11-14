@@ -313,7 +313,7 @@ with sync_playwright() as p:
 
     # ---- Intel: stored sides worked out again ----
     c = ctx_new(); pg = page(c, stand=False); login(pg)
-    setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_timeout(400)
+    setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_timeout(400)
     if not pg.is_checked('[data-it-chan="region.intel"]'): pg.check('[data-it-chan="region.intel"]')
     if not pg.is_checked(f'[data-it-me="{MAIN}"]'): pg.check(f'[data-it-me="{MAIN}"]')
     pg.click('#intelSwLabel'); pg.wait_for_function("it.on", timeout=8000); pg.wait_for_timeout(1500)

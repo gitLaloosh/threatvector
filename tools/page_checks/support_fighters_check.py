@@ -80,7 +80,7 @@ with sync_playwright() as p:
     pg = b.new_page(bypass_csp=True, viewport={'width': 1440, 'height': 1000})
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
-    pg.click('#tabBtnFit')
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     paste(pg, NIDHOGGUR)
     pg.wait_for_selector(f'{R} .dmg-card [data-out="head"]:not(:empty)', timeout=60000); settle(pg)
     s = pg.evaluate(STATE)
@@ -126,7 +126,7 @@ with sync_playwright() as p:
     pg = b.new_page(bypass_csp=True, viewport={'width': 390, 'height': 900}, is_mobile=True, has_touch=True, device_scale_factor=2)
     errs2 = []; pg.on('pageerror', lambda e: errs2.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
-    pg.click('#tabBtnFit'); paste(pg, ARCHON)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); paste(pg, ARCHON)
     pg.evaluate(f"() => {{ const b = document.querySelector('{R} button.cc-row[data-card=\"ewar\"]'); if(b) b.click(); }}"); settle(pg)
     ph = pg.evaluate(f"""() => {{ const ew = document.querySelector('{R} .ewar-card'); if(!ew) return null; const cr = ew.getBoundingClientRect();
       return {{chips: [...ew.querySelectorAll('.ewar-chip')].map(ch => {{ const r = ch.getBoundingClientRect(); return r.left >= cr.left - 0.5 && r.right <= cr.right + 0.5; }}),

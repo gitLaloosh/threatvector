@@ -79,7 +79,7 @@ def run(path, p, log):
     for k, t in (('plain', PLAIN), ('muta', MUTA)):
         try: out[k] = pg.evaluate(PARSE, t)
         except Exception as ex: out[k] = {'error': str(ex)[:200]}
-    pg.click('#tabBtnFit')
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     def drone_dps(text):
         pg.evaluate("() => { const r = document.querySelector('#fitAnalyzerResults'); if(r) r.innerHTML = ''; }")
         pg.fill('#fitAnalyzerInput', text); pg.click('#fitAnalyzerBtn')

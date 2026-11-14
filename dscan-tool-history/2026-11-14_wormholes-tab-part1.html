@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-14 — The Wormholes tab, part 1</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The Wormholes tab, part 1 (and three flagged fixes)</h1>
+<p><span class="tag">Intel</span><span class="tag">Wormholes</span><span class="tag">Matchup</span> 2026-11-14 &middot; <code>v2026.11.14.1</code> &middot; build queue 048 &middot; Project doc <code>roadmap/wormhole-mapping-plan.md</code> ("Build in parts" 1)</p>
+
+<h2>Why</h2>
+<p>The owner: "1. own wormholes tab, 2. yes as you suggest, 3. right after intel", and "add a "BETA" tag on the wormholes tab. i think it's going to take
+several iterations to get this one right." Part 1 is the tab, its map and tracking; the system menu, lock, Signatures, Share and Routes are parts 2–4.</p>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The Wormholes tab</b> right after Intel, BETA. Your chain is recorded from every reading of your system (the Local log; EVE location, also
+read while the tab is in front with Intel off): a change with a wormhole system on either side links it to the system you were last in (the
+owner at the review: "which hole you came through comes from your last recorded location"), except a change that lands you docked by EVE's
+answer (the owner: "yes, skip system changes that land you docked"). Entering J-space switches Intel to Wormholes; from another tab the button
+gets a mark; leaving switches back. Stored as <code>tvWhChain</code>; nothing expires.</li>
+<li><b>The map</b>: the whole tab, pan, zoom, drag, Shift / Select for a group, an overview, a dot grid; the Intel map's own corner buttons, the
+gear (Rearrange as a tree) and the ⓘ with the colour key. Focus and the System panel (class and effect from CCP's data, statics coloured by
+where they lead, who's there, notes, connections); Signatures, Routes and Local say they come later. + Add and "Add a system here".</li>
+<li><b>CCP's wormhole systems</b> (<code>INTEL_WH</code>, 2,604 systems, about 13 KB gzipped) written by <code>tools/jump_table_update.py</code>
+from the SDE, so the daily workflow keeps them current. Read from build 3698585 (the owner downloaded it; the build session can't reach CCP).</li>
+<li><b>Intel in a hole</b> counts jumps from where you came in (D14; the owner: "as long as the wormhole tab's routing feature to come counts
+wormhole connects like jumps, i think that's fine.").</li>
+<li><b>Phones</b>: the More menu (D21) keeps the tab row on one line.</li>
+<li><b>Flagged with this delivery</b>: the Damage Application card starts at the threat's optimal (turrets, sentries; the owner: "we should have
+set it to their optimal range."), missiles, Vorton and smartbombs as before; kills are their own route avoid option (ESS stays with hostiles and
+neutrals, the owner: "ESS by itself indicates someone is in it"); no search box on Paths to you.</li>
+</ul>
+
+<h2>Checks</h2>
+<p><code>wormhole_tab_check.py</code> (new, with mutants); <code>route_planner_check.py</code>, <code>paths_to_you_check.py</code> and
+<code>damage_chart_check.py</code> updated.</p>
+
+<h2>Lesson for future models</h2>
+<p>A file-writing tool can trim a line's trailing spaces: the names list for <code>check_pii</code> has two such lines, so check its fingerprint
+after writing it (the build queue README says so; it happened again here). And a Local log read at Intel's start is a reading too: the tab's
+first reading came from the folder scan, not the tick, or the jump into the first hole had no system to come from.</p>
+</body>
+</html>

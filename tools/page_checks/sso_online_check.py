@@ -78,7 +78,7 @@ with sync_playwright() as p:
             pg.reload()
         ready(pg); return pg
     def folder(pg):
-        setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_timeout(400)
+        setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_timeout(400)
         if not pg.is_checked('[data-it-chan="region.intel"]'): pg.check('[data-it-chan="region.intel"]')
         if not pg.is_checked(f'[data-it-me="{MAIN}"]'): pg.check(f'[data-it-me="{MAIN}"]')
         pg.wait_for_timeout(200)

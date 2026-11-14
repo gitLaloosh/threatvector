@@ -46,7 +46,7 @@ def run(b, W):
     check(ft['src'] == ['https://github.com/gitLaloosh/threatvector'] and not ft['span'] and ft['first'].startswith('Threat Vector is free software'),
           f'{W}: the footer names Threat Vector and links the source, written in, no #siteSrc {ft}')
     check('ESI' in h['btn'] and 'week' in h['btn'], f'{W}: the caching sentence is the Refresh button\'s hover ("{h["btn"]}")')
-    check(h['tabs'] == ['Intel', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'{W}: the tabs keep their names, in the order of use: Intel, System Analyzer (was D-Scan, v.81), Pilot, Fit (v2026.10.30.1) {h["tabs"]}')
+    check(h['tabs'] == (['Intel', 'WormholesBeta', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'] if W >= 600 else ['Intel', 'WormholesBeta', 'More']), f'{W}: the tabs keep their names (048: Wormholes after Intel; under 600 px the rest are under More), in the order of use: Intel, System Analyzer (was D-Scan, v.81), Pilot, Fit (v2026.10.30.1) {h["tabs"]}')
     # v2026.10.30.1 (the owner: "Intel, System, Pilot, Fit; open on Intel"): the page opens on Intel (v.62 to v2026.10.29.8: the Pilot Analyzer)
     shown = pg.evaluate("() => [...document.querySelectorAll('.tab-panel')].filter(p => getComputedStyle(p).display !== 'none').map(p => p.id).concat([document.querySelector('.tab-btn.active').id])")
     check(shown == ['tabIntel', 'tabBtnIntel'], f'{W}: opens on Intel {shown}')

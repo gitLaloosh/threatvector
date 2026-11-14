@@ -46,7 +46,7 @@ ROWS = """() => [...document.querySelectorAll('#fleetPanel .fk-card button.pr-ro
 def idle(pg):
     pg.wait_for_function("() => !document.querySelector('#fitBtn').disabled && document.querySelector('#pilotBusy').hidden", timeout=120000); pg.wait_for_timeout(400)
 def analyze(pg, name):
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', name); pg.fill('#manualShip', ''); pg.click('#fitBtn'); pg.wait_for_timeout(300); idle(pg)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', name); pg.fill('#manualShip', ''); pg.click('#fitBtn'); pg.wait_for_timeout(300); idle(pg)
 def fleet_done(pg, n, timeout=120000):
     # v2026.11.02.1: nothing is looked up on open; once the fits kept from the last hour are in, Load all (when anything is left)
     pg.wait_for_function("() => fk.ready && !fk.checking", timeout=timeout)
@@ -149,7 +149,7 @@ with sync_playwright() as p:
     fleet_done(pg, 21)
     check(len(M.ZKB_CALLS) == 2 and M.ZKB_CALLS[0][0].endswith('/pastSeconds/604800/') and M.ZKB_CALLS[1][0] + 'pastSeconds/604800/' == M.ZKB_CALLS[0][0] and '/allianceID/' in M.ZKB_CALLS[0][0],
           f'Load all: all 21 in with the pair\'s week, then all of history (no Rifter loss this week) ({[c[0] for c in M.ZKB_CALLS]})')
-    pg.click('#tabBtnPilot'); pg.click(f'[data-pd-fleet="{M.FLEET_KILL}"]'); pg.wait_for_timeout(300); fleet_done(pg, 6)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.click(f'[data-pd-fleet="{M.FLEET_KILL}"]'); pg.wait_for_timeout(300); fleet_done(pg, 6)
     check(pg.evaluate("() => document.querySelectorAll('#fleetPanel .fk-card button.pr-row').length") == 6 and 'Thanatos' in pg.inner_text('#fleetPanel .fk-sub'), 'another kill replaces the fleet (one at a time)')
     ctx.close()
     # phone

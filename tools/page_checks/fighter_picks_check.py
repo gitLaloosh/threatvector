@@ -81,7 +81,7 @@ with sync_playwright() as p:
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
     pg.click('#profileFitL'); pg.fill('#myShipEft', NYX); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles', timeout=60000); pg.keyboard.press('Escape')
-    pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', OMEN); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout', timeout=60000)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', OMEN); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout', timeout=60000)
     pg.wait_for_selector(f'{TV} .weak-picks[data-filled]', timeout=120000); settle(pg, 800)
     t1 = tiles(pg, TV)
     labels = [x[0] for x in t1]
@@ -126,7 +126,7 @@ with sync_playwright() as p:
     # My ship view: the Nyx as the threat, the Omen as my ship
     pg.evaluate("localStorage.clear()"); pg.reload()
     pg.click('#profileFitL'); pg.fill('#myShipEft', OMEN); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles', timeout=60000); pg.keyboard.press('Escape')
-    pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', NYX); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout', timeout=60000); settle(pg, 800)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', NYX); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout', timeout=60000); settle(pg, 800)
     pg.click(f'{R} .mys-sw-btn.is-mine'); pg.wait_for_selector(f'{MV} .weak-picks[data-filled]', timeout=120000); settle(pg, 800)
     m1 = tiles(pg, MV)
     check([x[0] for x in m1] == ['Their light fighters', 'Their heavy fighters'] and m1 == pg.evaluate(EXPECT, [R, 'theirs']) and 'What the Nyx should use against you' in pg.inner_text(f'{MV} .wp-head'),
@@ -138,7 +138,7 @@ with sync_playwright() as p:
     errs2 = []; pg.on('pageerror', lambda e: errs2.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
     pg.tap('#profileBtn'); pg.tap('#ppTab-fit'); pg.fill('#myShipEft', NYX); pg.tap('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles', timeout=60000); pg.keyboard.press('Escape')
-    pg.tap('#tabBtnFit'); pg.fill('#fitAnalyzerInput', OMEN); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout', timeout=60000)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', OMEN); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout', timeout=60000)
     pg.wait_for_selector(f'{TV} .weak-picks[data-filled]', timeout=120000); settle(pg, 800)
     ph = pg.evaluate(f"""() => {{ const card = document.querySelector('{TV} .weak-picks').closest('.fit-summary'); const cr = card.getBoundingClientRect();
       return {{inside: [...card.querySelectorAll('.wp-stat')].map(t => {{ const r = t.getBoundingClientRect(); return r.left >= cr.left - 0.5 && r.right <= cr.right + 0.5; }}),
