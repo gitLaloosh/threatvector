@@ -94,7 +94,7 @@ From `it.near`, every system Intel holds within "forget reports after": camp = `
 | The game's route options (Prefer Shorter / Safer 0.5–1.0 / Less Secure 0.0–0.4, Security penalty default 50, Include Jump Bridges, avoid pod kills, Triglavian, EDENCOM, avoidance list, Disable Autopilot at Each Waypoint) | the owner's screenshot of his game client | 2026-11-12 | verified |
 | Each one-jump waypoint leg makes EVE take that gate, even for a system on the game's avoidance list: the system stays in the waypoint list and the autopilot runs | the owner's hand test on the dev app (steps 5 and 7, the game's route settings) | 2026-11-13 | verified |
 | With the character logged off in the game the waypoint call still answers 204, and the game drops the destination (an older route stays set); each waypoint call uses 2 of the ui group's 900 tokens a 15 minutes (x-ratelimit-used 2, x-ratelimit-limit 900/15m) | the owner's hand test on the dev app (Network panel and the game) | 2026-11-13 | verified |
-| Any waypoint limit on a long route | not in the spec | 2026-11-12 | UNVERIFIED: hand test step 5 |
+| A 26-waypoint route arrives whole (no limit met), each waypoint about 0.3 s | the owner's hand test on the dev app (Network panel and the game's waypoint list) | 2026-11-14 | verified |
 | securityStatus in CCP's static data is unrounded (the band is taken from it) | tools/jump_table_update.py reads float(o['securityStatus']) from mapSolarSystems.jsonl (CCP's SDE); build 3682781's file read by the build session in the owner's built-in browser (six decimals, e.g. 0.858324) | 2026-11-13 | verified |
 
 ## Built (2026-11-13, v2026.11.13.3, build queue 047)
