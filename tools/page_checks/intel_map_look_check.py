@@ -64,7 +64,7 @@ def start(b, html, w, errs, h=1000, touch=False):
     pg = ctx.new_page(); pg.goto('file://' + html)
     pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false, forget: 15, hideFriendly: true})); }", SIDE)
     pg.reload(); pg.wait_for_timeout(400)
-    setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
+    setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
     near = sorted((s for s, v in D0.items() if 1 <= v <= 3), key=lambda s: (D0[s], s))
     W(pg, F_INTEL, line(T0, 'Scout Alt', f'{SYSNAME[near[0]]} {HOST[0]} {HOST[1]} {HOST[2]} sabre muninn loki +12 camp on gate bubble')
       + line(T0 + 1, 'Gate Watcher', f'{SYSNAME[near[1]]} {HOST[0]} hurricane +3')); tick(pg, 3200)

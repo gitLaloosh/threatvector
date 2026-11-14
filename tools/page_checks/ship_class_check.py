@@ -95,7 +95,7 @@ def pilot(b, w):
 def fit(b, w):
     tag = f'{w}px fit'
     ctx, pg, errs = _ns['start'](b, w, 900, w < 500)
-    pg.click('#tabBtnFit')
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     pg.fill('#fitAnalyzerInput', MEGATHRON); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout', timeout=60000); pg.wait_for_timeout(300)
     head = pg.evaluate(CLS_OF, f'{R} .mys-fa-head .cmeta')[0]
     check(head['cls'] == cls(641) and head['shown'] and head['text'] == 'Megathron Battleship — Battleship target', f'{tag}: the name line ({head["text"]!r})')
@@ -134,7 +134,7 @@ def no_group(b):
     pg.route(re.compile(r'https://zkillboard\.com/.*'), _ns['zkb'])
     pg.route(re.compile(r'https://(images\.evetech\.net|fonts\.).*'), lambda r: r.fulfill(status=404, body=''))
     pg.goto('file://' + HTML); pg.evaluate("localStorage.removeItem('dscanMyShip')")
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', 'Test Pilot'); pg.click('#fitBtn')
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', 'Test Pilot'); pg.click('#fitBtn')
     pg.wait_for_timeout(300); pg.wait_for_function("() => !document.querySelector('#fitBtn').disabled", timeout=90000); pg.wait_for_timeout(1000)
     # (the Loki's fit fails here: ESI-03 for its group; the pilot line still names the hull asked for: LESSON #79)
     btn = pg.evaluate(CLS_OF, '#fitCandidates')[0]

@@ -76,7 +76,7 @@ def desktop(b):
     ctx = b.new_context(bypass_csp=True, viewport={'width': 1440, 'height': 900}); pg = ctx.new_page()
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.removeItem('dscanMyShip')"); pg.reload()
-    pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
     check(pg.is_hidden(f'{R} .mys-switch-host') and pg.locator(f'{R} .mys-board').count() == 0, 'no ship saved: no scoreboard')
     pg.click('#profileFitL'); pg.fill('#myShipEft', VEXOR); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles'); pg.keyboard.press('Escape')
     pg.wait_for_function(f"() => {{ const b = document.querySelector('{R} .mys-board'); return b && !/…/.test(b.textContent); }}", timeout=60000); settle(pg, 600)
@@ -89,9 +89,10 @@ def desktop(b):
     bb, fl, box = pg.locator(f'{R} .mys-board').bounding_box(), pg.locator(f'{R} .mys-threat-view .fit-layout').bounding_box(), pg.locator(f'{R} .assess-box').bounding_box()
     check(box['y'] <= bb['y'] and bb['y'] + bb['height'] <= fl['y'] and bb['x'] >= box['x'], 'scoreboard inside the result box, above the cards')
     # the card's range slider moves the strip
-    pg.evaluate("() => { const i = document.querySelector('#fitAnalyzerResults .fl-dmg input[data-in=\"range\"]'); i.value = 1500; i.dispatchEvent(new Event('input', {bubbles: true})); }"); pg.wait_for_timeout(200)
+    RV = 2500 if pg.evaluate("Number(document.querySelector('#fitAnalyzerResults .fl-dmg input[data-in=\"range\"]').value)") == 1500 else 1500   # 048: away from the starting range (now their optimal)
+    pg.evaluate("(v) => { const i = document.querySelector('#fitAnalyzerResults .fl-dmg input[data-in=\"range\"]'); i.value = v; i.dispatchEvent(new Event('input', {bubbles: true})); }", RV); pg.wait_for_timeout(200)
     c2 = cells(pg)
-    check(c2['their'] == pg.inner_text(f'{R} .fl-dmg [data-out="head"]') and c2 != c and c2 == pg.evaluate(EXPECT, R) and pg.inner_text(f'{R} .mys-fight [data-fname="range"]') == '1.5 km' and pg.inner_text(f'{R} .mys-strip-note') == '',
+    check(c2['their'] == pg.inner_text(f'{R} .fl-dmg [data-out="head"]') and c2 != c and c2 == pg.evaluate(EXPECT, R) and pg.inner_text(f'{R} .mys-fight [data-fname="range"]') == f'{RV / 1000:.1f} km' and pg.inner_text(f'{R} .mys-strip-note') == '',
           f'range slider: the board follows ({c["their"]} -> {c2["their"]})')
     # my ship view: same strip; change a state -> amber
     pg.click(f'{R} .mys-sw-btn.is-mine'); pg.wait_for_selector(f'{R} .mys-mine-view .fit-layout'); settle(pg)
@@ -123,7 +124,7 @@ def desktop(b):
     check(pg.is_hidden(f'{R} .mys-switch-host'), '"Use in assessments" off: no scoreboard')
     pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape'); pg.wait_for_selector(f'{R} .mys-board', timeout=60000)
     # Pilot losses: the strip follows the visible tab
-    pg.click('#tabBtnPilot')
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
     run_async(pg, """async ([a, b]) => { const mk = async (text, day) => { const parsed = await parseEftFit(text);
         const est = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag);
         return {parsed, fit: { km: {killmail_time: day}, killmailId: 1, tally: parsed.tally, highSlotByFlag: parsed.highSlotByFlag, estimate: est,
@@ -152,7 +153,7 @@ def phone(b):
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.removeItem('dscanMyShip')"); pg.reload()
     pg.tap('#profileBtn'); pg.tap('#ppTab-fit'); pg.fill('#myShipEft', VEXOR); pg.tap('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles')
     pg.touchscreen.tap(W // 2, 40); pg.wait_for_timeout(200)
-    pg.tap('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .mys-board', timeout=60000); settle(pg)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .mys-board', timeout=60000); settle(pg)
     pg.wait_for_function(f"() => {{ const b = document.querySelector('{R} .mys-board'); return b && !/…/.test(b.textContent); }}", timeout=60000)
     th, mi, mid = [pg.locator(f'{R} {x}').bounding_box() for x in ('.mys-sw-btn.is-threat', '.mys-sw-btn.is-mine', '.mys-mid')]
     check(abs(th['y'] - mi['y']) < 1 and th['height'] >= 44 and mid['y'] >= th['y'] + th['height'] - 1 and pg.is_visible(f'{R} .mys-edge'),

@@ -48,7 +48,7 @@ with sync_playwright() as p:
         return ctx
     def dossier(pg, side=SIDE):
         pg.goto('file://' + HTML); pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); }", side); pg.reload(); pg.wait_for_timeout(400)
-        pg.click('#tabBtnPilot'); pg.fill('#pilotName', ORLA); pg.fill('#manualShip', ''); pg.click('#fitBtn'); pg.wait_for_timeout(300)
+        pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', ORLA); pg.fill('#manualShip', ''); pg.click('#fitBtn'); pg.wait_for_timeout(300)
         pg.wait_for_function("() => !document.querySelector('#fitBtn').disabled && document.querySelector('#pilotBusy').hidden", timeout=120000); pg.wait_for_timeout(500)
         pg.click(f'#pilotDossier [data-pd-exp="{M.byname["Curse"]}"]'); pg.wait_for_timeout(1500)
     ctx = new_ctx(1440); pg = ctx.new_page(); dossier(pg)
@@ -95,11 +95,11 @@ with sync_playwright() as p:
     np.value.close()
     k = pg.evaluate("() => [localStorage.getItem('dscanLeaveOk'), !document.getElementById('leaveBox')]")
     check(k == ['["zkillboard.com"]', True], f'"Don\'t ask again": zKillboard remembered, the next click opens at once {k}')
-    pg.click('#tabBtnIntel'); pg.wait_for_timeout(300); pg.click('#intelPanel [data-it-act="gear"]'); pg.wait_for_timeout(300)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(300); pg.click('#intelPanel [data-it-act="gear"]'); pg.wait_for_timeout(300)
     g = pg.evaluate("() => { const b = document.querySelector('#intelPanel [data-it-act=\"leaveask\"]'); return b ? b.parentElement.textContent : null; }")
     pg.click('#intelPanel [data-it-act="leaveask"]'); pg.wait_for_timeout(300)
     g2 = pg.evaluate("() => [localStorage.getItem('dscanLeaveOk'), !!document.querySelector('#intelPanel [data-it-act=\"leaveask\"]')]")
-    pg.click('#tabBtnPilot'); pg.wait_for_timeout(300); pg.click(z); pg.wait_for_timeout(200)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.wait_for_timeout(300); pg.click(z); pg.wait_for_timeout(200)
     g3 = pg.evaluate("() => !!document.getElementById('leaveBox')"); pg.keyboard.press('Escape')
     check(g and 'zKillboard opens without asking' in g and g2 == ['[]', False] and g3, f'under Intel\'s gear, "Ask again" brings the question back {g!r} {g2} {g3}')
     # the Fleet tab, from the fleet icon

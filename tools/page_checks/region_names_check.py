@@ -63,7 +63,7 @@ def intel_cases(b, html, out, errs, phone=True):
         pg = ctx.new_page(); pg.goto('file://' + html)
         pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false, forget: 15, hideFriendly: true})); }", SIDE)
         pg.reload(); pg.wait_for_timeout(400)
-        setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
+        setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
         W(pg, F_INTEL, ''.join(line(T0 + dt, who, msg) for dt, who, msg in LINES)); tick(pg, 3200)
         return ctx, pg
     ctx, pg = start(1440)
@@ -118,7 +118,7 @@ def intel_cases(b, html, out, errs, phone=True):
     sa = pg.evaluate("() => document.querySelector('#saFromIntel').textContent")
     one = f"8WA-Z6 ({R('8WA-Z6')}, {jn} jump{'' if jn == 1 else 's'})"
     if f'· {one}, reported in the last' not in sa: out.append(f'the System Analyzer note {sa[:90]!r} (want "{one}")')
-    pg.click('#tabBtnIntel'); pg.wait_for_timeout(200)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(200)
     pg.evaluate(f"() => [...document.querySelectorAll('#itNearList .it-nb')].find(r => r.dataset.itSys === '{SYSID['8WA-Z6']}').querySelector('button.it-pl').click()"); pg.wait_for_timeout(600)
     pa = pg.evaluate("() => document.querySelector('#pilotFromIntel').textContent")
     if f'at {one}' not in pa: out.append(f'the Pilot Analyzer note {pa[:90]!r} (want "at {one}")')
@@ -164,7 +164,7 @@ def fleet_dossier_cases(b, html, out, errs):
             hw = [f" in E-VKJV ({R('E-VKJV')})", ' in J100005', f" · E-VKJV ({R('E-VKJV')})"]
             if hd != hw: out.append(f'the kill picker heading and the Fleet tab head line {hd} (want {hw})')
         if w in (1440, 1000, 390):
-            pg.click('#tabBtnPilot'); pg.fill('#pilotName', M.PILOTS[M.DOSSIER_PILOT][0]); pg.fill('#manualShip', ''); pg.click('#fitBtn'); pg.wait_for_timeout(300)
+            pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', M.PILOTS[M.DOSSIER_PILOT][0]); pg.fill('#manualShip', ''); pg.click('#fitBtn'); pg.wait_for_timeout(300)
             pg.wait_for_function("() => !document.querySelector('#fitBtn').disabled && document.querySelector('#pilotBusy').hidden", timeout=120000); pg.wait_for_timeout(500)
             us = pg.evaluate("""() => [...document.querySelectorAll('[data-pd="systems"] b')].map(b => { const s = b.querySelector('[data-sec-sys]'), n = b.nextElementSibling;
               return [Number(s && s.dataset.secSys), n && n.classList.contains('pd-dim') && b.nextSibling === n.previousSibling ? n.textContent : n && n.classList.contains('pd-dim') ? n.textContent : '']; })""")

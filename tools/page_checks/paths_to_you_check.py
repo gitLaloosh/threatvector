@@ -108,7 +108,7 @@ def start(b, html, w, errs, h=1000, touch=False):
     pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: %d, sound: false, notify: false, forget: 15, hideFriendly: true})); }" % R, SIDE)
     pg.reload(); pg.wait_for_timeout(400)
     setup_logs(pg); W(pg, F_LOCAL_MAIN, line(time.time() - 600, 'EVE System', f'Channel changed to Local : {SYSNAME[HOME]}*'))
-    pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
     t0 = time.time()
     W(pg, F_INTEL, line(t0, 'Scout Alt', f'{SYSNAME[S1]} 2 reds gate camp on {SYSNAME[NB1]} gate') + line(t0 + 1, 'Scout Alt', f'{SYSNAME[S2]} 3 reds hacking the ess')
       + line(t0 + 2, 'Gate Watcher', f'{SYSNAME[TWO]} {HOST} sabre on {SYSNAME[NBT]} gate') + line(t0 + 3, 'Gate Watcher', f'{SYSNAME[S4]} 2 neuts')

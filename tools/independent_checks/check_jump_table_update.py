@@ -179,9 +179,9 @@ try:
           f'a system without a position in CCP\'s data: the script stops, the page untouched ({rc13})')
     # the mutant: the script without the CSP refresh (the code before 035), run from a copy beside csp_hash.py
     mdir = os.path.join(tmp, 'mut'); os.makedirs(mdir); shutil.copy(CSP, mdir)
-    msrc = open(SCRIPT, encoding='utf-8').read(); A = 'write(csp_write(src[:m.start(1)] + blk + src[m.end(1):])[0])'
+    msrc = open(SCRIPT, encoding='utf-8').read(); A = 'write(csp_write(out_src)[0])'   # 048: the page is built in out_src (the wormhole table's block too)
     check(A in msrc, 'mutant: the CSP refresh line is in the script (if not, update the mutant)')
-    open(os.path.join(mdir, 'jump_table_update.py'), 'w', encoding='utf-8').write(msrc.replace(A, 'write(src[:m.start(1)] + blk + src[m.end(1):])'))
+    open(os.path.join(mdir, 'jump_table_update.py'), 'w', encoding='utf-8').write(msrc.replace(A, 'write(out_src)'))
     page6 = os.path.join(tmp, 'index6.html'); shutil.copy(HTML, page6)
     p = subprocess.run([sys.executable, '-I', os.path.join(mdir, 'jump_table_update.py'), page6, '--sde', changed, '--write'], capture_output=True, text=True, timeout=300,
                        env={k: v for k, v in os.environ.items() if k not in ('GITHUB_OUTPUT', 'GITHUB_STEP_SUMMARY')})

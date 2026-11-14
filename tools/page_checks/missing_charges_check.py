@@ -36,7 +36,7 @@ with sync_playwright() as p:
     b = p.chromium.launch(**({'executable_path': CHROMIUM} if CHROMIUM else {}))
     pg = b.new_page(bypass_csp=True, viewport={'width': 1440, 'height': 900}); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg)
-    pg.goto('file://' + html); pg.click('#tabBtnFit')
+    pg.goto('file://' + html); pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     def paste(text):
         pg.evaluate("() => { const r = document.querySelector('#fitAnalyzerResults'); if(r) r.innerHTML = ''; }")
         pg.fill('#fitAnalyzerInput', text); pg.click('#fitAnalyzerBtn')
@@ -79,7 +79,7 @@ with sync_playwright() as p:
         else:
             check(flag is None and burst and burst[0].endswith('burst') and 'Nanite Repair Paste burst' in burst[1] and 'assumed' not in burst[1], f'AAR, paste {v}: no flag, burst {burst}')
     # a killmail (no fitSource) with no paste seen: the burst, as an assumed full clip
-    pg.click('#tabBtnPilot')
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
     run_async(pg, """async (text) => { const parsed = await parseEftFit(text);
         const est = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag);
         renderFitTabs('Test Pilot', 'Vexor', [{ km: {killmail_time: '2026-10-01T00:00:00Z'}, killmailId: 1, tally: parsed.tally, highSlotByFlag: parsed.highSlotByFlag, estimate: est,

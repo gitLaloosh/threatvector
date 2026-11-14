@@ -49,7 +49,7 @@ with sync_playwright() as p:
     check(rad == '4px' and bg == 'rgb(20, 24, 27)' and lr == ['3px'] * 4, f'the profile: a 4px face (--pf-face), lamps with 3px corners ({rad}, {bg}, {lr})')
 
     # text field: the fit box
-    pg.click('#tabBtnFit')
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     rest = cs(pg, '#fitAnalyzerInput', 'border-top-color', 'border-top-left-radius')
     check(rest == ['rgb(42, 52, 61)', '4px'], f'the fit box at rest: the quiet border, 4px corners ({rest})')
     pg.hover('#fitAnalyzerInput'); pg.wait_for_timeout(100)

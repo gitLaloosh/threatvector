@@ -194,7 +194,7 @@ with sync_playwright() as p:
             pg.evaluate("([s, i]) => { localStorage.setItem('dscanSide', JSON.stringify(s)); if(i) localStorage.setItem('dscanIntel', JSON.stringify(i)); else localStorage.removeItem('dscanIntel'); }", [side, intel])
             pg.reload()
         ready(pg)
-        setup_logs(pg); pg.evaluate('closeProfile(false)'); pg.click('#tabBtnIntel'); pg.evaluate('closeProfile(false)'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_timeout(400)
+        setup_logs(pg); pg.evaluate('closeProfile(false)'); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.evaluate('closeProfile(false)'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_timeout(400)
         if not pg.is_checked('[data-it-chan="region.intel"]'): pg.check('[data-it-chan="region.intel"]')
         if not pg.is_checked(f'[data-it-me="{MAIN}"]'): pg.evaluate('closeProfile(false)'); pg.check(f'[data-it-me="{MAIN}"]')
         pg.wait_for_timeout(200); return pg
@@ -232,7 +232,7 @@ with sync_playwright() as p:
     pg.click('#ppSw-loc'); pg.wait_for_timeout(150)
     # ---- Continue to EVE; back with the scope as an array ----
     pg.evaluate("() => localStorage.setItem('dscanIntel', JSON.stringify(Object.assign(JSON.parse(localStorage.getItem('dscanIntel')), {sound: true, notify: true})))")
-    pg.reload(); ready(pg); setup_logs(pg); pg.evaluate('closeProfile(false)'); pg.click('#tabBtnIntel'); pg.wait_for_timeout(300)
+    pg.reload(); ready(pg); setup_logs(pg); pg.evaluate('closeProfile(false)'); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(300)
     s = st(pg)
     check(s['sound'] and s['notify'], 'a saved sound and notification stay on after the update')
     reset(); prof(pg); pg.click('#eveTab button.sso-btn'); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(800)
@@ -261,7 +261,7 @@ with sync_playwright() as p:
     auth = [x for x in LOG if x[0] == '/v2/oauth/authorize']; q = auth[0][2] if auth else {}; s = st(pg)
     check(q.get('scope') == LOC and s['who'] and s['scp'] == [LOC], f"the profile's button asks for it; a scope as a string is read ({q.get('scope')!r}, {s['scp']})")
     # back without the scope: SSO-07, the switch off (032: a trip that came back without it)
-    prof(pg); pg.click('[data-sso="logout"]'); pg.wait_for_timeout(300); pg.evaluate('closeProfile(false)'); pg.click('#tabBtnIntel')
+    prof(pg); pg.click('[data-sso="logout"]'); pg.wait_for_timeout(300); pg.evaluate('closeProfile(false)'); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()')
     reset(scp=[]); prof(pg); pg.click('#eveTab button.sso-btn'); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(800)
     gear(pg); s = st(pg)
     check(s['who'] and not s['gl'] and '(SSO-07)' in s['box'], f"back without the permission: SSO-07, the switch off ({s['box'][-110:]!r})")
@@ -439,7 +439,7 @@ with sync_playwright() as p:
         login(pg, scp=()); gl_on(pg); pg.wait_for_timeout(100)   # logged in, the location picked, its permission not held yet: it waits
         if intel_on: on(pg)
         if perm: pg.evaluate("(v) => { __tS('perm', v); }", perm)
-        pg.evaluate('closeProfile(false)'); pg.click('#tabBtnIntel'); go(pg); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(1500)
+        pg.evaluate('closeProfile(false)'); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); go(pg); pg.wait_for_url(DEV_ORIGIN + '/**', timeout=8000); ready(pg); pg.wait_for_timeout(1500)
         return c, pg
     c, pg = trip(True); s = st(pg)
     check(s['on'] and s['gl'], f'running before the trip, Authorize: Intel runs again, the switch on ({s["on"]}, {s["gl"]})')
@@ -476,7 +476,7 @@ with sync_playwright() as p:
     # a message posted from pagehide may never arrive (the owner's Chrome, 2026-11-08): drop A's, so the line must come from before leaving
     # (the page's own pagehide listener runs before any added here, so the check drops what is posted while a pagehide is being handled)
     A.evaluate("() => { const f = itLockPost; itLockPost = function(m){ if(window.event && window.event.type === 'pagehide') return; return f.apply(this, arguments); }; }")
-    login(A, scp=()); gl_on(A); A.evaluate('closeProfile(false)'); A.click('#tabBtnIntel'); go(A); A.wait_for_url('https://login.eveonline.com/**', timeout=8000)
+    login(A, scp=()); gl_on(A); A.evaluate('closeProfile(false)'); A.eval_on_selector('#tabBtnIntel', 'b => b.click()'); go(A); A.wait_for_url('https://login.eveonline.com/**', timeout=8000)
     B.wait_for_timeout(800); sB = st(B)
     check('Intel is paused while the other tab logs in with EVE.' in sB['notes'], f"the other tab: \"Intel is paused while the other tab logs in with EVE.\" ({sB['notes'][:80]!r})")
     # Chrome may keep A in its back/forward cache still holding the lock (the owner's Chrome): B shown again must stay "paused"

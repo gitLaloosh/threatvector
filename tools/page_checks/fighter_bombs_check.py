@@ -60,7 +60,7 @@ with sync_playwright() as p:
     pg = b.new_page(bypass_csp=True, viewport={'width': 1440, 'height': 1000})
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
-    pg.click('#tabBtnFit'); paste(pg, HEL)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); paste(pg, HEL)
     pg.wait_for_selector(f'{R} .dmg-card [data-out="head"]:not(:empty)', timeout=60000); settle(pg)
     s0 = pg.evaluate(STATE)
     check(s0['btn'] and not s0['btn'][0] and not s0['btn'][1] and "off (pyfa's default)" in s0['btn'][2] and '3,840 damage per squadron every 60 s' in s0['btn'][2],

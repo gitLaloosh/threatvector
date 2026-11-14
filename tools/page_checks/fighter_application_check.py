@@ -69,7 +69,7 @@ with sync_playwright() as p:
     ctx = b.new_context(bypass_csp=True, viewport={'width': 1440, 'height': 900}); pg = ctx.new_page()
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.removeItem('dscanMyShip')"); pg.reload()
-    pg.click('#tabBtnFit')
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     paste(pg, REVENANT)
     rows = pg.evaluate(ROWS)
     loc, cyc = rows.get('Locust II ×36'), rows.get('Cyclops II ×12')

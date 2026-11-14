@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-0C2nhaELro1D/vgS8V/b8iQHWYqkZeqVjX32N6ZTef0='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-fFSGOZzjnqopgmle5My1hsmSl6xMmQOrZWVcBYRHNEA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -31884,7 +31884,7 @@ const WH_EFF = {b: 'Black Hole', c: 'Cataclysmic Variable', m: 'Magnetar', p: 'P
 const WH_PANELS = [['sum', 'System'], ['sigs', 'Signatures'], ['route', 'Routes'], ['local', 'Local']];
 const WH_LATER = 'Comes in a later part of the beta.';
 const WH_NW = 112, WH_NH = 48, WH_LOC_MS = 2000;   // a system's box in map units; the tab's location tick (Intel's own is itTick, 2 s)
-var whT = null, whS = null;   // var, not let: itMySys may ask before this part of the script has run
+var whT = null, whS = null, whReady = false;   // var, not let: itMySys and switchTab may ask before this part of the script has run (a #pilot= link)
 // ---- CCP's wormhole systems (INTEL_WH, tools/jump_table_update.py)
 function whTable(){
   if(whT) return whT;
@@ -32444,7 +32444,7 @@ function whWireMap(el){
 // then "More ▾": the rest by their full names, Fleet with its × when a kill has opened it; a dot on More while Fleet is open but not in front
 const TM_IDS = ['tabBtnIntel', 'tabBtnWh', 'tabBtnDscan', 'tabBtnPilot', 'tabBtnFit', 'tabBtnFleet'];
 const TM_SHORT = {tabBtnDscan: 'System', tabBtnPilot: 'Pilot', tabBtnFit: 'Fit'};
-const tm = {btn: null, panel: null, html: ''};
+var tm = {btn: null, panel: null, html: ''};   // var: see whT
 function tmPhone(){ return typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches; }
 function tmName(id){ const e = document.getElementById(id); if(!e) return ''; if(id === 'tabBtnWh') return cardName('whmap'); const tn = [...e.childNodes].find(n => n.nodeType === 3 && n.nodeValue.trim()); return (e.dataset.long || (tn ? tn.nodeValue : e.textContent)).trim(); }
 function tmXHtml(id){ return id === 'tabBtnFleet' ? '<button type="button" class="tm-x" data-tm-close aria-label="Close the Fleet tab" title="Close the Fleet tab">×</button>' : ''; }
@@ -32497,13 +32497,14 @@ function tmInit(){
 }
 // a switch of tab: the mark, the More row, the tab's own draw and location reads
 function whOnSwitch(tab){
+  if(!whReady) return;   // a switch at start-up, before this part of the script has run
   whMark(); tmLayout(); whLocArm();
   if(tab === 'wh'){ whMake(); whS.drawKey = ''; whS.pn = {}; whPaint(true); }
 }
 (function whInit(){
   if(typeof document === 'undefined' || !document.getElementById || !document.addEventListener) return;   // LESSON #36: stub DOM
   const b = document.getElementById('tabBtnWh'); if(!b || !b.addEventListener) return;
-  whState();
+  whReady = true; whState();
   b.querySelector('.tl').textContent = cardName('whmap');
   b.addEventListener('click', () => switchTab('wh'));
   document.addEventListener('visibilitychange', () => { whLocArm(); if(document.visibilityState !== 'hidden') whPaint(); });

@@ -39,7 +39,7 @@ _tail = r'''
     def chk(ok, msg): L.append((ok, msg)); check(ok, msg)
     # ---- the tabs ----
     tabs = pg.evaluate("() => [[...document.querySelectorAll('.tabs .tab-btn')].filter(b => b.offsetParent).map(b => b.textContent.trim()), ['tabIntel','tabDscan','tabPilot','tabFit'].filter(id => document.getElementById(id).style.display !== 'none')]")
-    chk(tabs[0] == ['Intel', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs in the order of use (the owner: "intel > system > pilot > fit") {tabs[0]}')
+    chk(tabs[0] == ['Intel', 'WormholesBeta', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs in the order of use (the owner: "intel > system > pilot > fit") {tabs[0]}')
     pg.evaluate("() => { it.set.range = 3; itRenderLists(); }"); pg.wait_for_timeout(300)
     # ---- Near You: layout D (v2026.10.31.6; the owner's layout, Project doc roadmap/near-you-layout-d.md) ----
     GEO = """(sel) => { const R = (e) => e && e.getBoundingClientRect(); const rows = [...document.querySelectorAll('#itNearList .it-nb')];

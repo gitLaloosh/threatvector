@@ -50,7 +50,7 @@ def start(b, html, errs, W=1440, H=1000, intel=True, perm=True):
     pg = ctx.new_page(); pg.goto('file://' + html)
     pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, forget: 15})); }", SIDE)
     pg.reload(); pg.wait_for_timeout(400)
-    setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
+    setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
     if not intel: pg.evaluate("() => { localStorage.removeItem('tvWormholes'); itWhSt = null; itWhChanged(); }")   # another player's browser: no wormholes yet
     return ctx, pg
 

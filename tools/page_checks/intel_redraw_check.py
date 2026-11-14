@@ -58,13 +58,13 @@ _tail = r'''
     a0 = pg.evaluate(AGE, L1); tick(pg, 13000); a1 = pg.evaluate(AGE, L1)
     check(a0 and a1 and a0 != a1, f'the ages move on their own (a line under a minute old): {a0!r} -> {a1!r}')
     # another tab in front: nothing drawn, alerts and the profile's mark still follow
-    pg.click('#tabBtnPilot'); tick(pg, 300); pg.evaluate(WATCH)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); tick(pg, 300); pg.evaluate(WATCH)
     b0 = pg.evaluate("() => __fs.beeps"); m0 = pg.evaluate("() => document.getElementById('profile').dataset.s")
     L2 = f'1DQ1-A {P2} loki'
     W(pg, F_INTEL, line(time.time(), 'Scout Alt', L2)); tick(pg, 6000)
     h = pg.evaluate(SEEN); b1 = pg.evaluate("() => __fs.beeps"); m1 = pg.evaluate("() => [document.getElementById('profile').dataset.s, (document.getElementById('intelNearN') || {}).textContent]")
     check(h[0] and h[1] == 0 and b1 > b0 and m1[0] == 'in' and m0 != 'in', f'the Pilot tab in front: the Intel card not drawn ({h[1]} changes), the hostile in your system still alerts ({b0} -> {b1}) and the profile shows it ({m0} -> {m1})')
-    pg.click('#tabBtnIntel'); tick(pg, 300)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); tick(pg, 300)
     r2 = pg.evaluate(ROWS)
     check('1DQ1-A' in r2[0] and L2 in r2[1], f'back on Intel: the new rows at once {r2[0]} {r2[1][:2]}')
     # the browser tab hidden, then shown

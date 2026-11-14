@@ -103,7 +103,7 @@ with sync_playwright() as p:
     ctx = b.new_context(bypass_csp=True, viewport={'width': 1440, 'height': 1100}); pg = ctx.new_page()
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.route(re.compile(r'https://images\.evetech\.net/.*'), icon_route)
-    pg.goto('file://' + HTML); pg.evaluate("localStorage.clear(); localStorage.setItem('dscanFitView', 'ring')"); pg.reload(); pg.click('#tabBtnFit')
+    pg.goto('file://' + HTML); pg.evaluate("localStorage.clear(); localStorage.setItem('dscanFitView', 'ring')"); pg.reload(); pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     paste(pg, MEGA)
     t = pg.evaluate(TILES)
     check(t.get(f'{BLASTER}:0', {}).get('badge') == 0 and t.get(f'{TC}:0', {}).get('icon') == TC and t.get(f'{TC}:0', {}).get('badge') == ORS
@@ -186,7 +186,7 @@ with sync_playwright() as p:
     ctx = b.new_context(bypass_csp=True, viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True); pg = ctx.new_page()
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.route(re.compile(r'https://images\.evetech\.net/.*'), icon_route)
-    pg.goto('file://' + HTML); pg.evaluate("localStorage.clear(); localStorage.setItem('dscanFitView', 'ring')"); pg.reload(); pg.click('#tabBtnFit')
+    pg.goto('file://' + HTML); pg.evaluate("localStorage.clear(); localStorage.setItem('dscanFitView', 'ring')"); pg.reload(); pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     paste(pg, MEGA)
     if not pg.locator(f'{R} .fit-ring').is_visible(): pg.click(f'{R} button.cc-toggle[data-card="fit"]'); settle(pg)
     pg.evaluate('window.scrollTo(0, 0)'); open_list(pg)

@@ -48,7 +48,7 @@ def rows_set(pg, v):   # 032: "Pilot rows up to" is in the System Analyzer's gea
 def wait_idle(pg):
     pg.wait_for_function("() => document.querySelector('#saBusy').hidden && !document.querySelector('#analyzeBtn').disabled", timeout=60000); pg.wait_for_timeout(300)
 def analyze(pg, local, scan=''):
-    pg.click('#tabBtnDscan'); pg.fill('#localInput', local); pg.fill('#dscanInput', scan); pg.click('#analyzeBtn'); pg.wait_for_timeout(300); wait_idle(pg)
+    pg.eval_on_selector('#tabBtnDscan', 'b => b.click()'); pg.fill('#localInput', local); pg.fill('#dscanInput', scan); pg.click('#analyzeBtn'); pg.wait_for_timeout(300); wait_idle(pg)
 RESULT = """() => {
   const col = (k) => { const c = document.querySelector(`.sa-col[data-sa-col="${k}"]`); if(!c) return null;
     return {n: +c.querySelector('.sa-n').textContent, groups: [...c.querySelectorAll(':scope > details.sa-g')].map(d => ({
@@ -79,8 +79,8 @@ with sync_playwright() as p:
     pg.wait_for_timeout(300)
     # --- the tab ---
     tabs = pg.evaluate("() => [...document.querySelectorAll('.tabs .tab-btn')].filter(b => b.checkVisibility()).map(b => b.textContent.trim())")   # v.94: the Fleet tab is hidden until a fleet is open
-    check(tabs == ['Intel', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs: Intel, System Analyzer, Pilot Analyzer, Fit Analyzer (v2026.10.30.1, the order of use) {tabs}')
-    pg.click('#tabBtnDscan')
+    check(tabs == ['Intel', 'WormholesBeta', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs: Intel, System Analyzer, Pilot Analyzer, Fit Analyzer (v2026.10.30.1, the order of use) {tabs}')
+    pg.eval_on_selector('#tabBtnDscan', 'b => b.click()')
     ins = pg.evaluate("() => [!!document.querySelector('#localInput'), !!document.querySelector('#dscanInput'), document.querySelector('#tabDscan h2').textContent]")
     check(ins == [True, True, 'System Analyzer'], f'two inputs, the heading from CARD_NAMES {ins}')
     # D-Scan alone: its ships in the Ships on Scan rail, full width (v2026.11.02.2)
@@ -215,7 +215,7 @@ with sync_playwright() as p:
     t2 = pg.evaluate("() => [...document.querySelectorAll('#pilotSideTag .side-tag > :not(.sa-mark)')].map(e => e.textContent).join(' ')")
     check('Hostile · your hostile list' in t2, f'a hostile corp inside a friendly alliance: tagged Hostile ({t2!r})')
     # --- phone ---
-    pg.set_viewport_size({'width': 390, 'height': 844}); pg.click('#tabBtnDscan'); pg.wait_for_timeout(300)
+    pg.set_viewport_size({'width': 390, 'height': 844}); pg.eval_on_selector('#tabBtnDscan', 'b => b.click()'); pg.wait_for_timeout(300)
     over = pg.evaluate("() => [document.documentElement.scrollWidth, [...document.querySelectorAll('#tabDscan *, #profile')].filter(e => { const r = e.getBoundingClientRect(); return e.checkVisibility() && r.width && (r.right > innerWidth + 1 || r.left < -1); }).map(e => [e.className || e.tagName, e.parentElement.className, Math.round(e.getBoundingClientRect().left), Math.round(e.getBoundingClientRect().right), e.closest('details') && e.closest('details').open]).slice(0, 5)]")
     check(over[0] <= 390 and not over[1], f'390 px: nothing runs off the page {over}')
     open_side(pg)

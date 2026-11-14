@@ -101,7 +101,7 @@ def cases(b, html, phone=True):
         pg = c.new_page(); pg.goto(DEV_ORIGIN + '/')
         pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: %d, range: 3, forget: 15})); localStorage.removeItem('tvRoute'); localStorage.removeItem('tvRouteSend'); }" % MAIN, YOU)
         pg.reload(); pg.wait_for_function("typeof it !== 'undefined' && it.loaded", timeout=10000); pg.wait_for_timeout(300)
-        setup_logs(pg); pg.evaluate('closeProfile(false)'); pg.click('#tabBtnIntel'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_timeout(400)
+        setup_logs(pg); pg.evaluate('closeProfile(false)'); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_timeout(400)
         pg.click('#intelSwLabel'); pg.wait_for_function("it.on", timeout=8000); tick(pg)
         if phone: pg.evaluate("() => { const nv = document.querySelector('[data-it-nv=\"map\"]'); if(nv) nv.click(); }"); pg.wait_for_timeout(300)   # a phone: the map is Near You's Map view
         pg.wait_for_function("itm.home >= 0 && itRp.par !== null", timeout=8000)

@@ -91,7 +91,7 @@ def add(pg, text):
     pg.fill('#myShipEft', text); pg.click('#myShipPanel [data-act="save"]')
     pg.wait_for_selector('#myShipPanel .mys-list'); wait_tiles(pg)
 def fa_ehp(pg, text):
-    pg.click('#tabBtnFit'); pg.evaluate("() => { document.querySelector('#fitAnalyzerResults').innerHTML = ''; }")
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.evaluate("() => { document.querySelector('#fitAnalyzerResults').innerHTML = ''; }")
     pg.fill('#fitAnalyzerInput', text); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout', timeout=60000); settle(pg)
 
 def ref_ehp(pg, text):   # the engine's EHP for a paste, as the Fit Analyzer computes it
@@ -154,7 +154,7 @@ def desktop(b):
     vex = next(f for f in s2['fits'] if f['eft'] == VEXOR); hec = next(f for f in s2['fits'] if f['eft'] == HECATE)
     check(not vex.get('moduleStates') and hec.get('moduleStates') and tid in hec['moduleStates'], 'each fit keeps its own states (Vexor as pasted, Hecate changed)')
     # the board's ship menu
-    pg.click('#tabBtnFit'); pg.evaluate("() => { document.querySelector('#fitAnalyzerResults').innerHTML = ''; }")
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.evaluate("() => { document.querySelector('#fitAnalyzerResults').innerHTML = ''; }")
     pg.fill('#fitAnalyzerInput', ORTHRUS); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .mys-board', timeout=60000)
     pg.wait_for_function(f"() => {{ const b = document.querySelector('{R} .mys-board'); return b && !/…/.test(b.textContent); }}", timeout=60000); settle(pg, 600)
     d = pg.evaluate(ALIGN); check(d <= 1, f'1440: the menu name sits exactly on the half\'s name ({d:.1f} px)')
@@ -220,7 +220,7 @@ def phone(b):
     hs = pg.evaluate("() => [...document.querySelectorAll('#myShipPanel .mys-row-main, #myShipPanel .mys-add')].map(b => b.getBoundingClientRect().height)")
     check(min(hs) >= 44 and pg.evaluate("document.documentElement.scrollWidth") <= W, f'phone: panel rows and buttons sized for a finger, no sideways scroll {[round(h) for h in hs]}')
     pg.tap('#sideBackdrop', position={'x': 20, 'y': 20})   # above the sheet
-    pg.tap('#tabBtnFit'); pg.fill('#fitAnalyzerInput', ORTHRUS); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .mys-board', timeout=60000)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', ORTHRUS); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .mys-board', timeout=60000)
     pg.wait_for_function(f"() => {{ const b = document.querySelector('{R} .mys-board'); return b && !/…/.test(b.textContent); }}", timeout=60000); settle(pg, 600)
     d = pg.evaluate(ALIGN); check(d <= 1, f'375: the menu name sits exactly on the half\'s name ({d:.1f} px)')
     pg.tap(f'{R} details.mys-pick > summary'); pg.wait_for_timeout(300)
