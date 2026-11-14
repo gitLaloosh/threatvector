@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-LhHdd+egbcT+Er9PZdeK1/eTY+y8UK8cbnKk6aJXCK8='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-fCGVIKI49l/d+n7X9Zz5UaAUVfaiW8MgUD53to2IpEc='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3568,8 +3568,8 @@ const CARD_INFO = {
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
   "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks what it shows; Paths to you draws the routes from hostiles in your alert range as a tree. Wormholes: reported, kept 24 h; its list edits and shares them. On the Wormholes filter the rest fades, one reported in the last 30 minutes pulses, and the chip steps through them. Systems past {card:itnear}'s range are faded.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate only (no jump bridges or wormholes). The map's drawn route follows Intel settings → Routes; jump counts stay the shortest by stargate.",
-  "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, systems with reported hostiles, neutrals, kills or ESS, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route.",
-  "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while you're in the game: EVE says OK while you're logged off, but drops it.",
+  "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, systems with reported hostiles, neutrals, kills or ESS, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list.",
+  "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
   "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI; only wormhole reports are kept after you close the page.",
   "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit."
  ],
@@ -30825,6 +30825,7 @@ function itMapPinTag(id){ return itm.pinned.has(id) ? '<span class="it-map-rtag"
 //  * The Intel example's map keeps the shortest stargate routes (itRpAside, set in itExSandbox): it never depends on your settings or Intel.
 const IT_RP_KEY = 'tvRoute', IT_RP_SEND = 'tvRouteSend', IT_RP_PREFS = ['Shorter', 'Safer', 'LessSecure'], IT_RP_LIST_MAX = 200, IT_RP_PICK_GATE = 40;
 const IT_RP_OFF_NOTE = "EVE answers OK while you're logged off, but the game drops the destination: send it while you're in the game.";   // the owner's hand test
+const IT_RP_GAME_AVOID = "It can't read your game's avoidance list: put those systems on Threat Vector's avoid list too (Intel ⚙ → Routes).";   // the owner's hand test: a game-avoided system stays in the route as a waypoint; ESI can't read that list
 const IT_RP_PREF_NAME = {Shorter: 'Prefer shorter', Safer: 'Prefer safer', LessSecure: 'Prefer less secure'};
 const IT_RP_DEF = {pref: 'Shorter', pen: 50, camp: true, bub: true, host: true, mine: true, list: []};
 const itRp = {stop: '', set: null, key: '', home: -1, par: null, f: null, len: null, flags: new Map(), menu: null, opener: null, out: null, sel: -1, busy: false, wait: false, prog: null, note: null, msg: null, sends: 0, force: false};
@@ -30984,7 +30985,7 @@ function itRpMenuKey(e){
 // ---- the note after a press (in the map box; its close button; role=status)
 function itRpNoteHtml(){
   const n = itRp.note; if(!n) return '';
-  if(n.offline) return `<b>You're logged off in EVE.</b><br><span class="d">${escapeHtml(IT_RP_OFF_NOTE)} Log in to the game, then press Send destination to EVE again.</span><div class="it-rp-nb"><button type="button" data-it-rp-force="${escapeHtml(n.mode === 'tv' ? 'tv' : 'eve')}" data-it-rp-i="${Number(n.i)}">Send anyway</button></div>`;
+  if(n.offline) return `<b>You're logged off in EVE.</b><br><span class="d">${escapeHtml(IT_RP_OFF_NOTE)} Log in to the game, then press Send destination to EVE again.</span><div class="it-rp-nb"><button type="button" data-it-rp-force="${escapeHtml(n.mode === 'tv' ? 'tv' : 'eve')}" data-it-rp-i="${Number(n.i)}">Retry</button></div>`;
   if(n.off) return `<b>Set my destination in EVE is off.</b><br><span class="d">Turn it on to send destinations to EVE (your login already has the permission). Then press Send destination to EVE again.</span><div class="it-rp-nb"><button type="button" class="mys-primary" data-it-rp-on>Turn it on</button></div>`;
   if(n.ask) return `<b>Setting your destination needs your EVE login with the Waypoints permission.</b><br><span class="d">${escapeHtml(`One trip to EVE: it asks for Waypoints${sso.who ? '' : ' and logs you in'}. Then press Send destination to EVE again.`)}</span><div class="it-rp-nb"><button type="button" class="mys-primary" data-it-rp-eve${itOnHtml(!ssoClientId() || sso.busy || sso.starting, 'disabled')}>Continue to EVE</button></div>`;
   return `${n.head ? `<b>${escapeHtml(n.head)}</b>` : ''}${(n.lines || []).map(([cls, t]) => `<br><span class="${escapeHtml(cls)}">${escapeHtml(t)}</span>`).join('')}`;
@@ -31010,7 +31011,8 @@ async function itRpGo(mode, i){
   if(!itRpSendOn()){ itRpNote({off: true}); return; }   // the owner's hand test: turned off on the EVE tab, nothing is sent (it was sent, and the switch turned itself back on)
   if(itRp.stop){ itRpNote({head: withCode('ESI refused this login, so nothing is sent until you log in again.', itRp.stop), lines: [['d', "Log out and in again on the profile's EVE tab."]], warn: true}); return; }
   // the owner's hand test: logged off in the game, ESI still answers 204 and the game drops the destination. Known logged off (Show when I'm
-  // online in EVE): not sent, with Send anyway in case that status is a minute behind; not known: the note says so after the send
+  // online in EVE): not sent, with Retry (sends: that status may be a minute behind; "Send anyway" until the owner's hand test read it as
+  // "send away", scrap it); not known: the note says so after the send
   const onl = typeof ssoOnShown === 'function' ? ssoOnShown() : null, force = itRp.force; itRp.force = false;
   if(onl === false && !force){ itRpNote({offline: true, mode: mode === 'tv' ? 'tv' : 'eve', i: Number(i)}); return; }
   let path = null;
@@ -31033,7 +31035,7 @@ async function itRpGo(mode, i){
   if(err === null){
     itRp.sends++;
     const lines = mode === 'eve' ? [['d', "EVE plans the route with your game's autopilot settings."]]
-      : [...(w.length ? [['it-rp-w', itRpWarnText(w)]] : []), ['d', 'Every system is a waypoint: with Disable Autopilot at Each Waypoint on, the autopilot stops at each.']];
+      : [...(w.length ? [['it-rp-w', itRpWarnText(w)]] : []), ['d', 'Every system is a waypoint: with Disable Autopilot at Each Waypoint on, the autopilot stops at each.'], ['d', IT_RP_GAME_AVOID]];
     if(onl !== true) lines.push(['d', IT_RP_OFF_NOTE]);   // not known to be in the game (or sent anyway): EVE says OK either way
     itRpNote({head: mode === 'eve' ? `Destination set: ${name}` : `Destination set: ${name}, ${legs.length} jump${legs.length === 1 ? '' : 's'}`, lines, warn: w.length > 0});
     return;
@@ -31116,7 +31118,7 @@ function itRpBoxHtml(numbered){
     + `<div class="it-rp-avk">avoid</div>${itRpCkHtml(s, 'camp', 'gate camps')}${itRpCkHtml(s, 'bub', 'bubbles')}${itRpCkHtml(s, 'host', 'systems with reported hostiles, neutrals, kills or ESS')}${itRpCkHtml(s, 'mine', 'systems on my avoid list')}`
     + `<ul class="it-rp-list">${itRpListHtml(s)}</ul>`
     + `<form class="it-rp-add" autocomplete="off"><input type="text" name="sys" placeholder="System, e.g. 8BA-RA" aria-label="System to avoid" maxlength="40" spellcheck="false"><button type="submit">Avoid</button></form><div class="it-rp-msg" role="status"></div>`
-    + `<div class="c">For the map's routes and “Send destination to EVE (Threat Vector's route)”. EVE's route uses your game settings.</div></div>`;
+    + `<div class="c">For the map's routes and “Send destination to EVE (Threat Vector's route)”. EVE's route uses your game settings; Threat Vector's can't read your game's avoidance list, so add those systems here too.</div></div>`;
 }
 function itRpCkHtml(s, k, t){ return `<label><input type="checkbox" data-it-rp-set="${escapeHtml(k)}"${itOnHtml(s[k], 'checked')}> ${escapeHtml(t)}</label>`; }
 function itRpPrefsHtml(s){ return IT_RP_PREFS.map(p => `<label><input type="radio" name="itRpPref" value="${escapeHtml(p)}" data-it-rp-set="pref"${itOnHtml(s.pref === p, 'checked')}> ${escapeHtml(IT_RP_PREF_NAME[p])}</label>`).join(''); }

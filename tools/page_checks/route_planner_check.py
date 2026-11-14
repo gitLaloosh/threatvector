@@ -14,7 +14,7 @@ address (http://localhost:8000/) with intel_check.py's made-up folder and Intel.
     and your own system never count;
   * on the real map: jump numbers stay the shortest by stargate (itm.D), the drawn route follows Threat Vector's route, the tooltip says
     "Threat Vector's route: N jumps (shortest M)" and what it couldn't avoid; the Intel example's map keeps the shortest routes;
-  * logged off in the game (ESI answers 204, the game drops it): known logged off, nothing sent and Send anyway; not known, the note says
+  * logged off in the game (ESI answers 204, the game drops it): known logged off, nothing sent and Retry (was Send anyway, read as "send away"); not known, the note says
     to send it while in the game (047's hand test);
   * the EVE tab's switch off: nothing sent even with the permission held, the note's Turn it on (047's hand test);
   * the search box: drawn as the site's one text field (the --bg fill, 4px corners); suggestions (names starting with the text first), the keyboard (arrows, Enter, Esc), a pick centres the map on the
@@ -265,7 +265,7 @@ def cases(b, html, phone=True):
     pg.evaluate("() => { window.__onShown = ssoOnShown; window.__onl = false; ssoOnShown = () => window.__onl; }")
     wreset(); go('eve', d['i']); pg.wait_for_timeout(200)
     t_off = pg.inner_text('.it-rp-note')
-    if WREQ or "logged off in EVE" not in t_off or not pg.locator('.it-rp-note [data-it-rp-force]').count(): out.append(f'known logged off: nothing sent, a note with Send anyway: {len(WREQ)} {t_off!r}')
+    if WREQ or "logged off in EVE" not in t_off or pg.locator('.it-rp-note [data-it-rp-force]').count() != 1 or pg.inner_text('.it-rp-note [data-it-rp-force]').strip() != 'Retry': out.append(f'known logged off: nothing sent, a note with Send anyway: {len(WREQ)} {t_off!r}')
     else:
         pg.click('.it-rp-note [data-it-rp-force]'); pg.wait_for_function("!itRp.busy", timeout=8000); pg.wait_for_timeout(100)
         if len(WREQ) != 1 or "while you're in the game" not in pg.inner_text('.it-rp-note'): out.append(f"Send anyway: one request, the note says it's dropped while logged off: {len(WREQ)} {pg.inner_text('.it-rp-note')!r}")
@@ -284,6 +284,7 @@ def cases(b, html, phone=True):
     if pg.evaluate("window.__wpMax") != 1: out.append(f'never two waypoint requests at once: {pg.evaluate("window.__wpMax")}')
     if 'Still setting this destination' not in busy: out.append(f'a press while sending should be refused, the line kept: {busy!r}')
     if f'Destination set: {nm}, {len(path)} jump' not in pg.inner_text('.it-rp-note'): out.append(f"Threat Vector's route: the note {pg.inner_text('.it-rp-note')!r}")
+    if "can't read your game's avoidance list" not in pg.inner_text('.it-rp-note'): out.append(f"Threat Vector's route: the note should say it can't read the game's avoidance list (the hand test): {pg.inner_text('.it-rp-note')!r}")
     # a failure stops the rest; 403 and 401
     if len(path) >= 3:
         wreset(fail_at=2, fail=500); go('tv', d['i']); pg.wait_for_function("!itRp.busy", timeout=15000)
@@ -322,6 +323,7 @@ def cases(b, html, phone=True):
     return out, errs
 
 MUTANTS = [
+    ("the game's avoidance list not said (047, the hand test)", ", ['d', IT_RP_GAME_AVOID]];", "];"),
     ('sent while known logged off (047, the hand test)', "  if(onl === false && !force){", "  if(false){"),
     ('sending with the switch off (047, the hand test)', "  if(!itRpSendOn()){ itRpNote({off: true}); return; }", "  if(false){ itRpNote({off: true}); return; }"),
     ('the search box drawn by the browser (047, the hand test)', "  input[type=text], input[type=search], select{", "  input[type=text], select{"),

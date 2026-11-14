@@ -451,7 +451,7 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   Send destination to EVE (`itRpGo`; "Set destination" until the owner's hand test): EVE's route one `POST /ui/autopilot/waypoint` (clear_other_waypoints=true), Threat Vector's route one per jump,
   in order, each waiting for the last, through `esiFetch(…, 'waypoints', {scope: SSO_WP})`; needs the login and Waypoints (`SSO_WP`, the EVE
   tab's "Set my destination in EVE", `tvRouteSend`); without them a note with Continue to EVE, then "press again" (sent only while that switch is on: off with the permission held, a note with Turn it on, and nothing turns the switch on but the person, the owner's hand test; logged off in the game ESI still answers 204 and the game drops it, so known
-  logged off (`ssoOnShown()` false) nothing is sent, a note with Send anyway (`itRp.force`), and not known the note adds `IT_RP_OFF_NOTE`; never sent by itself on
+  logged off (`ssoOnShown()` false) nothing is sent, a note with Retry (`itRp.force`; "Send anyway" until the hand test), and not known the note adds `IT_RP_OFF_NOTE`; Threat Vector's route's note and the Routes box say the game's avoidance list can't be read (`IT_RP_GAME_AVOID`; a game-avoided system stays a waypoint, the hand test); never sent by itself on
   return). A failure stops the rest (ROUTE-01; 403 SSO-07 off; 401 SSO-08). `route_planner_check.py` (stand-in SSO and ESI).
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
