@@ -407,7 +407,9 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   report flags nothing. Send destination to EVE (EVE's route) sends EVE the destination only, and EVE plans the route with your game's
   settings (jump bridges and your game's avoidance list included); Send destination to EVE (Threat Vector's route) sends every system as a
   waypoint, in order, one at a time, so EVE flies that route (with Disable Autopilot at Each Waypoint on, it stops at each). Both use
-  your EVE login with the Waypoints permission; a send that fails stops there, and the waypoints already sent stay in EVE.
+  your EVE login with the Waypoints permission; a send that fails stops there, and the waypoints already sent stay in EVE. EVE
+  answers OK while your character is logged off but the game drops the destination, so with Show when I'm online in EVE saying
+  you're logged off nothing is sent (Send anyway, in case that is a minute behind), and otherwise the note says to send it in the game.
 - **Wormholes** (build queue 040): a line that says wh, wormhole or drifter (intel words, never looked up as pilots) with a
   system keeps that system as a wormhole (a Drifter one with drifter), with the line's time and who sent it, in this
   browser only (localStorage `tvWormholes`; nothing is sent anywhere), for 24 hours unless you change "keep wormhole
