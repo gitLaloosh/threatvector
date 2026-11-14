@@ -39,12 +39,13 @@ table{border-collapse:collapse; margin:8px 0;} td,th{border:1px solid #ddd; padd
 <h2>Checks</h2>
 <ul>
 <li>New <code>route_planner_check.py</code> (stand-in SSO and ESI at the dev app's address; made-up characters and tokens): the search's rules on a made-up graph (each preference, penalty 0 and 50, the band not the rounded number, a detour round a flagged system, the fewest flagged when none is clean, the destination and you never counted); the real map (jump numbers unchanged, the drawn route and the tooltip's lines, the example's map); the search box and keyboard; the menu; the Routes box; setting the destination (asked for, Waypoints requested, one request for EVE's route, one per jump in order and never two at once for Threat Vector's, a failure, 403, 401, a press while sending, nothing without a press); a phone's tooltip buttons. Seven mutants, all caught.</li>
-<li><code>wormhole_share_check.py</code>: a long list scrolled down and the Add field being typed in, then a new Intel line: the scroll, the focus and the text kept; a mutant without the fix fails ("scroll 350 → 0").</li>
+<li><code>wormhole_share_check.py</code>: a long list scrolled down and the Add field being typed in, then a new Intel line: the scroll, the focus and the text kept; a mutant without the fix fails ("scroll 350 → 0"). After the owner's hand test: the page's own scroll kept too, with the map in view, down in the Feed and on a 1000 × 600 window, three redraws each; a mutant without <code>itKeepPlace</code> fails ("514 → 529").</li>
 <li>The mockup (rebuilt from main 60d75f1, the page it was made from): its test_rp.py, 39 of 39.</li>
 </ul>
 
 <h2>Lesson for future models</h2>
 <ul>
+<li>A redraw that keeps a scroll box's place must keep the page's place too (LESSON #165). The first fix for the Wormholes list kept the list's scroll, and its check redrew once with the page at the top; the owner's hand test found the page itself creeping up with every feed update (the browser's scroll anchoring, 15 px a redraw, while the map's box is out of the page). <code>itKeepPlace</code> puts the map back where it was on screen; the check now scrolls the page into the map, down into the Feed and on a short window, and redraws several times.</li>
 <li>A page check that runs its cases once on the page and again for each mutant must reset its stand-ins' request logs at the start of each run. Without that, the request the real run left behind made three mutants "fail" on "nothing should be sent without a press", which says nothing about the mutation. Read each mutant's failure line, not only that it failed.</li>
 <li>On a phone the map's tooltip with buttons is tall enough to open over the pressed point; the canvas then gets a <code>mouseleave</code> into it, which hid it. A tooltip that takes presses must not be hidden by the pointer moving into it.</li>
 </ul>

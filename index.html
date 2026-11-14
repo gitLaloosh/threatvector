@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-h4jJ44H+cefIsx23R3f8gQd/GRcsTgsqE2+A1n48eK0='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ud6zLCW/y8ClBDygMLIfwn1b/PICY7sIGDWyCEiFaNk='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -28956,16 +28956,26 @@ function itRender(force){   // force: a press that changes what is open (the gea
   // keeps losing their place in the list"): the card's new HTML takes the map's box (and the open Wormholes list in it) out of the page until
   // itMapMount puts it back, and an element taken out loses its scroll. Kept here and put back after the move.
   const whTop = typeof itWhListShown === 'function' && itWhListShown() ? itWhL.el.scrollTop : 0;
+  // 047, the owner's hand test ("it's like the page is slowly creeping up every time the feed refreshes"): with the map's box out of the
+  // page for a moment, the browser's scroll anchoring moved the page 15 px a redraw. The map stays where it was on screen (else the page's
+  // scroll stays)
+  const y0 = typeof window !== 'undefined' ? window.scrollY : 0, a0 = itm.el && itm.el.isConnected ? itm.el.getBoundingClientRect().top : null;
   el.innerHTML = html;
   const nl1 = el.querySelector('#itNearList'); if(nl1 && nTop) nl1.scrollTop = nTop;
   if(lf){ const f = el.querySelector(lf); if(f) f.focus({preventScroll: true}); }
   itMapMount(el); rsPaint(el);
   if(whTop && itWhListShown()) itWhL.el.scrollTop = whTop;
+  itKeepPlace(y0, a0);
   itExMount(el);   // v2026.11.07.7
   itStatusPaint(el, true);
   if(hf){ const f = el.querySelector(hf); if(f) f.focus({preventScroll: true}); }
   if(mf && mf.isConnected) mf.focus({preventScroll: true});
   itAfterDraw(el);
+}
+function itKeepPlace(y0, a0){   // LESSON #165. 047: after a redraw, the page scrolled so the map is where it was on screen (else the page where it was)
+  if(typeof window === 'undefined' || !window.scrollBy) return;
+  if(a0 !== null && itm.el && itm.el.isConnected){ const d = itm.el.getBoundingClientRect().top - a0; if(Math.abs(d) >= 1) window.scrollBy(0, d); }
+  else if(Math.abs(window.scrollY - y0) >= 1) window.scrollTo(window.scrollX, y0);
 }
 function itFocusKey(a){   // a selector that finds the same control again after a redraw, or null
   const sel = ['data-it-nbo', 'data-it-fsys', 'data-it-fship', 'data-it-grp', 'data-it-fcx', 'data-it-pilot', 'data-it-kb', 'data-it-raw'].find(k => a.hasAttribute && a.hasAttribute(k));

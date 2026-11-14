@@ -19,9 +19,10 @@ its lines through the made-up folder, one hole added by hand) and B (another pla
   * the checks on import: wrong tv, newer v, 300 KB, an unknown system, a mismatched name, a time 3 days old, a time in the future, a bad ID, an
     unknown type, HTML in a line: refused or skipped and counted, nothing run, nothing saved; Cancel changes nothing;
   * the UI: the chevrons turn with aria-expanded, one box at a time, focus into the box and back, Esc closes the list, 44 px and no sideways scroll at
-    390 px; a new Intel line redrawing the card keeps the open list where it was scrolled to and the Add field's focus and text (047);
+    390 px; a new Intel line redrawing the card keeps the open list where it was scrolled to and the Add field's focus and text (047), and the page where it was scrolled to (the map in
+    view, down in the Feed, a short window; 047's hand test);
   * mutants, each must fail: lines matched by time instead of text; theirs kept over yours; the cap dropping a line that decides a detail; the
-    reporter written into the export; an older line bringing back a removed ID;
+    reporter written into the export; an older line bringing back a removed ID; the page creeping with each redraw;
   * no page errors.
 """
 import sys, os, json, time, tempfile
@@ -158,9 +159,27 @@ def cases(b, html, phone=True):
     pa.evaluate("() => { itWhL.el.scrollTop = 0; }")
     pa.click('.it-whp-add input[name=sys]'); pa.keyboard.type('Ta')
     pa.evaluate("() => { itWhL.el.scrollTop = 350; }"); top0 = pa.evaluate("itWhL.el.scrollTop")
+    # 047, the owner's hand test ("it's like the page is slowly creeping up every time the feed refreshes"): the page scrolled into the map
+    pa.evaluate("() => { const r = itm.el.getBoundingClientRect(); window.scrollTo(0, scrollY + r.top + 120); }"); y0 = pa.evaluate("scrollY")
     draws = pa.evaluate("window.__d = 0; const f = itRender; itRender = function(){ window.__d++; return f.apply(this, arguments); }; 0")
     W(pa, F_INTEL, body + line(time.time(), 'Gate Watcher', f'{SYSNAME[near[0]]} Seren Ketter sabre')); tick(pa, 3200)
     ks = pa.evaluate("[window.__d, itWhListShown(), itWhL.el.scrollTop, document.activeElement && document.activeElement.name, document.activeElement && document.activeElement.value]")
+    keep = "[scrollY, itm.el.getBoundingClientRect().top, document.querySelector('#itFeedList').getBoundingClientRect().top, window.__d]"
+    p0 = pa.evaluate(keep)
+    if y0 < 100 or abs(p0[0] - y0) > 1: out.append(f'a redraw should leave the page where it was scrolled to: {y0} -> {p0[0]}')
+    for k in range(3):
+        W(pa, F_INTEL, body + line(time.time(), 'Gate Watcher', f'{SYSNAME[near[k + 1]]} Seren Ketter sabre')); tick(pa, 3200)
+    p1 = pa.evaluate(keep)
+    if p1[3] - p0[3] < 3 or abs(p1[0] - p0[0]) > 1 or abs(p1[1] - p0[1]) > 1: out.append(f'the page should not creep with the feed\'s redraws: scrolled {p0[0]} -> {p1[0]}, map at {p0[1]:.0f} -> {p1[1]:.0f} ({p1[3] - p0[3]} redraws)')
+    # down in the Feed, and a short window with the map half above it
+    for vp, at in (({'width': 1440, 'height': 1000}, "document.querySelector('#itFeedList')"), ({'width': 1000, 'height': 600}, "itm.el")):
+        pa.set_viewport_size(vp); pa.wait_for_timeout(300)
+        pa.evaluate(f"() => {{ const r = {at}.getBoundingClientRect(); window.scrollTo(0, scrollY + r.top + 250); }}"); q0 = pa.evaluate(keep)
+        for k in range(2):
+            W(pa, F_INTEL, body + line(time.time(), 'Gate Watcher', f'{SYSNAME[near[k + 4 + (vp["height"] < 900) * 2]]} Seren Ketter sabre')); tick(pa, 3200)
+        q1 = pa.evaluate(keep)
+        if q1[3] == q0[3] or abs(q1[0] - q0[0]) > 1 or abs(q1[1] - q0[1]) > 1: out.append(f'{vp["width"]} x {vp["height"]}, scrolled into {at}: the page {q0[0]} -> {q1[0]}, map {q0[1]:.0f} -> {q1[1]:.0f} ({q1[3] - q0[3]} redraws)')
+    pa.set_viewport_size({'width': 1440, 'height': 1000}); pa.wait_for_timeout(200)
     if top0 < 300 or ks[0] < 1: out.append(f'the scroll test needs a long list and a redraw: scrolled {top0}, redraws {ks[0]}')
     elif not ks[1] or abs(ks[2] - top0) > 2 or ks[3] != 'sys' or ks[4] != 'Ta': out.append(f'a redraw while the list is open: shown {ks[1]}, scroll {top0} -> {ks[2]}, focus {ks[3]!r} {ks[4]!r}')
     pa.keyboard.press('Escape'); pa.wait_for_timeout(150)
@@ -262,6 +281,7 @@ MUTANTS = [
     ('the cap dropping a line that decides a detail', "kept = [...sorted.filter(r => d.backing.has(r)), ...sorted.filter(r => !d.backing.has(r))].slice(0, IT_WH_RAW_MAX)", "kept = sorted.slice(0, IT_WH_RAW_MAX)"),
     ('the reporter written into the export', "return {t: r.t, k: hand ? 'hand' : 'intel', raw:", "return {t: r.t, who: r.who, k: hand ? 'hand' : 'intel', raw:"),
     ('a card redraw losing the open list\'s scroll (047)', "  if(whTop && itWhListShown()) itWhL.el.scrollTop = whTop;\n", ""),
+    ('the page creeping with each redraw (047, the hand test)', "  itKeepPlace(y0, a0);\n", ""),
     ('an older line bringing back a removed ID', "      if(itWhSigGone(w.goneSig, n.sig, r.t)) continue;   // removed by you after this line\n", ""),
 ]
 
