@@ -183,7 +183,7 @@ _tail = r'''
     pg.evaluate("() => { const s = document.querySelector('#intelPanel .it-head .info-body details.info-more summary'); if(s) s.click(); }"); pg.wait_for_timeout(100)
     op = pg.evaluate("() => [...document.querySelectorAll('#intelPanel .it-head .info-body details.info-more')].map(d => d.open)")
     check(inf[:4] == [2, 3, 10, 0] and inf[4] < 100 and op[0] and not any(op[1:]),
-          f'How Intel works: 2 short paragraphs (3 bold leads) and 10 folded headings (build queue 047 added Routes and Set destination; 036: 8, was 3 and 9), closed ({inf[4]} words shown); one opens on a click {inf[:5]} {op}')
+          f'How Intel works: 2 short paragraphs (3 bold leads) and 10 folded headings (build queue 047 added Routes and Send destination to EVE; 036: 8, was 3 and 9), closed ({inf[4]} words shown); one opens on a click {inf[:5]} {op}')
     check('slider' not in inf[5] and 'red row' not in inf[5], 'no "slider" or "red row" left in it')
     check(not errs, f'no page errors {errs[:3]}')
     ie = pg.evaluate("() => [it.err, it.note]")

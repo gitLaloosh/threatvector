@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6Qo2Qs7Ff8cEOsTJaTTTl1dyCrsI4nFE7kwzEX3zIwQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-m1yB91IiCd8lKc2OaXJPEyqBVNSVdnp0WaEDBuEA5LI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3569,7 +3569,7 @@ const CARD_INFO = {
   "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks what it shows; Paths to you draws the routes from hostiles in your alert range as a tree. Wormholes: reported, kept 24 h; its list edits and shares them. On the Wormholes filter the rest fades, one reported in the last 30 minutes pulses, and the chip steps through them. Systems past {card:itnear}'s range are faded.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate only (no jump bridges or wormholes). The map's drawn route follows Intel settings → Routes; jump counts stay the shortest by stargate.",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, systems with reported hostiles, neutrals, kills or ESS, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route.",
-  "[Set destination] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab).",
+  "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab).",
   "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI; only wormhole reports are kept after you close the page.",
   "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit."
  ],
@@ -4259,7 +4259,7 @@ const ERROR_CODES = {
  },
  "SSO-07": {
   "title": "EVE didn't give the permission",
-  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1); your profile, {card:side}, Use my corporation's and alliance's EVE standings (since v2026.11.09.2); the Intel map's Set destination and the profile's Set my destination in EVE (since v2026.11.13.3)",
+  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1); your profile, {card:side}, Use my corporation's and alliance's EVE standings (since v2026.11.09.2); the Intel map's Send destination to EVE and the profile's Set my destination in EVE (since v2026.11.13.3)",
   "trigger": "The token from EVE doesn't list the permission the switch needs (its scp claim), or ESI answered 403 for it (the permission was taken back). The switch turns off.",
   "check": "Turn the switch on again and agree on EVE's page; on EVE's site, check that Threat Vector still has the permission.",
   "why": "A switch works only with the permission EVE gave; the page never asks ESI for something it wasn't allowed.",
@@ -4268,16 +4268,16 @@ const ERROR_CODES = {
  },
  "ROUTE-01": {
   "title": "EVE didn't take the destination",
-  "where": "The Intel map, after Set destination (since v2026.11.13.3)",
+  "where": "The Intel map, after Send destination to EVE (since v2026.11.13.3)",
   "trigger": "Setting your destination in EVE (POST /ui/autopilot/waypoint) got an answer other than 204, or no answer. Nothing more is sent: the waypoints sent before it stay in EVE, and the note says how far it got.",
-  "check": "Check that your character is logged in to the game, then press Set destination again. EVE's daily downtime (11:00 UTC) stops it too.",
+  "check": "Check that your character is logged in to the game, then press Send destination to EVE again. EVE's daily downtime (11:00 UTC) stops it too.",
   "why": "Each waypoint goes in order, one after another, so a route sent with one missing would send the autopilot somewhere else; a failed one stops the rest and is never retried by itself (ESI's error limit counts every failure).",
   "since": "v2026.11.13.3",
   "doc": "2026-11-13_route-planner.html"
  },
  "SSO-08": {
   "title": "ESI refused the login",
-  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1); your profile, {card:side}, Use my corporation's and alliance's EVE standings (since v2026.11.09.2); the Intel map's Set destination (since v2026.11.13.3)",
+  "where": "Intel's settings, Use my game location; your profile, Pilot, Show when I'm online in EVE (since v2026.11.09.1); your profile, {card:side}, Use my corporation's and alliance's EVE standings (since v2026.11.09.2); the Intel map's Send destination to EVE (since v2026.11.13.3)",
   "trigger": "ESI answered 401 to a call made with the login. That feature stops and isn't asked again until you log in again.",
   "check": "Log in again. If it keeps happening, EVE's login may be having trouble.",
   "why": "Every refused call counts against ESI's error limit for everyone on this address (100 a minute), so a refused login is never retried by itself.",
@@ -24080,7 +24080,7 @@ function sideEveRefused(){
 // only record the choice and the login asks EVE for exactly those; logged in, a feature turned on without its permission waits (the EVE
 // lamp amber) for one Continue to EVE, which asks for every feature on (a new authorization's token carries only what it asked for).
 const SSO_FEAT_NAME = {online: "Show when I'm online in EVE", loc: 'Use my game location', stand: "Use my corporation's and alliance's EVE standings", wp: 'Set my destination in EVE'};   // wp: build queue 047
-function eveFeatInfoHtml(k){ return k === 'online' ? infoBtnHtml('side#online') : k === 'loc' ? infoBtnHtml('intel#game') : k === 'wp' ? infoBtnHtml('intel') : infoBtnHtml('side#eve'); }   // wp (047): Intel's [Set destination]
+function eveFeatInfoHtml(k){ return k === 'online' ? infoBtnHtml('side#online') : k === 'loc' ? infoBtnHtml('intel#game') : k === 'wp' ? infoBtnHtml('intel') : infoBtnHtml('side#eve'); }   // wp (047): Intel's [Send destination to EVE]
 function eveFeatLine(k, f, m){
   if(!ssoClientId()) return {t: 'Works on threatvector.space', s: 'off'};
   if(!m.eve){
@@ -24088,7 +24088,7 @@ function eveFeatLine(k, f, m){
     return f.on ? {t: 'EVE will ask for this when you log in', s: 'lit'} : {t: 'Not asked for', s: 'off'};
   }
   if(k === 'stand' && f.npc) return {t: 'NPC corporation: typed lists are used', s: 'off'};
-  if(!f.on) return {t: k === 'loc' ? 'Off: Intel counts jumps from your Local log' : k === 'stand' ? 'Off: your typed lists are used' : k === 'wp' ? "Off: the Intel map's Set destination asks for it" : 'Off', s: 'off'};
+  if(!f.on) return {t: k === 'loc' ? 'Off: Intel counts jumps from your Local log' : k === 'stand' ? 'Off: your typed lists are used' : k === 'wp' ? "Off: the Intel map's Send destination to EVE asks for it" : 'Off', s: 'off'};
   if(!f.held) return {t: "Needs EVE's OK: one trip to EVE, then it starts", s: 'warn'};
   if(k === 'wp') return {t: 'From the Intel map: right-click a system (on a phone, press it)', s: 'lit'};   // 047
   if(k === 'online'){
@@ -24263,7 +24263,7 @@ function ssoMsg(from, text, err){
   else if(from === 'wp' && sso.who){ itRp.msg = text ? {text, err: !!err} : null; renderSidePanel(); }   // 047: Set my destination in EVE
   else { sso.note = text ? {text, err: !!err} : null; renderSidePanel(); }
 }
-const SSO_FROM = ['loc', 'online', 'stand', 'eve', 'wp'];   // 047: 'wp', the Intel map's Set destination   // where a trip to EVE started (032: 'eve', the profile's EVE tab)
+const SSO_FROM = ['loc', 'online', 'stand', 'eve', 'wp'];   // 047: 'wp', the Intel map's Send destination to EVE   // where a trip to EVE started (032: 'eve', the profile's EVE tab)
 // want: the permissions a feature needs; the request asks for those, the ones this tab holds and the ones of the features that are on,
 // because EVE gives a later login only what it asks for (the owner's hand test, 2026-11-08: a login asking for nothing came back with no scp)
 async function ssoStart(want, from){
@@ -24433,7 +24433,7 @@ async function ssoFinish(ret){
     sso.busy = false;
     if(want.includes(SSO_LOC)) itGlGranted();   // on only when its permission came back (else off, SSO-07)
     ssoOn.stop = ''; ssoOn.next = 0;   // 029: a new login: the online check starts again
-    try{ itRp.stop = ''; }catch(e){ }   // 047: and Set destination
+    try{ itRp.stop = ''; }catch(e){ }   // 047: and Send destination to EVE
     if(want.includes(SSO_ON)) ssoOnGranted();
     if(want.includes(SSO_SC)) sideEveGranted();   // 030: on only with both contacts permissions (else SSO-07)
     if(want.includes(SSO_WP)) itRpGranted();   // 047
@@ -26053,7 +26053,7 @@ const IT_NEAR_EXTRA = 5;
 function itNearDefault(){ return Math.max(it.set.range, Math.min(itKillRange(), it.set.range + IT_NEAR_EXTRA)); }
 function itNearReach(){ return it.set.nearRange == null ? itNearDefault() : Math.max(it.set.range, Math.min(itKillRange(), it.set.nearRange)); }
 function itNearCtx(){ return itMySys() ? `last ${it.set.forget} min, within ${itNearReach()} jumps, nearest first` : `last ${it.set.forget} min, nearest first`; }
-function itMapCtx(){ return `around you, ${itMapReach()} jumps · hover a system or a row for its route to you; press to keep it; right-click to set destination`; }   // 047
+function itMapCtx(){ return `around you, ${itMapReach()} jumps · hover a system or a row for its route to you; press to keep it; right-click to send a destination to EVE`; }   // 047
 const IT_ALERT_GAP_MS = 30000;               // one alert per system per 30 s
 // v2026.11.01.8 (the owner: "volume control for the intel alerts. they're a little quiet"; "add ability for user to pick their own
 // alert sound"; plan: Project doc roadmap/alert-sound-plan.md): two slots, Near You (1 jump up to the alert range) and In system
@@ -30928,7 +30928,7 @@ function itRpTipHtml(i){
   if(w.length) h += `<br><span class="it-rp-w">${escapeHtml(itRpWarnText(w))}</span>`;
   if(itRpSet().list.includes(gid)) h += '<br><span class="d">on your avoid list</span>';
   if(d >= 0){
-    if(!itRpTouch()) h += '<br><span class="d">right-click: set destination</span>';
+    if(!itRpTouch()) h += '<br><span class="d">right-click: send destination to EVE</span>';
     else if(itm.pinned.has(gid)){ h += itRpBtnsHtml(i, true); act = true; }
   }
   return {h, act};
@@ -30937,8 +30937,8 @@ function itRpTipHtml(i){
 function itRpBtnsHtml(i, inTip){
   const ids = itGraphGet().ids, gid = ids[i], d = itm.D[i], can = d > 0, path = can ? itRpPath(i) : null, w = itRpWarn(path), on = itRpSet().list.includes(gid);
   return `<div class="it-rp-btns${escapeHtml(inTip ? ' it-rp-intip' : '')}"${itRpGroupHtml(inTip, gid)}>`
-    + `<button type="button"${itRpRoleHtml(inTip)} data-it-rp-go="eve" data-it-rp-i="${Number(i)}"${itOnHtml(!can, 'disabled')}>Set destination <span>(EVE's route)</span></button>`
-    + `<button type="button"${itRpRoleHtml(inTip)} data-it-rp-go="tv" data-it-rp-i="${Number(i)}"${itOnHtml(!can, 'disabled')}>Set destination <span>(Threat Vector's route)</span>${itRpSubHtml(path, w)}</button>`
+    + `<button type="button"${itRpRoleHtml(inTip)} data-it-rp-go="eve" data-it-rp-i="${Number(i)}"${itOnHtml(!can, 'disabled')}>Send destination to EVE <span>(EVE's route)</span></button>`
+    + `<button type="button"${itRpRoleHtml(inTip)} data-it-rp-go="tv" data-it-rp-i="${Number(i)}"${itOnHtml(!can, 'disabled')}>Send destination to EVE <span>(Threat Vector's route)</span>${itRpSubHtml(path, w)}</button>`
     + `<button type="button"${itRpRoleHtml(inTip)} class="it-rp-av" data-it-rp-av="${Number(gid)}"${itOnHtml(i === itm.home, 'disabled')}>${escapeHtml(on ? 'Stop avoiding' : 'Avoid this system')}</button></div>`;
 }
 function itRpRoleHtml(inTip){ return inTip ? '' : ' role="menuitem"'; }   // the menu's items; in a phone's tooltip they are plain buttons in a group
@@ -30950,7 +30950,7 @@ function itRpMenuOpen(i, x, y, opener){
   itRpMenuClose(false);
   if(i < 0 || !itm.box || itRpAside) return;
   const ids = itGraphGet().ids, m = document.createElement('div');
-  m.className = 'it-rp-menu'; m.setAttribute('role', 'menu'); m.setAttribute('aria-label', `${itSysName(ids[i])}: set destination`);
+  m.className = 'it-rp-menu'; m.setAttribute('role', 'menu'); m.setAttribute('aria-label', `${itSysName(ids[i])}: send destination to EVE`);
   m.innerHTML = `<div class="it-rp-mh"><b>${escapeHtml(itSysName(ids[i]))}</b>${itRpWhereHtml(i)}</div>${itRpBtnsHtml(i, false)}`;
   itm.box.appendChild(m); itRp.menu = m; itRp.opener = opener || null;
   const mw = m.offsetWidth, mh = m.offsetHeight;
@@ -30983,8 +30983,8 @@ function itRpMenuKey(e){
 // ---- the note after a press (in the map box; its close button; role=status)
 function itRpNoteHtml(){
   const n = itRp.note; if(!n) return '';
-  if(n.off) return `<b>Set my destination in EVE is off.</b><br><span class="d">Turn it on to send destinations to EVE (your login already has the permission). Then press Set destination again.</span><div class="it-rp-nb"><button type="button" class="mys-primary" data-it-rp-on>Turn it on</button></div>`;
-  if(n.ask) return `<b>Setting your destination needs your EVE login with the Waypoints permission.</b><br><span class="d">${escapeHtml(`One trip to EVE: it asks for Waypoints${sso.who ? '' : ' and logs you in'}. Then press Set destination again.`)}</span><div class="it-rp-nb"><button type="button" class="mys-primary" data-it-rp-eve${itOnHtml(!ssoClientId() || sso.busy || sso.starting, 'disabled')}>Continue to EVE</button></div>`;
+  if(n.off) return `<b>Set my destination in EVE is off.</b><br><span class="d">Turn it on to send destinations to EVE (your login already has the permission). Then press Send destination to EVE again.</span><div class="it-rp-nb"><button type="button" class="mys-primary" data-it-rp-on>Turn it on</button></div>`;
+  if(n.ask) return `<b>Setting your destination needs your EVE login with the Waypoints permission.</b><br><span class="d">${escapeHtml(`One trip to EVE: it asks for Waypoints${sso.who ? '' : ' and logs you in'}. Then press Send destination to EVE again.`)}</span><div class="it-rp-nb"><button type="button" class="mys-primary" data-it-rp-eve${itOnHtml(!ssoClientId() || sso.busy || sso.starting, 'disabled')}>Continue to EVE</button></div>`;
   return `${n.head ? `<b>${escapeHtml(n.head)}</b>` : ''}${(n.lines || []).map(([cls, t]) => `<br><span class="${escapeHtml(cls)}">${escapeHtml(t)}</span>`).join('')}`;
 }
 function itRpNotePaint(){
@@ -31040,7 +31040,7 @@ async function itRpGo(mode, i){
 }
 // back from EVE's page (ssoFinish): the switch stays on only with its permission
 function itRpGranted(){
-  if(ssoHeld(SSO_WP)){ itRpSendSave(true); itRp.msg = {text: 'Ready: press Set destination on the Intel map again.'}; itRp.note = null; }
+  if(ssoHeld(SSO_WP)){ itRpSendSave(true); itRp.msg = {text: 'Ready: press Send destination to EVE on the Intel map again.'}; itRp.note = null; }
   else { itRpSendSave(false); itRp.msg = {text: withCode("EVE didn't give the Waypoints permission, so Set my destination in EVE is off.", 'SSO-07'), err: true}; }
   renderSidePanel();
 }
@@ -31109,7 +31109,7 @@ function itRpBoxHtml(numbered){
     + `<div class="it-rp-avk">avoid</div>${itRpCkHtml(s, 'camp', 'gate camps')}${itRpCkHtml(s, 'bub', 'bubbles')}${itRpCkHtml(s, 'host', 'systems with reported hostiles, neutrals, kills or ESS')}${itRpCkHtml(s, 'mine', 'systems on my avoid list')}`
     + `<ul class="it-rp-list">${itRpListHtml(s)}</ul>`
     + `<form class="it-rp-add" autocomplete="off"><input type="text" name="sys" placeholder="System, e.g. 8BA-RA" aria-label="System to avoid" maxlength="40" spellcheck="false"><button type="submit">Avoid</button></form><div class="it-rp-msg" role="status"></div>`
-    + `<div class="c">For the map's routes and “Set destination (Threat Vector's route)”. EVE's route uses your game settings.</div></div>`;
+    + `<div class="c">For the map's routes and “Send destination to EVE (Threat Vector's route)”. EVE's route uses your game settings.</div></div>`;
 }
 function itRpCkHtml(s, k, t){ return `<label><input type="checkbox" data-it-rp-set="${escapeHtml(k)}"${itOnHtml(s[k], 'checked')}> ${escapeHtml(t)}</label>`; }
 function itRpPrefsHtml(s){ return IT_RP_PREFS.map(p => `<label><input type="radio" name="itRpPref" value="${escapeHtml(p)}" data-it-rp-set="pref"${itOnHtml(s.pref === p, 'checked')}> ${escapeHtml(IT_RP_PREF_NAME[p])}</label>`).join(''); }
@@ -31144,7 +31144,7 @@ function itRpBind(el){
     const av = e.target.closest && e.target.closest('[data-it-rp-av]');
     if(av){ e.preventDefault(); const inBox = !!av.closest('[data-it-rp-box]'); itRpAvoid(Number(av.dataset.itRpAv)); if(inBox){ const b = document.querySelector('[data-it-rp-box] [data-it-rp-av]') || document.querySelector('[data-it-rp-box] input[name=sys]'); if(b) b.focus({preventScroll: true}); } return; }
     if(e.target.closest && e.target.closest('[data-it-rp-nx]')){ itRpNote(null); return; }
-    if(e.target.closest && e.target.closest('[data-it-rp-on]')){ itRpSendSave(true); renderSidePanel(); itRpNote({head: 'Set my destination in EVE is on: press Set destination again.', lines: []}); return; }
+    if(e.target.closest && e.target.closest('[data-it-rp-on]')){ itRpSendSave(true); renderSidePanel(); itRpNote({head: 'Set my destination in EVE is on: press Send destination to EVE again.', lines: []}); return; }
     if(e.target.closest && e.target.closest('[data-it-rp-eve]')){ itRpSendSave(true); itRpNote(null); ssoStart(ssoWant(), 'wp'); }
   });
   el.addEventListener('keydown', (e) => { itRpMenuKey(e); }, true);   // before the card's own Escape

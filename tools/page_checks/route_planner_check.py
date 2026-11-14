@@ -151,7 +151,7 @@ def cases(b, html, phone=True):
     if t['len'] != t['route']: out.append(f'the drawn route should follow Threat Vector\'s route: {t["len"]} vs {t["route"]}')
     if t['len'] is not None and t['len'] != d['d'] and f"Threat Vector's route: {t['len']} jumps (shortest {d['d']})" not in t['tip']:
         out.append(f'the tooltip should say Threat Vector\'s route and the shortest: {t["tip"]!r}')
-    if 'right-click: set destination' not in t['tip']: out.append('the tooltip should say right-click: set destination on a wide screen')
+    if 'right-click: send destination to EVE' not in t['tip']: out.append('the tooltip should say right-click: send destination to EVE on a wide screen')
     ex = pg.evaluate("() => { let same = null; itExSandbox(() => { same = itRpParNow() === itm.par; }); return same; }")
     if not ex: out.append("the Intel example's map should keep the shortest stargate routes")
     pg.evaluate("() => { const s = itRpSet(); s.list = []; itRpSave(); itRpRefresh(); }")
@@ -239,7 +239,7 @@ def cases(b, html, phone=True):
     if gm[0] != 'false' or 'SSO-07' not in (gm[1] or ''): out.append(f'back without Waypoints: SSO-07, the switch off: {gm}')
     login(pg, [LOC, WP]); pg.evaluate("() => itRpGranted()")
     gm = pg.evaluate("[localStorage.getItem('tvRouteSend'), itRp.msg && itRp.msg.text]")
-    if gm[0] != 'true' or 'press Set destination' not in (gm[1] or ''): out.append(f'back with Waypoints: the switch on, press again: {gm}')
+    if gm[0] != 'true' or 'press Send destination to EVE' not in (gm[1] or ''): out.append(f'back with Waypoints: the switch on, press again: {gm}')
     pg.evaluate("() => openProfile('eve')"); pg.wait_for_timeout(150)
     ev = pg.evaluate("() => { const f = document.querySelector('#eveTab [data-feat=\"wp\"]'); return f ? [f.textContent.replace(/\\s+/g, ' '), document.querySelector('#ppSw-wp').checked] : null; }")
     if not ev or 'Set my destination in EVE' not in ev[0] or not ev[1]: out.append(f"the profile's EVE tab should show Set my destination in EVE, on: {ev}")
@@ -251,7 +251,7 @@ def cases(b, html, phone=True):
     if off[3]: pg.click('.it-rp-note [data-it-rp-on]'); pg.wait_for_timeout(150)
     else: pg.evaluate("() => itRpSendToggle(true)")
     on = [len(WREQ), pg.evaluate("localStorage.getItem('tvRouteSend')"), pg.inner_text('.it-rp-note')]
-    if on[0] or on[1] != 'true' or 'press Set destination again' not in on[2]: out.append(f'Turn it on: the switch on, nothing sent until the next press: {on}')
+    if on[0] or on[1] != 'true' or 'press Send destination to EVE again' not in on[2]: out.append(f'Turn it on: the switch on, nothing sent until the next press: {on}')
     # EVE's route: one request
     wreset(); go('eve', d['i']); pg.wait_for_function("!itRp.busy", timeout=8000)
     if len(WREQ) != 1 or WREQ[0]['m'] != 'POST' or WREQ[0]['q'] != {'add_to_beginning': 'false', 'clear_other_waypoints': 'true', 'destination_id': str(d['id'])}:

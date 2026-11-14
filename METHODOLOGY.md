@@ -404,8 +404,8 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   0.45, the rest), not the map's rounded number: 19 systems show 0.45 and are low sec. Compared with ESI's own route on 40 routes at
   the build (every one the cheapest by this rule). Flagged: a gate camp, a bubble, hostiles, neutrals, a kill or the ESS reported
   within "forget reports after" (each a setting), and your avoid list; the destination and your own system never count; a clear
-  report flags nothing. Set destination (EVE's route) sends EVE the destination only, and EVE plans the route with your game's
-  settings (jump bridges and your game's avoidance list included); Set destination (Threat Vector's route) sends every system as a
+  report flags nothing. Send destination to EVE (EVE's route) sends EVE the destination only, and EVE plans the route with your game's
+  settings (jump bridges and your game's avoidance list included); Send destination to EVE (Threat Vector's route) sends every system as a
   waypoint, in order, one at a time, so EVE flies that route (with Disable Autopilot at Each Waypoint on, it stops at each). Both use
   your EVE login with the Waypoints permission; a send that fails stops there, and the waypoints already sent stay in EVE.
 - **Wormholes** (build queue 040): a line that says wh, wormhole or drifter (intel words, never looked up as pilots) with a
