@@ -20,9 +20,10 @@ its lines through the made-up folder, one hole added by hand) and B (another pla
     unknown type, HTML in a line: refused or skipped and counted, nothing run, nothing saved; Cancel changes nothing;
   * the UI: the chevrons turn with aria-expanded, one box at a time, focus into the box and back, Esc closes the list, 44 px and no sideways scroll at
     390 px; a new Intel line redrawing the card keeps the open list where it was scrolled to and the Add field's focus and text (047), and the page where it was scrolled to (the map in
-    view, down in the Feed, a short window; 047's hand test);
+    view, its top on screen with the list closed, down in the Feed, a short window; 047's hand test);
   * mutants, each must fail: lines matched by time instead of text; theirs kept over yours; the cap dropping a line that decides a detail; the
-    reporter written into the export; an older line bringing back a removed ID; the page creeping with each redraw;
+    reporter written into the export; an older line bringing back a removed ID; the page creeping with each redraw (no fix), and the place put back
+    before the card is filled in;
   * no page errors.
 """
 import sys, os, json, time, tempfile
@@ -180,9 +181,18 @@ def cases(b, html, phone=True):
         q1 = pa.evaluate(keep)
         if q1[3] == q0[3] or abs(q1[0] - q0[0]) > 1 or abs(q1[1] - q0[1]) > 1: out.append(f'{vp["width"]} x {vp["height"]}, scrolled into {at}: the page {q0[0]} -> {q1[0]}, map {q0[1]:.0f} -> {q1[1]:.0f} ({q1[3] - q0[3]} redraws)')
     pa.set_viewport_size({'width': 1440, 'height': 1000}); pa.wait_for_timeout(200)
+    pa.keyboard.press('Escape'); pa.wait_for_timeout(150)
+    # the owner's second look: the list closed, the page scrolled a little so the map's top is on screen (it went up 15 px a redraw to the top)
+    for y in (60, 200):
+        pa.set_viewport_size({'width': 1500, 'height': 900}); pa.wait_for_timeout(300); pa.evaluate(f"window.scrollTo(0, {y})"); pa.wait_for_timeout(200)
+        r0 = pa.evaluate(keep)
+        for k in range(3):
+            W(pa, F_INTEL, body + line(time.time(), 'Gate Watcher', f'{SYSNAME[near[(k + y) % 6]]} Seren Ketter sabre')); tick(pa, 3200)
+        r1 = pa.evaluate(keep)
+        if r1[3] - r0[3] < 2 or abs(r1[0] - r0[0]) > 1 or abs(r1[1] - r0[1]) > 1 or pa.evaluate("itWhListShown()"): out.append(f'the list closed, scrolled {y}: the page {r0[0]} -> {r1[0]}, map {r0[1]:.0f} -> {r1[1]:.0f} ({r1[3] - r0[3]} redraws)')
+    pa.set_viewport_size({'width': 1440, 'height': 1000}); pa.wait_for_timeout(200)
     if top0 < 300 or ks[0] < 1: out.append(f'the scroll test needs a long list and a redraw: scrolled {top0}, redraws {ks[0]}')
     elif not ks[1] or abs(ks[2] - top0) > 2 or ks[3] != 'sys' or ks[4] != 'Ta': out.append(f'a redraw while the list is open: shown {ks[1]}, scroll {top0} -> {ks[2]}, focus {ks[3]!r} {ks[4]!r}')
-    pa.keyboard.press('Escape'); pa.wait_for_timeout(150)
     if pa.evaluate("itWhListShown()"): out.append('Esc should close the list')
     ca.close()
     # ---- B: an empty list, then the round trip
@@ -281,7 +291,8 @@ MUTANTS = [
     ('the cap dropping a line that decides a detail', "kept = [...sorted.filter(r => d.backing.has(r)), ...sorted.filter(r => !d.backing.has(r))].slice(0, IT_WH_RAW_MAX)", "kept = sorted.slice(0, IT_WH_RAW_MAX)"),
     ('the reporter written into the export', "return {t: r.t, k: hand ? 'hand' : 'intel', raw:", "return {t: r.t, who: r.who, k: hand ? 'hand' : 'intel', raw:"),
     ('a card redraw losing the open list\'s scroll (047)', "  if(whTop && itWhListShown()) itWhL.el.scrollTop = whTop;\n", ""),
-    ('the page creeping with each redraw (047, the hand test)', "  itKeepPlace(y0, a0);\n", ""),
+    ('no fix: the page creeping with each redraw (047, the hand test)', [("  itKeepPlace(y0, a0);   // last", "  0;   // last"), ("  itAnchorOff();\n  el.innerHTML = html;", "  el.innerHTML = html;")]),
+    ('the place put back before the card is filled in (047, the second look)', [("  itKeepPlace(y0, a0);   // last", "  0;   // last"), ("  itExMount(el);   // v2026.11.07.7\n", "  itKeepPlace(y0, a0);\n  itExMount(el);   // v2026.11.07.7\n")]),
     ('an older line bringing back a removed ID', "      if(itWhSigGone(w.goneSig, n.sig, r.t)) continue;   // removed by you after this line\n", ""),
 ]
 
@@ -291,10 +302,13 @@ with sync_playwright() as p:
     for o in out: check(False, o)
     check(not out, 'Export and Import: the redaction, the round trip, the merge, the checks, the boxes')
     check(not errs, f'no page errors {errs[:3]}')
-    for name, old, new in (MUTANTS if not os.environ.get('SHARE_FAST') else []):
-        if PAGE.count(old) != 1: check(False, f'mutant "{name}": its line isn\'t in the page once'); continue
+    for mu in (MUTANTS if not os.environ.get('SHARE_FAST') else []):
+        name, pairs = mu[0], (mu[1] if isinstance(mu[1], list) else [mu[1:]])   # one edit, or a list of (old, new) edits
+        if any(PAGE.count(o) != 1 for o, _ in pairs): check(False, f'mutant "{name}": its line isn\'t in the page once'); continue
+        mt = PAGE
+        for o, n in pairs: mt = mt.replace(o, n)
         with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8', dir=os.path.dirname(HTML)) as f:
-            f.write(PAGE.replace(old, new)); mp = f.name
+            f.write(mt); mp = f.name
         try:
             try: mo, me = cases(b, mp, phone=False)
             except Exception as ex: mo, me = [f'stopped: {str(ex).splitlines()[0]}'], []

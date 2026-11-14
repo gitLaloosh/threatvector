@@ -11,7 +11,7 @@ far as a static read can (the look itself: tools/page_checks/ui_rules_check.py):
      only for #intelSw (v2026.10.30.2, the owner's one named exception), whose motion stops under prefers-reduced-motion;
   3. one slider: the one global input[type=range] style (a 4px track filled to --p) and rangeFillSet in the script;
      no other rule restyles a slider's track or handle;
-  4. one text field: a :focus rule on a text field, select or textarea sets the cyan border and the ring, never amber;
+  4. one text field: every kind (text, search, select, textarea) has a rest rule with the --bg fill (047); a :focus rule on a text field, select or textarea sets the cyan border and the ring, never amber;
      a field rule's corners are 4px;
   5. one close button (v2026.11.01.3, the owner: "all info and settings panels need to have their own close button in the top
      right"): every panel the script marks role="dialog" has the shared button.x-close near where it is built; no close button
@@ -98,6 +98,11 @@ for sel, body, ln in rules:
             elif bc and bc != 'var(--cyan)': problems.append(f'line {ln}: {part}: focus border {bc} (one text field: var(--cyan))')
         r = prop(body, 'border-radius')
         if r and r not in ('4px',) and not re.search(r'\b(option|optgroup)\b', part): problems.append(f'line {ln}: {part}: border-radius {r} (text fields have 4px corners)')
+# 047 (the owner's hand test: "search box is white, should match the background color, no?"): every kind of text field has a rest rule
+# with the --bg fill; without one the browser draws its own (white)
+for n in ('input[type=text]', 'input[type=search]', 'select', 'textarea'):
+    if not any(n in [x.strip() for x in s_.split(',')] and prop(b, 'background') == 'var(--bg)' for s_, b, _ in rules):
+        problems.append(f'{n}: no rule at rest with the --bg fill (the browser would draw its own field)')
 need = ['input[type=search]:focus', '.it-fbar select:focus', '.it-box select:focus', 'textarea:focus']
 for n in need:
     if not any(n in [x.strip() for x in s.split(',')] and 'var(--accent-ring)' in b for s, b, _ in rules):

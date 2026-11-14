@@ -14,7 +14,7 @@ address (http://localhost:8000/) with intel_check.py's made-up folder and Intel.
     and your own system never count;
   * on the real map: jump numbers stay the shortest by stargate (itm.D), the drawn route follows Threat Vector's route, the tooltip says
     "Threat Vector's route: N jumps (shortest M)" and what it couldn't avoid; the Intel example's map keeps the shortest routes;
-  * the search box: suggestions (names starting with the text first), the keyboard (arrows, Enter, Esc), a pick centres the map on the
+  * the search box: drawn as the site's one text field (the --bg fill, 4px corners); suggestions (names starting with the text first), the keyboard (arrows, Enter, Esc), a pick centres the map on the
     system, zooms in, keeps its route and opens its tooltip; Shift+F10 in the box opens the menu;
   * the right-click menu: the system's name, the three items, the focus on the first, arrows, Esc and a press outside close it, the items off
     for your own system; Avoid this system adds it to the list (and Stop avoiding takes it off), the route then goes round it;
@@ -155,6 +155,9 @@ def cases(b, html, phone=True):
     if not ex: out.append("the Intel example's map should keep the shortest stargate routes")
     pg.evaluate("() => { const s = itRpSet(); s.list = []; itRpSave(); itRpRefresh(); }")
     # ---- the search box
+    # 047, the owner's hand test ("search box is white, should match the background color, no?"): drawn as the site's one text field
+    look = pg.evaluate("() => { const i = document.querySelector('.it-rp-search input'), c = getComputedStyle(i), t = document.createElement('div'); t.style.background = 'var(--bg)'; document.body.appendChild(t); const bg = getComputedStyle(t).backgroundColor; t.remove(); return [c.backgroundColor, bg, c.borderTopLeftRadius, c.color === getComputedStyle(document.body).color || c.color]; }")
+    if look[0] != look[1] or look[2] != '4px': out.append(f'the search box should be drawn as the site\'s text field (--bg fill, 4px corners): {look}')
     nm = pg.evaluate("(id) => itSysName(id)", d['id'])
     pg.click('.it-rp-search input'); pg.keyboard.type(nm[:3].lower()); pg.wait_for_timeout(150)
     sug = pg.evaluate("[...document.querySelectorAll('#itRpSug li')].map(l => l.textContent)")
@@ -295,6 +298,7 @@ def cases(b, html, phone=True):
     return out, errs
 
 MUTANTS = [
+    ('the search box drawn by the browser (047, the hand test)', "  input[type=text], input[type=search], select{", "  input[type=text], select{"),
     ('the rounded number instead of the band', "function itRpBand(T, i){ if(T.band) return T.band[i];", "function itRpBand(T, i){"),
     ('cost before the flagged count (no detours)', "    const fx = f[x] + (x !== home && flags.has(x) ? 1 : 0);   // a system counts once you go through it: the destination never does\n", "    const fx = 0;\n"),
     ('the destination named in the warning', "return path.slice(1, -1).filter(x => itRp.flags.has(x))", "return path.slice(1).filter(x => itRp.flags.has(x))"),

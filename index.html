@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ud6zLCW/y8ClBDygMLIfwn1b/PICY7sIGDWyCEiFaNk='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-/DligdYpjt7wpmXSMeUsaXlJ4RKL4t5h/Y7dAvxPDFA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -346,7 +346,7 @@
   .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
   .row + .row{margin-top:10px;}
 
-  input[type=text], select{
+  input[type=text], input[type=search], select{   /* 047, the owner's hand test: a search box had no rest rule and drew Chrome's white */
     background:var(--bg);
     border:1px solid var(--line);
     border-radius:4px;
@@ -2677,7 +2677,7 @@
   /* build queue 047: the route planner (roadmap/route-planner-plan.md; mockup Claude outputs/route_planner_mockup.html): the search box top
      left of the map ("Hide all routes" below it), the right-click menu, the phone tooltip's buttons, the note after a press, the Routes box */
   .it-rp-search{position:absolute; left:8px; top:8px; z-index:4; width:210px;}
-  .it-rp-search input{width:100%; box-sizing:border-box; height:32px; min-height:32px;}
+  .it-rp-search input{width:100%; min-width:0; box-sizing:border-box; height:32px; min-height:32px; padding:0 9px; font-size:12px;}
   .it-rp-sug{list-style:none; margin:2px 0 0; padding:3px 0; border:1px solid #2c3842; border-radius:6px; background:var(--panel-2); box-shadow:0 8px 22px rgba(0,0,0,.5); max-height:260px; overflow:auto;}
   .it-rp-sug[hidden]{display:none;}
   .it-rp-sug li{padding:5px 9px; font:400 12px/1.3 var(--sans); cursor:pointer; color:var(--text);} .it-rp-sug li.on, .it-rp-sug li:hover{background:#1d2731;}
@@ -28960,19 +28960,29 @@ function itRender(force){   // force: a press that changes what is open (the gea
   // page for a moment, the browser's scroll anchoring moved the page 15 px a redraw. The map stays where it was on screen (else the page's
   // scroll stays)
   const y0 = typeof window !== 'undefined' ? window.scrollY : 0, a0 = itm.el && itm.el.isConnected ? itm.el.getBoundingClientRect().top : null;
+  itAnchorOff();
   el.innerHTML = html;
   const nl1 = el.querySelector('#itNearList'); if(nl1 && nTop) nl1.scrollTop = nTop;
   if(lf){ const f = el.querySelector(lf); if(f) f.focus({preventScroll: true}); }
   itMapMount(el); rsPaint(el);
   if(whTop && itWhListShown()) itWhL.el.scrollTop = whTop;
-  itKeepPlace(y0, a0);
   itExMount(el);   // v2026.11.07.7
   itStatusPaint(el, true);
   if(hf){ const f = el.querySelector(hf); if(f) f.focus({preventScroll: true}); }
   if(mf && mf.isConnected) mf.focus({preventScroll: true});
   itAfterDraw(el);
+  itKeepPlace(y0, a0);   // last, once the status line and the rest are filled in (measured before them, it was 15 px off: the owner's second look)
 }
-function itKeepPlace(y0, a0){   // LESSON #165. 047: after a redraw, the page scrolled so the map is where it was on screen (else the page where it was)
+// LESSON #165. The browser's scroll anchoring is off for the swap (it picked a node of the old card and, with the map's top on screen, moved
+// the page up 15 px a redraw against this correction, the owner's second look); back on at the next frame, once the page is laid out again
+let itAnchorRaf = 0;
+function itAnchorOff(){
+  const d = typeof document !== 'undefined' && document.documentElement;
+  if(!d || !d.style || typeof requestAnimationFrame !== 'function') return;
+  d.style.overflowAnchor = 'none';
+  if(!itAnchorRaf) itAnchorRaf = requestAnimationFrame(() => requestAnimationFrame(() => { itAnchorRaf = 0; d.style.overflowAnchor = ''; }));
+}
+function itKeepPlace(y0, a0){   // 047: after a redraw, the page scrolled so the map is where it was on screen (else the page where it was)
   if(typeof window === 'undefined' || !window.scrollBy) return;
   if(a0 !== null && itm.el && itm.el.isConnected){ const d = itm.el.getBoundingClientRect().top - a0; if(Math.abs(d) >= 1) window.scrollBy(0, d); }
   else if(Math.abs(window.scrollY - y0) >= 1) window.scrollTo(window.scrollX, y0);
