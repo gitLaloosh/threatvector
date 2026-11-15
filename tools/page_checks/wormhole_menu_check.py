@@ -31,6 +31,7 @@ from playwright.sync_api import sync_playwright
 check = NS['check']
 PAGE = open(HTML, encoding='utf-8').read()
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
+PART1 = '9459b35'   # v2026.11.15.1, the last main with part 1 only: never origin/main, which is this page once it's merged (LESSON #168)
 DANGER = (0xe5, 0x53, 0x4b)
 
 def start(b, html, w, errs, h=1000, touch=False, chain=None):
@@ -185,14 +186,14 @@ def cases(b, html, parts=('empty', 'menu', 'lock', 'copy', 'store', 'phone')):
         if h != [nm, True, 0, len(nm)]: out.append(f'refused: the name stays in the menu, selected: {h}')
         pg.keyboard.press('Escape')
     if 'store' in parts:
-        # an older page (main, part 1) in the same browser saves its chain: tvWhMarks stays as it was, and this page still shows the marks
+        # an older page (part 1: PART1, main before 051) in the same browser saves its chain: tvWhMarks stays as it was, and this page still shows the marks
         menu_on(pg, j0); pg.click('.wh-smenu [data-wh-m="st:home"]'); pg.wait_for_timeout(150)
         a = pg.evaluate(AT, j0); pg.mouse.move(a['x'], a['y']); pg.mouse.down(); pg.mouse.move(a['x'] + 90, a['y'] + 70, steps=6); pg.mouse.up(); pg.wait_for_timeout(150)   # off its tree place, so its own place can be told apart
         menu_on(pg, j0); pg.click('.wh-smenu [data-wh-m="lock"]'); pg.wait_for_timeout(150)
         pg.evaluate("(id) => { const s = JSON.parse(localStorage.getItem('tvWhMarks')); s.sys['31999999'] = {st: 'target'}; localStorage.setItem('tvWhMarks', JSON.stringify(s)); }", j0)   # a system not on the map
         before = pg.evaluate("localStorage.getItem('tvWhMarks')")
-        old = subprocess.run(['git', '-C', REPO, 'show', 'origin/main:index.html'], capture_output=True, text=True, encoding='utf-8').stdout
-        if 'whMenuOpen' in old or 'function whRead' not in old: out.append('store: origin/main is not a part-1 page (fetch origin first)')
+        old = subprocess.run(['git', '-C', REPO, 'show', PART1 + ':index.html'], capture_output=True, text=True, encoding='utf-8').stdout
+        if 'whMenuOpen' in old or 'function whRead' not in old: out.append(f'store: no part-1 page at {PART1} (git fetch --depth=200 origin main)')
         else:
             with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8', dir=os.path.dirname(HTML)) as f:
                 f.write(old); op = f.name

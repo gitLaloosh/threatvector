@@ -195,6 +195,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #163 A mutant that survives can mean the made-up world never holds the input the code guards against: give the test data that shape, and find the one case only the guard decides.
 - #164 A text transform that will meet its own output must leave that output unchanged: test it on what it made (export, import, export again).
 - #166 Cutting stored data down for one reader breaks the others: list every reader of that store, and the fields each reads, before trimming it. See also #134.
+- #168 A check that reads the real clock (or "main") passes or fails by when it runs: move what the page does at a set time (EVE's downtime) away from the run, and pin an older page to a commit. See also #115.
 
 **Intel and live data (chat logs, zKillboard's feed)**
 
@@ -1074,6 +1075,22 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 168. A check that reads the real clock (or "main") passes or fails by when it runs
+
+- **What happened (found building 027, 2026-11-08; fixed page unchanged, 2026-11-15):** the page counts 11:00-12:00 UTC as EVE's daily downtime: from
+  10:56 the strip says it starts soon, and in that hour a failing ESI is called the downtime instead of "EVE's ESI is down". outage_check's ESI-down
+  cases ran on the real clock, so every run between 11:00 and 12:00 UTC failed 5 of them (on an unchanged page too), and feed_down_check and
+  intel_kills_check, which expect an empty strip, could fail in the 4 minutes before 11:00. Builds read the failure as a known flake and reran later.
+- **How it was caught:** the same 5 failures in several deliveries' runs, always started between 11:00 and 12:00 UTC (051's run started 11:14, and
+  outage_check passed alone at 12:18).
+- **Do this instead:** a check whose result something on a timetable can change (the downtime, a daily reset, a "past 4 hours" colour) must not
+  depend on when it runs. Here `tools/page_checks/off_downtime.py` gives the check a copy of the page whose downtime hour is 12 hours from the run
+  (the page's own code, only the hour moved); a test of the timetable itself sets the page's clock near that hour. Prove it by running the old
+  check on a page that thinks it's in the window (it fails) and the new one on the same page (it passes).
+- **The same mistake with "main" (found by this fix's own run):** 051's `wormhole_menu_check` read `origin/main:index.html` as "an older page
+  (part 1)". It passed on 051's branch and failed on every run after 051 merged, when main was part 2 itself. A check that needs an older page
+  names the commit (`PART1 = '9459b35'`), never a branch that moves.
 
 ## 167. A press and hold that opens a menu under the finger: lifting it clicks the menu's first item
 

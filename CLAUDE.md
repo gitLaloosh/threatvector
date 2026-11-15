@@ -537,6 +537,8 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   v2026.11.06.6 (build queue 019, LESSON #140): a read-back keeps every readable kill; the unreadable ones are asked once more 6 s
   later, then, if published and sequence.json reads now, read past (`kf.skipped`); three all-skipped passes count as the feed down
   (`kf.allSkip`). `outage_check.py`.
+  A page check whose result the downtime could change opens the page through `tools/page_checks/off_downtime.py` (its downtime hour 12
+  hours from the run; LESSON #168), so no check passes or fails by the time of day.
 - **Long lists stay in their box** (v2026.11.07.5, build queue 011; Project doc roadmap/list-caps-plan.md, mockup approved from
   list_caps_mockup.html): over 760 px the System Analyzer's Hostile and Neutral columns and the Ships on Scan rail are capped at the
   window (less 24 px) and scroll inside (`overscroll-behavior:auto`, LESSON #96); the columns' headings are sticky and "+N more groups

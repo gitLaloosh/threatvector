@@ -77,6 +77,8 @@ _src = _src[:_src.index('with sync_playwright() as p:')]
 NS = {'__file__': os.path.join(HERE, 'intel_check.py'), '__name__': 'intel_check_prefix'}
 exec(compile(_src, 'intel_check.py (first part)', 'exec'), NS)
 globals().update({k: v for k, v in NS.items() if not k.startswith('__') and k not in ('check', 'fails')})
+from off_downtime import off_downtime_copy
+HTML = off_downtime_copy(HTML)   # LESSON #168: EVE's downtime 12 hours from now, so its strip line can't fail the empty-strip checks
 from playwright.sync_api import sync_playwright
 check = NS['check']
 from datetime import datetime, timezone
