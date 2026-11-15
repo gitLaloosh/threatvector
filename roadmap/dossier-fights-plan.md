@@ -1,6 +1,6 @@
 # Pilot Dossier read by fights, not by its newest 50 kills: build plan (research, 2026-11-14)
 
-> **QUEUED as 049** (2026-11-14, the owner: "Yes, queue it"; `claude/build-queue/049-dossier-fights.md`). All questions answered. Updated 2026-11-14 for killmails with thousands of attackers (section 4.7). Written by the research session from `main` b5f0597 (v2026.11.13.3). Line numbers are approximate; find things by name. Mockup: `Claude outputs/dossier_fights_mockup.html` (scripts: Project doc folder `claude/roadmap/dossier-fights-mockup/`). **Build review 2026-11-15 (main 85e20cb): section 13 corrects 4.5 and adds the owner's answers; where it and an earlier section differ, section 13 wins.**
+> **BUILT as v2026.11.15.1** (build queue 049; see "Built" at the end). **QUEUED as 049** (2026-11-14, the owner: "Yes, queue it"; `claude/build-queue/049-dossier-fights.md`). All questions answered. Updated 2026-11-14 for killmails with thousands of attackers (section 4.7). Written by the research session from `main` b5f0597 (v2026.11.13.3). Line numbers are approximate; find things by name. Mockup: `Claude outputs/dossier_fights_mockup.html` (scripts: Project doc folder `claude/roadmap/dossier-fights-mockup/`). **Build review 2026-11-15 (main 85e20cb): section 13 corrects 4.5 and adds the owner's answers; where it and an earlier section differ, section 13 wins.**
 
 ## 1. Why (the owner, 2026-11-14)
 
@@ -171,6 +171,20 @@ Reviewed against main after 048 (the Wormholes tab): nothing it changed touches 
 - **Q9. Show 10 more after every page read is shown:** stops there and says every kill read is shown; no fourth page. The owner, 2026-11-15: [stated] "ok".
 - **Q10. The probe bug riding with this delivery** (backlog dscan-backlog-6, "Intel: a probe dragged in from D-Scan is read as a pilot and a ship"): probes only for now (not bubbles, depots, cyno fields, wrecks). The owner, 2026-11-15: [stated] "probes only for now". Uses Intel's existing "probes" tag, so no mockup.
 - Also in the build: the Last kill line's count of other attackers (NPCs included today) kept in the trimmed form as the total attackers.
+
+## Built (build queue 049, v2026.11.15.1, 2026-11-15)
+
+Built from section 13's corrections and answers. Where the build differs from sections 4-11:
+
+- **Trimming and the store** (C1, C2): only a pilot's own lists are trimmed (`zkbPilotList`, read by the dossier, the System Analyzer's pilot rows through `saPilotData`, the Last kill line through `fetchKillsStubs` and the fits through `fetchLossesStubs`); kept in the `zkb` store under `t:` + the address; no per-killmail `l:<id>` copies. Trimmed items carry `tk` / `tl`. `fetchKillmail` returns a trimmed loss as the loss it is (never kept under its id), reads ESI for a trimmed kill, and uses a whole list item without ESI everywhere else (the group and system lists too).
+- **The Last kill line** lists the newest kill's attackers, which a trimmed kill doesn't keep, so the first page's newest kill is also kept whole (in memory and in the `killmails` store, as an ESI read would). It counts every attacker, NPCs included, as before.
+- **The loss view** (4.5's "the 20 the loss view shows"): nothing lists a loss's attackers; the 20 top attackers and the count are kept anyway, as planned.
+- **Show 10 more** reads nothing; past the kills read it stops ("all N … read"); Try again reads from ESI only what zKillboard sent without its killmail (Q9).
+- **The cap's deletion** runs at most once a page load (the browser's figure can lag behind a deletion); the size to delete is measured from the entries themselves.
+- **Big pages:** a forced read of a 21.3 MB made-up page (70 kills of 2,000 attackers and 130 small kills) and its losses to the dossier drawn took about 3.1-3.3 s in `dossier_fights_check` on this machine, the stand-in's transfer included (section 10 asked for 2 s after the answer arrives; the answer's own transfer isn't separable there). Each stored kill under 4 KB (the largest about 1.2 KB).
+- **The probe bug** (Q10): `INTEL_PROBES` (scanner, survey and interdiction probes; 11 names, from pyfa's SDE copy through `tools/gen_intel_tables.py`), matched in `itParse` before ships (`itProbesIn`), read as the probes tag; with or without the " I". Checked by `tools/page_checks/intel_probe_check.py`.
+- **Also fixed:** `matchup_strip_check` (048's starting range moved to the optimal, so its 1.5 / 2.5 km step stayed inside the made-up threat's optimal and failed on main too); its step now goes into the falloff.
+- Checks: `tools/page_checks/dossier_fights_check.py` (section 10's list, the cap and the older page; 7 mutants), the three dossier checks' wording. LESSON #166.
 
 ## Sources
 
