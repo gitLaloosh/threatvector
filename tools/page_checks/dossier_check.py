@@ -6,7 +6,7 @@ The real page with ESI and zKillboard answered from sa_mocks.py: "Vesna Dossier"
 sizes (players on the killmail; an NPC on every kill that mustn't count), weapons, wingmates, victims, hours and systems,
 and 3 losses (Vedmak, Curse, a capsule). Every number the dossier shows is worked out again here, in Python, from the mock
 (sa_mocks.DOSSIER_ENTRIES), not from the page:
-  * the header (45 kills, 3 losses), the switch's counts (All / Solo / Small gang / Fleet), the solo / gang split;
+  * the header (45 kills in N fights, 3 losses: build queue 049), the switch's counts (All / Solo / Small gang / Fleet), the solo / gang split;
   * per hull, newest first (build queue 037; the count only breaks a tie): kills, the losses line, the gang-size bar (solo / small / fleet shares), the median gang size,
     the weapon, the wingmates' hulls (top 3), what they killed (top 2 ship classes); the capsule isn't a hull;
   * the Small gang switch: only those kills, "N of M", newest first by their newest kill of that size; Fleet the same;
@@ -67,7 +67,8 @@ def expect(mode):
                     'sz': [sum(1 for n in r['all'] if size(n) == s) for s in ('solo', 'small', 'fleet')]})
     return sorted(out, key=lambda r: (r['last'], r['score']), reverse=True)   # 037: newest first, the count only as a tie-break
 ROWS = """() => [...document.querySelectorAll('#pilotDossier button.pd-row')].map(b => ({hull: b.querySelector('.pd-hull .nm').firstChild.textContent,
-  sub: b.querySelector('.pd-hull .pd-sub').textContent, k: b.querySelector('.pd-n.k').textContent, gang: b.querySelector('.pd-gang > span:last-child').textContent,
+  sub: b.querySelector('.pd-hull .pd-sub').textContent, k: [...b.querySelector('.pd-n.k').childNodes].filter(n => !(n.classList && n.classList.contains('pd-fights'))).map(n => n.textContent).join(''),   // 049: without the fights line under it
+  gang: b.querySelector('.pd-gang > span:last-child').textContent,
   bar: [...b.querySelectorAll('.pd-gang .bar i')].map(i => Number(i.style.flexGrow || i.style.flex.split(' ')[0])),
   w: b.querySelector('.pd-w').textContent, f: b.querySelector('.pd-f').textContent, v: b.querySelector('.pd-v').textContent, sel: b.getAttribute('aria-pressed') === 'true'}))"""
 def want_rows(mode):
@@ -93,7 +94,7 @@ with sync_playwright() as p:
     M.ZKB_CALLS.clear()
     analyze(pg, NAME)
     head = pg.evaluate("() => [document.querySelector('#pilotDossier .pd-head h3').textContent, document.querySelector('#pilotDossier .pd-head .ctx').textContent]")
-    check(not pg.evaluate("() => document.querySelector('#pilotDossier').hidden") and head[0] == 'Pilot Dossier' and head[1].startswith(f'newest {len(E)} kills, 3 losses'), f'the dossier, from {len(E)} kills and 3 losses {head}')
+    check(not pg.evaluate("() => document.querySelector('#pilotDossier').hidden") and head[0] == 'Pilot Dossier' and re.match(rf'{len(E)} kills in \d+ fights?, 3 losses', head[1]), f'the dossier, from {len(E)} kills and 3 losses {head}')
     sizes = Counter(size(e[2]) for e in E)
     seg = pg.evaluate("() => [...document.querySelectorAll('#pilotDossier [data-pd-mode]')].map(b => [b.dataset.pdMode, b.querySelector('b').textContent, b.getAttribute('aria-pressed')])")
     check(seg == [['all', str(len(E)), 'true'], ['solo', str(sizes['solo']), 'false'], ['small', str(sizes['small']), 'false'], ['fleet', str(sizes['fleet']), 'false']],

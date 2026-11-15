@@ -14,12 +14,12 @@ nothing on zKillboard yet. Every expected row is worked out again here, in Pytho
     "Show fewer" folds them back, the button keeps focus; the Solo switch keeps the Ferox first ("0 of 1", "no solo kills in it",
     Last "—": its last-used follows the size, 037);
   * a kill zKillboard's list for her doesn't have yet (Wren in a Kikimora): that killmail is added, the Kikimora row first
-    with its real numbers (1 kill, usually 4), "not yet in zKillboard's list for them: added", the header "newest 47 kills
+    with its real numbers (1 kill, usually 4), "not yet in zKillboard's list for them: added", the header "47 kills
     + this one", All 48; the kill under the row opens that fleet on the Fleet tab;
   * a kill she lost (the victim's button): her Curse row first, "Lost on this kill" with its rank; nothing added;
   * a pilot with nothing on zKillboard (Nell, from the Fleet tab): her dossier from that kill alone, no PILOT-03;
-  * a hull typed in that isn't among those read (Kikimora): a row of its own, first, "Asked for", "not in their newest 47
-    kills or 2 losses", 0 kills, no ▾, Last "—", not counted among her 23 hulls; a typed hull that is (Ferox): "Asked for", "10th of 23 hulls";
+  * a hull typed in that isn't among those read (Kikimora): a row of its own, first, "Asked for", "not in the 47
+    kills or 2 losses read", 0 kills, no ▾, Last "—", not counted among her 23 hulls; a typed hull that is (Ferox): "Asked for", "10th of 23 hulls";
   * no hull asked for: no tag, the 8 newest and "Show 15 more hulls";
   * at 390 px nothing runs off the page; no page errors.
 v2026.11.01.4 fails (no row for the Ferox, a grey "N more hulls with fewer" line, the Kikimora kill not counted).
@@ -80,7 +80,8 @@ FEROX_RANK = ALL.index('Ferox') + 1
 CURSE_RANK = ALL.index('Curse') + 1
 
 ROWS = """() => [...document.querySelectorAll('#pilotDossier button.pd-row')].map(b => ({hull: b.querySelector('.pd-hull .nm').firstChild.textContent,
-  k: b.querySelector('.pd-n.k').textContent, gang: b.querySelector('.pd-gang > span:last-child').textContent, last: b.querySelector('.pd-last').textContent,
+  k: [...b.querySelector('.pd-n.k').childNodes].filter(n => !(n.classList && n.classList.contains('pd-fights'))).map(n => n.textContent).join(''),   // 049: without the fights line
+  gang: b.querySelector('.pd-gang > span:last-child').textContent, last: b.querySelector('.pd-last').textContent,
   sel: b.getAttribute('aria-pressed') === 'true', tag: (b.querySelector('.pd-pin .pd-tag') || {}).textContent || null,
   where: (b.querySelector('.pd-pin .pd-pin-r') || {}).textContent || null, exp: !!b.parentElement.querySelector('[data-pd-exp]')}))"""
 MORE = "() => { const m = document.querySelector('#pilotDossier .pd-more'); const b = m && m.querySelector('button'); return m ? [b ? b.textContent : null, b ? b.getAttribute('aria-expanded') : null, m.textContent.replace(b ? b.textContent : '', '').trim()] : null; }"
@@ -113,12 +114,12 @@ with sync_playwright() as p:
     check(r and r[0]['hull'] == 'Ferox' and r[0]['sel'] and r[0]['tag'] == 'On this kill' and r[0]['where'] == f'{ORD(FEROX_RANK)} of 23 hulls',
           f'from a kill on the Fleet tab: the hull she flew on it first, selected, "On this kill · {ORD(FEROX_RANK)} of 23 hulls" {r[:1]}')
     check([x['hull'] for x in r[1:]] == want_rest and not any(x['tag'] for x in r[1:]), f'the 8 newest follow, the Ferox not repeated\n      page {[x["hull"] for x in r[1:]]}\n      want {want_rest}')
-    check(mo == ['Show 14 more hulls', 'false', ''] and ctxt.startswith(f'newest {NK} kills, {NL} losses'), f'"Show 14 more hulls" under them, no line beside it (037); the header unchanged {mo} {ctxt!r}')
+    check(mo == ['Show 14 more hulls', 'false', ''] and re.match(rf'{NK} kills in \d+ fights?, {NL} losses', ctxt), f'"Show 14 more hulls" under them, no line beside it (037); the header unchanged {mo} {ctxt!r}')
     st = pg.inner_text('#fitStatus')
     check('Ferox' in st, f'the Ferox is what\'s shown under the dossier ({st!r})')
     pg.click('#pilotDossier [data-pd-allhulls]'); pg.wait_for_timeout(200)
     r2 = pg.evaluate(ROWS); mo2 = pg.evaluate(MORE); foc = pg.evaluate("() => document.activeElement && document.activeElement.dataset.pdAllhulls")
-    check([x['hull'] for x in r2] == ['Ferox'] + [h for h in ALL if h != 'Ferox'] and mo2 == ['Show fewer', 'true', f'all 23 hulls in their newest {NK} kills and {NL} losses'] and foc == '0',
+    check([x['hull'] for x in r2] == ['Ferox'] + [h for h in ALL if h != 'Ferox'] and mo2 == ['Show fewer', 'true', f'all 23 hulls in the {NK} kills and {NL} losses read'] and foc == '0',
           f'Show 14 more hulls: all 23 (the Ferox still first), "Show fewer", the button keeps focus {len(r2)} {mo2} {foc}')
     pg.click('#pilotDossier [data-pd-allhulls]'); pg.wait_for_timeout(200)
     r3 = pg.evaluate(ROWS); mo3 = pg.evaluate(MORE)
@@ -133,7 +134,7 @@ with sync_playwright() as p:
     r = pg.evaluate(ROWS); ctxt = pg.evaluate(CTX); seg = pg.evaluate("() => document.querySelector('#pilotDossier [data-pd-mode=all] b').textContent")
     check(r[0]['hull'] == 'Kikimora' and r[0]['k'] == '1' and r[0]['gang'] == 'usually 4' and r[0]['tag'] == 'On this kill' and r[0]['where'] == 'not yet in zKillboard’s list for them: added' and r[0]['sel'],
           f'a kill zKillboard\'s list doesn\'t have yet: added, its hull first with its real numbers {r[:1]}')
-    check(ctxt.startswith(f'newest {NK} kills + this one, {NL} losses') and seg == str(NK + 1), f'the header says + this one; All counts it ({ctxt!r}, {seg})')
+    check(re.match(rf'{NK} kills \+ this one in \d+ fights?, {NL} losses', ctxt) and seg == str(NK + 1), f'the header says + this one; All counts it ({ctxt!r}, {seg})')
     pg.click(f'#pilotDossier [data-pd-exp="{byname["Kikimora"]}"]'); pg.wait_for_timeout(300)
     pdk = pg.evaluate("() => [...document.querySelectorAll('#pilotDossier .pd-kills .pdk[data-pdk]')].map(x => Number(x.dataset.pdk))")
     check(pdk == [FK2], f'its kill under the row {pdk}')
@@ -150,17 +151,17 @@ with sync_playwright() as p:
     from_fleet(pg, FK4, M.PILOTS[NELL][0])
     r = pg.evaluate(ROWS); st = pg.inner_text('#fitStatus'); hid = pg.evaluate("() => document.querySelector('#pilotDossier').hidden")
     ctxt = pg.evaluate(CTX) if not hid else ''
-    check(not hid and 'PILOT-03' not in st and [x['hull'] for x in r] == ['Rifter'] and r[0]['k'] == '1' and r[0]['tag'] == 'On this kill' and ctxt.startswith('newest 0 kills + this one, 0 losses'),
+    check(not hid and 'PILOT-03' not in st and [x['hull'] for x in r] == ['Rifter'] and r[0]['k'] == '1' and r[0]['tag'] == 'On this kill' and ctxt.startswith('0 kills + this one in 1 fight, 0 losses'),
           f'a pilot with nothing on zKillboard yet: her dossier from that kill, no PILOT-03 {r} {ctxt!r} {st!r}')
     # 5. a hull typed in that isn't among those read
     analyze(pg, name, 'Kikimora')
     r = pg.evaluate(ROWS); mo = pg.evaluate(MORE); seg = pg.evaluate("() => document.querySelector('#pilotDossier [data-pd-mode=all] b').textContent")
-    check(r and r[0]['hull'] == 'Kikimora' and r[0]['tag'] == 'Asked for' and r[0]['where'] == f'not in their newest {NK} kills or {NL} losses' and r[0]['k'] == '0' and not r[0]['exp'] and r[0]['last'] == '—' and r[0]['sel'],
+    check(r and r[0]['hull'] == 'Kikimora' and r[0]['tag'] == 'Asked for' and r[0]['where'] == f'not in the {NK} kills or {NL} losses read' and r[0]['k'] == '0' and not r[0]['exp'] and r[0]['last'] == '—' and r[0]['sel'],
           f'a typed hull not among those read: a row of its own, first, "Asked for", no numbers, no ▾ {r[:1]}')
     check([x['hull'] for x in r[1:]] == ALL[:8] and mo and mo[0] == 'Show 15 more hulls' and seg == str(NK), f'it isn\'t counted: the 8 newest, "Show 15 more hulls", All {NK} ({mo}, {seg})')
     pg.click('#pilotDossier [data-pd-allhulls]'); pg.wait_for_timeout(200)
     r2 = pg.evaluate(ROWS); mo2 = pg.evaluate(MORE)
-    check(len(r2) == 24 and r2[0]['hull'] == 'Kikimora' and mo2 and mo2[2] == f'all 23 hulls in their newest {NK} kills and {NL} losses', f'opened: hers 23 + the one asked for, "all 23 hulls" {len(r2)} {mo2}')
+    check(len(r2) == 24 and r2[0]['hull'] == 'Kikimora' and mo2 and mo2[2] == f'all 23 hulls in the {NK} kills and {NL} losses read', f'opened: hers 23 + the one asked for, "all 23 hulls" {len(r2)} {mo2}')
     # 6. a typed hull that is
     analyze(pg, name, 'Ferox')
     r = pg.evaluate(ROWS)

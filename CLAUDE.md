@@ -357,6 +357,15 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   from the Fleet tab, a typed hull, a System Analyzer row) as its first row in every size, tagged On this kill / Lost on this kill /
   Asked for with its rank; the 8 used most recently follow (build queue 037: newest first, in a size by their newest kill in it); "Show N more hulls" is a button that draws every hull read. A Fleet-tab kill missing
   from zKillboard's list for the pilot is added from the killmail already open ("+ this one"). `dossier_pin_check.py`.
+- **The dossier read by fights** (v2026.11.15.1, build queue 049; roadmap/dossier-fights-plan.md, mockup `Claude outputs/dossier_fights_mockup.html`;
+  LESSON #166): zKillboard's kill pages until `PD_FIGHTS` fights (`pdFights`: 2 shared other players, 1 for kills with 1-2 others, within
+  `PD_FIGHT_GAP_MS`, the pilot left out), a year back, `PD_PAGES` pages, a short page or one over `PD_PAGE_BIG` (`pdStopWhy`); page 1 drawn,
+  the rest after it and one redraw (`pdReadOlder`, `pdGen`); losses one page; the past year's only, else what was read, said so (`pdYearCut`).
+  A pilot's own lists only go through `zkbPilotList`: trimmed on arrival (`pdTrimKill` / `pdTrimLoss`, marked `tk` / `tl`), kept under
+  `t:` + the address; group and system lists stay whole (they read every attacker). `fetchKillmail` uses a whole list item (`zkbWholeKm`)
+  without ESI, a trimmed loss as itself, never caches a trimmed copy. Stored data under `DSCAN_CACHE_CAP` (`dscanCacheSweep`, once per load
+  at idle and after a read; its deletion once a page load). `dossier_fights_check.py`. Probes dragged in from D-Scan: `INTEL_PROBES`
+  (`tools/gen_intel_tables.py`), `itProbesIn` before ships, the probes tag (`intel_probe_check.py`).
 - **Kills grouped into fleets** (v2026.11.01.6, Project doc roadmap/kill-groups-impact.md §0, LESSON #122): the Fleet tab's kill picker
   (opened from Intel with 2+ kills) groups kills by shared player attackers: 2 shared pilots link two kills, 1 when either kill had
   1–2; chains are one fleet; victims and NPCs never link; "Not linked" last; biggest fleet first, newest kill first inside. Every

@@ -915,7 +915,6 @@
   "rowHtml␟open ? ` aria-controls=\"pdk-${h.id}\"` : ''": 1,
   "rowHtml␟open ? pdKillsHtml(h) : ''": 1,
   "rowHtml␟pd.mode === 'all' ? '' : `<span> of ${h.kills.length}</span>`": 1,
-  "rowHtml␟pd.mode === 'all' ? 'No ships among their recent kills and losses (capsules, shuttles and rookie ships aren’t counted).' : `No ${PD_SIZES.find(x => x[0] === pd.mode)[1].toLowerCase()} kills among their newest ${d.nKills}.`": 1,
   "rowHtml␟pdTz()": 1,
   "rowHtml␟pinRow && pinRow.h === h ? pdPinHtml(d, h, pinRank, all.length) : ''": 1,
   "rowHtml␟rowsBody": 1,

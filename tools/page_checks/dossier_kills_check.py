@@ -11,11 +11,12 @@ answered from sa_mocks.py; expected lines worked out here from the mock's killma
   * ▶ opens that hull's kills under its row, newest first, 10: date and time in the browser's time zone, the victim's ship,
     class, pilot and corporation ticker, the players on the kill, the system, their weapon, who flew with them, zKillboard's
     value, the link to the kill; the row's hull isn't picked (the loss tabs stay); one open at a time;
-  * Show 10 more: the rest of those already read, no request at all; then "all N ... in zKillboard's list", no button;
+  * Show 10 more: the rest of those already read, no request at all; then "all N ... read", no button (build queue 049);
   * the switch: Small gang lists only small-gang kills ("10 of 12 small-gang Sabre kills");
-  * a pilot with 60 kills (the dossier reads 50): Show 10 more reads the 10 older killmails from ESI (no zKillboard
-    request) and lists the older Sabre kills; the dossier's own numbers don't change;
-  * ESI failing on some older kills: what was read is listed, "N older kills couldn't be read (PILOT-09)" and Try again,
+  * a pilot with 60 kills: since build queue 049 every kill on the page is read at once (this mock's list sends stubs, so
+    each is read from ESI, the fallback of a list item without its killmail); Show 10 more lists the rest of her Sabre
+    kills with no request at all, and the dossier's own numbers don't change;
+  * ESI failing on some of those: what was read is listed, "N older kills couldn't be read (PILOT-09)" and Try again,
     which reads those once ESI answers;
   * v2026.10.31.6: the expand button is Intel's chevron (was ▶ / ▼ in a bordered box), turned up when open;
   * 390 px: three lines per kill, the expand button and the links 40 px tall, nothing off the page; no page errors.
@@ -113,13 +114,13 @@ with sync_playwright() as p:
     check(pg.evaluate(MORE, sab) == [True, '10 of 14 Sabre kills'], f'Show 10 more, "10 of 14 Sabre kills" {pg.evaluate(MORE, sab)}')
     pg.click(f'#pdk-{sab} [data-pd-more]'); pg.wait_for_timeout(400); names_in(pg, sab)
     got = pg.evaluate(LINES, sab)
-    check([g['id'] for g in got] == [w['id'] for w in W] and pg.evaluate(MORE, sab) == [False, "all 14 Sabre kills in zKillboard's list"] and not M.ZKB_CALLS and not km_req,
+    check([g['id'] for g in got] == [w['id'] for w in W] and pg.evaluate(MORE, sab) == [False, "all 14 Sabre kills read"] and not M.ZKB_CALLS and not km_req,
           f"Show 10 more: the rest, no button, no request at all ({len(got)} lines, {pg.evaluate(MORE, sab)}, {len(M.ZKB_CALLS)} zKillboard, {len(km_req)} killmails)")
     # the switch
     pg.click('#pilotDossier [data-pd-mode="small"]'); pg.wait_for_timeout(300); names_in(pg, sab)
     Ws = want_lines(M.DOSSIER_PILOT, 'Sabre', 'small')
     got = pg.evaluate(LINES, sab)
-    check([g['id'] for g in got] == [w['id'] for w in Ws] and len(Ws) == 12 and pg.evaluate(MORE, sab) == [False, "all 12 small-gang Sabre kills in zKillboard's list"],
+    check([g['id'] for g in got] == [w['id'] for w in Ws] and len(Ws) == 12 and pg.evaluate(MORE, sab) == [False, "all 12 small-gang Sabre kills read"],
           f"the switch: only her 12 small-gang Sabre kills ({len(got)} lines, {pg.evaluate(MORE, sab)})")
     pg.click(f'#pilotDossier [data-pd-exp="{sab}"]'); pg.wait_for_timeout(200); pg.click(f'#pilotDossier [data-pd-exp="{sab}"]'); pg.wait_for_timeout(300)
     check(pg.evaluate(MORE, sab) == [True, '10 of 12 small-gang Sabre kills'] and len(pg.evaluate(LINES, sab)) == 10, f"closed and opened again: 10 again ({pg.evaluate(MORE, sab)})")
@@ -131,13 +132,12 @@ with sync_playwright() as p:
     pg.click(f'#pilotDossier [data-pd-exp="{sab}"]'); pg.wait_for_timeout(300); names_in(pg, sab)
     Wl = want_lines(M.LONG_PILOT, 'Sabre')
     got = pg.evaluate(LINES, sab)
-    check([g['id'] for g in got] == [w['id'] for w in Wl[:2]] and pg.evaluate(MORE, sab) == [True, '2 Sabre kills in their newest 50'], f"60 kills: the 2 Sabre kills among the newest 50, Show 10 more {pg.evaluate(MORE, sab)}")
-    pg.click(f'#pdk-{sab} [data-pd-more]')
-    pg.wait_for_function(f"() => {{ const b = document.querySelector('#pdk-{sab} .pdk-more'); return b && !b.querySelector('button[disabled]'); }}", timeout=60000); pg.wait_for_timeout(300); names_in(pg, sab)
+    check([g['id'] for g in got] == [w['id'] for w in Wl[:10]] and pg.evaluate(MORE, sab) == [True, '10 of 12 Sabre kills'] and head0.startswith('60 kills in '), f"60 kills, all read: 10 of her 12 Sabre kills, Show 10 more {pg.evaluate(MORE, sab)} {head0!r}")
+    pg.click(f'#pdk-{sab} [data-pd-more]'); pg.wait_for_timeout(400); names_in(pg, sab)
     got = pg.evaluate(LINES, sab)
     head1 = pg.evaluate("() => document.querySelector('#pilotDossier .pd-head .ctx').textContent")
-    check([g['id'] for g in got] == [w['id'] for w in Wl] and len(Wl) == 12 and pg.evaluate(MORE, sab) == [False, "all 12 Sabre kills in zKillboard's list"] and len(km_req) == 10 and not M.ZKB_CALLS and head1 == head0,
-          f"Show 10 more reads the 10 older killmails from ESI (no zKillboard request) and lists the older Sabre kills; the dossier's numbers stay ({len(got)} lines, {len(km_req)} killmails, {len(M.ZKB_CALLS)} zKillboard, {head1!r})")
+    check([g['id'] for g in got] == [w['id'] for w in Wl] and len(Wl) == 12 and pg.evaluate(MORE, sab) == [False, "all 12 Sabre kills read"] and not km_req and not M.ZKB_CALLS and head1 == head0,
+          f"Show 10 more lists the older Sabre kills with no request at all; the dossier's numbers stay ({len(got)} lines, {len(km_req)} killmails, {len(M.ZKB_CALLS)} zKillboard, {head1!r})")
     ctx.close()
     # ESI failing on some older kills
     ctx = new_ctx(1440); pg = ctx.new_page()
@@ -145,16 +145,14 @@ with sync_playwright() as p:
     ctx.route(re.compile(r'https://esi\.evetech\.net/.*/killmails/(\d+)/.*'), lambda rt: rt.fulfill(status=502, body='') if int(re.search(r'/killmails/(\d+)/', rt.request.url).group(1)) in bad else M.esi(rt))
     pg.goto('file://' + HTML); analyze(pg, KIRRA)
     pg.click(f'#pilotDossier [data-pd-exp="{sab}"]'); pg.wait_for_timeout(300)
-    pg.click(f'#pdk-{sab} [data-pd-more]')
-    pg.wait_for_function(f"() => {{ const b = document.querySelector('#pdk-{sab} .pdk-more'); return b && !b.querySelector('button[disabled]'); }}", timeout=60000); pg.wait_for_timeout(300)
     got = pg.evaluate(LINES, sab); mo = pg.evaluate(MORE, sab)
-    check(len(got) == 9 and mo == [True, "9 Sabre kills in their newest 57 · 3 older kills couldn't be read (PILOT-09)"] and pg.inner_text(f'#pdk-{sab} [data-pd-more]') == 'Try again',
+    check(len(got) == 9 and mo == [True, "all 9 Sabre kills read · 3 older kills couldn't be read (PILOT-09)"] and pg.inner_text(f'#pdk-{sab} [data-pd-more]') == 'Try again',
           f'ESI failing on 3 older kills: the other 9 listed, PILOT-09 said, Try again ({len(got)} lines, {mo})')
     bad.clear()   # ESI answers again
     pg.click(f'#pdk-{sab} [data-pd-more]')
     pg.wait_for_function(f"() => {{ const b = document.querySelector('#pdk-{sab} .pdk-more'); return b && !b.querySelector('button[disabled]'); }}", timeout=60000); pg.wait_for_timeout(300)
     got = pg.evaluate(LINES, sab); mo = pg.evaluate(MORE, sab)
-    check(len(got) == 12 and mo == [False, "all 12 Sabre kills in zKillboard's list"], f'Try again reads those 3: all 12 listed ({len(got)} lines, {mo})')
+    check(len(got) == 12 and mo == [False, "all 12 Sabre kills read"], f'Try again reads those 3: all 12 listed ({len(got)} lines, {mo})')
     ctx.close()
     # phone
     ctx = new_ctx(390); pg = ctx.new_page(); pg.goto('file://' + HTML); analyze(pg, VESNA)

@@ -193,6 +193,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #136 A replace checked for one match before the edit can match twice after it: check the count where the replace runs (a moved line is a duplicate until the old one is gone).
 - #163 A mutant that survives can mean the made-up world never holds the input the code guards against: give the test data that shape, and find the one case only the guard decides.
 - #164 A text transform that will meet its own output must leave that output unchanged: test it on what it made (export, import, export again).
+- #166 Cutting stored data down for one reader breaks the others: list every reader of that store, and the fields each reads, before trimming it. See also #134.
 
 **Intel and live data (chat logs, zKillboard's feed)**
 
@@ -1072,6 +1073,20 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 166. Cutting stored data down for one reader breaks the others: list every reader of that store, and the fields each reads, before trimming it
+
+- **What happened (build queue 049, caught at the build review, 2026-11-15):** the plan trimmed every zKillboard list the page keeps for the
+  hour to a pilot's own entry, counts and ids, "including the System Analyzer's lists (`zkbCachedJson`)", written from the dossier's needs.
+  Three System Analyzer features read every attacker of the killmails in those lists (which groups killed your side, who shot alongside it,
+  the system's kills and losses), and `fetchKillmail` would have handed them a trimmed copy as if it were whole: wrong counts, no error.
+  The plan also said the loss view lists a loss's 20 top attackers; only the Last kill line lists attackers, and only of a kill.
+- **How it was caught:** before building, every caller of `zkbCachedJson` and `fetchKillmail` and every `.attackers` in the page was
+  listed with what it reads.
+- **Do this instead:** before a change cuts down what a shared store or cache holds, grep for every reader (the store's getter, the
+  function that hands its items on, and each field the trimmed form drops) and note what each one needs. Trim only for the readers that
+  need less, give the trimmed form a mark (`tk` / `tl` here) so a whole-item test refuses it, and keep it under its own key so an older
+  page never reads it (`t:` + the address).
 
 ## 165. A redraw that keeps a scroll box's place must keep the page's place too: scroll the page into the redrawn part and redraw it several times
 
