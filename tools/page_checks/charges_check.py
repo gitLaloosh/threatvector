@@ -124,7 +124,7 @@ with sync_playwright() as p:
     ctx = b.new_context(bypass_csp=True, viewport={'width': 1440, 'height': 1100}); pg = ctx.new_page()
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.route(re.compile(r'https://images\.evetech\.net/.*'), icon_route)
-    pg.goto('file://' + HTML); pg.evaluate("localStorage.clear(); localStorage.setItem('dscanFitView', 'ring')"); pg.reload(); pg.click('#tabBtnFit')
+    pg.goto('file://' + HTML); pg.evaluate("localStorage.clear(); localStorage.setItem('dscanFitView', 'ring')"); pg.reload(); pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     paste(pg, DRAKE)
     check(pg.locator(f'{R} button.chg-btn').count() == 1, '1440: the Fit card has a Charges button')
     if not pg.locator(f'{R} button.chg-btn').count(): print(f'FAILURES: {fails}'); sys.exit(1)
@@ -226,7 +226,7 @@ with sync_playwright() as p:
         ctx = b.new_context(bypass_csp=True, viewport={'width': w, 'height': 844}, is_mobile=True, has_touch=True); pg = ctx.new_page()
         errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         route_all(pg); pg.route(re.compile(r'https://images\.evetech\.net/.*'), icon_route)
-        pg.goto('file://' + HTML); pg.evaluate("localStorage.clear(); localStorage.setItem('dscanFitView', 'ring')"); pg.reload(); pg.click('#tabBtnFit')
+        pg.goto('file://' + HTML); pg.evaluate("localStorage.clear(); localStorage.setItem('dscanFitView', 'ring')"); pg.reload(); pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
         paste(pg, DRAKE)
         if not pg.locator(f'{R} .fit-ring').is_visible(): pg.click(f'{R} button.cc-toggle[data-card="fit"]'); settle(pg)
         pg.evaluate('window.scrollTo(0, 0)'); pg.wait_for_timeout(150)   # opened from the top of the page

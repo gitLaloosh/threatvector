@@ -78,12 +78,12 @@ with sync_playwright() as p:
         pg.evaluate("([v, a]) => { __fsNm('perm', v); __fs.perm = v; __fs.answer = a; }", [v, answer])
     def reload(pg, v):
         pg.evaluate("(v) => __fsNm('perm', v)", v); pg.reload(); pg.wait_for_function("typeof it !== 'undefined' && it.loaded"); pg.wait_for_timeout(300)
-        setup_logs(pg); pg.click('#tabBtnIntel'); pg.wait_for_timeout(300)
+        setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(300)
         # the stand-in folder lives in the page, so its files are written after the page's own first read: look again (as on focus)
         pg.evaluate("() => window.dispatchEvent(new Event('focus'))"); pg.wait_for_timeout(500)
     c = ctx_new(); pg = c.new_page(); pg.goto('file://' + HTML)
     pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.removeItem('dscanIntel'); }", SIDE); pg.reload(); pg.wait_for_timeout(500)
-    setup_logs(pg); pg.click('#tabBtnIntel'); pg.wait_for_timeout(200)
+    setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(200)
     # ---- chosen ----
     pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_timeout(500)
     s = pg.evaluate(ST)
@@ -152,13 +152,13 @@ with sync_playwright() as p:
     c.close()
     # ---- a folder with no chat logs at all: read, so step 3 says so (not "Reading the folder…") ----
     c = ctx_new(); pg = c.new_page(); pg.goto('file://' + HTML); pg.wait_for_function("typeof it !== 'undefined' && it.loaded")
-    pg.click('#tabBtnIntel'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_function("it.perm === 'granted'"); pg.wait_for_timeout(300)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('#intelPanel [data-it-act="folder"]'); pg.wait_for_function("it.perm === 'granted'"); pg.wait_for_timeout(300)
     s = pg.evaluate(ST)
     check(s['read'] and 'No Local log in this folder' in s['b3'] and '(INTEL-04)' in s['notes'], f"a folder with no chat logs: read, step 3 says no Local log, INTEL-04 ({s['b3'][:60]!r})")
     c.close()
     # ---- phone ----
     c = ctx_new(390); pg = c.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(400)
-    setup_logs(pg); pg.click('#tabBtnIntel'); pg.wait_for_timeout(200); pg.click('#intelPanel [data-it-act="folder"]')
+    setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(200); pg.click('#intelPanel [data-it-act="folder"]')
     pg.wait_for_function("it.perm === 'granted' && JSON.parse(window.name || '{}').saved === 1")
     reload(pg, 'prompt'); s = pg.evaluate(ST)
     check(s['allow'] and s['allowH'] >= 44 and s['sw'] <= s['vw'], f"390 px: Allow reading {s['allowH']:.0f} px tall, no sideways scroll ({s['perm']}, {s['b1'][:60]!r})")

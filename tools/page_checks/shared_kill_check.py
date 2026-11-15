@@ -64,7 +64,7 @@ with sync_playwright() as p:
     b = p.chromium.launch()
     # ---------------- the sender
     ctx, pg, errs = page(b, 1440, 1000)
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', 'Test Pilot'); pg.fill('#manualShip', 'Loki'); pg.click('#fitBtn'); wait_idle(pg)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', 'Test Pilot'); pg.fill('#manualShip', 'Loki'); pg.click('#fitBtn'); wait_idle(pg)
     pg.wait_for_selector('#fitResults .subtab-btn')
     base = pg.evaluate(STATS)
     pg.click('#fitResults .fit-menu-btn'); pg.wait_for_timeout(150)
@@ -136,7 +136,7 @@ with sync_playwright() as p:
     # uncoded APP-01 (seen when extension_check ran under load)
     ctx, pg, errs = page(b, 1440, 1000)
     pg.route(re.compile(r'https://zkillboard\.com/api/killID/.*'), lambda r: r.abort('failed'))
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', 'https://zkillboard.com/kill/9100003/'); pg.click('#fitBtn'); pg.wait_for_timeout(400); wait_idle(pg)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', 'https://zkillboard.com/kill/9100003/'); pg.click('#fitBtn'); pg.wait_for_timeout(400); wait_idle(pg)
     s4 = pg.inner_text('#fitStatus')
     # v2026.11.06.4 (build queue 014, LESSON #106/#140): an answer the browser can't read now stops the page like an outage (ZKB-01)
     check('(ZKB-01)' in s4 and 'Wait ' in s4 and 'APP-01' not in s4 and pg.evaluate("() => zkbUnavailableUntil > Date.now()"), f'zKillboard not reachable for a kill link: ZKB-01 with the wait, the page paused ({s4!r})')

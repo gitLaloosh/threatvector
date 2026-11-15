@@ -79,7 +79,7 @@ with sync_playwright() as p:
     ctx = new_ctx(1440); pg = fresh(ctx)
     pg.wait_for_timeout(1500)   # the page's own start-up writes (lookup counts, saved at most once a second) are done
     s0 = pg.evaluate(STATE); pg.evaluate("() => { window.__ls = []; }"); n0 = len(REQ)
-    pg.click('#tabBtnIntel'); pg.wait_for_timeout(1500)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(1500)
     I = pg.evaluate(INFO)
     check(I and I['tag'] == 'EXAMPLE' and I['title'] == 'What Intel looks like once it’s running' and I['ctx'] == 'made-up pilots on real systems' and I['afterSetup'] and I['beforeLog']
           and I['role'] == 'region' and I['label'] == 'Example: what Intel shows once it’s running' and not I['close'],
@@ -109,7 +109,7 @@ with sync_playwright() as p:
     # ---- the bug: no channel, no Intel ----
     # v2026.11.07.8 (the owner: "disable the on/off switch until a folder is chosen and at least one channel is checked")
     SW = "() => { const s = document.querySelector('#intelSw'), l = document.querySelector('#intelSwLabel'); return [it.on, s.checked, s.disabled, l.title, l.classList.contains('is-off')]; }"
-    pg = fresh(ctx); pg.click('#tabBtnIntel'); pg.wait_for_timeout(300)
+    pg = fresh(ctx); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(300)
     s0 = pg.evaluate(SW); pg.click('#intelSwLabel', force=True); pg.wait_for_timeout(400); s0b = pg.evaluate(SW)
     check(s0[:3] == [False, False, True] and 'Choose the Chatlogs folder' in s0[3] and s0[4] and s0b[:3] == [False, False, True],
           f'no folder: the switch is disabled (dimmed), its hover says what to do, a press does nothing {s0} {s0b[:3]}')
@@ -133,7 +133,7 @@ with sync_playwright() as p:
     pg.close()
 
     # ---- a quiet start, then the first real report ----
-    pg = fresh(ctx); pg.click('#tabBtnIntel')
+    pg = fresh(ctx); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()')
     W(pg, F_LOCAL_MAIN, header('Local', 'Your Main', NOW - 7200) + line(NOW - 4000, 'EVE System', 'Channel changed to Local : 1DQ1-A*'))
     W(pg, F_INTEL, header('region.intel', 'Your Main', NOW - 7000) + line(NOW - 6990, 'EVE System', 'Channel MOTD: hi'))
     pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(500)
@@ -160,18 +160,18 @@ with sync_playwright() as p:
     check(v == [True, True, False, True] and v2 is False, f'"See an example" in the info panel: shown with the shared close button (focused), the panel closed; closed: gone {v} {v2}')
     # the stand-in folder can't be kept in IndexedDB as a real one is (a plain object): after the reload it is put back by hand, as the
     # page's start-up does with the kept handle
-    pg.reload(); pg.wait_for_timeout(1500); pg.click('#tabBtnIntel'); pg.wait_for_timeout(500)
+    pg.reload(); pg.wait_for_timeout(1500); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(500)
     rl = pg.evaluate("() => { it.dir = {kind: 'directory', name: 'Chatlogs'}; itRender(true); return [!!it.dir, !!document.querySelector('#intelPanel .itx')]; }")
     check(rl == [True, False], f'reloaded with the folder still linked: still gone {rl}')
     pg.close()
     ctx.close()
     ctx = new_ctx(1440); pg = ctx.new_page(); pg.goto('file://' + HTML); pg.evaluate("() => { localStorage.clear(); localStorage.setItem('dscanItExGone', '1'); }"); pg.reload(); pg.wait_for_timeout(800)
-    pg.click('#tabBtnIntel'); pg.wait_for_timeout(1200)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(1200)
     check(pg.evaluate("() => [!!it.dir, !!document.querySelector('#intelPanel .itx')]") == [False, True], 'remembered as gone, but no folder linked (another browser, the folder unlinked): shown again')
     ctx.close()
 
     # ---- 390 px ----
-    ctx = new_ctx(390); pg = fresh(ctx); pg.click('#tabBtnIntel'); pg.wait_for_timeout(1500)
+    ctx = new_ctx(390); pg = fresh(ctx); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(1500)
     I = pg.evaluate(INFO); M2 = pg.evaluate(MARKS)
     vis = pg.evaluate("() => getComputedStyle(document.querySelector('.itx .it-mapcol')).display")
     check(I and I['sw'] <= 390 and vis == 'none' and I['notes'][2] == '3The map: switch Near You to Map to see reports and kills around you.' and all(ok is True for _, ok in M2),
@@ -180,11 +180,11 @@ with sync_playwright() as p:
 
     # ---- a browser without the folder picker; Brave ----
     NOTE = "() => { const n = document.querySelector('#intelPanel .it-nofs'), s = document.querySelector('#intelPanel .it-setup'); return n ? [n.textContent, !!(n.compareDocumentPosition(s) & 4), n.querySelectorAll('a, button').length, (n.querySelector('code') || {}).textContent || '', !!document.querySelector('#intelPanel .itx')] : [null, !!document.querySelector('#intelPanel .itx')]; }"
-    ctx = new_ctx(1440, "window.__noFsApi = true;"); pg = fresh(ctx); pg.click('#tabBtnIntel'); pg.wait_for_timeout(1000)
+    ctx = new_ctx(1440, "window.__noFsApi = true;"); pg = fresh(ctx); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(1000)
     n1 = pg.evaluate(NOTE)
     check(n1[0] and n1[0].startswith('Intel needs Chrome or Edge on a computer.') and n1[1] and n1[2] == 0 and n1[4], f'no folder picker (Firefox, Safari): the amber note above the steps, the example still shown {n1}')
     ctx.close()
-    ctx = new_ctx(390, "window.__noFsApi = true; navigator.brave = {isBrave: () => Promise.resolve(true)};"); pg = fresh(ctx); pg.click('#tabBtnIntel'); pg.wait_for_timeout(1000)
+    ctx = new_ctx(390, "window.__noFsApi = true; navigator.brave = {isBrave: () => Promise.resolve(true)};"); pg = fresh(ctx); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(1000)
     n2 = pg.evaluate(NOTE); sw = pg.evaluate("() => document.documentElement.scrollWidth")
     pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(400)
     e1 = pg.evaluate("() => document.querySelector('#itNotes').textContent")
@@ -192,7 +192,7 @@ with sync_playwright() as p:
           and 'brave://flags/#file-system-access-api' in e1 and '(INTEL-01)' in e1,
           f'Brave without the picker: its own line, the flag\'s address as text (no link or button), no sideways scroll at 390 ({sw}); INTEL-01 says the same {n2[:1]} {e1[:80]}')
     ctx.close()
-    ctx = new_ctx(1440, "navigator.brave = {isBrave: () => Promise.resolve(true)};"); pg = fresh(ctx); pg.click('#tabBtnIntel'); pg.wait_for_timeout(1000)
+    ctx = new_ctx(1440, "navigator.brave = {isBrave: () => Promise.resolve(true)};"); pg = fresh(ctx); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(1000)
     n3 = pg.evaluate(NOTE)
     check(n3[0] is None and n3[1], f'Brave with the flag on (the picker there): no note, the example shown {n3}')
     ctx.close()

@@ -45,7 +45,7 @@ def setup(ctx, side):
     pg.evaluate("(s) => localStorage.setItem('dscanSide', JSON.stringify(s))", side); pg.reload(); pg.wait_for_timeout(300)
     return pg
 def analyze(pg, local, scan=''):
-    pg.click('#tabBtnDscan'); pg.fill('#localInput', local); pg.fill('#dscanInput', scan); pg.click('#analyzeBtn'); pg.wait_for_timeout(300)
+    pg.eval_on_selector('#tabBtnDscan', 'b => b.click()'); pg.fill('#localInput', local); pg.fill('#dscanInput', scan); pg.click('#analyzeBtn'); pg.wait_for_timeout(300)
     pg.wait_for_function("() => document.querySelector('#saBusy').hidden && !document.querySelector('#analyzeBtn').disabled", timeout=60000)
 def rows_done(pg, n, timeout=120000):
     pg.wait_for_function(f"() => {{ const c = document.querySelector('#saPilots .pr-head .ctx'); return c && c.textContent === '{n} of {n} looked up'; }}", timeout=timeout); pg.wait_for_timeout(300)
@@ -118,7 +118,7 @@ with sync_playwright() as p:
     n2 = len(mine())
     check(n2 == 34 and not pg2.query_selector('[data-pr-more]'), f'Load more looks up the rest (2 requests each: {n2 - n1})')
     # phone
-    pg.set_viewport_size({'width': 390, 'height': 844}); pg.click('#tabBtnDscan'); pg.wait_for_timeout(300)
+    pg.set_viewport_size({'width': 390, 'height': 844}); pg.eval_on_selector('#tabBtnDscan', 'b => b.click()'); pg.wait_for_timeout(300)
     over = pg.evaluate("() => [document.documentElement.scrollWidth, [...document.querySelectorAll('#saPilots *')].filter(e => { const r = e.getBoundingClientRect(); return e.checkVisibility() && r.width && (r.right > innerWidth + 1 || r.left < -1); }).map(e => e.className || e.tagName).slice(0, 5)]")
     check(over[0] <= 390 and not over[1], f'390 px: nothing runs off the page {over}')
     check(not errs, f'no page errors {errs[:3]}')

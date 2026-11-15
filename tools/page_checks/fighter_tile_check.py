@@ -113,7 +113,7 @@ with sync_playwright() as p:
         pg = b.new_page(bypass_csp=True, viewport={'width': vw, 'height': 1000})
         errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
-        pg.click('#tabBtnFit')
+        pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
         for key, (prop, eft) in FITS.items():
             paste(pg, eft)
             if vw == 1440:

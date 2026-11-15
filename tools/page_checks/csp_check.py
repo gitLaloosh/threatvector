@@ -72,7 +72,7 @@ try:
         pg.evaluate("() => switchTab('fit')"); pg.fill('#fitAnalyzerInput', FIT); pg.click('#fitAnalyzerBtn'); pg.wait_for_timeout(500)
         pg.wait_for_function("() => !document.querySelector('#fitAnalyzerResults .fit-card-busy')", timeout=60000); pg.wait_for_timeout(800)
         fitok = pg.evaluate("() => (document.querySelector('#fitAnalyzerResults') || {}).innerText.length > 200")
-        pg.click('#tabBtnPilot'); pg.fill('#pilotName', 'Test Pilot'); pg.click('#fitBtn'); pg.wait_for_timeout(6000)
+        pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', 'Test Pilot'); pg.click('#fitBtn'); pg.wait_for_timeout(6000)
         pg.evaluate("() => switchTab('dscan')"); pg.wait_for_timeout(300)
         pg.fill('#localInput', '\n'.join(M.LOCAL.split('\n')[:12])); pg.click('#analyzeBtn'); pg.wait_for_timeout(5000)
         pg.evaluate("() => openProfile()"); pg.wait_for_timeout(600)
@@ -82,7 +82,7 @@ try:
         pg.keyboard.press('Escape')
         pg.evaluate("() => openMyShipPanel(undefined, {})"); pg.wait_for_timeout(600); pg.keyboard.press('Escape')
         # Intel: made-up logs, its timer worker running, reports read
-        pg.click('#tabBtnIntel'); setup_logs(pg); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(500)
+        pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); setup_logs(pg); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(500)
         pg.check('[data-it-chan="region.intel"]'); pg.check(f'[data-it-me="{MAIN}"]'); pg.click('#intelSwLabel'); pg.wait_for_timeout(4000)
         intel = pg.evaluate("() => [it.on, it.ticker && it.ticker.kind, document.querySelectorAll('#intelPanel .it-fd').length]")
         v = pg.evaluate("() => window.__csp")

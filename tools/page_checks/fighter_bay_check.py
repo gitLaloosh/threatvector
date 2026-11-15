@@ -78,7 +78,7 @@ with sync_playwright() as p:
     ctx = b.new_context(bypass_csp=True, viewport={'width': 1440, 'height': 1000}); pg = ctx.new_page()
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
-    pg.click('#tabBtnFit')
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
     paste(pg, NIDHOGGUR)
     bay = pg.evaluate(BAY)
     check(bay is not None and not pg.query_selector(f'{R} .cc-closed [data-card="bay:fighter"]'), 'Fighter bay open by default')
@@ -135,7 +135,7 @@ with sync_playwright() as p:
     check(restored and all(x[0] == 2 and 6441 in x[1] for x in restored), f'after a reload my ship has the stored states: {restored}')
     pg.keyboard.press('Escape')
     # a bomber: Attack then Bomb, the Bomb off (pyfa's default) and, since v2026.10.14.71, a toggle (fighter_bombs_check.py)
-    pg.click('#tabBtnFit'); paste(pg, HEL)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); paste(pg, HEL)
     bay = pg.evaluate(BAY); ab = bay['types']['40560']['abs']
     check([(a['t'], a['on'], a['dis']) for a in ab] == [('Attack', True, False), ('Bomb', False, False)] and "off (pyfa's default)" in ab[1]['title'], f'bomber: {[(a["t"], a["on"], a["dis"]) for a in ab]}')
     check(not errs, f'no page errors {errs}')
@@ -144,7 +144,7 @@ with sync_playwright() as p:
     ctx = b.new_context(bypass_csp=True, viewport={'width': 375, 'height': 900}, device_scale_factor=2); pg = ctx.new_page()
     errs2 = []; pg.on('pageerror', lambda e: errs2.append(str(e)))
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
-    pg.click('#tabBtnFit'); paste(pg, NIDHOGGUR)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); paste(pg, NIDHOGGUR)
     m = pg.evaluate(f"""() => {{ const g = document.querySelector('{R} .fb-row').closest('.fitgroup');
       return {{h: Math.min(...[...g.querySelectorAll('.fb-ab')].map(b => b.getBoundingClientRect().height)), over: g.scrollWidth - g.clientWidth,
               doc: document.documentElement.scrollWidth - window.innerWidth}}; }}""")

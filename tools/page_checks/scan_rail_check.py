@@ -103,7 +103,7 @@ CARD = """() => { const c = document.querySelector('#scanCard'); if(!c || c.hidd
     cyno: (c.querySelector('.sr-ccy') || {}).textContent || '', cf: c.querySelector('.sr-cf').textContent, pinned: c.classList.contains('pinned'), up: c.classList.contains('up'), inline: c.classList.contains('inline'),
     top: b.top, bottom: b.bottom, left: b.left, right: b.right, z: document.elementFromPoint(b.left + b.width / 2, b.top + 20) && document.elementFromPoint(b.left + b.width / 2, b.top + 20).closest('#scanCard') !== null}; }"""
 def run(pg, local, scan):
-    pg.click('#tabBtnDscan'); pg.fill('#localInput', local); pg.fill('#dscanInput', scan); pg.click('#analyzeBtn'); pg.wait_for_timeout(400)
+    pg.eval_on_selector('#tabBtnDscan', 'b => b.click()'); pg.fill('#localInput', local); pg.fill('#dscanInput', scan); pg.click('#analyzeBtn'); pg.wait_for_timeout(400)
     pg.wait_for_function("() => !document.querySelector('#analyzeBtn').disabled && (document.querySelector('#saBusy') || {hidden: true}).hidden", timeout=120000); pg.wait_for_timeout(600)
 def row(t): return f'#scanRail button.sr-row[data-sr="{B[t]}"]'
 

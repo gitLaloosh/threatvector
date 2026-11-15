@@ -118,7 +118,7 @@ with sync_playwright() as p:
         errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         route_all(pg); pg.route(re.compile(r'https://images\.evetech\.net/.*'), icon_route)   # the icons load (their own turn is checked)
         pg.goto('file://' + HTML); pg.evaluate("localStorage.clear(); localStorage.setItem('dscanFitView', 'ring')"); pg.reload()
-        pg.click('#tabBtnFit')
+        pg.eval_on_selector('#tabBtnFit', 'b => b.click()')
         for name, eft in (('drake', DRAKE), ('tengu', TENGU)):
             pg.evaluate("() => { const r = document.querySelector('#fitAnalyzerResults'); if(r) r.innerHTML = ''; }")
             pg.fill('#fitAnalyzerInput', eft); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout', timeout=60000)

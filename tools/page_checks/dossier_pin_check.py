@@ -88,7 +88,7 @@ CTX = "() => document.querySelector('#pilotDossier .pd-head .ctx').textContent"
 def idle(pg):
     pg.wait_for_function("() => !document.querySelector('#fitBtn').disabled && document.querySelector('#pilotBusy').hidden", timeout=120000); pg.wait_for_timeout(400)
 def analyze(pg, name, ship=''):
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', name); pg.fill('#manualShip', ship); pg.click('#fitBtn'); pg.wait_for_timeout(300); idle(pg)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', name); pg.fill('#manualShip', ship); pg.click('#fitBtn'); pg.wait_for_timeout(300); idle(pg)
 def from_fleet(pg, kid, name, victim=False):
     pg.evaluate("([k, h]) => fkOpen(k, h, null)", [kid, M.H[kid]])
     sel = '.fk-vbtn' if victim else f'#fleetPanel [data-fk-pilot="{name}"]:not(.fk-vbtn)'

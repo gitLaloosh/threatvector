@@ -69,7 +69,7 @@ def board_panel(pg, W):
 
 def load(pg):
     route_all(pg); pg.goto('file://' + HTML); pg.evaluate("localStorage.clear()"); pg.reload()
-    pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn'); pg.wait_for_selector(f'{R} .fit-layout'); settle(pg)
     check('How effective HP and DPS are calculated' not in pg.inner_text(R), 'the methodology note is gone from the page (METHODOLOGY.md)')
     (pg.click('#profileFitL') if pg.is_visible('#profileFitL') else [pg.click('#profileBtn'), pg.click('#ppTab-fit')]); pg.fill('#myShipEft', VEXOR); pg.click('#myShipPanel [data-act="save"]'); pg.wait_for_selector('#myShipPanel .mys-tiles'); pg.keyboard.press('Escape')
     pg.wait_for_function(f"() => {{ const b = document.querySelector('{R} .mys-board'); return b && !/…/.test(b.textContent); }}", timeout=60000); settle(pg, 600)
@@ -170,7 +170,7 @@ def desktop(b, W):
     check(pg.evaluate('document.documentElement.scrollWidth') <= W, f'{W}: no sideways scroll')
     # Pilot losses: each loss keeps its own fight
     if W == 1440:
-        pg.click('#tabBtnPilot')
+        pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
         run_async(pg, """async ([a, b]) => { const mk = async (text, day) => { const parsed = await parseEftFit(text);
             const est = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag);
             return {parsed, fit: { km: {killmail_time: day}, killmailId: 1, tally: parsed.tally, highSlotByFlag: parsed.highSlotByFlag, estimate: est,

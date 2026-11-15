@@ -42,7 +42,7 @@ def cases(html_path, out):
     setup_logs(pg)
     W(pg, F_ALT_INTEL, header('region.intel', 'Your Alt', NOW - 600) + line(NOW - 590, 'Gate Watcher', 'E-VKJV Seren Ketter sabre'))
     pg.evaluate("(n) => { __fs.files[n].mtime = Date.now() - 600000; }", F_ALT_INTEL)   # the alt's log: quiet for 10 minutes
-    pg.click('#tabBtnIntel'); pg.wait_for_timeout(200)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(200)
     pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(500)
     pg.click('#intelSwLabel'); tick(pg)
     # the owner's case: the main's log keeps logging

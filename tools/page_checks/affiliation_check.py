@@ -37,7 +37,7 @@ BOX = """() => { const b = document.querySelector('#pilotAff'); const t = (s) =>
     danger: t('[data-pa-bar=danger] .v'), gang: t('[data-pa-bar=gang] .v'), kills: t('[data-pa=kills]'), losses: t('[data-pa=losses]'), isk: t('[data-pa=isk]'),
     link: (b.querySelector('.pa-zk-h a') || {}).href || '', msg: [...b.querySelectorAll('.pa-msg')].map(e => [e.textContent, e.title || ''])}; }"""
 def analyze(pg, name):
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', name); pg.click('#fitBtn'); pg.wait_for_timeout(300)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', name); pg.click('#fitBtn'); pg.wait_for_timeout(300)
     pg.wait_for_function("() => !document.querySelector('#fitBtn').disabled", timeout=90000)
 def settled(pg):
     pg.wait_for_function("() => { const b = document.querySelector('#pilotAff'); return b.hidden || !b.querySelector('.busy-spin'); }", timeout=60000); pg.wait_for_timeout(200)
@@ -84,7 +84,7 @@ with sync_playwright() as p:
     r2 = pg.evaluate(BOX)
     check([m[0] for m in r2['msg']] == ['No kills or losses on zKillboard.'] and r2['orgs'], f"no zKillboard history said plainly {r2['msg']}")
     # not a pilot: no box
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', 'Nobody Here At All'); pg.click('#fitBtn'); pg.wait_for_timeout(1500)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', 'Nobody Here At All'); pg.click('#fitBtn'); pg.wait_for_timeout(1500)
     check(pg.evaluate("() => document.querySelector('#pilotAff').hidden") and '(PILOT-01)' in pg.inner_text('#fitStatus'), 'a name that isn\'t a pilot: no box (PILOT-01)')
     ctx.close()
     # zKillboard failing: a wrong answer, then a 500

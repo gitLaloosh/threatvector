@@ -89,7 +89,7 @@ def warn_cases(b, out, note=lambda ok, msg: None):
         c = b.new_context(bypass_csp=True, viewport={'width': w, 'height': 1000}); c.add_init_script(STAND_IN); M.route(c)
         pg = c.new_page(); pg.on('pageerror', lambda e: ck(False, f'033: page error {str(e)[:80]}')); pg.goto('file://' + html); pg.wait_for_timeout(500)
         pg.evaluate("() => localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true}))"); pg.reload(); pg.wait_for_timeout(600)
-        pg.click('#tabBtnIntel'); pg.wait_for_timeout(300); return c, pg
+        pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(300); return c, pg
     def pick(pg, slot, name, data, mime):
         with pg.expect_file_chooser() as fc:
             pg.select_option(f'#intelPanel [data-it-snd="{slot}"]', 'file')
@@ -170,7 +170,7 @@ with sync_playwright() as p:
         return ctx
     ctx = new_ctx(1480)
     pg = ctx.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(600)
-    pg.click('#tabBtnIntel'); pg.wait_for_timeout(300)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(300)
     d = pg.evaluate("() => [it.set.volume, it.set.soundNear, it.set.soundHere, it.set.sound, !!window.__ac]")
     check(d == [70, 'chime', 'klaxon', False, False], f'defaults: 70%, Near You Chime, In system Klaxon, Sound off (v2026.11.08.4, 028: a new user turns it on); no audio made before a sound {d}')
     pg.evaluate("() => { it.set.sound = true; it.set.notify = true; itWriteSet(); itRender(true); }")   # the rest: a player who turned sound and notifications on
@@ -256,7 +256,7 @@ with sync_playwright() as p:
     caches = pg.evaluate("() => indexedDB.databases ? indexedDB.databases().then(l => l.map(d => d.name)) : null")
     check(caches is None or ('dscan-intel-sounds' in caches), f'its own database {caches}')
     # reload: kept
-    pg.reload(); pg.wait_for_timeout(1200); pg.click('#tabBtnIntel'); pg.wait_for_timeout(400)
+    pg.reload(); pg.wait_for_timeout(1200); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(400)
     rr = pg.evaluate(ROW, 'near')
     m = pg.evaluate(MARK); pg.evaluate("() => itPlaySound('near')"); pg.wait_for_timeout(500); fr = pg.evaluate(SOUND, m)
     check(rr[0] == 'file' and rr[2] == ['tone-1s.wav', 'tone-7s.wav'] and fr['src'] and fr['src'][0]['dur'] == 1.0, f'after a reload: still your files, read once and played {rr} {fr["src"]}')
@@ -268,7 +268,7 @@ with sync_playwright() as p:
     pg.evaluate("""() => new Promise(res => { const r = indexedDB.open('dscan-intel-sounds'); r.onsuccess = () => { const tx = r.result.transaction('sounds', 'readwrite');
       tx.objectStore('sounds').put({blob: new Blob(['broken'], {type: 'audio/mpeg'}), name: 'old.mp3'}, 'near'); tx.oncomplete = () => res(1); }; })""")
     pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('dscanIntel')); s.soundNear = 'file'; s.sndPrev = {near: 'ping', here: 'klaxon'}; localStorage.setItem('dscanIntel', JSON.stringify(s)); }")
-    pg.reload(); pg.wait_for_timeout(1200); pg.click('#tabBtnIntel'); pg.wait_for_timeout(400)
+    pg.reload(); pg.wait_for_timeout(1200); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(400)
     m = pg.evaluate(MARK); pg.evaluate("() => itPlaySound('near')"); pg.wait_for_timeout(600); fb = pg.evaluate(SOUND, m); rf = pg.evaluate(ROW, 'near')
     check(rf[0] == 'ping' and rf[3] and 'INTEL-10' in rf[3][0] and fb['osc'] and fb['osc'][0]['f'][0][1] == 1320 and pg.evaluate(IDB, 'near') is None,
           f'a kept file that can\'t be played: Near You falls back to its sound before (Ping), says so (INTEL-10), and the file goes {rf} {[o["f"] for o in fb["osc"]]}')
@@ -283,7 +283,7 @@ with sync_playwright() as p:
     # a database of that name already there without its store (made by something else): the page adds the store
     pg.evaluate("() => new Promise(res => { const r = indexedDB.open('dscan-intel-sounds', 1); r.onsuccess = () => { r.result.close(); res(1); }; })")
     pg.evaluate("() => localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true}))")   # v2026.11.08.4 (028): sound starts off for a new user
-    pg.reload(); pg.wait_for_timeout(600); pg.click('#tabBtnIntel'); pg.wait_for_timeout(300)
+    pg.reload(); pg.wait_for_timeout(600); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(300)
     pick('near', 'tone-1s.wav', one, 'audio/wav')
     check(pg.evaluate(IDB, 'near') == ['tone-1s.wav', len(one)], 'a database of that name without its store: the page adds it and keeps the file')
     pg.click('#intelPanel [data-it-sndx="near"]'); pg.wait_for_timeout(300)

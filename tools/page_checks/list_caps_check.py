@@ -98,7 +98,7 @@ with sync_playwright() as p:
         ctx = b.new_context(viewport={'width': w, 'height': h}, bypass_csp=True); ctx.add_init_script(INIT); M.route(ctx)
         pg = ctx.new_page(); pg.on('pageerror', lambda e: errs.append(str(e)[:200])); pg.goto('file://' + HTML); pg.wait_for_timeout(600); return pg
     def analyze(pg):
-        pg.click('#tabBtnDscan'); pg.fill('#localInput', '\n'.join(LOCAL)); pg.fill('#dscanInput', SCAN); pg.click('#analyzeBtn')
+        pg.eval_on_selector('#tabBtnDscan', 'b => b.click()'); pg.fill('#localInput', '\n'.join(LOCAL)); pg.fill('#dscanInput', SCAN); pg.click('#analyzeBtn')
         pg.wait_for_selector('.sa-cols .sa-col', timeout=120000); pg.wait_for_selector('#scanRail:not([hidden]) .sr-row', timeout=120000); pg.wait_for_timeout(2500)
     def col(pg, k): return next(c for c in pg.evaluate(COLS) if c['key'] == k)
 
@@ -206,7 +206,7 @@ with sync_playwright() as p:
 
     # ---- 5. the dossier ----
     pg = page(1440, 1100)
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', 'Talia Sabrewing'); pg.click('#fitBtn')
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', 'Talia Sabrewing'); pg.click('#fitBtn')
     pg.wait_for_function("() => !document.querySelector('#fitBtn').disabled && document.querySelector('#pilotBusy').hidden", timeout=180000); pg.wait_for_timeout(800)
     sab = byname['Sabre']
     pg.click(f'#pilotDossier [data-pd-exp="{sab}"]'); pg.wait_for_timeout(600)

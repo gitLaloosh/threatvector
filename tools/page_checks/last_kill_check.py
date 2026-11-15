@@ -83,7 +83,7 @@ def start(b, w, h, mobile=False):
     pg.route(re.compile(r'https://zkillboard\.com/.*'), zkb)
     pg.route(re.compile(r'https://(images\.evetech\.net|fonts\.).*'), lambda r: r.fulfill(status=404, body=''))
     pg.goto('file://' + HTML); pg.evaluate("localStorage.removeItem('dscanMyShip')")
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', 'Test Pilot'); pg.click('#fitBtn'); wait_idle(pg)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', 'Test Pilot'); pg.click('#fitBtn'); wait_idle(pg)
     pg.wait_for_selector('.lk-sum')
     return ctx, pg, errs
 def box(pg, sel): return pg.locator(sel).first.bounding_box()

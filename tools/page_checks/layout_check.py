@@ -95,7 +95,7 @@ with sync_playwright() as p:
         ctx = b.new_context(bypass_csp=True, viewport={'width': W, 'height': 900}, is_mobile=W < 600, has_touch=W < 600)
         pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         route_all(pg)
-        pg.goto('file://' + html); pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn')
+        pg.goto('file://' + html); pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn')
         pg.wait_for_function("() => document.querySelector('#fitAnalyzerResults .fit-layout')", timeout=30000); pg.wait_for_timeout(600)
         R = '#fitAnalyzerResults'
         sw = pg.evaluate('document.documentElement.scrollWidth'); check(sw <= W, f'{W}: no sideways scroll (page width {sw})')
@@ -149,7 +149,7 @@ with sync_playwright() as p:
             s3 = wheel_over_fit(900)
             check(s3[:2] == [True, 'sticky'], f'{W}: the window made tall again: pinned again {s3}')
         # Pilot Analyzer path: renderFitTabs with two "losses" built from the same paste
-        pg.click('#tabBtnPilot')
+        pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
         res = run_async(pg, """async (text) => {
           const parsed = await parseEftFit(text);
           const mk = async (day) => { const modes = {}; const order = hullModeOrder(parsed.shipTypeId); const active = resolveModeKey(parsed.shipTypeId, null);
@@ -263,7 +263,7 @@ with sync_playwright() as p:
         pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         route_all(pg)
         def run(text):
-            pg.goto('file://' + html); pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', text); pg.click('#fitAnalyzerBtn')
+            pg.goto('file://' + html); pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', text); pg.click('#fitAnalyzerBtn')
             pg.wait_for_function("() => document.querySelector('#fitAnalyzerResults .fit-layout')", timeout=30000); pg.wait_for_timeout(500)
         R = '#fitAnalyzerResults'
         run(STRESS)
@@ -306,7 +306,7 @@ with sync_playwright() as p:
         ctx = b.new_context(bypass_csp=True, viewport={'width': W, 'height': 900}, is_mobile=W < 600, has_touch=W < 600)
         pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         route_all(pg)
-        pg.goto('file://' + html); pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE.replace('Warp Scrambler II', 'Warp Scrambler II\nStasis Webifier II')); pg.click('#fitAnalyzerBtn')
+        pg.goto('file://' + html); pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE.replace('Warp Scrambler II', 'Warp Scrambler II\nStasis Webifier II')); pg.click('#fitAnalyzerBtn')
         pg.wait_for_function("() => document.querySelector('#fitAnalyzerResults .fit-layout')", timeout=30000); pg.wait_for_timeout(400)
         R = '#fitAnalyzerResults'
         state = lambda: pg.evaluate(f"() => Object.fromEntries([...document.querySelectorAll('{R} button.cc-toggle:not(.bay-toggle):not([data-card=fit])')].map(b => [b.dataset.card, b.getAttribute('aria-expanded') === 'true']))")
@@ -342,7 +342,7 @@ with sync_playwright() as p:
         check(total_dps(pg, R) != dps_open, f'{W}: collapsed Firepower summary follows the recalculation ({dps_open} -> {total_dps(pg, R)})')
         sw = pg.evaluate('document.documentElement.scrollWidth'); check(sw <= W, f'{W}: collapsed cards, no sideways scroll ({sw})')
         # Pilot Analyzer: each loss keeps its own open / closed cards
-        pg.click('#tabBtnPilot')
+        pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
         run_async(pg, """async (text) => { const parsed = await parseEftFit(text);
           const mk = async (day) => { const est = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag);
             return { km: {killmail_time: day}, killmailId: 1, tally: parsed.tally, highSlotByFlag: parsed.highSlotByFlag, estimate: est,
@@ -464,7 +464,7 @@ with sync_playwright() as p:
         route_all(pg)
         for label, name in (('long fit name', LONG_FIT_NAME), ('unbroken fit name', UNBROKEN)):
             for view in ('ring', 'list'):
-                pg.goto('file://' + html); pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', long_eft(name)); pg.click('#fitAnalyzerBtn')
+                pg.goto('file://' + html); pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', long_eft(name)); pg.click('#fitAnalyzerBtn')
                 pg.wait_for_function("() => document.querySelector('#fitAnalyzerResults .fit-layout')", timeout=30000); pg.wait_for_timeout(400)
                 if pg.evaluate("document.querySelector('#fitAnalyzerResults .fit-view-btn.on').dataset.view") != view:
                     try: pg.click(f'#fitAnalyzerResults .fit-view-btn[data-view="{view}"]', timeout=5000); pg.wait_for_timeout(300)
@@ -478,7 +478,7 @@ with sync_playwright() as p:
         tops = pg.evaluate("""() => [...document.querySelectorAll('#fitAnalyzerResults .ds-row')].map(r => { const p = r.querySelector('.ds-pips').getBoundingClientRect(), n = r.querySelector('.ms-name').getBoundingClientRect(); return [Math.round(p.right), Math.round(p.top - n.top)]; })""")
         check(len(tops) >= 4 and len({t[0] for t in tops}) == 1 and all(abs(t[1]) <= 4 for t in tops), f'{W}: drone squares right-aligned on the name line in every row {tops}')
         # Pilot Analyzer header with a 37-character pilot name (EVE's maximum)
-        pg.click('#tabBtnPilot')
+        pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
         run_async(pg, """async (text) => { const parsed = await parseEftFit(text);
           const est = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag);
           renderFitTabs('Abcdefghijklmnopqrstuvwxyz Abcdefghij', 'Stratios Emergency Responder', [{ km: {killmail_time: '2026-10-01T00:00:00Z'}, killmailId: 123456789, tally: parsed.tally, highSlotByFlag: parsed.highSlotByFlag, estimate: est,
@@ -487,7 +487,7 @@ with sync_playwright() as p:
         ob = pg.evaluate(OUT_OF_BOX, '#tabPilot section.panel')
         check(not ob and pg.evaluate('document.documentElement.scrollWidth') <= W, f'{W}: Pilot Analyzer with a 37-character pilot name: everything inside the panel {ob}')
         # D-scan tab with long names
-        pg.click('#tabBtnDscan'); pg.fill('#dscanInput', LONG_DSCAN); pg.click('#analyzeBtn')
+        pg.eval_on_selector('#tabBtnDscan', 'b => b.click()'); pg.fill('#dscanInput', LONG_DSCAN); pg.click('#analyzeBtn')
         pg.wait_for_function("() => document.querySelectorAll('#scanRail button.sr-row').length >= 1 && !document.querySelector('#analyzeBtn').disabled", timeout=30000); pg.wait_for_timeout(400)
         ob = pg.evaluate(OUT_OF_BOX, '#scanRail')   # v2026.11.02.2: the Ships on Scan rail (was a card per type)
         pg.click('#scanRail button.sr-row'); pg.wait_for_timeout(200)
@@ -503,7 +503,7 @@ with sync_playwright() as p:
         ctx = b.new_context(bypass_csp=True, viewport={'width': W, 'height': 900}, is_mobile=W < 600, has_touch=W < 600)
         pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         route_all(pg)
-        pg.goto('file://' + html); pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', long_eft('bay test')); pg.click('#fitAnalyzerBtn')
+        pg.goto('file://' + html); pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', long_eft('bay test')); pg.click('#fitAnalyzerBtn')
         pg.wait_for_function("() => document.querySelector('#fitAnalyzerResults .fit-layout')", timeout=30000); pg.wait_for_timeout(400)
         R = '#fitAnalyzerResults .fl-fit'
         bays = lambda: pg.evaluate(f"() => Object.fromEntries([...document.querySelectorAll('{R} button.bay-toggle')].map(b => [b.dataset.card, b.getAttribute('aria-expanded') === 'true']))")
@@ -532,7 +532,7 @@ with sync_playwright() as p:
         ctx = b.new_context(bypass_csp=True, viewport={'width': W, 'height': 900}, is_mobile=W < 600, has_touch=W < 600)
         pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         route_all(pg)
-        pg.goto('file://' + html); pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn')
+        pg.goto('file://' + html); pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.click('#fitAnalyzerBtn')
         pg.wait_for_function("() => document.querySelector('#fitAnalyzerResults .fit-layout')", timeout=30000); pg.wait_for_timeout(400)
         F = '#fitAnalyzerResults .fl-fit'
         txt = pg.inner_text(F)

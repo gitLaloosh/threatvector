@@ -228,7 +228,7 @@ with sync_playwright() as p:
         # ---- the Pilot Analyzer: a slow list says so on the busy line, counting down; no pause
         ctx, pg = new_page(); zk(pg, T={'*': 4000})
         nm = M.PILOTS[crts[0]][0]
-        pg.click('#tabBtnPilot'); pg.fill('#pilotName', nm); pg.click('#fitBtn')
+        pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', nm); pg.click('#fitBtn')
         pg.wait_for_function("() => /zKillboard is slow right now: wait 0:0\\d/.test(document.querySelector('#pilotBusy .busy-detail').textContent)", timeout=20000)
         d1 = pg.inner_text('#pilotBusy .busy-detail'); pg.wait_for_timeout(1200); d2 = pg.inner_text('#pilotBusy .busy-detail')
         check(d1 != d2 and d2.startswith('zKillboard is slow right now: wait 0:0'), f'the Pilot Analyzer: after 10 s the busy line says zKillboard is slow, counting down ({d1!r} -> {d2!r})')

@@ -86,7 +86,7 @@ with sync_playwright() as p:
     pg.route(re.compile(r'https://zkillboard\.com/.*'), zkb)
     pg.route(re.compile(r'https://(images\.evetech\.net|fonts\.).*'), lambda r: r.fulfill(status=404, body=''))
     pg.goto('file://' + HTML); pg.evaluate("localStorage.removeItem('dscanMyShip')")
-    pg.click('#tabBtnPilot'); pg.fill('#pilotName', 'Test Pilot')
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.fill('#pilotName', 'Test Pilot')
     pg.evaluate('window.__delay.zkb = 1500')
     pg.click('#fitBtn'); pg.wait_for_timeout(100)
     s0 = bar_state(pg)
@@ -142,7 +142,7 @@ with sync_playwright() as p:
     check(not pg.evaluate("document.getElementById('refreshLossesBtn').disabled"), 'Refresh losses: button usable again')
     check(not errs, f'Pilot Analyzer: no page errors {errs}')
     # Fit Analyzer
-    pg.click('#tabBtnFit'); pg.fill('#fitAnalyzerInput', "[Rifter, slow]\n\n1MN Afterburner II\n\n200mm AutoCannon II, EMP S\n")
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', "[Rifter, slow]\n\n1MN Afterburner II\n\n200mm AutoCannon II, EMP S\n")
     pg.evaluate('window.__delay.ids = 1200'); pg.click('#fitAnalyzerBtn'); pg.wait_for_timeout(500)
     s4 = bar_state(pg, '#fitAnalyzerBusy')
     check(s4['vis'] == 'visible' and 'Analyzing fit' in s4['label'], f'Fit Analyzer: its own bar "{s4["label"]}" ({s4["detail"][:50]})')

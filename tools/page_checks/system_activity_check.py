@@ -108,7 +108,7 @@ SUM = "() => { const e = document.querySelector('#saAct'); return e && !e.hidden
 def wait_act(pg, timeout=60000):
     pg.wait_for_function("() => sa.act && !sa.act.busy && (sa.act.list || sa.act.none || sa.act.err)", timeout=timeout); pg.wait_for_timeout(300)
 def analyze(pg, local=LOCAL, scan=SCAN):
-    pg.click('#tabBtnDscan'); pg.fill('#localInput', local); pg.fill('#dscanInput', scan); pg.click('#analyzeBtn'); pg.wait_for_timeout(300)
+    pg.eval_on_selector('#tabBtnDscan', 'b => b.click()'); pg.fill('#localInput', local); pg.fill('#dscanInput', scan); pg.click('#analyzeBtn'); pg.wait_for_timeout(300)
     pg.wait_for_function("() => !document.querySelector('#analyzeBtn').disabled", timeout=120000); wait_act(pg)
 def gear(pg):
     if pg.evaluate("() => document.querySelector('#saPop').hidden"): pg.click('#saGear'); pg.wait_for_timeout(150)

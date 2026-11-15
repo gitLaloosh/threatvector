@@ -259,6 +259,9 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
 - **The range** (v2026.10.14.56) runs to whichever ship reaches farther (weapons, drone control range, a fighter
   ability's range from the carrier's centre (v2026.10.14.64), or 1.25 × its default range), on both cards and the
   strip; with no ship saved, to the threat's reach.
+- **Where it starts** (v2026.11.14.1, build queue 048; the owner: "we should have set it to their optimal range."): at the optimal of the
+  threat's weapon group with the most raw DPS (its highest-DPS weapon): turrets and sentry drones their optimal alone; missiles their flight;
+  Vorton projectors and smartbombs their range; mobile drones only, or nothing that deals damage, 10 km. Reset goes back there.
 - **One fight:** the strip under the Matchup and the card's Adjust panel set the same values, and both perspectives
   use them. The chart is a snapshot at that distance, as pyfa's graph: it doesn't play the fight out over time.
 - **They last / you last** (not a pyfa number): damage by type against each layer's resists, shield then armor then
@@ -482,3 +485,17 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   Intel reading), Allow on every visit (no more questions) or Don't allow. Until you answer, step 1 shows Allow reading
   and steps 2 and 3 wait for the folder. The logs are read every 2 seconds, also in a hidden tab. Intel runs in one tab
   at a time: another tab shows it's on and can take it over with Move Intel here.
+
+## Wormholes (the Wormholes tab)
+
+- **What's recorded** (v2026.11.14.1, build queue 048): each reading of your system, from your Local log ("Channel changed to Local") or from EVE
+  with Use my game location on, the newer winning as in Intel. A change of system with a wormhole system on either side is a connection, from the
+  system you were last in: the game never says which hole you took, but J-space has no gates. A change where EVE's answer says you're docked
+  (a jump clone, a pod death) adds the system and no connection; the Local log can't tell, so such a jump read only from the log draws a
+  connection you can delete. Two hole jumps between two readings show as one connection.
+- **Systems:** CCP's static data (the SDE): every system with an ID from 31,000,000 to 31,999,999, its class from the system, else its
+  constellation, else its region (only the five Drifter systems carry their own), its effect from its secondary sun's effect beacon
+  (Black Hole, Cataclysmic Variable, Magnetar, Pulsar, Red Giant, Wolf-Rayet). Statics aren't in the SDE: you type them, and each is coloured
+  by where its type leads (the same table as Intel's wormhole reports).
+- **Intel in a hole:** jumps are counted from your chain's nearest k-space system (where you came in), since there are no gates to count from.
+- **Kept:** in this browser only (tvWhChain), until you remove it; nothing expires.

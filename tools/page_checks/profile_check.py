@@ -194,7 +194,7 @@ def run_main(b):
     w2 = intel(pg, "window.__nl = Array.from({length: 20}, () => ({j: 10, st: {n: 60}}));")['w']
     check(w1 == w2, f'the Intel lamp as wide for "Clear" as for "999+ near · 10j" ({w1}, {w2})')
     m = intel(pg, "window.__nl = [{j: 2, st: {n: 2}}];")
-    pg.click('#tabBtnPilot'); pg.click('#intelNear'); pg.wait_for_timeout(200)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.click('#intelNear'); pg.wait_for_timeout(200)
     pres = pg.evaluate("() => [!document.getElementById('ppPane-intel').hidden, document.querySelector('#ppPane-intel').innerText.includes('2 hostiles and neutrals in 1 system within'), it.on, document.getElementById('tabIntel').style.display]")
     check(m['dot'] == 'inline-block' and pres[:3] == [True, True, True] and pres[3] != 'block', f'pressing the Intel lamp opens the profile\'s Intel tab (its sentence), leaves Intel on and the page tab where it was {pres}')
     pg.keyboard.press('Escape'); pg.evaluate(UNSTUB)
@@ -232,7 +232,7 @@ def run_main(b):
     pg.set_viewport_size({'width': 1280, 'height': 800}); pg.wait_for_timeout(300)
     # ---- "My Fit" ----
     names = pg.evaluate("() => [CARD_NAMES.myshippage, CARD_NAMES['perspective.mine']]")
-    pg.click('#tabBtnFit'); pg.wait_for_timeout(200)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.wait_for_timeout(200)
     leftover = pg.evaluate("() => (document.body.innerText.match(/\\bMy Ships?\\b|\\bmy ships?\\b/g) || [])")
     check(names == ['Viewing My Fit', 'My Fit Perspective'] and not leftover, f'"My Ship" reads "My Fit": the card names, nothing left in the page\'s text {names} {leftover[:3]}')
     check(not errs, f'no page errors {errs[:3]}')

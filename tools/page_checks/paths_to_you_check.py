@@ -108,7 +108,7 @@ def start(b, html, w, errs, h=1000, touch=False):
     pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: %d, sound: false, notify: false, forget: 15, hideFriendly: true})); }" % R, SIDE)
     pg.reload(); pg.wait_for_timeout(400)
     setup_logs(pg); W(pg, F_LOCAL_MAIN, line(time.time() - 600, 'EVE System', f'Channel changed to Local : {SYSNAME[HOME]}*'))
-    pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
     t0 = time.time()
     W(pg, F_INTEL, line(t0, 'Scout Alt', f'{SYSNAME[S1]} 2 reds gate camp on {SYSNAME[NB1]} gate') + line(t0 + 1, 'Scout Alt', f'{SYSNAME[S2]} 3 reds hacking the ess')
       + line(t0 + 2, 'Gate Watcher', f'{SYSNAME[TWO]} {HOST} sabre on {SYSNAME[NBT]} gate') + line(t0 + 3, 'Gate Watcher', f'{SYSNAME[S4]} 2 neuts')
@@ -176,6 +176,14 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
         if not c[1].startswith('Paths to you') or f'within {R} jumps (your alert range)' not in c[1]: out.append(f'the legend line: {c[1]!r}')
         if c[2] != 'none' or c[3] != 'hidden' or c[4] == 'none': out.append(f'the map under it: zoom {c[2]}, canvas {c[3]}, drag help {c[4]} (want none, hidden, shown)')
         if not c[5].startswith('Paths to you'): out.append(f'the name line: {c[5]!r}')
+        # 048 (the owner: "search should not be visible on Paths to you filter/map mode."): hidden here, its list closed; back on other filters
+        SB = "() => { const f = itm.el.querySelector('.it-rp-search'); return [getComputedStyle(f).display, f.querySelector('ul').hidden]; }"
+        s0 = pg.evaluate(SB)
+        pg.click('[data-im-f="sec"]'); pg.wait_for_timeout(200); s1 = pg.evaluate(SB)
+        pg.fill('.it-rp-search input', SYSNAME[TWO][:2]); pg.wait_for_timeout(150); s2 = pg.evaluate(SB)
+        pg.click('[data-im-f="paths"]'); pg.wait_for_timeout(250); s3 = pg.evaluate(SB)
+        pg.evaluate("() => { itm.el.querySelector('.it-rp-search input').value = ''; }")
+        if s0[0] != 'none' or s1[0] == 'none' or s2[1] or s3 != ['none', True]: out.append(f'the search box: on Paths {s0}, on Security {s1}, typed {s2}, back on Paths {s3} (want hidden, shown, its list open, hidden and closed)')
     if 'trace' in parts:
         ids = pg.evaluate("(a) => a.map(id => itGraphGet().at.get(id))", [S4, TWO, HOME])
         for f, i in ((S4, ids[0]), (TWO, ids[1])):
@@ -247,6 +255,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
     return out, errs
 
 MUTANTS = [
+    ('the search box on Paths to you (048, the owner)', ", .it-map.pt-on .it-rp-search{display:none !important;}", "{display:none !important;}", ('chrome',)),
     ('one route per system', "      for(const y of T.adj[x]) if(on(y) && D[y] === D[x] - 1){ const k = x + '>' + y; (edges.get(k) || edges.set(k, {x, y, from: new Set()}).get(k)).from.add(h); }",
      "      { const y = T.adj[x].find(y => on(y) && D[y] === D[x] - 1); if(y !== undefined){ const k = x + '>' + y; (edges.get(k) || edges.set(k, {x, y, from: new Set()}).get(k)).from.add(h); } }", ('tree',)),
     ('Near You\'s range for the alert range', "  const D = itm.D, R = it.set.range, out = [];", "  const D = itm.D, R = itNearReach(), out = [];", ('tree',)),

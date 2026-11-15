@@ -80,7 +80,7 @@ def setup(ctx):
     pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.removeItem('dscanSaSize'); }", SIDE); pg.reload(); pg.wait_for_timeout(300)
     return pg
 def analyze(pg, names, scan=''):
-    pg.click('#tabBtnDscan'); pg.fill('#localInput', '\n'.join(names)); pg.fill('#dscanInput', scan); pg.click('#analyzeBtn'); pg.wait_for_timeout(300)
+    pg.eval_on_selector('#tabBtnDscan', 'b => b.click()'); pg.fill('#localInput', '\n'.join(names)); pg.fill('#dscanInput', scan); pg.click('#analyzeBtn'); pg.wait_for_timeout(300)
     pg.wait_for_function("() => document.querySelector('#saBusy').hidden && !document.querySelector('#analyzeBtn').disabled", timeout=60000)
     n = len(names)
     pg.wait_for_function(f"() => {{ const c = document.querySelector('#saPilots .pr-head .ctx'); return c && c.textContent === '{n} of {n} looked up'; }}", timeout=180000); pg.wait_for_timeout(400)

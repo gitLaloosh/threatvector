@@ -183,10 +183,10 @@ with sync_playwright() as p:
     pg = ctx.new_page(); pg.goto('file://' + HTML)
     pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true})); }", SIDE); pg.reload(); pg.wait_for_timeout(400)   # v2026.11.08.4 (028): a new user's alerts start off; these cases are a player who turned them on
     tabs = pg.evaluate("() => [...document.querySelectorAll('.tabs .tab-btn')].filter(b => b.checkVisibility()).map(b => b.textContent)")
-    check(tabs == ['Intel', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs in the order of use, Intel first (v2026.10.30.1, the owner: "intel > system > pilot > fit") {tabs}')
+    check(tabs == ['Intel', 'WormholesBeta', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs in the order of use, Intel first (v2026.10.30.1, the owner: "intel > system > pilot > fit") {tabs}')
     hdr = pg.evaluate("() => { const b = document.querySelector('#intelNear'); return [b.closest('#profile') ? 'profile' : '', b.hidden, document.querySelectorAll('#myShipBar input[aria-label=\"Watch the intel channels\"]').length, document.querySelector('#profile').dataset.s, b.querySelector('.pf-vw').textContent]; }")
     check(hdr == ['profile', False, 0, 'off', 'Off'], f'v2026.10.29.1: no Intel switch in the header; 032: Intel\'s lamp on the profile, "Off" while Intel is off {hdr}')
-    pg.click('#tabBtnIntel'); pg.wait_for_timeout(200)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(200)
     box = pg.evaluate("() => [...document.querySelectorAll('#intelPanel .it-setup .it-box .k')].map(k => k.textContent)")
     check(box == ['1 · Chat logs folder', '2 · Intel channels', '3 · You', '4 · Range and alerts'], f'the card: four setup boxes {box}')
     sws = pg.evaluate("() => { const l = document.querySelector('#intelSwLabel'); return [document.querySelectorAll('input.mys-sw[aria-label=\"Watch the intel channels\"]').length, !!l && !!l.closest('#intelPanel .it-head'), l && l.nextElementSibling && l.nextElementSibling.dataset.itAct, l && l.querySelector('input').checked, l && l.textContent.trim(), (document.querySelector('#intelPanel .it-sub') || {}).textContent || '']; }")
@@ -292,11 +292,11 @@ with sync_playwright() as p:
     hn = pg.evaluate("() => itNearSum().h")
     badge = pg.evaluate("() => [document.querySelector('#intelNear').hidden, document.querySelector('#intelNear .pf-vw').textContent, document.querySelector('#profile').dataset.s, document.querySelector('#tabBtnIntel').dataset.s]")
     check(hn >= 4 and badge == [False, f'{hn} near · 1j', 'near', 'near'], f'the header: Intel\'s lamp on the profile says "{hn} near · 1j", the Intel tab\'s dot too {badge}')
-    pg.click('#tabBtnPilot'); pg.click('#intelNear'); pg.wait_for_timeout(300)   # v.97: the lamp doesn't switch Intel off; 032: it opens the profile's Intel tab
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.click('#intelNear'); pg.wait_for_timeout(300)   # v.97: the lamp doesn't switch Intel off; 032: it opens the profile's Intel tab
     pill = pg.evaluate("() => [it.on, document.querySelector('#intelSw').checked, !document.querySelector('#profilePanel').hidden && document.querySelector('#ppTab-intel').getAttribute('aria-selected'), document.querySelector('#intelNear').title]")
     check(pill[:3] == [True, True, 'true'] and pill[3] == f'Intel: {hn} hostiles and neutrals in 4 systems within 3 jumps, the closest 1 jump away (8WA-Z6). Open the Intel tab of your profile',
           f'pressing the Intel lamp opens the profile\'s Intel tab and leaves Intel on (v.96: it turned Intel off) {pill}')
-    pg.keyboard.press('Escape'); pg.click('#tabBtnIntel'); pg.wait_for_timeout(200)
+    pg.keyboard.press('Escape'); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(200)
     W(pg, F_INTEL, line(time.time(), 'Scout Alt', '8WA-Z6 Marrek Ketter still'))
     tick(pg)
     check(pg.evaluate("() => __fs.beeps") == 3, 'one alert per system per 30 s')
@@ -355,7 +355,7 @@ with sync_playwright() as p:
     check(NAMES_CALLS == [] and pg.evaluate("() => it.on"), 'on again: the system names not asked again')
     pg.click('#intelSwLabel'); pg.wait_for_timeout(200)
     # ---- v2026.10.29.5: no build warning ----
-    STATUS['v'] = str(J['build'] + 1); pg.reload(); pg.wait_for_timeout(300); pg.click('#tabBtnIntel')
+    STATUS['v'] = str(J['build'] + 1); pg.reload(); pg.wait_for_timeout(300); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()')
     STATUS['asked'] = 0   # v2026.11.04.3: the page's own /status/ as it loads (item data after a patch, game_data_check.py) is not Intel's
     setup_logs(pg); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300)   # the made-up folder can't be kept in IndexedDB: chosen again
     pg.click('#intelSwLabel'); tick(pg)
@@ -371,20 +371,20 @@ with sync_playwright() as p:
     ctx.close()
     # ---- errors ----
     ctx = new_ctx(1440, 'window.__noFsApi = true;'); pg = ctx.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(300)
-    pg.click('#tabBtnIntel'); pg.wait_for_timeout(200)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(200)
     dis = pg.evaluate("() => [document.querySelector('#intelSw').disabled, document.querySelector('#intelSw').checked]")   # v2026.11.07.8: can't be pressed here
     pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300)
     e = pg.inner_text('#intelPanel .pr-msg.err')
     check(e.endswith('(INTEL-01)') and dis == [True, False], f'no File System Access API: the switch disabled (v2026.11.07.8), "Choose folder" says INTEL-01 ({e!r}) {dis}')
     ctx.close()
-    ctx = new_ctx(1440); pg = ctx.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(300); pg.click('#tabBtnIntel')
+    ctx = new_ctx(1440); pg = ctx.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(300); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()')
     W(pg, 'notes.txt', 'x'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300)
     e = pg.inner_text('#intelPanel .pr-msg.err'); check(e.endswith('(INTEL-04)'), f'a folder with no chat logs: INTEL-04 ({e!r})')
     ctx.close()
     STATUS['names_fail'] = True
     ctx = new_ctx(390); pg = ctx.new_page(); pg.goto('file://' + HTML); pg.wait_for_timeout(300)
     pg.evaluate("(s) => localStorage.setItem('dscanSide', JSON.stringify(s))", SIDE); pg.reload(); pg.wait_for_timeout(300)
-    setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300)
+    setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300)
     pg.check('[data-it-chan="region.intel"]'); pg.check(f'[data-it-me="{MAIN}"]'); pg.click('#intelSwLabel'); tick(pg)
     e = pg.inner_text('#intelPanel .pr-msg.err')
     check(e.endswith('(INTEL-03)') and not pg.evaluate("() => it.on"), f'the system names fail: INTEL-03, off ({e!r})')

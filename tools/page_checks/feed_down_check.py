@@ -78,7 +78,7 @@ with sync_playwright() as p:
         pg = ctx.new_page(); pg.goto('file://' + HTML)
         pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, killRange: 3, sound: false, notify: false, forget: 15, hideFriendly: true})); }", SIDE)
         pg.reload(); pg.wait_for_timeout(400)
-        setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300)
+        setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300)
         return ctx, pg
     def settle(pg, t=15):   # the reader idle (not mid-read)
         for _ in range(t * 4):
@@ -108,11 +108,11 @@ with sync_playwright() as p:
     check(115000 < s3['wait'] <= 120500 and [len(seqs(0)), h1, h2 - h1, h3 - h2] == [3, 1, 1, 1], f'one request per try, sequence.json only, the third wait 120 s ({len(seqs(0))}, {h1}, {h2 - h1}, {h3 - h2}, {s3["wait"]})')
     check(s3['shown'] and s3['sw'] <= s3['vw'], f'390 px: the strip shown, no sideways scroll ({s3["sw"]} / {s3["vw"]})')
     pg.screenshot(path=os.environ.get('FEED_DOWN_SHOT', '/tmp/feed_down_390.png'))
-    pg.click('#tabBtnPilot'); pg.wait_for_timeout(300)
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()'); pg.wait_for_timeout(300)
     check(pg.evaluate("() => !!document.getElementById('sysStrip').offsetHeight"), 'on another tab (Pilot Analyzer): the strip still shown')
     # written only when the text changes
     pg.evaluate("() => { window.__sw = 0; new MutationObserver((l) => { window.__sw += l.length; }).observe(document.getElementById('sysStrip'), {childList: true, subtree: true, characterData: true}); }")
-    pg.click('#tabBtnIntel'); pg.evaluate("() => { for(let i = 0; i < 5; i++){ itRender(true); bgPaintNow(); } }"); pg.wait_for_timeout(1200)
+    pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.evaluate("() => { for(let i = 0; i < 5; i++){ itRender(true); bgPaintNow(); } }"); pg.wait_for_timeout(1200)
     check(pg.evaluate("() => window.__sw") == 0, f'the strip written only when its text changes ({pg.evaluate("() => window.__sw")} writes over 5 redraws)')
     # offline: not zKillboard's side
     ctx.set_offline(True); pg.wait_for_timeout(400)

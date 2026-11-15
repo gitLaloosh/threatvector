@@ -174,7 +174,7 @@ def main_desktop(b):
     check(pg.is_visible(f'{R} .mys-board') and pg.get_attribute(f'{R} .mys-sw-btn.is-threat', 'aria-pressed') == 'true', '"Use in assessments" on again: switch back, on the threat')
     pg.click(f'{R} .mys-sw-btn.is-mine'); pg.wait_for_selector(f'{M} .fit-layout')
     # Pilot Analyzer threat
-    pg.click('#tabBtnPilot')
+    pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
     n = run_async(pg, """async (text) => { const parsed = await parseEftFit(text);
         const mk = async (day) => { const est = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag);
           return { km: {killmail_time: day}, killmailId: 1, tally: parsed.tally, highSlotByFlag: parsed.highSlotByFlag, estimate: est,
@@ -192,7 +192,7 @@ def main_desktop(b):
     # a change here, then back to the Fit Analyzer: that view is redrawn (stale-view refresh)
     pb = pg.locator(f'{P} .mys-mine-view .fl-fit button.ms-state[data-type-id="{m_id}"]').first
     p_to = pb.get_attribute('data-to'); pb.click(); wait_idle(pg, f'{P} .mys-mine-view')
-    pg.click('#tabBtnFit'); pg.wait_for_timeout(200)
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.wait_for_timeout(200)
     st = pg.evaluate(f"(id) => [...document.querySelectorAll('{M} .fl-fit .ms-state[data-type-id=\"' + id + '\"]')].map(b => b.dataset.from)", m_id)
     check(p_to in st, f'Fit Analyzer my ship view redrawn after a change on the Pilot tab ({st})')
     # Set as my ship (Hecate, with its changed state)
@@ -261,7 +261,7 @@ def phone(b):
     sw = pg.evaluate('document.documentElement.scrollWidth'); check(sw <= W, f'phone: no sideways scroll with the panel open ({sw})')
     pg.touchscreen.tap(W // 2, 40); pg.wait_for_timeout(150)  # the backdrop, above the sheet
     check(pg.is_hidden('#myShipPanel'), 'phone: tapping the backdrop closes the sheet')
-    pg.tap('#tabBtnFit'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector('#fitAnalyzerResults .mys-threat-view .fit-layout')
+    pg.eval_on_selector('#tabBtnFit', 'b => b.click()'); pg.fill('#fitAnalyzerInput', HECATE); pg.tap('#fitAnalyzerBtn'); pg.wait_for_selector('#fitAnalyzerResults .mys-threat-view .fit-layout')
     sb = [pg.locator(f'#fitAnalyzerResults .mys-sw-btn.{c}').bounding_box() for c in ('is-threat', 'is-mine')]
     check(abs(sb[0]['y'] - sb[1]['y']) < 1 and sb[0]['height'] >= 44, f'phone: scoreboard is two side-by-side buttons ({sb[0]["height"]:.0f}px)')
     pg.tap('#fitAnalyzerResults .mys-sw-btn.is-mine .mys-sw-k'); pg.wait_for_selector('#fitAnalyzerResults .mys-mine-view .fit-layout')   # v.58: a tap on a time opens its why panel; v.65: one on the ship's name opens the ship menu

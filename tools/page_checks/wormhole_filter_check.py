@@ -75,7 +75,7 @@ def start(b, html, w, errs, h=1000, touch=False, store=None, lines=True):
     pg.evaluate("([s, w]) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false, forget: 15, hideFriendly: true}));"
                 " if(w) localStorage.setItem('tvWormholes', JSON.stringify(w)); }", [SIDE, store if store is not None else seed(time.time())])
     pg.reload(); pg.wait_for_timeout(400)
-    setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
+    setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
     if lines: write_lines(pg); tick(pg, 3200)
     if touch and pg.query_selector('[data-it-nv="map"]'): pg.click('[data-it-nv="map"]'); tick(pg, 600)
     pg.evaluate("() => document.querySelector('#intelPanel .it-map-box').scrollIntoView({block: 'center'})"); pg.wait_for_timeout(200)
@@ -88,7 +88,7 @@ def write_lines(pg):
 
 def relaunch(pg):   # a reload: the made-up folder is written again (the same lines), Intel turned on, the lines read again as history
     pg.reload(); pg.wait_for_timeout(500)
-    setup_logs(pg); write_lines(pg); pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300)
+    setup_logs(pg); write_lines(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300)
     if not pg.evaluate("it.on"): pg.click('#intelSwLabel')
     tick(pg, 3200)
 

@@ -62,7 +62,7 @@ with sync_playwright() as p:
         pg.goto('file://' + HTML)
         if first: pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true})); }", SIDE); pg.reload()   # v2026.11.08.4 (028): a new user's alerts start off; these cases are a player who turned them on
         pg.wait_for_function("typeof it !== 'undefined' && it.loaded")
-        setup_logs(pg); pg.click('#tabBtnIntel'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(400)
+        setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(400)
         if not pg.is_checked('[data-it-chan="region.intel"]'): pg.check('[data-it-chan="region.intel"]')
         if not pg.is_checked(f'[data-it-me="{MAIN}"]'): pg.check(f'[data-it-me="{MAIN}"]')
         pg.wait_for_timeout(200); return pg

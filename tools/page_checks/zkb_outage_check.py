@@ -42,7 +42,7 @@ def run(mode, pilot='Test Pilot'):
         pg.route(re.compile(r'https://esi\.evetech\.net/.*'), esi)
         pg.route(re.compile(r'https://zkillboard\.com/.*'), zkb)
         pg.route(re.compile(r'https://(images\.evetech\.net|fonts\.).*'), lambda r: r.fulfill(status=404, body=''))
-        pg.goto('file://' + HTML); pg.click('#tabBtnPilot')
+        pg.goto('file://' + HTML); pg.eval_on_selector('#tabBtnPilot', 'b => b.click()')
         pg.fill('#pilotName', pilot); t0 = time.time(); pg.click('#fitBtn')
         pg.wait_for_function("() => !document.getElementById('fitBtn').disabled", timeout=90000)
         out = (time.time() - t0, pg.inner_text('#fitStatus'), pg.inner_text('#lastKillInfo'), errs, pg.evaluate("() => zkbUnavailableUntil > Date.now()"))
