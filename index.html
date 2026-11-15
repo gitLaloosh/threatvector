@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-kwTMJSotEdcMwPqvt4d/kjF8HkWemWEFKNV5SJpVMPQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-H3FekAOSPFBb1wMOipazJIB4fG4bsEjrlyS5Q+lmv2E='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -11309,10 +11309,11 @@ async function zkbPilotList(url, kind, charId, force, fail, o = {}){
 // A browser short of space deletes all of a site's data at once (plan row B1), so the page keeps its own size down: once per
 // load at idle and after a dossier read (at most once a minute), the zkb entries past their hour are deleted, then, while
 // navigator.storage.estimate() (approximate, row B2) says the site uses over DSCAN_CACHE_CAP, the killmails used longest ago
-// (their ts, re-stamped on a read at most once a day) until under DSCAN_CACHE_LOW. Never types, groups, orgs, localStorage
-// or the sounds database. Best-effort, like every write here.
+// (their ts, re-stamped on a read at most once a day) until under DSCAN_CACHE_LOW, measured by the entries' own size. That deletion
+// runs at most once a page load (dscanCapCut): the browser's figure can lag behind a deletion, and read again a minute later it
+// would delete more each time. Never types, groups, orgs, localStorage or the sounds database. Best-effort, like every write here.
 const DSCAN_CACHE_CAP = 50e6, DSCAN_CACHE_LOW = 40e6, DSCAN_SWEEP_GAP_MS = 60000;
-let dscanSweepAt = 0, dscanSweepP = null;
+let dscanSweepAt = 0, dscanSweepP = null, dscanCapCut = false;
 function dscanCacheSweep(){
   if(dscanSweepP || Date.now() - dscanSweepAt < DSCAN_SWEEP_GAP_MS) return dscanSweepP || Promise.resolve(null);
   dscanSweepAt = Date.now();
@@ -11333,7 +11334,7 @@ async function dscanCacheSweepNow(){
   const now = Date.now();
   await walk('zkb', 'readwrite', (c) => { const v = c.value; if(!v || !(now - v.ts <= ZKB_CACHE_TTL_MS)){ c.delete(); out.zkb++; } });
   const st = typeof navigator !== 'undefined' && navigator.storage && navigator.storage.estimate ? navigator.storage : null;
-  if(!st) return out;
+  if(!st || dscanCapCut) return out;
   let usage;
   try{ usage = (await st.estimate()).usage; }catch(e){ return out; }
   out.usage = usage;
@@ -11345,6 +11346,7 @@ async function dscanCacheSweepNow(){
   const gone = [];
   for(const [k, , n] of all){ if(free <= 0) break; gone.push(k); free -= n; }
   if(!gone.length) return out;
+  dscanCapCut = true;
   await new Promise((res) => {
     try{ const tx = db.transaction('killmails', 'readwrite'), s = tx.objectStore('killmails'); for(const k of gone) s.delete(k); tx.oncomplete = () => res(true); tx.onerror = tx.onabort = () => res(false); }
     catch(e){ res(false); }

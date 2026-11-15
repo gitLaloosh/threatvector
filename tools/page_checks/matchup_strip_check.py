@@ -89,7 +89,9 @@ def desktop(b):
     bb, fl, box = pg.locator(f'{R} .mys-board').bounding_box(), pg.locator(f'{R} .mys-threat-view .fit-layout').bounding_box(), pg.locator(f'{R} .assess-box').bounding_box()
     check(box['y'] <= bb['y'] and bb['y'] + bb['height'] <= fl['y'] and bb['x'] >= box['x'], 'scoreboard inside the result box, above the cards')
     # the card's range slider moves the strip
-    RV = 2500 if pg.evaluate("Number(document.querySelector('#fitAnalyzerResults .fl-dmg input[data-in=\"range\"]').value)") == 1500 else 1500   # 048: away from the starting range (now their optimal)
+    # 048: away from the starting range (now their optimal). 049: 1.5 / 2.5 km sit inside the optimal of the made-up threat, so the damage
+    # didn't change (766 -> 766 on main too): go out into their falloff instead (1.6 times the start), where it falls but isn't 0
+    RV = pg.evaluate("Math.round(Number(document.querySelector('#fitAnalyzerResults .fl-dmg input[data-in=\"range\"]').value) * 1.6 / 100) * 100")
     pg.evaluate("(v) => { const i = document.querySelector('#fitAnalyzerResults .fl-dmg input[data-in=\"range\"]'); i.value = v; i.dispatchEvent(new Event('input', {bubbles: true})); }", RV); pg.wait_for_timeout(200)
     c2 = cells(pg)
     check(c2['their'] == pg.inner_text(f'{R} .fl-dmg [data-out="head"]') and c2 != c and c2 == pg.evaluate(EXPECT, R) and pg.inner_text(f'{R} .mys-fight [data-fname="range"]') == f'{RV / 1000:.1f} km' and pg.inner_text(f'{R} .mys-strip-note') == '',

@@ -20,8 +20,9 @@ never looked up), killmail ids growing with time (LESSON #129). Expected numbers
   * page 1 first: the dossier is drawn ("reading older kills…") while page 2 is held, then redrawn once; a new pilot meanwhile
     stops the reading (no page 3, the new pilot's dossier stays);
   * System Analyzer rows (saPilotData): all of page 1 (200 kills, not 50), 2 zKillboard requests, 0 ESI killmail reads;
-  * stored data: lists in the zkb store under 't:' + the address, trimmed; the cap: over 50 MB the killmails used longest ago are
-    deleted to under 40 MB, expired zkb entries deleted, types / groups / orgs untouched; the older page (main before 049) reads its
+  * stored data: lists in the zkb store under 't:' + the address, trimmed; the cap: under 50 MB nothing deleted; over it the killmails
+    used longest ago are deleted to under 40 MB, once a page load (a figure lagging behind deletes nothing more), expired zkb entries
+    deleted, types / groups / orgs untouched; the older page (main before 049) reads its
     own entries after this page wrote its own;
   * mutants, each must fail: whole killmails kept; the pilot counted among his wingmates; no 3-hour window; 50 kills read; an ESI read
     despite a whole item; no size stop; no year limit;
@@ -310,17 +311,20 @@ def s_store(b, html, old):
       for(let i = 0; i < 30; i++) await put('killmails', 8800000 + i, {ts: now - (30 - i) * 864e5, data: {killmail_id: 8800000 + i, hash: 'h', km: {pad}}});
       await put('zkb', 'old-list', {ts: now - 2 * 3600e3, data: []}); await put('zkb', 'fresh-list', {ts: now - 60e3, data: []});
       await put('types', 99999991, {ts: now - 900 * 864e5, data: {name: 'kept'}}); await put('orgs', 99999992, {ts: now - 900 * 864e5, data: {name: 'kept'}});
+      window.__usage = 30e6; dscanSweepAt = 0;
+      const under = (await dscanCacheSweep()).killmails;
       window.__usage = 60e6; dscanSweepAt = 0;
       const out = await dscanCacheSweep();
+      window.__usage = 60e6; dscanSweepAt = 0;   // the browser's figure lagging behind the deletion: nothing more this page load
+      const again = (await dscanCacheSweep()).killmails;
+      out.under = under; out.again = again;
       const has = (st, k) => new Promise(r => { const q = db.transaction(st).objectStore(st).get(k); q.onsuccess = () => r(q.result !== undefined); });
       const kept = []; for(let i = 0; i < 30; i++) if(await has('killmails', 8800000 + i)) kept.push(i);
       return {out, kept, oldList: await has('zkb', 'old-list'), fresh: await has('zkb', 'fresh-list'), types: await has('types', 99999991), orgs: await has('orgs', 99999992)}; }""")
     # usage 60 MB, low mark 40 MB: about 20 MB of the oldest (1 MB each) go
     if not (r['kept'] and r['kept'][0] >= 19 and r['kept'][-1] == 29 and len(r['kept']) <= 11) or r['oldList'] or not r['fresh'] or not r['types'] or not r['orgs']:
         out.append(f'the cap: the oldest killmails deleted to under 40 MB, the expired list deleted, the rest kept {r}')
-    under = pg.evaluate("""async () => { const db = await openDscanCacheDb(); window.__usage = 30e6; dscanSweepAt = 0; const o = await dscanCacheSweep();
-      const n = await new Promise(r => { const q = db.transaction('killmails').objectStore('killmails').count(); q.onsuccess = () => r(q.result); }); return [o.killmails, n]; }""")
-    if under[0] != 0: out.append(f'under the cap nothing is deleted {under}')
+    if r['out'].get('under') != 0 or r['out'].get('again') != 0: out.append(f"under the cap nothing is deleted, and after one cut nothing more this page load {r['out']}")
     # the older page reads what it wrote before, after this one wrote its own
     if old:
         CALLS.clear(); ESI_KM.clear()
