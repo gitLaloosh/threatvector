@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-15 — The Pilot Dossier read by fights</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The Pilot Dossier read by fights (and a probe read as a pilot)</h1>
+<p><span class="tag">Pilot Analyzer</span><span class="tag">System Analyzer</span><span class="tag">Intel</span> 2026-11-15 &middot; <code>v2026.11.15.1</code> &middot; build queue 049 &middot; plan <code>roadmap/dossier-fights-plan.md</code> (its section 13 is the build review)</p>
+
+<h2>Why</h2>
+<p>The owner: a pilot in a large alliance that "sometimes has very large battles during a war" has "their newest 50 kills and 30 losses ...
+accounted for in two or three hulls over a weekend or a week. so you get nothing useful about the pilot when they're out roaming with a small
+gang between large alliance fleets." He asked for a proposal "with our lookup budgets in mind".</p>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Read by fights.</b> zKillboard's kill pages (200 kills each, newest first) are read until their kills make 15 fights, a page reaches
+over a year back, 3 pages are read, a page holds fewer than 200, or a page is over 20 MB of data. Page 1 is drawn at once; the older pages
+are read after it ("reading older kills…" in the heading line) and the dossier is redrawn once, keeping the size, the row and the scroll.
+A new pilot meanwhile stops the reading. Losses: one page. Both the past year's only; a pilot with nothing in the past year shows what was
+read, and the heading says "(none in the past year)" (the owner at the review: "your plan works").</li>
+<li><b>Fights:</b> two kills are one fight when they share 2 of the other players (1 when either had only 1 or 2 others) and are within
+3 hours of each other; the pilot himself is left out. The heading reads "N kills in N fights, N losses, from – to", its hover what was
+read and why it stopped; under each row's kill count "N fights".</li>
+<li><b>No ESI killmail reads for a pilot.</b> zKillboard's list items are the killmails (its own code: the ESI killmail plus a zkb object),
+so the dossier, the System Analyzer's pilot rows, the Last kill line and the fits from their losses use them as they are: up to 80 ESI reads
+per pilot before, 0 now. <code>fetchKillmail</code> uses a whole list item everywhere (the System Analyzer's group and system lists too).</li>
+<li><b>System Analyzer rows</b> read all of their first pages (up to 200 kills and 200 losses, not 50 and 30), the same 2 zKillboard requests.</li>
+<li><b>Trimmed on arrival, kept trimmed.</b> A pilot's own kill and loss lists are cut down as a page arrives: a kill to the victim, their
+own entry, the players counted, the other players' hulls and up to 100 player ids (a 2,000-attacker structure kill: about 1.6 KB, was about
+374 KB); a loss to the victim (its fit) and its 20 top attackers. Kept for the hour under <code>t:</code> + the list's address in the
+<code>zkb</code> store. The group and system lists stay whole (they read every attacker).</li>
+<li><b>Stored data stays under 50 MB.</b> Once per load at idle and after a dossier read: the <code>zkb</code> entries past their hour are
+deleted, then, over 50 MB (<code>navigator.storage.estimate()</code>), the killmails used longest ago until under 40 MB. Never item types,
+groups, organisations, settings or sounds.</li>
+<li><b>Intel: a probe dragged in from D-Scan</b> ("&lt;system&gt; &lt;pilot&gt; Sisters Core Scanner Probe") made the probe's last word the
+Probe frigate and the words before it a pilot. Every probe's name (scanner, survey and interdiction probes, from CCP's data through pyfa:
+<code>INTEL_PROBES</code>, written by <code>tools/gen_intel_tables.py</code>) is read first as the probes tag (the owner: "probes only for now").</li>
+<li>The <code>dossier</code> info panel's first line, and METHODOLOGY.md's dossier, possible ship and system lines.</li>
+</ul>
+
+<h2>Stored data</h2>
+<p>New keys only, inside existing stores: <code>t:&lt;address&gt;</code> in <code>zkb</code>. The older page reads the plain addresses, so it
+never gets a trimmed list; its own entries stay as they were. No database version change. The cap deletes old <code>killmails</code> and
+expired <code>zkb</code> entries, which both pages read again from zKillboard or ESI when missing.</p>
+
+<h2>Checks</h2>
+<ul>
+<li><code>tools/page_checks/dossier_fights_check.py</code> (new): made-up pilots on a stand-in zKillboard that answers with whole
+killmails, pages and a page over 20 MB; the fight rule; page 1 first; the System Analyzer rows; the cap and the older page; 7 mutants.</li>
+<li><code>tools/page_checks/intel_probe_check.py</code> (new): the probe lines and two mutants.</li>
+<li><code>dossier_check</code>, <code>dossier_kills_check</code>, <code>dossier_pin_check</code>: the new heading and notes.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #166: cutting stored data down for one reader breaks the others. The plan trimmed every list in the hour's store, including the
+System Analyzer's, and three of its features read every attacker of those killmails; a whole-item test would have taken the trimmed copies
+as killmails and counted wrong without an error. List every reader of a store, and what it reads, before trimming it; mark the trimmed
+form and keep it under its own key.</p>
+</body>
+</html>

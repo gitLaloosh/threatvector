@@ -2,6 +2,9 @@
 
   INTEL_JUMPS  every stargate connection, from the EVE client's own res:/staticdata/jumps.static
   INTEL_SHIPS  every published ship's name (English, and Chinese) -> type ID, from pyfa's SDE data
+  INTEL_PROBES (build queue 049) every published probe's name (English, and Chinese) -> type ID, from pyfa's SDE data: the
+               groups Scanner Probe, Survey Probe and Interdiction Probe (by name, category Charge), so a probe dragged in from
+               D-Scan ("Sisters Core Scanner Probe") is read as probes, never as the ship "Probe" and a pilot
   INTEL_MAP    (v2026.11.02.4) kept as it is: tools/jump_table_update.py derives it from CCP's static data, aligned to
                INTEL_JUMPS; when the jump table here changes, that script must be run again (this one says so and fails)
 
@@ -58,6 +61,16 @@ zhCount = {}
 for en, zh in ships.values(): zhCount[zh] = zhCount.get(zh, 0) + 1
 shipRows = {str(t): [en, zh if zh and zhCount[zh] == 1 else ''] for t, (en, zh) in sorted(ships.items())}
 assert len(shipRows) > 300, len(shipRows)
+# build queue 049 (the owner at its review: "probes only for now"): probes, not bubbles, depots, cyno fields or wrecks
+PROBE_GROUPS = {'Scanner Probe', 'Survey Probe', 'Interdiction Probe'}
+probeGroups = {int(g) for g, v in groups.items() if v.get('categoryID') == 8 and (v.get('groupName') or {}).get('en-us') in PROBE_GROUPS}
+assert len(probeGroups) == len(PROBE_GROUPS), probeGroups
+probeRows = {}
+for t, v in sorted(types.items(), key=lambda x: int(x[0])):
+    if v.get('groupID') in probeGroups and v.get('published'):
+        n = v.get('typeName') or {}
+        probeRows[str(int(t))] = [n.get('en-us', ''), n.get('zh', '')]
+assert len(probeRows) >= 5, probeRows
 
 # ---- jumps, from the client ----
 RES = os.environ.get('EVE_RES')
@@ -101,19 +114,20 @@ if RES and all(_oj.get(k) == jumps[k] for k in ('sys', 'edges', 'n', 'systems'))
 
 _mp = re.search(r'^const INTEL_MAP = .*;$', cur, re.M)
 new = ('const INTEL_JUMPS = ' + json.dumps(jumps, separators=(',', ':')) + ';\n'
-       + 'const INTEL_SHIPS = ' + json.dumps(shipRows, ensure_ascii=False, separators=(',', ':')) + ';'
+       + 'const INTEL_SHIPS = ' + json.dumps(shipRows, ensure_ascii=False, separators=(',', ':')) + ';\n'
+       + 'const INTEL_PROBES = ' + json.dumps(probeRows, ensure_ascii=False, separators=(',', ':')) + ';'
        + ('\n' + _mp.group(0) if _mp else ''))
 _mj = cur_json('INTEL_MAP')
 if _mj and _mj.get('jumps') != jumps['md5']:
     print(f"INTEL_MAP is aligned to jump table {_mj.get('jumps')}, not {jumps['md5']}: run tools/jump_table_update.py --write")
 if new == cur:
-    print(f"intel tables match: {len(shipRows)} ships (pyfa), {jumps['n']} gate connections between {jumps['systems']} systems "
+    print(f"intel tables match: {len(shipRows)} ships and {len(probeRows)} probes (pyfa), {jumps['n']} gate connections between {jumps['systems']} systems "
           f"(client build {CLIENT_BUILD}, the page's table from build {jumps['build']}){'' if RES else ' -- jumps: skipped (no EVE_RES, the table in the page kept)'}")
     sys.exit(0)
 if WRITE:
     out = src[:m.start(1)] + new + src[m.end(1):]
     open(HTML, 'w', encoding='utf-8').write(out)
-    print(f"written: {len(shipRows)} ships, {jumps['n']} connections, {jumps['systems']} systems, build {jumps['build']}")
+    print(f"written: {len(shipRows)} ships, {len(probeRows)} probes, {jumps['n']} connections, {jumps['systems']} systems, build {jumps['build']}")
     sys.exit(0)
 old = cur_json('INTEL_SHIPS') or {}
 print('intel tables differ:')
@@ -121,6 +135,7 @@ if old != shipRows:
     add = sorted(set(shipRows) - set(old)); gone = sorted(set(old) - set(shipRows))
     chg = [t for t in shipRows if t in old and old[t] != shipRows[t]]
     print(f'  ships: +{len(add)} -{len(gone)} changed {len(chg)}', [shipRows[t][0] for t in add[:8]], [old[t][0] for t in gone[:8]])
+if (cur_json('INTEL_PROBES') or {}) != probeRows: print(f'  probes: {len(cur_json("INTEL_PROBES") or {})} in the page, {len(probeRows)} in pyfa')
 oj = cur_json('INTEL_JUMPS') or {}
 if RES and oj != jumps:
     print(f"  jumps: page build {oj.get('build')} md5 {oj.get('md5')} n {oj.get('n')} -> client build {jumps['build']} md5 {jumps['md5']} n {jumps['n']}")

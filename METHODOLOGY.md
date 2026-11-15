@@ -290,26 +290,39 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   in the System Analyzer's settings) is a small gang, one row per pilot; more is shown by group. Groups shows the
   columns for a small gang too. Each pilot is 2 zKillboard requests (kills and losses, kept for an hour), 15 pilots at a
   time. A row opens that pilot in the Pilot Analyzer, on that hull, its dossier on the same gang size.
-- **Possible ship,** for a gang size: from their newest 50 kills and 30 losses, as the Pilot Dossier. Auto picks each
+- **Possible ship,** for a gang size: from every kill and loss on their first zKillboard page of each (up to 200 of each,
+  the past year's; nothing in the past year: all of those read), as the Pilot Dossier, with no older pages. Auto picks each
   pilot's size from how many of their alliance (or corporation, without one) are in Local; an NPC corporation counts as
   solo. The ship is the hull of their newest kill in that size (All: their newest kill or loss); a ship of theirs
   from the last 30 days that's on your D-Scan comes first. No kill in that size: the newest ship they were seen in
   within 30 days, else the hull they lost most.
-- **Kills and losses in the system:** one zKillboard request per system an hour, then the killmails from ESI, newest
+- **Kills and losses in the system:** one zKillboard request per system an hour, then the killmails (from the list itself,
+  which carries them, else from ESI), newest
   first, 300 at most (zKillboard lists 1,000); the hours chosen run from 1 to 72. Each group, corporation, pilot and
   hull counts its own kills and losses; folded rows show none.
 - **Hostile from lately:** zKillboard's list of your alliance's (or corporation's) losses in the past 7 days (one
-  request, kept for an hour) and the newest 50 of those killmails from ESI; every attacking pilot's alliance (or
+  request, kept for an hour) and the newest 50 of those killmails (from the list itself, else ESI); every attacking pilot's alliance (or
   corporation, without one) counts.
 - **Affiliation:** one zKillboard request per pilot after the analysis' own, kept an hour; corporation lookups are kept
   an hour, names and tickers a week. Kills, losses and ISK destroyed are zKillboard's totals.
-- **Pilot Dossier:** each killmail is read from ESI and kept. Hulls are listed newest first (in a gang size, by their newest kill in it), the count only breaking a tie; the 8
+- **Pilot Dossier:** read by fights (build queue 049). zKillboard's kill pages, 200 kills each, newest first, are read until
+  their kills make 15 fights, the oldest kill on a page is over a year old, 3 pages are read, a page holds fewer than 200
+  (all their kills) or a page is over 20 MB of data (a big structure fight's worth already); page 1 is drawn first and the
+  older pages added after it. Losses: one page. Both count only the past year's kills and losses; a pilot with nothing in
+  the past year shows all of those read, and the heading says so. Two kills are one fight when they share 2 of the other
+  players on them (1 when either kill had only 1 or 2 others) and are within 3 hours of each other; chains of those are
+  one fight, and the pilot himself isn't counted (he is on every one of his kills). Each fight's sharing is worked out
+  from up to the 100 lowest player ids on each kill. zKillboard's list items are the killmails themselves, so nothing is
+  read again from ESI (an item sent without its killmail is). A pilot's lists are kept for an hour in this browser, cut
+  down to what the dossier and the fits use (a kill: the victim, their own entry, the players counted and their hulls;
+  a loss: the victim and its fit, and its 20 top attackers). Stored data is kept under 50 MB: past that, the killmails
+  used longest ago are deleted until under 40 MB (never items, groups or settings). Hulls are listed newest first (in a gang size, by their newest kill in it), the count only breaking a tie; the 8
   used most recently follow the one asked for; Show N more
   hulls shows every hull read, with no new request. Gang size counts the players on the killmail (anyone who joined in
   counts). Weapons seen: the weapon each killmail credits them with; Flies with: the other players' hulls on those
   kills; Kills mostly: what they killed, by ship class; Active: the hours of their kills in your own time zone; Usual
-  systems: where their kills and losses were. The kills under a row show 10 at a time; Show 10 more reads older kills
-  from ESI once those are shown (no new zKillboard request).
+  systems: where their kills and losses were. The kills under a row show 10 at a time; Show 10 more shows more of those
+  read (no request); once all are shown it stops.
 - **Fleet tab fits:** each fit by the Pilot Analyzer's rule for a chosen hull: their newest loss in that hull; none,
   their alliance's (or corporation's) most common fit for it, said as not theirs; none, fit unknown (the bare hull, no
   DPS). Load asks zKillboard once (twice when it also needs their alliance's). Load all with Common fits (the choice
