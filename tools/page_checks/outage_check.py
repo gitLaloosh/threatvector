@@ -16,7 +16,8 @@ ESI's /status/ while down every 6 s, not 60); R2Z2 and ESI answered by stand-ins
   * 015: ESI down (no answer the browser may read): one /status/ confirms it; the strip, the gauge's "ESI down", Intel's Feed note
     and status line; /status/ once a scaled minute while down, never more; ESI back: all of it gone; one failed lookup while
     /status/ answers: nothing shown; ESI down takes over from the unreadable feed; ESI down and zKillboard's pause: two lines, ESI
-    first; EVE's daily downtime: "starts in 4:00" at 10:56 UTC, the downtime line from 11:00 with ESI down, nothing with ESI fine;
+    first; EVE's daily downtime: "starts in 4:00" 4 minutes before, the downtime line from the hour with ESI down, nothing with ESI fine
+    (the page copy's downtime hour is 12 hours from the run, off_downtime.py, so the other cases pass at any time of day; LESSON #168);
     zKillboard's pause: its line with ZKB-01's own text, counting down, gone at its end; the feed behind: 7 kills in 15 minutes:
     the strip, "Kills slow" and the Feed note; 60 kills and a stale sequence.json: nothing;
   * the strip's text written only when it changes; no page errors; Intel shows no error of its own.
@@ -29,13 +30,15 @@ for a, b in (('const IT_KILL_BACK = 240;', 'const IT_KILL_BACK = 60;'), ('const 
              ('Math.min(300000, 30000 * 2 ** (kf.fails - 1))', 'Math.min(300000, 3000 * 2 ** (kf.fails - 1))'), ('const ESI_DOWN_CHECK_MS = 60000;', 'const ESI_DOWN_CHECK_MS = 6000;')):
     if page.count(a) != 1: print(f'FAIL the page has no {a!r} to shorten'); print('FAILURES: 1'); sys.exit(1)
     page = page.replace(a, b)
+sys.path.insert(0, HERE); from off_downtime import off_downtime   # LESSON #168: the downtime hour 12 hours from now, so the time of day can't decide
+page, DT_HOUR = off_downtime(page)
 SCALED = os.path.join(tempfile.mkdtemp(prefix='outage'), 'index.html'); open(SCALED, 'w', encoding='utf-8').write(page)
 
 _src = open(os.path.join(HERE, 'intel_check.py'), encoding='utf-8').read()
 _src = _src[:_src.index('    jumps = pg.evaluate("(names) => Object.fromEntries')]
 _src = _src.replace("os.path.dirname(os.path.abspath(__file__))", repr(HERE), 1)
 _src = re.sub(r"^HTML = .*$", "HTML = " + repr(SCALED), _src, count=1, flags=re.M)
-_ns = {'__file__': os.path.join(HERE, 'intel_check.py'), '__name__': 'intel_check_prefix'}
+_ns = {'__file__': os.path.join(HERE, 'intel_check.py'), '__name__': 'intel_check_prefix', 'DT_HOUR': DT_HOUR}
 _tail = r'''
     import json as _j, time as _t   # never time.sleep here: the stand-ins answer only while Playwright runs (pg.wait_for_timeout)
     ACAO = {'access-control-allow-origin': '*'}
@@ -160,11 +163,11 @@ _tail = r'''
     g = pg.evaluate("() => document.getElementById('bgSegs').innerText.replace(/\\s+/g, ' ')")
     s5 = len(E['status']); pg.wait_for_timeout(7000)
     check(ok and 'ESI ok' in g and len(E['status']) == s5, f'ESI back: the strip and "ESI down" go, no more /status/ ({g!r}, {len(E["status"]) - s5} more)')
-    # ---- EVE's daily downtime (the clock moved for the page only) ----
+    # ---- EVE's daily downtime (the clock moved for the page only, to the copy's downtime hour DT_HOUR; its words still say 11:00 UTC) ----
     DT = """(t) => { const real = Date.now; Date.now = () => t[0]; esiDown.on = t[1]; sysLastStrip = null; sysStripPaint(); const s = document.getElementById('sysStrip').innerText; Date.now = real; esiDown.on = false; sysLastStrip = null; sysStripPaint(); return s; }"""
     import calendar as _c
-    d = _t.gmtime(); T = lambda h, m: _c.timegm((d.tm_year, d.tm_mon, d.tm_mday, h, m, 0)) * 1000
-    a1, a2, a3 = pg.evaluate(DT, [T(10, 56), False]), pg.evaluate(DT, [T(11, 2), True]), pg.evaluate(DT, [T(11, 2), False])
+    d = _t.gmtime(); T = lambda m: (_c.timegm((d.tm_year, d.tm_mon, d.tm_mday, DT_HOUR, 0, 0)) + 60 * m) * 1000   # m minutes from it
+    a1, a2, a3 = pg.evaluate(DT, [T(-4), False]), pg.evaluate(DT, [T(2), True]), pg.evaluate(DT, [T(2), False])
     check("EVE's daily downtime starts in 4:00" in a1 and "EVE's daily downtime (11:00 UTC)" in a2 and 'maintenance' not in a2 and 'downtime' not in a3,
           f'the downtime: "starts in 4:00" at 10:56 UTC; from 11:00 with ESI failing the downtime line; with ESI fine nothing ({a1!r}, {a2!r}, {a3!r})')
     # ---- zKillboard's pause ----

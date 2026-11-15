@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-15 — Checks that don't depend on EVE's downtime</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Checks that don't depend on EVE's downtime</h1>
+<p><span class="tag">Tools</span> 2026-11-15 &middot; page unchanged (after <code>v2026.11.15.2</code>) &middot; the backlog bug "outage_check fails between 11:00 and 12:00 UTC"</p>
+
+<h2>Why</h2>
+<ul>
+<li>The page counts 11:00-12:00 UTC as EVE's daily downtime: from 10:56 the strip says it starts soon, and in that hour a failing ESI is called "EVE's daily downtime" instead of "EVE's ESI is down". The line itself shows only while ESI fails and goes at the first answer, however long the downtime is; the hour only picks the words.</li>
+<li><code>outage_check</code>'s ESI-down cases ran on the real clock, so any run between 11:00 and 12:00 UTC failed 5 of them, on an unchanged page too (051's run started 11:14 UTC). <code>feed_down_check</code> and <code>intel_kills_check</code> expect an empty strip and could fail in the 4 minutes before 11:00.</li>
+<li>The owner, offered fixing the check only or the page's wording too: "go with option 1" (the check only; the page keeps its hour).</li>
+</ul>
+
+<h2>What changed (tools only)</h2>
+<ul>
+<li><b><code>tools/page_checks/off_downtime.py</code></b> (new): a copy of the page whose downtime hour is 12 hours from the run (the page's own code; only <code>SYS_DT_HOUR</code> moves). It stops with a failure if the page's line <code>const SYS_DT_HOUR = 11,</code> changes, so a moved hour can't pass unnoticed.</li>
+<li><b><code>outage_check</code></b> moves the hour in its page copy, and its downtime cases set the page's clock 4 minutes before and 2 minutes after that hour (the words still say 11:00 UTC).</li>
+<li><b><code>intel_kills_check</code></b> opens the moved-hour copy; the checks built on its start get it too (<code>feed_down_check</code>, <code>close_buttons_check</code>, <code>intel_fleet_check</code>, <code>html_escape_check</code>, <code>intel_filters_check</code>, <code>intel_guard_check</code>, <code>intel_layout_check</code>).</li>
+<li><b>Proof:</b> a copy of the page that thinks it is in the downtime hour now (its hour stretched to 10 hours): the old <code>outage_check</code> fails on it, the new one passes.</li>
+<li><b><code>wormhole_menu_check</code></b> (051's): it read <code>origin/main</code> as "an older page (part 1)", so it failed on every run after 051 merged (found by this delivery's run). It now reads the part-1 page at a fixed commit, <code>9459b35</code> (v2026.11.15.1).</li>
+<li>The page, <code>.github/workflows/</code> and what browsers keep: unchanged.</li>
+</ul>
+
+<h2>Not in this delivery</h2>
+<ul>
+<li>The page's words: an ESI failure that starts later in the hour (say 11:40) is still called the downtime (option 2, not chosen).</li>
+<li>The open bug "Downtime notice stays up after EVE is back": its cause is still unknown (the line follows the status check, not the clock).</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #168: a check that reads the real clock passes or fails by the time of day it runs. Move what the page does at a set time away from the run (or set the page's clock), and prove it on a page that thinks it's in the window: the old check fails there, the new one passes. The same goes for a branch: a check that needs an older page names its commit, never "main", which moves.</p>
+</body></html>
