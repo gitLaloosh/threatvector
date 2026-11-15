@@ -186,11 +186,21 @@ Built from section 13's corrections and answers. Where the build differs from se
 - **Also fixed:** `matchup_strip_check` (048's starting range moved to the optimal, so its 1.5 / 2.5 km step stayed inside the made-up threat's optimal and failed on main too); its step now goes into the falloff.
 - Checks: `tools/page_checks/dossier_fights_check.py` (section 10's list, the cap and the older page; 7 mutants), the three dossier checks' wording. LESSON #166.
 
+## Hand test (the owner, 2026-11-15, on the branch): all 7 steps pass
+
+1. A big-alliance pilot: "200 kills in 27 fights, 50 losses", stopped at 15 fights (page 1 only), Small gang 16 (0 before); the battleship row 128 kills in 7 fights, a carrier 19 in 1.
+2. A new pilot: zKillboard 4 (Pilot Analyzer), no Killmails row in ESI's panel. A second look-up within the hour: 0 zKillboard.
+3. A kill's fleet icon: the Fleet tab with the victim's fit; ESI Killmails 1 (the full read, on purpose).
+4. A live list item is the whole killmail plus zkb (Z1).
+5. A fleet commander in the largest bloc: one page, 461 kB, no page 2; "200 kills in 22 fights", stopped at 15 fights. First view about 20 s (item data: the ship types of his wingmates not yet in the browser), a repeat about 1 s. Storage 11.0 MB.
+6. The same pilot again within the hour: no new zKillboard request.
+7. "<system> Sisters Core Scanner Probe": the probes tag, no pilot, no Probe ship.
+
 ## Sources
 
 | Fact | Source | Checked | Status |
 |---|---|---|---|
-| Z1. zKillboard's API list items are the ESI killmail plus a `zkb` object (npc, solo, awox, labels added) | `classes/Feed.php` `getJSON` (`Kills::getEsiKill($killID)`, then `$json['zkb'] = …`), https://github.com/zKillboard/zKillboard at 00e8cb30 (zKillboard's own code, not a secondary source) | 2026-11-14 | verified (code); live comparison in hand test step 4 |
+| Z1. zKillboard's API list items are the ESI killmail plus a `zkb` object (npc, solo, awox, labels added) | `classes/Feed.php` `getJSON` (`Kills::getEsiKill($killID)`, then `$json['zkb'] = …`), https://github.com/zKillboard/zKillboard at 00e8cb30 (zKillboard's own code, not a secondary source); live answer in the owner's hand test step 4 (an item: attackers, killmail_id, killmail_time, solar_system_id, victim, zkb) | 2026-11-15 | verified (code and live answer) |
 | Z2. Up to 200 killmails per request, newest first | `public/api/api.json` ("return up to 200 killmails. Results are newest first and include the ESI killmail plus a zkb metadata object"); `classes/MongoFilter.php` line 11 (`min(200, …)`), zKillboard at 00e8cb30 (zKillboard's own code, not a secondary source) | 2026-11-14 | verified (code) |
 | Z3. `/page/N/` path modifier, 1–100 | `public/api/api.json` form field `page` (`min` 1, `max` 100), zKillboard at 00e8cb30 (zKillboard's own code, not a secondary source) | 2026-11-14 | verified (code) |
 | Z4. No date filter beyond 7 days (`pastSeconds` max 604800); `year` needs `month` | `public/api/api.json` fields `pastSeconds` (max 604800) and `year`/`month`, zKillboard at 00e8cb30 (zKillboard's own code, not a secondary source) | 2026-11-14 | verified (code) |
@@ -199,4 +209,4 @@ Built from section 13's corrections and answers. Where the build differs from se
 | B1. A browser that evicts a site's best-effort data deletes all of it at once; writes over the quota fail with QuotaExceededError | https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria (MDN, documentation of the web standard) | 2026-11-14 | verified (documentation) |
 | B2. `navigator.storage.estimate()` returns approximate `usage` and `quota` for the site | https://developer.mozilla.org/en-US/docs/Web/API/StorageManager/estimate (MDN) | 2026-11-14 | verified (documentation) |
 | B3. A real structure killmail (the owner's sample, killmail 139700765): 1,099 attackers, 195,600 bytes of JSON, 20,564 gzip; trimmed form 1,835 bytes (848 gzip) | live answer: https://esi.evetech.net/killmails/139700765/ce43f787d7f02070bc4e386e8fa0d9f1dff2e2ce/ read in the owner's built-in browser, measured with JSON.stringify and CompressionStream | 2026-11-14 | verified (live answer) |
-| B4. Size of a whole zKillboard page of such kills on the wire | UNVERIFIED: scaled from B3 (about 4 MB for 200 kills of 1,100 attackers); the build measures a real page for a pilot with structure kills (DevTools Network, transferred size) | — | UNVERIFIED |
+| B4. Size of a whole zKillboard page of such kills on the wire | live answer in the owner's hand test (DevTools Network, transferred size): a fleet commander in the largest bloc, nearly all his fights very large fleets: his first kill page 461 kB (1.14 s), losses 93.7 kB; another fleet pilot's 211 kB. A page of big structure kills alone (B3's scale, about 4 MB) not seen | 2026-11-15 | verified (live answer; the structure-only page still scaled) |
