@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-15 — The Wormholes tab, part 2: the system menu</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The Wormholes tab, part 2: the system menu (and the empty map's height)</h1>
+<p><span class="tag">Wormholes</span> 2026-11-15 &middot; <code>v2026.11.15.2</code> &middot; build queue 051 &middot; plan <code>roadmap/wormhole-mapping-plan.md</code> ("Build in parts" 2, D25, D26, D34) &middot; mockup <code>Claude outputs/wormholes_tab_mockup.html</code></p>
+
+<h2>Why</h2>
+<p>The owner's requirements for the chain map: borders "set by the user to denote level of danger", a lock "to prevent accidental deletions of home
+systems for example" ("LOCK is all we need"), tags, copy the name, remove, from a menu on each system. At the build review he picked the page's own
+tag look for the tag on the map ("the page's"), and from the live site: "the map should push the bottom of the page to the bottom of the screen
+even if it's empty. no re-size when it's populated that way."</p>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The system menu:</b> right-click a system on the Wormholes map, or press and hold on a phone. A menu (no close button: Esc, a press
+outside or a pick closes it; focus on its first item, the arrows move): the six statuses and No status, a tag (up to 8), Lock (can't be moved
+or removed) / Unlock, Copy the name, Remove from the map (greyed with "(unlock first)" while locked). A right-click on empty space still opens
+"Add a system here". "Routes from here" waits for the Routes panel (part 4).</li>
+<li><b>Status</b> as the box's border, in six new colour tokens (<code>--wh-st-*</code>); named in the menu, the System panel (the page's tag)
+and the box's hover, which is new (written only when the box under the pointer changes).</li>
+<li><b>Tag</b> on the box in the page's tag look (a faint fill in the status colour, its text in that colour); in the System panel too.</li>
+<li><b>Lock:</b> a locked system isn't moved by a drag (alone or in a group: the others move), Rearrange leaves it, and Remove refuses it in the
+menu and the System panel with "&lt;system&gt; is locked: it can't be moved or removed until you unlock it." A connection touching it can still
+be deleted.</li>
+<li><b>Copy the name:</b> to the clipboard, or, when the browser refuses, the name stays in the menu, selected, to copy by hand.</li>
+<li><b>The empty map</b> is as tall as the full one, to the bottom of the screen; adding the first system resizes nothing. Part 1 worked the
+height out only after the empty map had returned, so the empty box was 320 px.</li>
+<li>The <code>whmap</code> info panel and its colour key (the statuses and the lock); the settings popover says Rearrange keeps locked systems.</li>
+</ul>
+
+<h2>Stored data</h2>
+<p>A new key, <code>tvWhMarks</code> <code>{v: 1, sys: {id: {st, tag, lock, at}}}</code>: part 1's reader rebuilds each system in
+<code>tvWhChain</code> from the fields it knows, so a part-1 page in another tab, or a revert, would have dropped them there. <code>at</code> is a
+locked system's place, so an older page's Rearrange (which clears <code>tvWhChain.pos</code>) can't move it. Entries for systems no longer on the
+map are dropped on read. <code>tvWhChain</code> keeps its form. Both ways: the new page reads what part 1 wrote (no <code>tvWhMarks</code>: no
+marks); part 1 reads <code>tvWhChain</code> as before and never touches <code>tvWhMarks</code> (checked with main's page in the same browser).
+The limit: an older page doesn't know about locks, so it can still remove a locked system.</p>
+
+<h2>Checks</h2>
+<ul>
+<li><code>tools/page_checks/wormhole_menu_check.py</code> (new): the empty map's height at 1440 and 390 px; the menu by right-click and by press and
+hold (real touch events, start to release); statuses read off the canvas, the System panel and the hover, kept after a reload; the tag cut to 8;
+Lock against a drag, a group drag, Rearrange and both Removes; Copy, allowed and refused; main's page saving the chain; 8 mutants.</li>
+</ul>
+<p>Known limit: Rearrange lays the other systems out as a tree around a locked one, which keeps its place, so a box can land on top of it (the
+menu and the System panel still reach it).</p>
+<p>Page size: source 927,134 bytes; served 587,311 bytes (gzip -9).</p>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #167: a press and hold that opens a menu under the finger is clicked when the finger lifts. The browser sends its mouse events and a
+click after a touch to the same point, where the menu's first item now is: every hold set the status "Home" and closed the menu. The mockup's
+test opened the menu by script and never lifted a finger. Cancel that touch's <code>touchend</code> when the hold opened something, and test a
+long press with real touch events from start to release.</p>
+</body>
+</html>

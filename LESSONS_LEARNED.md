@@ -160,6 +160,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #160 A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it.
 - #161 "No sideways scroll" can't see a control cut off inside a box that hides its overflow, and a box placed at left:50% wraps in half its parent's width: check each control lies inside its box.
 - #162 A sandbox that sets state aside by a list of names doesn't cover state added later: new state the sandboxed builders read (a new store) joins the list in the same change.
+- #167 A press and hold that opens a menu under the finger: lifting it clicks the menu's first item. Cancel the release's default (touchend) when the hold opened something. See also #137.
 
 **Checks and test machinery**
 
@@ -1073,6 +1074,18 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 167. A press and hold that opens a menu under the finger: lifting it clicks the menu's first item
+
+- **What happened (build queue 051, caught by its check before delivery, 2026-11-15):** the Wormholes tab's system menu opens on a 0.55 s press
+  and hold on a phone, placed where the finger is. When the finger lifted, the browser sent its usual mousedown / mouseup / click after a touch to
+  the same point, which by then was the menu's first item, "Home": every press and hold set a status nobody chose and closed the menu. The mockup
+  (round 7) had the same flaw; its test opened the menu by script, so it never lifted a finger.
+- **How it was caught:** the check pressed and held with real touch events (CDP `Input.dispatchTouchEvent`) and found the menu closed after the
+  release; logging the events showed `click` on `.wh-mi` and the stack of the close.
+- **Do this instead:** when a press and hold opens something under the finger, mark it and call `preventDefault()` on that touch's `touchend`
+  (a non-passive listener): the browser then sends no mouse events or click for it. Test a long press with real touch events from start to
+  release, never by calling the opener. Same family as #137 (a tap's click landing on what appeared under it).
 
 ## 166. Cutting stored data down for one reader breaks the others: list every reader of that store, and the fields each reads, before trimming it
 

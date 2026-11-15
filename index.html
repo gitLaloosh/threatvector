@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-H3FekAOSPFBb1wMOipazJIB4fG4bsEjrlyS5Q+lmv2E='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ci4wKfCmRKkoetEas7713BZoMTdl+MAmGqazjdi9710='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3186,7 +3186,7 @@
   #tabBtnWh[data-s="in"] .tb{display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--it-wh); box-shadow:0 0 0 3px color-mix(in srgb, var(--it-wh) 35%, transparent);}
   .wh-panel{padding:8px;}
   .wh{display:flex; flex-direction:column; gap:8px;}
-  .wh-box{position:relative; overflow:hidden; outline:none; border:1px solid var(--line); border-radius:6px; background:var(--bg); min-height:320px;}
+  .wh-box{position:relative; overflow:hidden; outline:none; border:1px solid var(--line); border-radius:6px; background:var(--bg); min-height:var(--whH, 320px);}   /* 051: the empty map as tall as the full one (the owner) */
   .wh-box canvas{display:block; touch-action:none; cursor:grab;} .wh-box canvas[hidden]{display:none;}
   .wh-topl{position:absolute; top:8px; left:8px; right:300px; display:flex; gap:8px; align-items:center; pointer-events:none; z-index:3;}
   .wh-topl .wh-ctx{padding:5px 9px; border-radius:6px; font:12px var(--sans); color:var(--text); background:color-mix(in srgb, var(--panel-2) 92%, transparent); border:1px solid var(--line); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
@@ -3197,7 +3197,7 @@
   .wh-ctl .info-body{max-height:calc(var(--whH, 480px) - 60px); text-align:left;} .wh-infoleg{margin-top:10px; padding-top:8px; border-top:1px solid var(--line);} .wh-infoleg .wh-leg{margin:4px 0 0; line-height:1.9;}
   .wh-gsel{position:absolute; top:46px; left:8px; z-index:3; padding:4px 8px; border-radius:4px; font:12px var(--sans); color:var(--cyan); background:color-mix(in srgb, var(--cyan) 14%, var(--bg));} .wh-gsel[hidden]{display:none;}
   .wh-mini{position:absolute; right:10px; bottom:10px; border:1px solid var(--line); border-radius:3px; background:var(--panel); cursor:pointer; touch-action:none; box-shadow:0 2px 8px rgba(0,0,0,.4);} .wh-mini[hidden]{display:none;}
-  .wh-empty{position:relative; min-height:300px; display:flex; align-items:center; justify-content:center; padding:32px 16px; color:var(--text-dim); font:13px var(--sans); text-align:center;} .wh-empty[hidden]{display:none;}
+  .wh-empty{position:relative; box-sizing:border-box; min-height:var(--whH, 300px); display:flex; align-items:center; justify-content:center; padding:32px 16px; color:var(--text-dim); font:13px var(--sans); text-align:center;} .wh-empty[hidden]{display:none;}
   .wh-leg, .wh-note{font:12px var(--sans); color:var(--text-dim);}
   .wh-acts{display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center;} .wh-acts a{font:600 12px var(--sans); color:var(--cyan);} .wh-acts .wh-rm{margin-left:auto;}
   button.wh-n{font:700 13px var(--sans); color:var(--heading); background:none; border:none; padding:0; min-height:0; cursor:pointer; letter-spacing:0;} button.wh-n:hover{text-decoration:underline;}
@@ -3239,6 +3239,18 @@
   .wh-msg:empty{display:none;}
   .wh-menu{position:absolute; z-index:8; width:236px; padding:6px; display:flex; flex-direction:column; gap:2px; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); box-shadow:0 12px 32px rgba(0,0,0,.6);}
   .wh-menu[hidden]{display:none;} .wh-mh{padding:4px 8px 6px; font:700 13px var(--sans); border-bottom:1px solid var(--line); margin-bottom:4px;}
+  :root{--wh-st-home:#4fc3d9; --wh-st-friendly:#3fb950; --wh-st-looking:#e3d26f; --wh-st-warning:#d99a3c; --wh-st-target:#ff7b54; --wh-st-danger:#e5534b;}   /* 051 (D26): a system's status, the border the user sets */
+  .st-home{--wh-st:var(--wh-st-home);} .st-friendly{--wh-st:var(--wh-st-friendly);} .st-looking{--wh-st:var(--wh-st-looking);} .st-warning{--wh-st:var(--wh-st-warning);} .st-target{--wh-st:var(--wh-st-target);} .st-danger{--wh-st:var(--wh-st-danger);}
+  .it-gtag.wh-st{color:var(--wh-st, var(--text)); background:color-mix(in srgb, var(--wh-st, var(--text-dim)) 18%, transparent);} .wh-sh .it-gtag.wh-st, .wh-leg .it-gtag.wh-st{margin-left:0;}
+  .wh-smenu{max-height:calc(var(--whH, 480px) - 8px); overflow:auto; box-sizing:border-box;}   /* 051: the system menu (D25); a menu, so no close button */
+  .wh-smenu .wh-mg{display:grid; grid-template-columns:1fr 1fr; gap:0 2px; padding-bottom:4px; margin-bottom:4px; border-bottom:1px solid var(--line);}
+  .wh-smenu button.wh-mi{display:flex; align-items:center; gap:8px; width:100%; min-height:32px; padding:0 8px; border:0; border-radius:4px; background:transparent; color:var(--text); font:13px var(--sans); text-align:left; cursor:pointer;}
+  .wh-smenu button.wh-mi:hover, .wh-smenu button.wh-mi:focus-visible{background:color-mix(in srgb, var(--cyan) 14%, transparent); color:var(--heading);}
+  .wh-smenu button.wh-mi[aria-checked="true"]{color:var(--heading); font-weight:700;} .wh-smenu button.wh-mdel{color:color-mix(in srgb, var(--danger) 70%, var(--heading));}
+  .wh-smenu button.wh-mi[aria-disabled="true"]{color:var(--text-dim); cursor:not-allowed;} .wh-mnote{font-size:11px; color:var(--text-dim);}
+  .wh-sw{width:12px; height:12px; border-radius:3px; border:2px solid var(--wh-st, var(--text-dim)); box-sizing:border-box; flex:0 0 auto;} [aria-checked="true"] > .wh-sw{background:var(--wh-st, transparent);}
+  .wh-mtag{display:flex; gap:4px; padding:2px 2px 6px; margin-bottom:4px; border-bottom:1px solid var(--line);} .wh-mtag input{flex:1 1 auto; min-width:0;} .wh-mtag button.wh-mi{width:auto; flex:none; font-size:12px;}
+  .wh-smenu input.wh-mcopy{width:100%; box-sizing:border-box;}
   .wh-here{display:flex; gap:4px; padding:2px 2px 4px;} .wh-here input{flex:1 1 auto; min-width:0;} .wh-here button{font-size:12px; padding:2px 10px;} .wh-hn{padding:2px 4px; line-height:1.4;}
   @media (max-width:899px){ .wh-topl{right:8px; top:52px;} .wh-panels{top:90px;} }
   @media (max-width:599px){
@@ -3251,7 +3263,7 @@
     .wh-pn{display:contents;} .wh-pnh{order:2; flex:1 1 25%; width:25%; justify-content:center; min-height:44px; border-radius:0; font-size:11px; letter-spacing:.3px; padding:0 2px; gap:4px;}
     .wh-pnh::after{display:none;} .wh-pnh[aria-expanded="true"]{color:var(--cyan); box-shadow:inset 0 2px 0 var(--cyan);} .wh-pnh .wh-pnc{display:none;}
     .wh-pnb{order:1; flex:1 1 100%; max-height:calc(var(--whH, 480px) * .62 - 46px); box-sizing:border-box; overflow:auto; padding:12px 14px; border-bottom:1px solid var(--line);}
-    .wh-mini{bottom:auto; top:60px;} .wh-menu{width:min(260px, calc(100% - 16px));}
+    .wh-mini{bottom:auto; top:60px;} .wh-menu{width:min(260px, calc(100% - 16px));} .wh-smenu button.wh-mi, .wh-smenu .wh-mtag input{min-height:44px;}
     .wh-msg{bottom:auto; top:60px; left:8px; transform:none; max-width:calc(100% - 120px);} .wh-box:has(.wh-pnb:not([hidden])) .wh-topl{display:none;}
     .wh-cn button, .wh-acts button{min-height:44px;} button.wh-n{min-height:44px;} .wh-here button, .wh-pop .wh-addf button[type="submit"]{min-height:44px;}
     /* D21: the More menu */
@@ -3276,7 +3288,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.15.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.15.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3696,9 +3708,9 @@ const CARD_INFO = {
  ],
  "whmap": [
   "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. A change of system that lands you docked (a jump clone, a pod death) adds no connection.",
-  "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move together. The overview in the corner shows where everything is; press it to go there. ⚙ → Rearrange as a tree puts them back.",
-  "[Focus and adding] Click a system to see it in the System panel: class, effect, statics, notes and its connections. + Add adds a system or connection by hand; right-click empty space (press and hold on a phone) adds one right there.",
-  "[Kept] In this browser only, until you remove it: nothing expires. While you're in a wormhole, Intel counts jumps from where you came into the chain."
+  "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move together. The overview in the corner shows where everything is; press it to go there. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
+  "[Focus and adding] Click a system to see it in the System panel: class, effect, statics, notes and its connections. Right-click it (press and hold on a phone) for its menu: a status (the border's colour), a tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one right there.",
+  "[Kept] In this browser only, until you remove it: nothing expires. Lock a system (your home, say) so it can't be moved or removed by accident. While you're in a wormhole, Intel counts jumps from where you came into the chain."
  ]
 };
 const CTX_MAX = 40;
@@ -32198,6 +32210,13 @@ const WH_BAND = {c1: 'lo', c2: 'lo', c3: 'lo', c4: 'mid', c5: 'mid', c6: 'hi', c
 const WH_EFF = {b: 'Black Hole', c: 'Cataclysmic Variable', m: 'Magnetar', p: 'Pulsar', r: 'Red Giant', w: 'Wolf-Rayet'};
 const WH_PANELS = [['sum', 'System'], ['sigs', 'Signatures'], ['route', 'Routes'], ['local', 'Local']];
 const WH_LATER = 'Comes in a later part of the beta.';
+// 051 (part 2, D25 / D26 / D34): the system menu. A status shown as the box's border colour, a tag, Lock (the owner: "LOCK is all we need ...
+// just need the lock to prevent accidental deletions of home systems for example"), Copy the name, Remove. Kept under their own key, tvWhMarks
+// {v: 1, sys: {id: {st, tag, lock, at: [x, y]}}}: part 1's whRead rebuilds each system from the fields it knows, so a part-1 page in another tab,
+// or a revert, would drop them from tvWhChain. A locked system's place (at) is kept there too, so a part-1 page's Rearrange can't move it.
+const WH_MK_KEY = 'tvWhMarks', WH_TAG_MAX = 8;
+const WH_ST = [['home', 'Home', '#4fc3d9'], ['friendly', 'Friendly', '#3fb950'], ['looking', 'Looking for', '#e3d26f'], ['warning', 'Warning', '#d99a3c'], ['target', 'Target', '#ff7b54'], ['danger', 'Dangerous', '#e5534b']];
+function WH_LOCKED(name){ return `${name} is locked: it can’t be moved or removed until you unlock it.`; }   // D34's words
 const WH_NW = 112, WH_NH = 48, WH_LOC_MS = 2000;   // a system's box in map units; the tab's location tick (Intel's own is itTick, 2 s)
 var whT = null, whS = null, whReady = false;   // var, not let: itMySys and switchTab may ask before this part of the script has run (a #pilot= link)
 // ---- CCP's wormhole systems (INTEL_WH, tools/jump_table_update.py)
@@ -32266,9 +32285,32 @@ function whRead(){
 }
 function whSave(){ try{ localStorage.setItem(WH_KEY, JSON.stringify(whS.st)); }catch(e){ } }
 function whState(){
-  if(!whS) whS = {st: whRead(), last: null, lastT: 0, kind: null, sel: null, el: null, drawKey: '', pn: {}, msgT: 0, here: null, timer: 0, M: null};
+  if(!whS){ whS = {st: whRead(), last: null, lastT: 0, kind: null, sel: null, el: null, drawKey: '', pn: {}, msgT: 0, here: null, timer: 0, M: null, mk: {}, menu: null}; whS.mk = whMkRead(whS.st.sys); }
   return whS;
 }
+function whTagClean(v){ return typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, WH_TAG_MAX) : ''; }
+function whMkRead(sys){
+  const out = {}; let o = null;
+  try{ o = typeof localStorage === 'undefined' ? null : JSON.parse(localStorage.getItem(WH_MK_KEY) || 'null'); }catch(e){ o = null; }
+  if(!o || o.v !== 1 || !o.sys || typeof o.sys !== 'object') return out;
+  for(const [k, m] of Object.entries(o.sys)){
+    if(!sys[k] || !m || typeof m !== 'object') continue;   // a system no longer on the map (an older page removed it): its marks go too
+    const e = {}, tg = whTagClean(m.tag);
+    if(WH_ST.some(x => x[0] === m.st)) e.st = m.st;
+    if(tg) e.tag = tg;
+    if(m.lock === true){ e.lock = true; if(Array.isArray(m.at) && m.at.length === 2 && m.at.every(Number.isFinite)) e.at = [Math.round(m.at[0]), Math.round(m.at[1])]; }
+    if(e.st || e.tag || e.lock) out[k] = e;
+  }
+  return out;
+}
+function whMkSave(){
+  const S = whS, sys = {};
+  for(const [k, e] of Object.entries(S.mk)) if(S.st.sys[k] && (e.st || e.tag || e.lock)) sys[k] = e;
+  try{ localStorage.setItem(WH_MK_KEY, JSON.stringify({v: 1, sys})); }catch(e){ }
+}
+function whMk(id){ return (whS && whS.mk[id]) || {}; }
+function whLocked(id){ return !!whMk(id).lock; }
+function whAt(n){ const m = whMk(n), p = whS.st.pos[n]; return m.lock && m.at ? m.at : p || null; }   // where a system was put: a locked one's own place first
 function whLinkKey(a, b){ return a < b ? `${a}-${b}` : `${b}-${a}`; }
 function whLinkOf(a, b){ return whState().st.links.find(l => whLinkKey(l.a, l.b) === whLinkKey(a, b)); }
 function whLinksOf(id){ return whState().st.links.filter(l => l.a === id || l.b === id); }
@@ -32278,7 +32320,14 @@ function whAddLink(a, b, t = Date.now()){
   if(st.links.length >= WH_LINK_MAX || !st.sys[a] || !st.sys[b]) return null;
   const n = {a, b, t, u: t, seen: t, sig: '', type: '', life: '', mass: '', size: ''}; st.links.push(n); return n;
 }
-function whRemoveSys(id){ const st = whState().st; delete st.sys[id]; delete st.pos[id]; st.links = st.links.filter(l => l.a !== id && l.b !== id); if(whS.sel === id) whS.sel = null; whSave(); }
+function whRemoveSys(id){   // false while locked (the owner: "locked systems cannot be deleted until unlocked.")
+  const st = whState().st; if(whLocked(id)) return false;
+  delete st.sys[id]; delete st.pos[id]; delete whS.mk[id]; st.links = st.links.filter(l => l.a !== id && l.b !== id); if(whS.sel === id) whS.sel = null; whSave(); whMkSave(); return true;
+}
+function whRemoveAsk(n){
+  const nm = whName(n); if(!whRemoveSys(n)){ whMsg(WH_LOCKED(nm)); return false; }
+  whMsg(`Removed ${nm} and its connections.`); whS.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true); return true;
+}
 // ---- tracking: each reading of your system (the Local log, EVE location); the newer wins, as Intel's own (itMySys)
 function whSeen(id, t, docked){
   if(typeof id === 'string'){   // a name from the Local log: a k-space one waits for the page's system names
@@ -32338,8 +32387,9 @@ function whCtxHtml(){
   if(c !== null) return `you're in ${whNameHtml(c)} · ${escapeHtml(ns)}`;
   return `${escapeHtml(ns)} · turn on Intel, or Use my game location on your profile's EVE tab, to track your jumps`;
 }
+function whStLegHtml(){ return WH_ST.map(([k, l]) => `<span class="it-gtag wh-st st-${escapeHtml(k)}">${escapeHtml(l)}</span>`).join(' '); }
 function whLegendHtml(){
-  return `<div class="wh-leg">Dashed white ring: in focus. Cyan ring: you. Right-click empty space (or press and hold) to add a system there.<br>Lines: solid · dashed end of life · amber reduced mass · red critical · thicker for bigger ships.`
+  return `<div class="wh-leg">Border: the status you set (right-click a system, or press and hold): ${whStLegHtml()}. A lock: it can’t be moved or removed until you unlock it.<br>Dashed white ring: in focus. Cyan ring: you. Right-click empty space (or press and hold) to add a system there.<br>Lines: solid · dashed end of life · amber reduced mass · red critical · thicker for bigger ships.`
     + `<br>Classes and statics lead to: <span class="wh-sc d-lo">C1–3</span> <span class="wh-sc d-mid">C4–5</span> <span class="wh-sc d-hi">C6</span> <span class="wh-sc d-sp">Thera, shattered, Drifter</span> <span class="wh-sc it-sn s6">HS</span> <span class="wh-sc it-sn s3">LS</span> <span class="wh-sc it-sn s0">NS</span>. K-space names carry their security colour.</div>`;
 }
 function whOptsHtml(arr, v){ return arr.map(([k, l]) => `<option value="${escapeHtml(k)}"${escapeHtml(String(k) === String(v) ? ' selected' : '')}>${escapeHtml(l)}</option>`).join(''); }
@@ -32356,9 +32406,9 @@ function whShellHtml(){
     + `<span class="wh-ty"><input type="text" name="ty" placeholder="Type or class: Z971, C3, HS" aria-label="Type or class (optional)" maxlength="7" spellcheck="false" autocapitalize="characters"><output name="dest"></output></span>`
     + `${whAddSelHtml('life')}${whAddSelHtml('mass')}${whAddSelHtml('size')}<label class="wh-dr"><input type="checkbox" name="dr"> Drifter</label><button type="submit">Add</button></form></div>`
     + `<div class="wh-pop" data-pop="set" role="dialog" aria-label="Wormholes settings" hidden><div class="wh-poph">Wormholes settings<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
-    + `<div class="wh-sub">Map</div><button type="button" data-wh-z="arr">Rearrange as a tree</button><div class="wh-note">Puts every system back in the tree layout, dropping where you moved them.</div></div>`
+    + `<div class="wh-sub">Map</div><button type="button" data-wh-z="arr">Rearrange as a tree</button><div class="wh-note">Puts every system back in the tree layout, dropping where you moved them; locked systems stay where they are.</div></div>`
     + `<div class="wh-panels">${whPanelsHtml()}</div>`
-    + `<div class="wh-msg" role="status"></div><div class="wh-menu" role="dialog" aria-label="Add a system here" hidden></div>`
+    + `<div class="wh-msg" role="status"></div><div class="wh-menu wh-hmenu" role="dialog" aria-label="Add a system here" hidden></div><div class="wh-menu wh-smenu" role="menu" hidden></div>`
     + `<div class="wh-gsel" hidden></div><canvas class="wh-mini" hidden role="img" aria-label="Overview of the whole chain; press or drag to move the view there"></canvas>`
     + `<div class="wh-empty" hidden>Nothing mapped yet. Jump into a wormhole and each system you enter is added here, with the connection you came through. Or add one with + Add.</div></div>`;
 }
@@ -32399,13 +32449,13 @@ function whLayout(phone){
   return out;
 }
 function whPlaces(phone){
-  const st = whState().st, A = whLayout(phone), P = new Map(), mine = st.pos;
-  for(const n of A.keys()) if(mine[n]) P.set(n, {x: mine[n][0], y: mine[n][1]});
+  const st = whState().st, A = whLayout(phone), P = new Map();
+  for(const n of A.keys()){ const q = whAt(n); if(q) P.set(n, {x: q[0], y: q[1]}); }
   let left = [...A.keys()].filter(n => !P.has(n)), grew = true;
   while(left.length && grew){   // a system added later sits beside the moved neighbour it came from
     grew = false;
     for(const n of left){
-      const nb = st.links.map(l => l.a === n ? l.b : l.b === n ? l.a : null).find(m => m !== null && P.has(m) && mine[m]);
+      const nb = st.links.map(l => l.a === n ? l.b : l.b === n ? l.a : null).find(m => m !== null && P.has(m) && whAt(m));
       if(nb !== undefined){ const a = A.get(n), b = A.get(nb), q = P.get(nb); P.set(n, {x: q.x + a.x - b.x, y: q.y + a.y - b.y}); grew = true; }
     }
     left = left.filter(n => !P.has(n));
@@ -32448,13 +32498,17 @@ function whPaint(force){
   const ctx = box.querySelector('.wh-ctx'), ch = whCtxHtml(); if(S.ctx !== ch){ S.ctx = ch; ctx.innerHTML = whCtxHtml(); }   // written only when it changed
   box.querySelector('.wh-empty').hidden = n > 0; cv.hidden = !n; box.querySelector('.wh-panels').hidden = !n;
   whPanels();
+  // D22: the map is the tab, as tall from where it starts to the bottom of the screen; worked out before the empty map returns, so the empty map is
+  // as tall as the full one and the first system resizes nothing (051, the owner: "the map should push the bottom of the page to the bottom of the
+  // screen even if it's empty. no re-size when it's populated that way.")
+  const phone = box.clientWidth < 600, top = Math.round(box.getBoundingClientRect().top + scrollY), H = Math.round(Math.max(phone ? 420 : 520, innerHeight - top - (phone ? 8 : 12)));
+  if(box.style.getPropertyValue('--whH') !== H + 'px') box.style.setProperty('--whH', H + 'px');
   if(!n){ box.querySelector('.wh-mini').hidden = true; return; }
-  const phone = box.clientWidth < 600, top = Math.round(box.getBoundingClientRect().top + scrollY), key = JSON.stringify([S.st.sys, S.st.links, S.st.pos, S.last, whFocus(), box.clientWidth, phone, innerHeight, top, !!it.names]);
+  const key = JSON.stringify([S.st.sys, S.st.links, S.st.pos, S.mk, S.last, whFocus(), box.clientWidth, phone, innerHeight, top, !!it.names]);
   if(!force && key === S.drawKey) return;
   S.drawKey = key; M.phone = phone;
   if(phone && !M.phoneInit){ M.phoneInit = true; box.querySelectorAll('.wh-pnb').forEach(x => { x.hidden = true; }); box.querySelectorAll('[data-wh-pn]').forEach(x => x.setAttribute('aria-expanded', 'false')); }   // a phone starts with the map clear
-  const H = Math.round(Math.max(phone ? 420 : 520, innerHeight - top - (phone ? 8 : 12))), bw = box.clientWidth, dpr = window.devicePixelRatio || 1;   // D22: the map is the tab
-  box.style.setProperty('--whH', H + 'px');
+  const bw = box.clientWidth, dpr = window.devicePixelRatio || 1;
   if(cv.width !== Math.round(bw * dpr) || cv.height !== Math.round(H * dpr)){ cv.width = Math.round(bw * dpr); cv.height = Math.round(H * dpr); cv.style.width = bw + 'px'; cv.style.height = H + 'px'; }
   M.P = whPlaces(phone);
   for(const g of [...M.group]) if(!M.P.has(g)) M.group.delete(g);
@@ -32464,7 +32518,8 @@ function whPaint(force){
   whDraw();
 }
 function whCols(){ const c = (n, d) => itMapCol(n, d); return {lo: c('--cyan', '#4fc3d9'), mid: c('--amber', '#d99a3c'), hi: c('--danger', '#c65b4e'), sp: c('--it-wh', '#a98bd8'), k: c('--text-dim', '#7c8a94'),
-  text: c('--heading', '#eef2f4'), dim: c('--text-dim', '#7c8a94'), panel: c('--panel-2', '#161c22'), line: c('--field-border-hover', '#5b6773'), bg: c('--bg', '#0a0d10')}; }
+  text: c('--heading', '#eef2f4'), dim: c('--text-dim', '#7c8a94'), panel: c('--panel-2', '#161c22'), line: c('--field-border-hover', '#5b6773'), bg: c('--bg', '#0a0d10'),
+  st: Object.fromEntries(WH_ST.map(([k, , d]) => [k, c('--wh-st-' + k, d)]))}; }
 function whDraw(){
   const S = whS, M = S.M, box = S.el.querySelector('.wh-box'), cv = box.querySelector('canvas'); if(!M.cam || cv.hidden) return;
   const dpr = window.devicePixelRatio || 1, w = cv.width / dpr, h = cv.height / dpr, s = M.cam.s, st = S.st;
@@ -32490,8 +32545,12 @@ function whDraw(){
   for(const [n, p] of M.P){
     const sy = st.sys[n], k = !whIsJ(n), sk = k ? whSecKey(n) : null, kc = sk === null ? C.k : IT_MAP_SEC[sk], cl = whCls(n);
     if(M.group.has(n)){ c.strokeStyle = C.lo; c.lineWidth = 1.5; c.setLineDash([4, 3]); c.beginPath(); c.roundRect(p.x - 7, p.y - 7, WH_NW + 14, WH_NH + 14, 8); c.stroke(); c.setLineDash([]); }
-    c.fillStyle = C.panel; c.strokeStyle = C.line; c.lineWidth = 1.2;   // borders stay neutral: the status the user sets comes with part 2 (D5, D25)
+    const mk = whMk(n), sc = mk.st ? C.st[mk.st] : null;   // the border: the status the user set, else neutral (D5, D25)
+    c.fillStyle = C.panel; c.strokeStyle = sc || C.line; c.lineWidth = sc ? 2.2 : 1.2;
     c.beginPath(); c.roundRect(p.x, p.y, WH_NW, WH_NH, 4); c.fill(); c.stroke();
+    if(mk.lock){ const lx = p.x + WH_NW - 15, ly = p.y + 5; c.strokeStyle = C.dim; c.fillStyle = C.dim; c.lineWidth = 1.3; c.beginPath(); c.arc(lx + 4, ly + 4.5, 2.6, Math.PI, 0); c.stroke(); c.fillRect(lx + 0.5, ly + 4.5, 7, 5.5); }
+    const tg = mk.tag ? mk.tag.toUpperCase() : ''; let tgW = 0;
+    if(tg){ c.font = `700 9px ${font}`; tgW = c.measureText(tg).width + 10; }
     if(n === fo){ c.strokeStyle = C.text; c.lineWidth = 1.5; c.setLineDash([3, 2]); c.beginPath(); c.roundRect(p.x - 7.5, p.y - 7.5, WH_NW + 15, WH_NH + 15, 8); c.stroke(); c.setLineDash([]); }
     if(n === me){ c.strokeStyle = C.lo; c.lineWidth = 2; c.beginPath(); c.roundRect(p.x - 4, p.y - 4, WH_NW + 8, WH_NH + 8, 6); c.stroke(); c.fillStyle = C.lo; c.font = `700 10px ${font}`; c.fillText('YOU', p.x, p.y - 7); }
     c.fillStyle = k ? kc : C.text; c.font = `700 12px ${font}`; c.fillText(whName(n).slice(0, 15), p.x + 7, p.y + 15);
@@ -32501,8 +32560,13 @@ function whDraw(){
       let x = p.x + 7; c.fillStyle = C.dim; c.fillText('→', x, p.y + 42); x += c.measureText('→ ').width;
       for(const code of sy.statics.split(' ')){
         const kk = whStcKind(code), sh = code === 'K162' ? 'exit' : itWhDestTxt(code)[0], col = kk[0] === 's' && kk !== 'sp' ? IT_MAP_SEC[Number(kk.slice(1))] : C[kk] || C.dim, tw = c.measureText(sh).width;
-        if(x + tw > p.x + WH_NW - 4) break; c.fillStyle = col; c.fillText(sh, x, p.y + 42); x += tw + c.measureText('  ').width;
+        if(x + tw > p.x + WH_NW - 4 - (tgW ? tgW + 6 : 0)) break; c.fillStyle = col; c.fillText(sh, x, p.y + 42); x += tw + c.measureText('  ').width;
       }
+    }
+    if(tg){   // the tag: the page's one tag (.it-gtag): a faint fill in the status colour, the text in that colour, 3 px corners
+      const tx = p.x + WH_NW - tgW - 5, ty = p.y + WH_NH - 15; c.font = `700 9px ${font}`;
+      c.globalAlpha = 0.18; c.fillStyle = sc || C.dim; c.beginPath(); c.roundRect(tx, ty, tgW, 12, 3); c.fill(); c.globalAlpha = 1;
+      c.fillStyle = sc || C.text; c.fillText(tg, tx + 5, ty + 9);
     }
   }
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -32551,10 +32615,10 @@ function whMiniGo(ev){
 // ---- the panels: the system in focus (D23, D24). Part 1 fills System; Signatures, Routes and Local say they come later (the owner at the review)
 function whSumHtml(n){
   const S = whS, s = S.st.sys[n], k = !whIsJ(n), lk = whLinksOf(n), own = !!s.cls, eff = k ? '' : whEff(n), rep = k ? itWhStore().rep[n] : null;
-  return `<div class="wh-sh"><span class="wh-shn">${whNameHtml(n)}</span>${whYouHtml(n === S.last)}${whTagHtml(n)}</div>`
+  return `<div class="wh-sh"><span class="wh-shn">${whNameHtml(n)}</span>${whYouHtml(n === S.last)}${whTagHtml(n)}${whStHtml(n)}${whTagPillHtml(n)}</div>`
     + `<div class="wh-kv"><span>${escapeHtml(k ? 'Region' : 'Constellation / region')}</span><b>${escapeHtml(whPlace(n) || 'not known')}</b></div>`
     + (k ? `<div class="wh-kv"><span>Security</span><b>${escapeHtml(whSecTxt(n))}</b></div>` : `<div class="wh-kv"><span>Effect</span><b>${escapeHtml(eff || 'none')}</b></div>`)
-    + `<div class="wh-kv"><span>Kept</span><b>until you remove it</b></div>`
+    + `<div class="wh-kv"><span>Kept</span><b>until you remove it</b></div>${whLockKvHtml(n)}`
     + `<div class="wh-ed" data-wh-ed="${Number(n)}">`
     + (k ? '' : `<label>Class<select data-f="cls">${whOptsHtml(WH_CLS_OPT, whCls(n))}</select><span class="wh-note">${escapeHtml(own ? 'changed by you' : 'from CCP’s data')}</span></label>`
       + `<label>Statics<input type="text" data-f="statics" value="${escapeHtml(s.statics)}" placeholder="e.g. D845 U210" maxlength="40" autocomplete="off"><span class="wh-stc" data-wh-stc>${whStcsHtml(s.statics)}</span><span class="wh-note" data-wh-bad hidden>Codes are a letter and three digits, e.g. U210</span></label>`)
@@ -32562,7 +32626,15 @@ function whSumHtml(n){
     + `<label class="wide">Notes<textarea data-f="notes" rows="2" maxlength="400">${escapeHtml(s.notes)}</textarea></label>`
     + `<div class="wide wh-cns"><div class="wh-sub">Connections</div>${whConnsHtml(n, lk)}</div></div>`
     + (rep && ((rep.sigs || []).length || (rep.raws || []).length) ? `<div class="wh-sub">Intel’s wormhole reports here</div><div class="wh-rep">${itWhSigsHtml(rep.sigs, 6)}</div>${itWhRawLinesHtml(rep.raws || [])}` : '')
-    + `<div class="wh-acts"><a href="https://evemaps.dotlan.net/system/${escapeHtml(encodeURIComponent(whName(n)))}">${escapeHtml(whName(n))} on DOTLAN ↗</a><button type="button" class="wh-rm" data-wh-del="${Number(n)}">Remove from the map</button></div>`;
+    + `<div class="wh-acts"><a href="https://evemaps.dotlan.net/system/${escapeHtml(encodeURIComponent(whName(n)))}">${escapeHtml(whName(n))} on DOTLAN ↗</a>${whRmHtml(n)}</div>`
+    + '<div class="wh-note">Right-click the system on the map (press and hold on a phone) for its status, tag, lock and more.</div>';
+}
+function whStHtml(n){ const k = whMk(n).st; return k ? `<span class="it-gtag wh-st st-${escapeHtml(k)}" title="Status: the box's border on the map">${escapeHtml(whStLabel(k))}</span>` : ''; }
+function whTagPillHtml(n){ const m = whMk(n); return m.tag ? `<span class="it-gtag wh-st${escapeHtml(m.st ? ' st-' + m.st : '')}" title="Tag">${escapeHtml(m.tag)}</span>` : ''; }
+function whLockKvHtml(n){ return whLocked(n) ? '<div class="wh-kv"><span>Locked</span><b>can’t be moved or removed until you unlock it</b></div>' : ''; }
+function whRmHtml(n){
+  return whLocked(n) ? `<button type="button" class="wh-rm" data-wh-del="${Number(n)}" aria-disabled="true" title="${escapeHtml(WH_LOCKED(whName(n)))}">Remove from the map <span class="wh-mnote">(unlock first)</span></button>`
+    : `<button type="button" class="wh-rm" data-wh-del="${Number(n)}">Remove from the map</button>`;
 }
 function whYouHtml(on){ return on ? '<span class="it-here">You</span>' : ''; }
 function whConnsHtml(n, lk){ return lk.length ? lk.map(l => whConnHtml(n, l)).join('') : '<span class="wh-note">No connections.</span>'; }
@@ -32613,7 +32685,8 @@ function whAddForm(f){
   whSelect(id);
 }
 function whHereOpen(x, y){
-  const S = whS, m = S.el.querySelector('.wh-menu'), w = whToWorld(x, y);
+  whMenuClose(false);
+  const S = whS, m = S.el.querySelector('.wh-hmenu'), w = whToWorld(x, y);
   S.here = [Math.round(w.x - WH_NW / 2), Math.round(w.y - WH_NH / 2)];
   m.innerHTML = `<div class="wh-mh">Add a system here</div><form class="wh-here" data-wh-here autocomplete="off"><input type="text" name="sys" maxlength="40" spellcheck="false" placeholder="J123456, Thera or Amamake" aria-label="System to add here"><button type="submit">Add</button></form>`
     + '<div class="wh-note wh-hn">Not linked to anything. Link it later with + Add.</div>';
@@ -32622,7 +32695,7 @@ function whHereOpen(x, y){
   m.style.left = Math.max(4, Math.min(x, bx.clientWidth - m.offsetWidth - 4)) + 'px'; m.style.top = Math.max(4, Math.min(y, bh - m.offsetHeight - 4)) + 'px';
   m.querySelector('input').focus();
 }
-function whHereClose(){ const m = whS && whS.el && whS.el.querySelector('.wh-menu'); if(m && !m.hidden){ m.hidden = true; return true; } return false; }
+function whHereClose(){ const m = whS && whS.el && whS.el.querySelector('.wh-hmenu'); if(m && !m.hidden){ m.hidden = true; return true; } return false; }
 function whHereAdd(f){
   const raw = f.sys.value.trim(); if(!raw) return;
   const id = whNameIn(raw);
@@ -32631,6 +32704,77 @@ function whHereAdd(f){
   if(whS.st.sys[id]){ whMsg(`${whName(id)} is already on your map.`); whSelect(id); if(!whInView(id)){ whCenter(id); whDraw(); } return; }
   if(!whAddSys(id)){ whMsg(`Your map holds ${WH_SYS_MAX} systems at most.`); return; }
   whS.st.pos[id] = whS.here; whSave(); whMsg(`Added ${whName(id)} here, not linked to anything.`); whSelect(id);
+}
+// ---- the system menu (051, D25): right-click a system, or press and hold on a phone. A menu, so no close button: Esc, a press outside or a pick
+// closes it; focus on its first item, the arrows move. Status (D26), a tag, Lock / Unlock (D34), Copy the name, Remove (refused while locked).
+// "Routes from here" waits for the Routes panel (part 4), so it isn't in the menu yet.
+function whStLabel(k){ const x = WH_ST.find(e => e[0] === k); return x ? x[1] : ''; }
+function whMenuStHtml(m){
+  return WH_ST.map(([k, l]) => `<button type="button" class="wh-mi st-${escapeHtml(k)}" role="menuitemradio" aria-checked="${escapeHtml(String(m.st === k))}" data-wh-m="st:${escapeHtml(k)}"><i class="wh-sw" aria-hidden="true"></i>${escapeHtml(l)}</button>`).join('')
+    + `<button type="button" class="wh-mi" role="menuitemradio" aria-checked="${escapeHtml(String(!m.st))}" data-wh-m="st:"><i class="wh-sw" aria-hidden="true"></i>No status</button>`;
+}
+function whMenuRmHtml(n, m){
+  return m.lock ? `<button type="button" class="wh-mi" role="menuitem" data-wh-m="del" aria-disabled="true" title="${escapeHtml(WH_LOCKED(whName(n)))}">Remove from the map <span class="wh-mnote">(unlock first)</span></button>`
+    : '<button type="button" class="wh-mi wh-mdel" role="menuitem" data-wh-m="del">Remove from the map</button>';
+}
+function whMenuHtml(n){
+  const m = whMk(n);
+  return `<div class="wh-mh" role="none">${whNameHtml(n)}</div><div class="wh-mg" role="group" aria-label="Status">${whMenuStHtml(m)}</div>`
+    + `<div class="wh-mtag" role="none"><input type="text" maxlength="${WH_TAG_MAX}" value="${escapeHtml(m.tag || '')}" placeholder="Tag, e.g. A1" aria-label="Tag, up to 8 letters" spellcheck="false" autocomplete="off" data-wh-mtag><button type="button" class="wh-mi" role="menuitem" data-wh-m="tag">Set tag</button></div>`
+    + `<button type="button" class="wh-mi" role="menuitem" data-wh-m="lock">${escapeHtml(m.lock ? 'Unlock' : 'Lock (can’t be moved or removed)')}</button>`
+    + `<button type="button" class="wh-mi" role="menuitem" data-wh-m="copy">Copy the name</button>${whMenuRmHtml(n, m)}`;
+}
+function whMenuOpen(n, x, y){
+  const S = whS; if(!S.st.sys[n]) return;
+  whHereClose(); whPopClose();
+  if(S.sel !== n) whSelect(n);
+  const m = S.el.querySelector('.wh-smenu'); S.menu = n;
+  m.innerHTML = whMenuHtml(n); m.setAttribute('aria-label', `${whName(n)}: status, tag, lock`); m.hidden = false; m.scrollTop = 0;
+  const bx = S.el.querySelector('.wh-box'), br = bx.getBoundingClientRect(), bh = Math.min(bx.clientHeight, innerHeight - br.top - 8);   // inside the map and on the screen (LESSON #46)
+  m.style.left = Math.max(4, Math.min(x, bx.clientWidth - m.offsetWidth - 4)) + 'px'; m.style.top = Math.max(4, Math.min(y, bh - m.offsetHeight - 4)) + 'px';
+  const f = m.querySelector('[data-wh-m]'); if(f) f.focus({preventScroll: true});
+}
+function whMenuClose(back){
+  const m = whS && whS.el && whS.el.querySelector('.wh-smenu'); if(!m || m.hidden) return false;
+  m.hidden = true; whS.menu = null;
+  if(back){ const b = whS.el.querySelector('.wh-box'); if(b) b.focus({preventScroll: true}); }
+  return true;
+}
+function whMenuKey(ev){   // arrows move through the items (in the tag field only Up and Down leave it), Enter in the field sets the tag
+  const m = ev.currentTarget, a = document.activeElement, items = [...m.querySelectorAll('button.wh-mi, input')].filter(e => e.offsetParent), i = items.indexOf(a), inF = !!(a && a.matches('input'));
+  if(ev.key === 'ArrowDown' || ev.key === 'ArrowUp'){ ev.preventDefault(); if(items.length) items[(i < 0 ? 0 : i + (ev.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length].focus(); }
+  else if(!inF && (ev.key === 'Home' || ev.key === 'End')){ ev.preventDefault(); if(items.length) items[ev.key === 'Home' ? 0 : items.length - 1].focus(); }
+  else if(ev.key === 'Enter' && a && a.matches('[data-wh-mtag]')){ ev.preventDefault(); whMenuAct('tag'); }
+}
+function whMenuAct(act){
+  const S = whS, n = S.menu; if(n === null || !S.st.sys[n]){ whMenuClose(true); return; }
+  const [k, v] = act.split(':'), nm = whName(n), m = S.mk[n] || (S.mk[n] = {});
+  if(k === 'copy'){ whCopyName(n); return; }
+  if(k === 'del'){ if(m.lock){ whMsg(WH_LOCKED(nm)); return; } whMenuClose(true); whRemoveAsk(n); return; }
+  if(k === 'st'){ if(WH_ST.some(e => e[0] === v)) m.st = v; else delete m.st; whMsg(m.st ? `${nm}: ${whStLabel(m.st)}.` : `${nm}: no status.`); }
+  if(k === 'tag'){ const t = whTagClean(S.el.querySelector('.wh-smenu [data-wh-mtag]').value); if(t) m.tag = t; else delete m.tag; whMsg(t ? `${nm} tagged ${t}.` : `${nm}: no tag.`); }
+  if(k === 'lock'){
+    if(m.lock){ delete m.lock; if(m.at) S.st.pos[n] = m.at; delete m.at; whMsg(`${nm} can be moved and removed again.`); }
+    else{ const p = S.M && S.M.P.get(n); m.lock = true; if(p){ m.at = [Math.round(p.x), Math.round(p.y)]; S.st.pos[n] = m.at.slice(); } whMsg(WH_LOCKED(nm)); }   // locked where it is now
+    whSave();
+  }
+  if(!m.st && !m.tag && !m.lock) delete S.mk[n];
+  whMkSave(); whMenuClose(true); S.pn = {}; whPaint(true);
+}
+function whCopyName(n){   // to the clipboard; when the browser refuses, the name stays in the menu, selected, to copy by hand
+  const nm = whName(n), m = whS.el.querySelector('.wh-smenu');
+  const hand = () => {
+    const r = m.querySelector('[data-wh-m="copy"]'); if(!r || m.hidden) return;
+    const f = document.createElement('input'); f.type = 'text'; f.readOnly = true; f.value = nm; f.className = 'wh-mcopy'; f.setAttribute('aria-label', `${nm}, selected: press Ctrl+C to copy it`);
+    r.replaceWith(f); f.focus({preventScroll: true}); f.select(); whMsg('The browser didn’t let the page copy: the name is selected, press Ctrl+C (Cmd+C on a Mac).');
+  };
+  let p = null; try{ p = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(nm) : null; }catch(e){ p = null; }
+  if(!p){ hand(); return; }
+  p.then(() => { whMsg(`Copied ${nm}.`); whMenuClose(true); }, hand);
+}
+function whHoverTxt(n){
+  const m = whMk(n);
+  return [whName(n), whIsJ(n) ? whClsName(whCls(n)) : whSecTxt(n), m.st ? `status: ${whStLabel(m.st)}` : '', m.tag ? `tag: ${m.tag}` : '', m.lock ? 'locked: can’t be moved or removed' : '', 'right-click for its menu'].filter(Boolean).join(' · ');
 }
 // ---- edits in the System panel: saved on change, no Save button (D9)
 function whEdit(f){
@@ -32659,15 +32803,17 @@ function whWire(el){
     if(d.whPn){ const body = [...el.querySelectorAll('[data-pnb]')].find(x => x.dataset.pnb === d.whPn), on = body.hidden;
       if(whS.M.phone){ el.querySelectorAll('.wh-pnb').forEach(x => { x.hidden = true; }); el.querySelectorAll('[data-wh-pn]').forEach(x => x.setAttribute('aria-expanded', 'false')); }
       body.hidden = !on; b.setAttribute('aria-expanded', String(on)); return; }
+    if(d.whM){ whMenuAct(d.whM); return; }
     if(d.whPop){ whPop(d.whPop); return; }
     if('whPopx' in d){ whPopClose(); return; }
     if(d.whSel){ whSelect(Number(d.whSel)); return; }
-    if(d.whDel){ const n = Number(d.whDel); whRemoveSys(n); whMsg(`Removed ${whName(n)} and its connections.`); whS.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true); return; }
+    if(d.whDel){ whRemoveAsk(Number(d.whDel)); return; }
     if(d.whDl){ whS.st.links = whS.st.links.filter(l => whLinkKey(l.a, l.b) !== d.whDl); whSave(); whMsg('Connection deleted.'); whS.pn = {}; whPaint(true); return; }
     if(d.whZ) whZoomBtn(b, d.whZ);
     if(!ev.target.closest('.wh-menu')) whHereClose();
   });
   el.addEventListener('change', (ev) => { if(ev.target.closest('[data-wh-ed]')) whEdit(ev.target); });
+  el.querySelector('.wh-smenu').addEventListener('keydown', whMenuKey);
   el.addEventListener('input', (ev) => {
     const f = ev.target;
     if(f.matches('[data-f="statics"]')){ const o = f.closest('[data-wh-ed]').querySelector('[data-wh-stc]'); if(o) o.innerHTML = whStcsHtml(whStatics(f.value).ok); }
@@ -32679,13 +32825,15 @@ function whWire(el){
   });
   document.addEventListener('keydown', (ev) => {
     if(ev.key !== 'Escape' || !whS.el || !whS.el.offsetParent) return;
+    if(whMenuClose(true)){ ev.preventDefault(); return; }
     if(whHereClose()){ ev.preventDefault(); return; }
     const p = [...whS.el.querySelectorAll('.wh-pop')].find(x => !x.hidden);
     if(p){ ev.preventDefault(); whPopClose(); const o = [...whS.el.querySelectorAll('[data-wh-pop]')].find(x => x.dataset.whPop === p.dataset.pop); if(o) o.focus(); return; }
     if(whS.M.group.size){ whS.M.group.clear(); whDraw(); }
   }, true);
   document.addEventListener('pointerdown', (ev) => {
-    if(!whS.el) return; const m = whS.el.querySelector('.wh-menu'); if(!m.hidden && !m.contains(ev.target) && ev.button !== 2) whHereClose();
+    if(!whS.el) return; const m = whS.el.querySelector('.wh-hmenu'); if(!m.hidden && !m.contains(ev.target) && ev.button !== 2) whHereClose();
+    const sm = whS.el.querySelector('.wh-smenu'); if(!sm.hidden && !sm.contains(ev.target) && !(ev.button === 2 && ev.target === whCv())) whMenuClose(false);   // a right-click on the map opens the next one
     const p = [...whS.el.querySelectorAll('.wh-pop')].find(x => !x.hidden); if(p && !p.contains(ev.target) && !ev.target.closest('[data-wh-pop]')) whPopClose();
   }, true);
   whWireMap(el);
@@ -32695,7 +32843,11 @@ function whZoomBtn(b, a){
   if(a === 'me'){ if(S.last !== null && M.P.has(S.last)){ whCenter(S.last); whDraw(); } else whMsg('Your system isn’t on this map.'); }
   if(a === 'in') whZoom(1.25); if(a === 'out') whZoom(0.8); if(a === 'fit') whFit();
   if(a === 'sel'){ M.selMode = !M.selMode; b.setAttribute('aria-pressed', String(M.selMode)); }
-  if(a === 'arr'){ S.st.pos = {}; whSave(); M.group.clear(); S.drawKey = ''; whPopClose(); whPaint(true); whFit(); whMsg('Rearranged as a tree. Moving a system again keeps it where you put it.'); }
+  if(a === 'arr'){
+    const kept = Object.keys(S.st.sys).filter(whLocked);   // D34: Rearrange leaves a locked system where it is
+    S.st.pos = Object.fromEntries(Object.entries(S.st.pos).filter(([k]) => whLocked(k))); whSave(); M.group.clear(); S.drawKey = ''; whPopClose(); whPaint(true); whFit();
+    whMsg(`Rearranged as a tree${kept.length ? ` (${kept.length} locked system${kept.length === 1 ? '' : 's'} stayed where ${kept.length === 1 ? 'it was' : 'they were'})` : ''}. Moving a system again keeps it where you put it.`);
+  }
 }
 function whWireMap(el){
   const box = el.querySelector('.wh-box'), cv = box.querySelector('canvas'), M = whS.M;
@@ -32706,10 +32858,13 @@ function whWireMap(el){
     const q = pt(ev); M.ptrs.set(ev.pointerId, q);
     if(M.ptrs.size === 2){ const [a, b] = [...M.ptrs.values()]; M.drag = null; M.band = null; clearTimeout(M.lp); M.pinch = {d: Math.hypot(a.x - b.x, a.y - b.y), s: M.cam.s, w: whToWorld((a.x + b.x) / 2, (a.y + b.y) / 2)}; return; }   // two fingers: pinch and pan
     const hit = whHit(whToWorld(q.x, q.y));
-    if(hit !== null) M.drag = {kind: 'move', hit, sx: q.x, sy: q.y, moved: false, from: new Map((M.group.has(hit) ? [...M.group] : [hit]).map(n => [n, {...M.P.get(n)}])), shift: ev.shiftKey};
+    if(hit !== null){
+      M.drag = {kind: 'move', hit, sx: q.x, sy: q.y, moved: false, locked: whLocked(hit), from: new Map((M.group.has(hit) ? [...M.group] : [hit]).filter(n => !whLocked(n)).map(n => [n, {...M.P.get(n)}])), shift: ev.shiftKey};
+      if(ev.pointerType !== 'mouse'){ const d0 = M.drag; clearTimeout(M.lp); M.lp = setTimeout(() => { if(M.drag === d0 && !d0.moved && M.ptrs.size === 1){ M.drag = null; M.ptrs.clear(); M.lpOpen = true; whMenuOpen(hit, q.x, q.y); } }, 550); }   // press and hold on a system: its menu (D25)
+    }
     else if(ev.shiftKey || M.selMode){ M.drag = {kind: 'band', sx: q.x, sy: q.y, moved: false, add: ev.shiftKey}; M.band = {x0: q.x, y0: q.y, x1: q.x, y1: q.y}; }
     else M.drag = {kind: 'pan', sx: q.x, sy: q.y, cam: {...M.cam}, moved: false};
-    if(M.drag && M.drag.kind === 'pan' && ev.pointerType !== 'mouse'){ const d0 = M.drag; clearTimeout(M.lp); M.lp = setTimeout(() => { if(M.drag === d0 && !d0.moved && M.ptrs.size === 1){ M.drag = null; M.ptrs.clear(); whHereOpen(q.x, q.y); } }, 550); }   // press and hold on empty space: add a system there
+    if(M.drag && M.drag.kind === 'pan' && ev.pointerType !== 'mouse'){ const d0 = M.drag; clearTimeout(M.lp); M.lp = setTimeout(() => { if(M.drag === d0 && !d0.moved && M.ptrs.size === 1){ M.drag = null; M.ptrs.clear(); M.lpOpen = true; whHereOpen(q.x, q.y); } }, 550); }   // press and hold on empty space: add a system there
   });
   cv.addEventListener('pointermove', (ev) => {
     if(!M.ptrs.has(ev.pointerId)) return;
@@ -32730,7 +32885,7 @@ function whWireMap(el){
     if(M.pinch){ if(M.ptrs.size < 2) M.pinch = null; M.drag = null; return; }
     const d = M.drag; M.drag = null; if(!d) return;
     if(d.kind === 'move'){
-      if(d.moved){ for(const n of d.from.keys()){ const p = M.P.get(n); whS.st.pos[n] = [Math.round(p.x), Math.round(p.y)]; } whSave(); whS.drawKey = ''; }   // this browser only
+      if(d.moved){ for(const n of d.from.keys()){ const p = M.P.get(n); whS.st.pos[n] = [Math.round(p.x), Math.round(p.y)]; } whSave(); whS.drawKey = ''; if(d.locked) whMsg(WH_LOCKED(whName(d.hit))); }   // this browser only
       else if(d.shift){ if(M.group.has(d.hit)) M.group.delete(d.hit); else M.group.add(d.hit); whDraw(); }
       else whSelect(d.hit);
     }
@@ -32743,7 +32898,14 @@ function whWireMap(el){
     if(d.kind === 'pan' && !d.moved && M.group.size){ M.group.clear(); whDraw(); }
   };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-  cv.addEventListener('contextmenu', (ev) => { ev.preventDefault(); const q = pt(ev), hit = whHit(whToWorld(q.x, q.y)); if(hit !== null) whSelect(hit); else whHereOpen(q.x, q.y); });   // a system's own menu is part 2
+  // a press and hold opened a menu under the finger: lifting it must not also click that menu's first item (the browser's click after a touch;
+  // it picked a status nobody chose, 051's check). LESSON #167
+  cv.addEventListener('touchend', (ev) => { if(M.lpOpen){ M.lpOpen = false; ev.preventDefault(); } }, {passive: false});
+  cv.addEventListener('touchstart', () => { M.lpOpen = false; }, {passive: true});
+  cv.addEventListener('contextmenu', (ev) => { ev.preventDefault(); const q = pt(ev), hit = whHit(whToWorld(q.x, q.y)); if(hit !== null) whMenuOpen(hit, q.x, q.y); else whHereOpen(q.x, q.y); });
+  // the box under the pointer named in a hover (its status not by colour alone): written only when the box under the pointer changes
+  cv.addEventListener('pointermove', (ev) => { if(ev.buttons || !M.cam || ev.pointerType !== 'mouse') return; const q = pt(ev), h = whHit(whToWorld(q.x, q.y)); if(h === M.hov) return; M.hov = h; cv.title = h === null ? '' : whHoverTxt(h); });
+  cv.addEventListener('pointerleave', () => { M.hov = undefined; if(cv.title) cv.title = ''; });
   cv.addEventListener('wheel', (ev) => { ev.preventDefault(); const q = pt(ev); whZoom(Math.exp(-ev.deltaY * (ev.ctrlKey ? 0.01 : 0.0015)), q.x, q.y); }, {passive: false});
   const mc = box.querySelector('.wh-mini');
   mc.addEventListener('contextmenu', (ev) => ev.preventDefault());

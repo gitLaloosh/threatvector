@@ -474,6 +474,14 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   names, class from the system / constellation / region, effect from mapSecondarySuns): `whTable`. The map (`whPaint` compares a key, LESSON #120;
   `whDraw` on interactions), its corner buttons the Intel map's (D33), the System panel (`whSumHtml`; Signatures, Routes and Local say they come
   later), + Add (`itWhTyOrCls`, `itWhOptHtml`), "Add a system here" on right-click. Phones: the More menu (`tm*`, D21). `wormhole_tab_check.py`.
+  Build queue 051 (part 2, v2026.11.15.2; D25, D26, D34): the system menu (`whMenuOpen`, `.wh-smenu`, role menu, no close button) on a right-click
+  or a 0.55 s press and hold on a system (empty space keeps "Add a system here", `.wh-hmenu`): a status as the box's border (`WH_ST`, tokens
+  `--wh-st-*`, named in the menu, the System panel's tag and the box's hover `whHoverTxt`), a tag (`WH_TAG_MAX` 8; on the map in the page's tag
+  look, the owner: "the page's"), Lock (`whLocked`: no drag, alone or in a group; Rearrange keeps it; `whRemoveSys` refuses with `WH_LOCKED`'s
+  words), Copy the name (else selected in the menu), Remove. Kept in their own key `tvWhMarks` (`whMkRead` / `whMkSave`; part 1's `whRead`
+  rebuilds systems from known fields), a locked system's place there too (`whAt`). A press and hold that opened a menu cancels its touchend
+  (LESSON #167). The map's height (`--whH`) is worked out before the empty map returns, so the empty map is as tall as the full one (the owner).
+  `wormhole_menu_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a

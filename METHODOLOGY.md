@@ -512,3 +512,6 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   by where its type leads (the same table as Intel's wormhole reports).
 - **Intel in a hole:** jumps are counted from your chain's nearest k-space system (where you came in), since there are no gates to count from.
 - **Kept:** in this browser only (tvWhChain), until you remove it; nothing expires.
+- **The system menu** (v2026.11.15.2, build queue 051): a status (Home, Friendly, Looking for, Warning, Target, Dangerous) drawn as the box's
+  border, a tag of up to 8 characters, and Lock: a locked system keeps its place (a drag, alone or in a group, and Rearrange leave it) and can't be
+  removed until it's unlocked; its connections can still be deleted. Kept in this browser only (tvWhMarks), beside the chain.
