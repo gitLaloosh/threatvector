@@ -11,7 +11,7 @@ intel_check.py's stand-ins (its made-up Chatlogs folder, ESI and system names, t
     sound, shows no notification, leaves Intel's state (its lists, filters, names, Standings) and the map's state as they were;
   * inert: Tab never lands inside it, a press on its kill badge or a pilot opens nothing; every chip's corporation and alliance has
     its emblem (an inline image, no empty logo box) and ticker;
-  * 390 px: no sideways scroll, Near You as a list (no map), note 3's phone wording;
+  * 390 px (052): no sideways scroll, the map picture with Near You's list under it, note 3 as on a wide screen;
   * v2026.11.07.8: the switch is disabled (its hover says what's missing) until a folder is chosen and a channel ticked;
   * the bug found at 017's review (the owner: "why would we allow intel to be turned out if no intel channels have been linked and
     chosen?"): the folder chosen, no channel ticked, the switch: Intel stays off and says to choose the channels; on with a channel,
@@ -44,7 +44,7 @@ MARKS = """() => { const f = document.querySelector('#intelPanel .itx'); if(!f) 
   return [1, 2, 3, 4, 5].map(n => { const m = f.querySelector(`[data-itx-mk="${n}"]`), r = m.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     if(m.hidden) return [n, 'hidden'];
     const inF = r.left >= F.left - 1 && r.right <= F.right + 1 && r.top >= F.top - 1 && r.bottom <= F.bottom + 1;
-    if(n === 3 && phone){ const h = E('.it-nearcol > .it-h'), b = h.getBoundingClientRect(); return [n, inF && cy >= b.top && cy <= b.bottom]; }
+    // build queue 052: marker 3 on the map picture on a phone too (it was by Near You's heading while the phone's example had no map)
     const t = T[n]; if(!t) return [n, 'no target']; const b = t.getBoundingClientRect();
     const ok = n === 5 ? Math.abs(cx - (b.right + 16)) <= 4 && Math.abs(cy - (b.top + 7)) <= 4 : Math.abs(cx - b.left - (n === 3 ? 14 : 0)) <= 4 && cy >= b.top - 2 && cy <= b.bottom + 2;
     return [n, inF && ok]; }); }"""
@@ -173,9 +173,10 @@ with sync_playwright() as p:
     # ---- 390 px ----
     ctx = new_ctx(390); pg = fresh(ctx); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(1500)
     I = pg.evaluate(INFO); M2 = pg.evaluate(MARKS)
-    vis = pg.evaluate("() => getComputedStyle(document.querySelector('.itx .it-mapcol')).display")
-    check(I and I['sw'] <= 390 and vis == 'none' and I['notes'][2] == '3The map: switch Near You to Map to see reports and kills around you.' and all(ok is True for _, ok in M2),
-          f'390 px: no sideways scroll ({I and I["sw"]}), Near You as a list (map {vis}), note 3\'s phone wording, each marker on its target {M2}')
+    # build queue 052: the phone's example shows the map picture too (Near You's list under it), note 3 as on a wide screen
+    vis = pg.evaluate("() => [getComputedStyle(document.querySelector('.itx .it-mapcol')).display, !!document.querySelector('.itx .itx-map img[src]'), (() => { const m = document.querySelector('.itx .itx-map').getBoundingClientRect(), n = document.querySelector('.itx .it-nearcol').getBoundingClientRect(); return n.top >= m.bottom - 1; })()]")
+    check(I and I['sw'] <= 390 and vis == ['block', True, True] and I['notes'][2] == '3The map: reports and kills around you; hover one for its route to you.' and all(ok is True for _, ok in M2),
+          f'390 px: no sideways scroll ({I and I["sw"]}), the map picture with Near You\'s list under it {vis}, note 3 as on a wide screen, each marker on its target {M2}')
     ctx.close()
 
     # ---- a browser without the folder picker; Brave ----

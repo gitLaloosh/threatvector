@@ -21,8 +21,8 @@ not by the page. Uses intel_check.py's made-up folder, mocks and names (you in 1
     paths_to_you_check.py), the pressed one aria-pressed, 32 px; the name line shown on a press, faded after;
   * routes past the reach (the owner: "yes"): hover shows its route and the tip says reports aren't shown there; a press keeps it; a
     system with no gate route to you: the tip says so, nothing kept;
-  * Near You beside the map at 905, 1000 and 1200 px with a busy row (LESSON #113): at least 400 px, no row wider than its box, and
-    the map's column (so Near You) the same height for every filter;
+  * Near You's panel in the map at 905, 1000 and 1200 px with a busy row (LESSON #113): 320 px (052), no row wider than its box, and
+    the map's column the same height for every filter;
   * 390 px: one 44 px button; it opens the row of seven 44 px buttons; a pick, Escape (focus back on the button) and a press outside
     close it; no sideways scroll;
   * the info text and "Map: within"; the timings (layout at a 30-jump reach, a redraw of the whole galaxy), printed for the history doc;
@@ -62,7 +62,7 @@ def start(b, html, w, errs, h=1000, touch=False):
     ctx.on('page', lambda pg: pg.on('pageerror', lambda e: errs.append(str(e))))
     ctx.add_init_script(FS); route(ctx)
     pg = ctx.new_page(); pg.goto('file://' + html)
-    pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false, forget: 15, hideFriendly: true})); }", SIDE)
+    pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({nearShown: true, channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false, forget: 15, hideFriendly: true})); }", SIDE)
     pg.reload(); pg.wait_for_timeout(400)
     setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
     near = sorted((s for s, v in D0.items() if 1 <= v <= 3), key=lambda s: (D0[s], s))
@@ -100,7 +100,8 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         if moved > 14: out.append(f'a system within the reach moved {moved:.1f} px off CCP\'s place at the start (want at most 14)')
         gap = min(((P[x][0] - P[y][0]) ** 2 + (P[x][1] - P[y][1]) ** 2) ** 0.5 * k0 for ii, x in enumerate(rk) for y in rk[ii + 1:])
         if gap < 11.9: out.append(f'the systems within the reach {gap:.2f} px apart at the start (want at least 12)')
-        if abs(L['home'][0] - L['W'] / 2) > 1 or abs(L['home'][1] - L['H'] / 2) > 1 or abs(L['G'] * k0 - 16) > 0.5: out.append(f"the start: you at {L['home']} in a {L['W']}x{L['H']} box, a gate {L['G'] * k0:.1f} px")
+        fx = pg.evaluate("itMapFreeX()")   # 052: in the part of the map Near You's panel doesn't cover (the owner: "yes")
+        if abs(L['home'][0] - fx) > 1 or abs(L['home'][1] - L['H'] / 2) > 1 or abs(L['G'] * k0 - 16) > 0.5: out.append(f"the start: you at {L['home']} in a {L['W']}x{L['H']} box (want x {fx:.0f}), a gate {L['G'] * k0:.1f} px")
         pg.click('.it-map-zoom [data-im-z="fit"]'); pg.wait_for_timeout(150)
         o = pg.evaluate("() => itm.vis.filter(i => { const x = itm.Q[2 * i], y = itm.Q[2 * i + 1]; return x < 0 || y < 0 || x > itm.W || y > itm.H; }).length")
         if o: out.append(f'⤢: {o} systems within the reach out of the box')
@@ -152,6 +153,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         # a dot's pixel follows the pressed filter, and a press redraws once
         q = next(s for s, v in sorted(D0.items(), key=lambda x: x[1]) if 2 <= v <= 4 and s not in reps)
         DOT = """(id) => { const i = itGraphGet().at.get(id), d = window.devicePixelRatio || 1; return [...itm.cv.getContext('2d').getImageData(Math.round(itm.Q[2 * i] * d), Math.round(itm.Q[2 * i + 1] * d), 1, 1).data]; }"""
+        pg.mouse.move(5, 5); pg.wait_for_timeout(100)   # off the map first: leaving a hovered system redraws it
         d0 = pg.evaluate('itm.draws'); pg.click('#intelPanel [data-im-f="jumps"]'); pg.wait_for_timeout(150)
         d1, px = pg.evaluate('itm.draws'), pg.evaluate(DOT, q)
         want = JUMPCOL[D0[q]]; rgb = [int(want[1:3], 16), int(want[3:5], 16), int(want[5:7], 16)]
@@ -160,7 +162,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
     if 'bar' in parts:
         bb = pg.evaluate("""() => { const box = itm.box.getBoundingClientRect(); return [...itm.box.querySelectorAll('[data-im-f]')].map(b => { const r = b.getBoundingClientRect();
           return [b.dataset.imF, b.getAttribute('aria-pressed'), Math.round(r.width), Math.round(r.height), r.left >= box.left && r.right <= box.right && r.top >= box.top && r.bottom <= box.bottom]; }); }""")
-        if [x[0] for x in bb] != ['sec', 'jumps', 'region', 'reports', 'kills', 'paths', 'wh'] or [x[1] for x in bb] != ['true', 'false', 'false', 'false', 'false', 'false', 'false'] or any(x[2] != 32 or x[3] != 32 or not x[4] for x in bb):
+        if [x[0] for x in bb] != ['sec', 'jumps', 'region', 'reports', 'kills', 'wh', 'paths'] or [x[1] for x in bb] != ['true', 'false', 'false', 'false', 'false', 'false', 'false'] or any(x[2] != 32 or x[3] != 32 or not x[4] for x in bb):
             out.append(f'the bar at 1440 px: {bb}')
         pg.mouse.move(5, 5); pg.click('#intelPanel [data-im-f="region"]'); pg.mouse.move(5, 5); pg.wait_for_timeout(500)
         nm = pg.evaluate("() => { const n = itm.box.querySelector('.it-map-fn'); return [n.textContent, getComputedStyle(n).opacity, itm.box.querySelector('[data-im-f=\"region\"]').getAttribute('aria-pressed')]; }")
@@ -186,7 +188,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         pg.mouse.move(5, 5)
     if 'info' in parts or 'routes' in parts:
         it_ = pg.evaluate("() => [CARD_INFO.intel.join(' '), rsLabel(RS.mapReach), RS.mapReach.title()]")
-        if "**{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route; right-click a system to set your destination in EVE." not in it_[0] or 'The bottom bar picks what it shows; Paths to you draws the routes from hostiles in your alert range as a tree.' not in it_[0] or '(solo, 2–10, 11+)' not in it_[0]: out.append('the info text (intel) is not the owner\'s pick')
+        if "**{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route; right-click a system to set your destination in EVE." not in it_[0] or 'Filters (left) pick what it shows. Paths to you: routes from hostiles in your alert range, as a tree.' not in it_[0] or '(solo, 2–10, 11+)' not in it_[0]: out.append('the info text (intel) is not the owner\'s pick')
         if it_[1] != 'Map: within' or not it_[2].startswith('Reports and names show this many jumps from you'): out.append(f'the stepper: {it_[1:]}')
         tm = pg.evaluate("() => { it.set.mapReach = 30; itm.W = 0; itMapRefresh(true); const a = [itm.layoutMs, itm.vis.length]; itMapZoom(itm.W / 2, itm.H / 2, 1e-6); const t = performance.now(); for(let k = 0; k < 10; k++) itMapDraw(); a.push((performance.now() - t) / 10); it.set.mapReach = null; itm.W = 0; itMapRefresh(true); return a; }")
         print(f'TIMING: layout at a 30-jump reach ({tm[1]} systems) {tm[0]:.1f} ms; a redraw of the whole galaxy {tm[2]:.1f} ms')
@@ -195,12 +197,12 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
     if 'near' in parts:
         for w in (905, 1000, 1200):
             ctx, pg = start(b, html, w, errs)
-            r = pg.evaluate("""() => { const hs = []; for(const f of ['sec', 'jumps', 'region', 'reports', 'kills', 'paths', 'wh']){ itMapFilterSet(f); hs.push(Math.round(document.querySelector('#intelPanel .it-mapcol').getBoundingClientRect().height * 10) / 10); }
+            r = pg.evaluate("""() => { const hs = []; for(const f of ['sec', 'jumps', 'region', 'reports', 'kills', 'wh', 'paths']){ itMapFilterSet(f); hs.push(Math.round(document.querySelector('#intelPanel .it-mapcol').getBoundingClientRect().height * 10) / 10); }
               itMapFilterSet('sec'); const nc = document.querySelector('#intelPanel .it-nearcol').getBoundingClientRect();
               const over = [...document.querySelectorAll('#itNearList > .it-nb')].filter(e => e.scrollWidth > e.clientWidth + 1 || e.getBoundingClientRect().right > nc.right + 1).length;
               return [hs, Math.round(nc.width), over, document.querySelectorAll('#itNearList > .it-nb').length, document.querySelector('#intelPanel .it-map-fl').getBoundingClientRect().height]; }""")
             hs, nw, over, rows, flh = r
-            if len(set(hs)) != 1 or nw < 400 or over or rows < 2 or flh > 18: out.append(f'{w} px: the map column {hs} (one height for every filter), Near You {nw} px wide, {over} of {rows} rows wider than their box, the legend line {flh} px')
+            if len(set(hs)) != 1 or nw != 320 or over or rows < 2 or flh > 18: out.append(f'{w} px: the map column {hs} (one height for every filter), Near You\'s panel {nw} px wide (052: 320), {over} of {rows} rows wider than their box, the legend line {flh} px')
             ctx.close()
     if 'phone' in parts:
         ctx, pg = start(b, html, 390, errs, h=844, touch=True)
@@ -227,7 +229,7 @@ MUTANTS = [
     ('gates between regions solid', "c.setLineDash(k & 1 ? (big ? [3, 4] : [2, 3]) : []);", "c.setLineDash([]);", ('look',)),
     ('your region\'s name grey', "c.fillStyle = rg === mine ? '#ffffff' : '#8f9ba5';", "c.fillStyle = '#8f9ba5';", ('look',)),
     ('a long legend allowed to wrap', [(".it-map-leg .it-map-fl{flex:1 0 100%; display:flex; align-items:center; gap:6px; height:16px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;}",
-     ".it-map-leg .it-map-fl{flex:1 0 100%; display:flex; flex-wrap:wrap; align-items:center; gap:6px;}"), ("10+ · grey: no gate route`", "10+ · grey: no gate route to you, by any stargate from where you are now in New Eden`")], ('near',)),
+     ".it-map-leg .it-map-fl{flex:1 0 100%; display:flex; flex-wrap:wrap; align-items:center; gap:6px;}"), ("10+ · grey: no gate route`", "10+ · grey: no gate route to you, by any stargate from where you are now in New Eden, whatever the route, the region, the security status, the jump bridges or the wormholes you may know about, and whatever the map's reach is set to under Map: within`")], ('near',)),
     ('Escape not closing the phone\'s row', "if(e.key === 'Escape' && itm.el.querySelector('.it-map-fb.open'))", "if(e.key === 'Esc' && itm.el.querySelector('.it-map-fb.open'))", ('phone',)),
 ]
 

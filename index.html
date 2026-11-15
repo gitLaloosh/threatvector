@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ci4wKfCmRKkoetEas7713BZoMTdl+MAmGqazjdi9710='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sBPx7fL+Bqx8rv91M272NcHBu+Xw3wDWcd6PI0Thnt0='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2503,6 +2503,11 @@
   .itx > button.x-close{position:absolute; top:10px; right:10px; margin:0;}
   .itx-wrap{position:relative;}
   .itx .it-top .it-nearcol{contain:none; min-height:0;}
+  /* build queue 052: the example's Near You open beside its still map button at the picture's top right (under the markers); on a phone
+     under the picture */
+  .it-top.itx-top .itx-map{position:relative;} .it-top.itx-top .itx-map .it-map-rail{top:8px;}
+  .it-top.itx-top .it-nearcol{z-index:2; top:8px; bottom:8px; height:auto;} .it-top.itx-top .it-nearcol > .itx-near{flex:1 1 0; min-height:0; overflow:hidden;}
+  @media (max-width: 599px){ .it-top.itx-top .it-nearcol{position:static; width:auto; height:auto; margin-top:10px;} .it-top.itx-top .it-nearcol > .itx-near{overflow:visible;} }
   .itx-map img{display:block; width:100%; height:auto;}
   .itx-mk{position:absolute; z-index:3; width:20px; height:20px; margin:-10px 0 0 -10px; border-radius:50%; background:var(--cyan); color:#0b0f13; font:700 11.5px/20px var(--sans); text-align:center; box-shadow:0 0 0 2px var(--panel); pointer-events:none;}
   .itx-mk[hidden]{display:none;}
@@ -2653,8 +2658,31 @@
 
   /* ---- v2026.11.02.4: the Intel map beside Near You, the Feed below (layout B; a List | Map switch on a phone), and the range steppers
      (roadmap/intel-map-plan.md; mockup Claude outputs/intel_map_mockup_v3.html) ---- */
-  .it-top{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(400px,0.8fr); gap:6px 20px; align-items:start;}   /* Near You's rows need ~400 px (intel_layout_check's split widths) */
-  .it-top .it-nv{display:none;}
+  /* build queue 052 (Project doc roadmap/intel-layout-sov-plan.md, part 1; mockup Claude outputs/intel_layout_mockup.html): the map full
+     width and taller, the Feed below; Near You a panel inside the map behind its button in the rail under the zoom buttons (shut by default,
+     remembered as nearShown); the filters a column down the map's left edge. The map box's height is --it-mh (itMapRefresh), so the panel
+     stops 8 px above the map's foot whatever the legend under it holds. */
+  .it-top{display:block;}
+  .it-mapwrap{position:relative;}
+  .it-top .it-nearcol{position:absolute; z-index:4; top:46px; right:44px; width:320px; height:calc(var(--it-mh, 520px) - 54px); display:flex; flex-direction:column; box-sizing:border-box;
+    padding:10px 12px 8px; background:var(--panel); border:1px solid var(--line); border-radius:6px; box-shadow:0 8px 24px rgba(0,0,0,.5); overflow:hidden;}   /* rule B: panels over the map */
+  .it-top:not(.ny-open) .it-nearcol{display:none;}
+  .it-top .it-nearcol > .it-h{flex:none; display:flex; align-items:center; gap:8px; flex-wrap:nowrap;} .it-top .it-nearcol > .it-h h3{font:700 14px var(--sans); color:var(--heading); margin:0;}
+  .it-top .it-nearcol > .it-h .ctx{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;}
+  .it-top .it-nearcol > #itNearList{flex:1 1 0; min-height:0; overflow-y:auto; overscroll-behavior:auto; scrollbar-gutter:stable; padding-right:2px;}
+  .it-top .it-nearcol > .it-more{display:block; flex:none; padding:5px 2px 0; font:400 11.5px var(--sans); color:var(--text-dim); border-top:1px solid var(--line-soft);}
+  .it-top .it-nearcol > .it-more[hidden]{display:none;}
+  .it-nearcol .it-nb, .it-nearcol .it-nb.alert{background:var(--panel-2);}   /* rule B: rows inside a panel are the site's card colour */
+  /* the rail of map panel buttons under + − ⤢ ⌖ (Near You now; the Routes list later), in the map control style (rule A) */
+  .it-map-rail{position:absolute; z-index:5; top:46px; right:8px; display:flex; flex-direction:column; gap:4px;}
+  .it-map-rail button{position:relative; display:flex; align-items:center; justify-content:center; width:30px; height:30px; min-height:30px; margin:0; padding:0; border-radius:4px; border:1px solid var(--line);
+    background:rgba(18,23,28,.9); color:var(--text); cursor:pointer;}
+  .it-map-rail button:hover{border-color:color-mix(in srgb, var(--cyan) 55%, transparent);} .it-map-rail button[aria-pressed="true"]{background:var(--tag-on); color:var(--heading);}
+  .it-map-rail button:focus-visible{outline:2px solid var(--cyan); outline-offset:1px;} .it-map-rail svg{display:block;}
+  .it-ny-badge{position:absolute; top:-6px; right:-7px; min-width:15px; height:15px; box-sizing:border-box; padding:0 3px; border-radius:8px; border:1px solid var(--line); background:#222c36; color:var(--heading);
+    font:700 10px/13px var(--mono); text-align:center; pointer-events:none;} .it-ny-badge:empty{display:none;}
+  .it-ny-badge.al{background:var(--amber); border-color:var(--amber); color:#1b1306;}   /* rule A's one amber: a count that means your alert range */
+  .it-map.pt-on .it-map-rail{z-index:3;}
   .it-map{position:relative; min-width:0;}
   .it-map-box{position:relative; border:1px solid var(--line); border-radius:6px; background:#0c1014; overflow:hidden;}
   .it-map-box canvas{display:block; width:100%; cursor:grab; touch-action:pan-x pan-y;}
@@ -2683,7 +2711,7 @@
   .it-rp-sug[hidden]{display:none;}
   .it-rp-sug li{padding:5px 9px; font:400 12px/1.3 var(--sans); cursor:pointer; color:var(--text);} .it-rp-sug li.on, .it-rp-sug li:hover{background:#1d2731;}
   .it-rp-sug li .d, .it-rp-menu .d, .it-rp-note .d, .it-rp-box .d{color:var(--text-dim);}
-  .it-map-box button.it-map-clr{top:46px;}
+  .it-map-box button.it-map-clr{top:8px; left:auto; right:148px;}   /* 052: left of the zoom buttons (the filter column is under the search box) */
   .it-rp-menu{position:absolute; z-index:6; min-width:230px; max-width:calc(100% - 8px); box-sizing:border-box; padding:6px; border:1px solid #2c3842; border-radius:6px; background:var(--panel-2); box-shadow:0 8px 22px rgba(0,0,0,.55); font:400 12px/1.35 var(--sans); color:var(--text);}
   .it-rp-mh{padding:3px 6px 6px; border-bottom:1px solid var(--line); margin-bottom:4px;} .it-rp-mh b{color:var(--heading);}
   .it-rp-btns{display:flex; flex-direction:column; gap:2px;}
@@ -2693,7 +2721,7 @@
   .it-rp-btns button[disabled]{opacity:.45; cursor:default;} .it-rp-btns .it-rp-av{border-top:1px solid var(--line); border-radius:0 0 4px 4px;}
   .it-map-tip.it-rp-act{pointer-events:auto; z-index:5;} .it-rp-intip{margin-top:6px;} .it-rp-intip button{min-height:44px; border:1px solid var(--line); margin-top:4px;}
   .it-rp-w{color:var(--amber);} .it-rp-n b{color:var(--heading);}
-  .it-rp-note{position:absolute; left:8px; right:8px; bottom:52px; z-index:5; padding:8px 40px 8px 10px; border:1px solid var(--cyan); border-radius:6px; background:rgba(18,23,28,.96); font:400 12px/1.4 var(--sans); color:var(--text);}
+  .it-rp-note{position:absolute; left:8px; right:8px; bottom:8px; z-index:5; padding:8px 40px 8px 10px; border:1px solid var(--cyan); border-radius:6px; background:rgba(18,23,28,.96); font:400 12px/1.4 var(--sans); color:var(--text);}
   .it-rp-note.warn{border-color:var(--amber);} .it-rp-note[hidden]{display:none;} .it-rp-note b{color:var(--heading);}
   .it-rp-note button.x-close{position:absolute; right:4px; top:4px;} .it-rp-nb{margin-top:6px;}
   .it-rp-box .it-rp-pref{display:flex; flex-wrap:wrap; gap:4px 12px;} .it-rp-avk{margin-top:6px; color:var(--text-dim); font-size:12px;}
@@ -2702,7 +2730,7 @@
   .it-rp-add{display:flex; gap:6px;} .it-rp-add input{flex:1; min-width:0;} .it-rp-msg{min-height:16px; margin:4px 0; color:var(--text-dim); font-size:12px;}
   @media (max-width: 599px){
     .it-rp-search{top:60px; right:8px; width:auto;} .it-rp-search input{height:44px; min-height:44px; font-size:16px;}
-    .it-map-box button.it-map-clr{top:112px; min-height:44px;} .it-rp-note{bottom:64px;} .it-rp-list li{min-height:44px;} .it-rp-list li button, .it-rp-add button, .it-rp-add input{min-height:44px;}
+    .it-map-box button.it-map-clr{top:8px; left:8px; right:auto; min-height:44px;} .it-rp-note{bottom:8px;} .it-rp-list li{min-height:44px;} .it-rp-list li button, .it-rp-add button, .it-rp-add input{min-height:44px;}
   }
   .it-map-hint{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); padding:8px 12px; border-radius:6px; background:rgba(10,13,16,.85); color:var(--heading); font:600 13px var(--sans); opacity:0; transition:opacity .2s; pointer-events:none;}
   .it-map-hint.on{opacity:1;}
@@ -2716,12 +2744,17 @@
   /* build queue 039 (roadmap/map-look-plan.md): the filter bar, bottom centre inside the map like the game's; its name line fades (one
      timeout per change, opacity only); on a phone one 44 px button opens the row. The legend's filter line: always one line, the same
      height for every filter (Near You beside the map is as tall as the map's column) */
-  .it-map-fb{position:absolute; left:50%; bottom:8px; transform:translateX(-50%); z-index:2; display:flex; flex-direction:column; align-items:center; gap:4px; max-width:calc(100% - 16px); pointer-events:none;}
+  /* build queue 052: the filters a column down the map's left edge, 8 px under the search box (it keeps its place on Paths to you, where the
+     search box is hidden), wrapping into a second column when the map is too short (--it-flr, itMapCtlPlace); the name line to the right of
+     the panel buttons, level with the filter that is on (placed by itMapCtlPlace), hidden while a filter's panel is open (.pop) */
+  .it-map-fb{position:absolute; left:8px; top:48px; z-index:3; display:flex; flex-direction:column; align-items:flex-start; gap:4px; pointer-events:none;}
+  .it-map-box.pop .it-map-fn{visibility:hidden;}
   .it-map-fb > button, .it-map-fbtns{pointer-events:auto;}
-  .it-map-fn{max-width:100%; padding:3px 8px; border:1px solid var(--line); border-left:3px solid var(--cyan); border-radius:4px; background:rgba(12,16,20,.9); font:400 11.5px/1.35 var(--sans); color:var(--text-dim); text-align:center; opacity:0; transition:opacity .3s;}
+  .it-map-fn{position:absolute; left:0; top:0; width:max-content; max-width:340px; box-sizing:border-box; transform:translateY(-50%); padding:3px 8px; border:1px solid var(--line); border-left:3px solid var(--cyan); border-radius:4px; background:rgba(12,16,20,.9); font:400 11.5px/1.35 var(--sans); color:var(--text-dim); text-align:left; opacity:0; transition:opacity .3s;}
+  .it-map-fn.under{transform:none;}
   .it-map-fn b{color:var(--heading); font-weight:700;}
   .it-map-fb.named .it-map-fn, .it-map-fb:hover .it-map-fn, .it-map-fb:has(:focus-visible) .it-map-fn{opacity:1;}   /* keyboard focus only: a clicked button keeps focus */
-  .it-map-fbtns{display:flex; gap:2px; padding:3px; border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92);}
+  .it-map-fbtns{display:grid; grid-auto-flow:column; grid-template-rows:repeat(var(--it-flr, 12), auto); justify-items:start; align-content:start; gap:2px; padding:3px; border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92);}
   .it-map-fbtns button, button.it-map-fcur{display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; min-height:32px; margin:0; padding:0; border:0; border-radius:4px; background:transparent; color:var(--text-dim); cursor:pointer;}
   .it-map-fbtns button:hover, button.it-map-fcur:hover{color:var(--heading); background:var(--tag-fill-hover);}
   .it-map-fbtns button[aria-pressed="true"]{color:var(--heading); background:var(--tag-on);}
@@ -2737,15 +2770,20 @@
     button.it-map-fcur{display:inline-flex; border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92); color:var(--heading);}
     .it-map-fb:not(.open) .it-map-fbtns{display:none;} .it-map-fb.open button.it-map-fcur{display:none;}
   }
-  /* build queue 040: the Wormholes filter's list button, floating right of the bar: shown while Wormholes is hovered or focused (gone
-     0.6 s after the pointer leaves, so it can be reached), on its own hover or focus, while its list is open, and while the filter is on;
-     on a phone (no hover) it sits in the opened row. The list: a dialog over the map, above the bar. */
-  .it-map-fbtns{position:relative;}
-  .it-map-fbtns button.it-whl{position:absolute; left:100%; top:-1px; margin-left:6px; border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92); color:var(--heading);
-    visibility:hidden; opacity:0; transition:opacity .15s, visibility 0s .6s;}
-  .it-map-fbtns [data-im-f="wh"]:hover + button.it-whl, .it-map-fbtns [data-im-f="wh"]:focus-visible + button.it-whl, .it-map-fbtns button.it-whl:hover, .it-map-fbtns button.it-whl:focus-visible,
-  .it-map-fbtns button.it-whl[aria-expanded="true"], .it-map-fbtns:has([data-im-f="wh"][aria-pressed="true"]) button.it-whl{visibility:visible; opacity:1; transition-delay:0s;}
-  .it-whp{position:absolute; right:8px; bottom:56px; z-index:5; width:min(400px, calc(100% - 16px)); max-height:min(420px, calc(100% - 72px)); overflow:auto; box-sizing:border-box; padding:10px 12px;
+  /* build queue 040, moved in 052: a filter with a panel (Wormholes' list now, Sov upgrades later) and its panel button share a box
+     (.it-map-fw); the button floats right of the column, level with its filter: shown while the filter is hovered or focused (gone 0.6 s after
+     the pointer leaves, so it can be reached; a bridge across the gap keeps the hover), on its own hover or focus, while its panel is open and
+     while the filter is on. Touch screens: only while the filter is on. On a phone only the panel button of the filter that is on shows,
+     inside the column beside it. The panel: a dialog over the map, placed by itMapCtlPlace (right of the panel buttons, level with its filter,
+     clear of Near You). */
+  .it-map-fw{position:relative; display:inline-flex; align-items:center;}
+  .it-map-fw::before{content:''; position:absolute; left:100%; top:0; bottom:0; width:12px;}
+  button.it-map-pb{position:absolute; left:calc(100% + 9px); top:0; width:32px; height:32px; min-height:32px; margin:0; padding:0; display:inline-flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92); color:var(--heading); cursor:pointer; visibility:hidden; opacity:0; transition:opacity .15s, visibility 0s .6s;}
+  button.it-map-pb:hover{border-color:color-mix(in srgb, var(--cyan) 55%, transparent);} button.it-map-pb:focus-visible{outline:2px solid var(--cyan); outline-offset:1px;} button.it-map-pb svg{display:block;}
+  .it-map-fw > [aria-pressed="true"] ~ button.it-map-pb, button.it-map-pb[aria-expanded="true"]{visibility:visible; opacity:1; transition-delay:0s;}
+  @media (hover: hover){ .it-map-fw:hover > button.it-map-pb, .it-map-fw:focus-within > button.it-map-pb{visibility:visible; opacity:1; transition-delay:0s;} }
+  .it-whp{position:absolute; left:94px; top:48px; z-index:5; width:min(400px, calc(100% - 16px)); max-height:calc(100% - 16px); overflow:auto; box-sizing:border-box; padding:10px 12px;
     border:1px solid var(--line); border-radius:6px; background:var(--panel); box-shadow:0 8px 24px rgba(0,0,0,.5); font:400 12px var(--sans); color:var(--text); text-align:left;}
   .it-whp[hidden]{display:none;}
   .it-whp-h{display:flex; align-items:center; gap:8px; margin-bottom:8px;} .it-whp-h h4{margin:0; font:700 14px var(--sans); color:var(--heading);} .it-whp-keep{color:var(--text-dim);}
@@ -2753,6 +2791,9 @@
   .it-whp-msg{min-height:16px; margin:4px 0; color:var(--text-dim);}
   .it-whp-r{display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; padding:6px 0; border-top:1px solid var(--line);}
   .it-whp-j{min-width:56px; color:var(--text-dim); font-weight:600;} .it-whp-s{font:700 13px var(--sans);} .it-whp-r .it-gtag{margin-left:0;}
+  button.it-whp-go{color:var(--text);}   /* as the name was, under its security colour (.it-sn.sN wins) */
+  .it-whp-r button.it-whp-go{order:0; margin:0; min-height:0; padding:0; border:0; border-radius:2px; background:none; font:700 13px var(--sans); text-align:left; cursor:pointer;}   /* 052: shows the system on the map */
+  .it-whp-r button.it-whp-go:hover, .it-whp-r button.it-whp-go:focus-visible{text-decoration:underline; text-underline-offset:3px;} .it-whp-r button.it-whp-go:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
   .it-whp-by{flex:1 1 100%; order:4; color:var(--text-dim); padding-left:64px;} .it-whp-r button{margin-left:auto; order:3; min-height:28px; padding:2px 10px;}
   .it-whp-none{color:var(--text-dim); padding:6px 0;}
   /* build queue 044: signature IDs (mono, the wormhole colour; a Drifter one pink with DR), life / mass / size tags, the × per ID, the Add form's second row, the lines as typed */
@@ -2778,22 +2819,22 @@
   .it-whp-more select{flex:1 1 90px; min-width:0;}
   @media (max-width: 599px){ button.it-sigx{box-sizing:border-box; min-width:44px; min-height:44px; padding:0; margin:-15px -14px -15px -8px; text-align:center; line-height:44px;} .it-whp-more input, .it-whp-more select{min-height:44px;} .it-whp-r .it-whp-by > button.it-rawt{position:static; width:36px; height:32px; vertical-align:middle; margin-right:4px;} }
   .it-gtag.it-wh{color:var(--it-wh); background:color-mix(in srgb, var(--it-wh) 18%, transparent);} .it-gtag.it-wh.dr{color:var(--it-wh-drifter); background:color-mix(in srgb, var(--it-wh-drifter) 16%, transparent);}
-  @media (prefers-reduced-motion: reduce){ .it-map-fbtns button.it-whl{transition:none;} }
+  @media (prefers-reduced-motion: reduce){ button.it-map-pb{transition:none;} }
   /* build queue 045: the Wormholes filter's pulse (transform and opacity only, LESSON #120) and its "N wormholes" chip */
   .it-map-whp{position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1;}
   .it-map-whp i{position:absolute; box-sizing:border-box; border:2px solid var(--it-wh); border-radius:50%; opacity:0; animation:it-whp 2.2s ease-out infinite;} .it-map-whp i.dr{border-color:var(--it-wh-drifter);}
   @keyframes it-whp{0%{transform:scale(1); opacity:.75;} 100%{transform:scale(var(--s, 2.5)); opacity:0;}}
   @media (prefers-reduced-motion: reduce){ .it-map-whp{display:none;} }
   button.it-map-whn{position:absolute; left:8px; bottom:8px; z-index:3; min-height:32px; padding:0 12px; border-radius:16px; border:1px solid var(--it-wh); background:color-mix(in srgb, var(--it-wh) 20%, #0c1014); color:var(--heading); font:700 12px var(--sans); cursor:pointer;}
-  button.it-map-whn:hover{background:color-mix(in srgb, var(--it-wh) 34%, #0c1014);} button.it-map-whn[hidden]{display:none;} button.it-map-whn.up{bottom:56px;}
+  button.it-map-whn:hover{background:color-mix(in srgb, var(--it-wh) 34%, #0c1014);} button.it-map-whn[hidden]{display:none;} button.it-map-whn.up{left:var(--it-whn-l, 60px);}
   button.it-map-whn:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
   @media (max-width: 599px){ button.it-map-whn{min-height:44px;} .it-map-box.fb-open button.it-map-whn{display:none;} }
   @media (max-width: 599px){
-    .it-map-fb{left:8px; right:8px; transform:none; max-width:none;}   /* 040: the bar's whole width to wrap in (centred as before; LESSON #161) */
-    .it-map-fbtns{flex-wrap:wrap; justify-content:center;}   /* six filters and the list button don't fit one 390 px line: the list button wraps under them */
-    .it-whp-j{min-width:0;} .it-whp-r button{padding:2px 8px;}
-    .it-map-fbtns button.it-whl{position:static; margin:0; visibility:visible; opacity:1; transition:none;}
-    .it-whp{left:8px; right:8px; width:auto; bottom:64px;} .it-whp-r button, .it-whp-add button{min-height:44px;} .it-whp-add input[type=text]{min-height:44px; flex-basis:100px;}
+    .it-map-fb{top:112px;}   /* 052: under the search box, which runs under the zoom row */
+    .it-whp-j{min-width:0;} .it-whp-r button{padding:2px 8px;} .it-whp-r button.it-whp-go{min-height:44px; padding:0 4px;}
+    .it-map-fw::before{display:none;} button.it-map-pb{position:static; display:none; width:44px; height:44px; min-height:44px; margin-left:2px; visibility:visible; opacity:1; transition:none;}
+    .it-map-fw > [aria-pressed="true"] ~ button.it-map-pb{display:inline-flex;}   /* only the panel button of the filter that is on, in the column */
+    .it-whp{left:8px !important; right:8px; width:auto !important; top:112px !important; bottom:8px; max-height:none !important;}   /* a sheet over the map under the top buttons */ .it-whp-r button, .it-whp-add button{min-height:44px;} .it-whp-add input[type=text]{min-height:44px; flex-basis:100px;}
     .it-whp-by{padding-left:0;}
   }
   .it-map-help{font:400 11.5px var(--sans); color:var(--text-dim);} .it-map-help.phone{display:none;}
@@ -2834,19 +2875,9 @@
   button.rs-b:focus-visible, .rs-v:focus-visible{outline:2px solid var(--cyan); outline-offset:-2px;}
   .rs-n{font-size:11.5px; color:var(--text-dim);}
   .rs-live{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}
-  @media (max-width: 900px){ .it-top{grid-template-columns:minmax(0,1fr);} }
-  /* v2026.11.07.1 (build queue 010; the owner: "implement a max hight on the "near you" list to match the height of the map side"): beside
-     the map (over 900 px) the map column sets the row's height (contain:size on Near You) and Near You's list scrolls inside it; its floor
-     is the map's smallest box and heading (--it-near-floor, from IT_NEAR_FLOOR); "+N more systems below" under it (itNearMore). The wheel
-     moves the page on at the list's ends (LESSON #96). 900 px and under: unchanged. */
+  /* v2026.11.07.1 (build queue 010): Near You's list scrolls inside its box, "+N more systems below" under it (itNearMore); the wheel moves
+     the page on at the list's ends (LESSON #96). Since build queue 052 the box is the panel inside the map at every width. */
   .it-more{display:none;}
-  @media (min-width: 901px){
-    .it-top{align-items:stretch;}
-    .it-top .it-nearcol{contain:size; display:flex; flex-direction:column; min-height:var(--it-near-floor);}
-    .it-top .it-nearcol > #itNearList{flex:1 1 0; min-height:0; overflow-y:auto; overscroll-behavior:auto; scrollbar-gutter:stable; padding-right:2px;}
-    .it-top .it-nearcol > .it-more{display:block; flex:none; padding:5px 2px 0; font:400 11.5px var(--sans); color:var(--text-dim); border-top:1px solid var(--line-soft);}
-    .it-top .it-nearcol > .it-more[hidden]{display:none;}
-  }
   /* v2026.11.07.1 (build queue 010, the additions; mockup Claude outputs/intel_filters_mockup.html): the Feed's filter chips, on their own
      line under the bar; ship names as filter buttons; ISK on Near You's kill badges */
   .it-fchips{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:-2px 0 8px;}
@@ -2867,12 +2898,9 @@
   @media (prefers-reduced-motion: reduce){ button.it-chip.ship{transition:none;} }
   @media (max-width: 599px){ .it-fc{min-height:36px;} button.it-fc-x{width:36px; height:36px;} button.it-fc-all{min-height:36px;} }
   @media (max-width: 599px){
-    .it-top .it-nearcol > .it-h{flex-wrap:wrap;}
-    .it-top .it-nv{display:inline-flex; margin-left:auto; align-self:center; border:1px solid var(--line); border-radius:4px; overflow:hidden;}
-    .it-nv button{min-height:36px; padding:0 14px; border:0; border-radius:0; background:transparent; color:var(--text-dim); font:600 13px var(--sans); cursor:pointer;}
-    .it-nv button[aria-pressed="true"]{background:color-mix(in srgb, var(--cyan) 16%, #151b20); color:var(--heading);}
-    .it-top .it-nearcol{order:1;} .it-top .it-mapcol{order:2;} .it-top .it-mapcol > .it-h{display:none;}
-    .it-top.v-list .it-mapcol{display:none;} .it-top.v-map #itNearList{display:none;}
+    .it-top .it-nearcol{top:164px; right:58px; width:calc(100% - 66px); height:calc(var(--it-mh, 440px) - 172px);}
+    .it-top .it-nearcol{padding:8px 8px 6px;} .it-top .it-nearcol > #itNearList{scrollbar-gutter:auto; padding-right:0;}   /* a phone's scrollbars float: the rows get the room */   /* 052: the map's width less the rail, under the filter column's button (every control stays clickable) */
+    .it-map-rail{top:112px;} .it-map-rail button{width:44px; height:44px; min-height:44px;}
     .it-map-help.wide{display:none;} .it-map-help.phone{display:inline;}
     .it-box button.rs-b, button.rs-b{width:44px; height:44px; min-height:44px; font-size:18px;}
     .rs-v{width:4ch; font-size:15px;} .rs-l{flex:1 0 100%;}
@@ -2922,12 +2950,14 @@
   button.it-an{display:inline-flex; align-items:center; justify-content:center; width:26px; height:24px; min-height:0; padding:0; border:1px solid transparent; border-radius:4px; background:transparent; color:var(--text-dim); cursor:pointer;}
   button.it-an:hover, button.it-an:focus-visible{border-color:var(--accent-edge); background:var(--tag-fill-hover); color:var(--heading);} button.it-an svg{width:14px; height:14px;}
   .it-gtag.clr{color:var(--it-clear); background:color-mix(in srgb, var(--it-clear) 18%, transparent);}
-  .it-nb.dd{display:grid; grid-template-columns:var(--it-jw, 66px) 26px var(--it-sys-w, 121px) minmax(0,1fr) auto; grid-template-areas:"j an sys tg age" ". . rg rg rg" ". . kb kb kb" "rt . wl wl wl";
-    column-gap:10px; row-gap:4px; align-items:center;}
-  .it-nb.dd.nokb{grid-template-areas:"j an sys tg age" ". . rg rg rg" "rt . wl wl wl";}
+  /* build queue 052: Near You is a 320 px panel inside the map at every width, so its rows take the narrow form (the mockup's): the tags on
+     their own line under the system and its region; rows with no tags, kills or region (a wormhole) drop that line */
+  .it-nb.dd{display:grid; grid-template-columns:var(--it-jw, 66px) 26px minmax(0,1fr) auto; grid-template-areas:"j an sys age" ". . rg rg" ". . tg tg" ". . kb kb" "rt . wl wl";
+    column-gap:10px; row-gap:3px; align-items:center;}
+  .it-nb.dd.nokb{grid-template-areas:"j an sys age" ". . rg rg" ". . tg tg" "rt . wl wl";} .it-nb.dd.notg{grid-template-areas:"j an sys age" ". . rg rg" ". . kb kb" "rt . wl wl";} .it-nb.dd.notg.nokb{grid-template-areas:"j an sys age" ". . rg rg" "rt . wl wl";}
   @media (min-width:600px){   /* no region (a wormhole): no line under the system */
-    .it-nb.dd:has(> .it-rg:empty){grid-template-areas:"j an sys tg age" ". . kb kb kb" "rt . wl wl wl";} .it-nb.dd.nokb:has(> .it-rg:empty){grid-template-areas:"j an sys tg age" "rt . wl wl wl";}
-    .it-nb.dd > .it-rg:empty{display:none;}
+    .it-nb.dd:has(> .it-rg:empty){grid-template-areas:"j an sys age" ". . tg tg" ". . kb kb" "rt . wl wl";} .it-nb.dd.nokb:has(> .it-rg:empty){grid-template-areas:"j an sys age" ". . tg tg" "rt . wl wl";} .it-nb.dd.notg:has(> .it-rg:empty){grid-template-areas:"j an sys age" ". . kb kb" "rt . wl wl";} .it-nb.dd.notg.nokb:has(> .it-rg:empty){grid-template-areas:"j an sys age" "rt . wl wl";}
+    .it-nb.dd > .it-rg:empty{display:none;} .it-nb.dd > .tg:empty{display:none;}
   }
   /* build queue 038: the region, plain dim text, no hover. The Feed: its own column after the system (--it-rg-w, the widest region name,
      itSysWidths). Near You, beside the map and often ~400 px wide: a second line under the system, from the system's column to the row's
@@ -2990,6 +3020,21 @@
   input[type=range]:focus{outline:none;}
   input[type=range]:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
   input[type=range]:disabled{opacity:.45; cursor:not-allowed;}
+  /* build queue 052, rule C (CLAUDE.md "UI rules"; the owner: "can we treat radio buttons and checkboxes like text inputs with regard to
+     colors?", then "cyan tick, dark box"): one checkbox and one radio, drawn by the site in the text field's colours: 16 px, --bg fill,
+     --field-border, 3 px corners (the radio round); hover --field-border-hover; keyboard focus a cyan border and --accent-ring; disabled 45%;
+     checked a cyan border with a cyan tick (a dot) on the dark box. Switches (.mys-sw, .dmg-sw, role=switch) keep their own rule. The label
+     around it stays the tap area. */
+  input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]), input[type=radio]{appearance:none; -webkit-appearance:none; box-sizing:border-box; flex:none; width:16px; height:16px; min-width:16px; min-height:0;
+    margin:0 4px 0 0; padding:0; display:inline-grid; place-content:center; vertical-align:-3px; background:var(--bg); border:1px solid var(--field-border); border-radius:3px; color:var(--cyan); cursor:pointer;}
+  input[type=radio]{border-radius:50%;}
+  input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch])::before{content:''; width:8px; height:4px; margin-top:-2px; border:solid currentColor; border-width:0 0 2px 2px; transform:rotate(-45deg); visibility:hidden;}
+  input[type=radio]::before{content:''; width:8px; height:8px; border-radius:50%; background:currentColor; visibility:hidden;}
+  input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]):checked::before, input[type=radio]:checked::before{visibility:visible;}
+  input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]):hover, input[type=radio]:hover{border-color:var(--field-border-hover);}
+  input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]):checked, input[type=radio]:checked{border-color:var(--cyan);}
+  input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]):focus-visible, input[type=radio]:focus-visible{outline:none; border-color:var(--cyan); box-shadow:0 0 0 2px var(--accent-ring);}
+  input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]):disabled, input[type=radio]:disabled{opacity:.45; cursor:not-allowed;}
 
   /* ---- v2026.11.01.1: the profile (one control at the top right) and its panel; profile_mockup_5.html ---- */
   :root{--st-clear:var(--cyan); --st-near:var(--amber); --st-in:var(--danger);}   /* Intel's states (the owner: cyan, amber, A = the Hostile red) */
@@ -3288,7 +3333,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.15.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.15.3</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3663,13 +3708,13 @@ const CARD_INFO = {
   "[No time to kill] In a fleet fight every ship picks its own range, so one number for the whole fleet would be a guess."
  ],
  "intel": [
-  "**{card:itnear}:** systems with reports or kills within its range (Intel settings), nearest first. An amber edge means within your alert range: the sound and notification (if on) and the profile's Intel lamp (N near, or In system), from any tab.",
+  "**{card:itnear}** (the map's feed button): systems with reports or kills within its range (Intel settings), nearest first. An amber edge means within your alert range: the sound and notification (if on) and the profile's Intel lamp (N near, or In system), from any tab.",
   "**{card:itfeed}:** every report and kill as it comes in. **{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route; right-click a system to set your destination in EVE.",
   "[How a line is read] Systems, ship names, counts (+5, x2) and words like clr and nv; the rest is looked up on ESI as pilot names, coloured by your {card:side}. A word it can't place stays plain text.",
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. The bottom bar picks what it shows; Paths to you draws the routes from hostiles in your alert range as a tree. Wormholes: reported, kept 24 h; its list edits and shares them. On the Wormholes filter the rest fades, one reported in the last 30 minutes pulses, and the chip steps through them. Systems past {card:itnear}'s range are faded.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. Filters (left) pick what it shows. Paths to you: routes from hostiles in your alert range, as a tree. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map); the rest fades, one reported in the last 30 minutes pulses, the chip steps through them. Systems past {card:itnear}'s range are faded.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; jump counts stay the shortest by stargate.",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list.",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
@@ -26527,7 +26572,7 @@ const it = {
 function itKfNew(){ return {seq: null, busy: false, waitUntil: 0, head: false, fails: 0, blk: 0, seen: new Set(), reqs: 0, lastGot: 0, target: 0, seqAt: 0, halt: false, skipped: 0, allSkip: 0, ups: [], behind: false, behindOk: 0, skipMode: false, retrying: false}; }   // blk (v2026.11.06.1): counted reads in a row with nothing the browser may read (itFeedDown)   // seq = the next number to read; head = at the live end; lastGot = when a kill was last read; target = sequence.json's newest number (every one up to it is published); seqAt = when sequence.json was last read (v2026.10.29.8)
 // v2026.11.08.4 (028; the owner: "have desktop notifications unchecked by default ... same with sounds"): sound and notify start off; a
 // saved setting keeps its value (itReadSet), so nobody's choice changes. gameLoc: Use my game location (box 3).
-function itDefaults(){ return {channels: [], me: null, range: 3, killRange: IT_KILL_RANGE_DEFAULT, nearRange: null, mapReach: null, nearView: 'list', sound: false, notify: false, gameLoc: false, volume: IT_VOL_DEFAULT, soundNear: 'chime', soundHere: 'klaxon', sndPrev: {near: 'chime', here: 'klaxon'}, forget: 15, hideFriendly: true, feed: {types: 'all', dist: 0, sort: 'new'}, alias: ''}; }
+function itDefaults(){ return {channels: [], me: null, range: 3, killRange: IT_KILL_RANGE_DEFAULT, nearRange: null, mapReach: null, nearView: 'list', nearShown: false, sound: false, notify: false, gameLoc: false, volume: IT_VOL_DEFAULT, soundNear: 'chime', soundHere: 'klaxon', sndPrev: {near: 'chime', here: 'klaxon'}, forget: 15, hideFriendly: true, feed: {types: 'all', dist: 0, sort: 'new'}, alias: ''}; }
 function itReadSet(){
   const d = itDefaults();
   try{
@@ -26539,7 +26584,8 @@ function itReadSet(){
       if(IT_KILL_RANGES.includes(Number(r.killRange))) d.killRange = Number(r.killRange);   // v2026.10.29.3
       // v2026.11.02.4: Near You's reach and the map's (null: the defaults), the phone's List | Map
       for(const k of ['nearRange', 'mapReach']) if(Number.isInteger(r[k]) && r[k] >= 1 && r[k] <= IT_MAP_MAX) d[k] = r[k];
-      if(r.nearView === 'map') d.nearView = 'map';
+      if(r.nearView === 'map') d.nearView = 'map';   // kept as it is since 052 (no List | Map switch now), so a reverted page still reads it
+      if(r.nearShown === true) d.nearShown = true;   // build queue 052: Near You's panel open or shut (the owner: "remember"); missing = shut
       if(IT_FORGET.includes(Number(r.forget))) d.forget = Number(r.forget);
       for(const k of ['sound', 'notify', 'hideFriendly', 'gameLoc']) if(typeof r[k] === 'boolean') d[k] = r[k];
       // v2026.11.01.8: the alert sounds; a saved setting without them gets the defaults
@@ -28618,10 +28664,12 @@ function itNearCap(el){
   if(!el || !el.querySelectorAll) return;
   for(const w of el.querySelectorAll('#itNearList .who[data-it-cap]')){
     if(typeof w.getBoundingClientRect !== 'function') return;   // LESSON #36: the suites' stub DOM
-    const key = `${w.clientWidth}|${it.fl.filter(c => c.kind === 'ship').map(c => c.id).join(',')}|${w.dataset.itCap}`, kept = IT_CAP.get(key);   // v2026.11.07.1: the pressed ships too
+    if(!w.getClientRects().length) continue;   // LESSON #169. 052: Near You's panel shut: nothing to measure (cut when it opens, itNearToggle), nothing cached
+    const key = `${w.closest('.wl') ? w.closest('.wl').clientWidth : w.clientWidth}|${it.fl.filter(c => c.kind === 'ship').map(c => c.id).join(',')}|${w.dataset.itCap}`, kept = IT_CAP.get(key);   // v2026.11.07.1: the pressed ships too
     if(kept !== undefined){ if(kept) w.innerHTML = kept; continue; }
     if(IT_CAP.size > 400) IT_CAP.clear();
-    const lh = parseFloat(getComputedStyle(w).lineHeight) || 17, fits = () => w.getBoundingClientRect().height <= lh * IT_WHO_LINES + 1;
+    // 052: measured on the whole line (the word, then the names): in the narrow panel the names can start on the line after the word
+    const box = w.closest('.wl') || w, lh = parseFloat(getComputedStyle(w).lineHeight) || 17, fits = () => box.getBoundingClientRect().height <= lh * IT_WHO_LINES + 1;
     if(fits()){ IT_CAP.set(key, ''); continue; }
     let d; try{ d = JSON.parse(w.dataset.itCap); }catch(e){ continue; }
     const draw = (np, ns) => { w.innerHTML = itNearWho(d.P, d.B, d.S, np, ns, d.E); return fits(); };
@@ -28886,10 +28934,10 @@ function itRenderLists(){
   it.lastHtml = null; it.drawNow = Date.now();   // the card no longer matches the last full build: the next itRender draws it whole
   itAfterDraw(el);
 }
-// v2026.11.07.1 (build queue 010): beside the map Near You is as tall as the map column (CSS) and its list scrolls; its floor, when the map
-// can't draw, is the map's smallest box and its heading (one number, from the map's own height rule)
-const IT_MAP_MIN_H = 380, IT_NEAR_FLOOR = IT_MAP_MIN_H + 50;
-function itNearCapped(){ return typeof matchMedia === 'function' && matchMedia('(min-width: 901px)').matches; }
+// v2026.11.07.1 (build queue 010): Near You's list scrolls inside its box; since build queue 052 that box is the panel inside the map at
+// every width (as tall as the map less the rail's top and 8 px), so the list is always capped
+const IT_MAP_MIN_H = 380;   // the Intel example's map picture (052: the live map's height is in itMapRefresh)
+function itNearCapped(){ return true; }
 // "+N more systems below" (the owner: "keep it"): the rows whose top is below the list's bottom; after a draw and on the list's own
 // scroll (one frame), never on a timer (LESSON #120); the line is in the built markup, filled here (the built-text compare stays exact)
 let itMoreRaf = 0;
@@ -28898,14 +28946,18 @@ function itNearMore(){
   const col = typeof document !== 'undefined' && document.querySelector && document.querySelector('#intelPanel .it-top .it-nearcol');
   const L = col && col.querySelector('#itNearList'), m = col && col.querySelector('.it-more');
   if(!L || !m || typeof L.getBoundingClientRect !== 'function') return;
-  let n = 0;
-  if(itNearCapped() && L.scrollHeight > L.clientHeight + 1){
-    const bottom = L.getBoundingClientRect().bottom;
-    for(const r of L.querySelectorAll(':scope > .it-nb')) if(r.getBoundingClientRect().top >= bottom - 4) n++;
+  // 052: the line takes room from the list when it shows (the list is a flex box above it), so a change of shown / hidden is counted again
+  for(let pass = 0; pass < 2; pass++){
+    let n = 0;
+    if(itNearCapped() && L.scrollHeight > L.clientHeight + 1){
+      const bottom = L.getBoundingClientRect().bottom;
+      for(const r of L.querySelectorAll(':scope > .it-nb')) if(r.getBoundingClientRect().top >= bottom - 4) n++;
+    }
+    const t = n ? `+${n} more system${n === 1 ? '' : 's'} below` : '', flip = m.hidden !== !n;
+    if(m.textContent !== t) m.textContent = t;
+    if(flip) m.hidden = !n;
+    if(!flip) break;
   }
-  const t = n ? `+${n} more system${n === 1 ? '' : 's'} below` : '';
-  if(m.textContent !== t) m.textContent = t;
-  if(m.hidden !== !n) m.hidden = !n;
 }
 function itNearMoreSoon(){ if(!itMoreRaf && typeof requestAnimationFrame === 'function') itMoreRaf = requestAnimationFrame(itNearMore); }
 // a row's top and bottom inside the list, by the list's own scroll (never scrollIntoView, which can move the page); the row's top is
@@ -28913,7 +28965,9 @@ function itNearMoreSoon(){ if(!itMoreRaf && typeof requestAnimationFrame === 'fu
 function itNearShow(row){
   const L = row && row.closest && row.closest('#itNearList');
   if(!L || !itNearCapped() || L.scrollHeight <= L.clientHeight + 1) return;
-  const lr = L.getBoundingClientRect(), rr = row.getBoundingClientRect();
+  const lr = L.getBoundingClientRect(), r0 = row.getBoundingClientRect(), nx = row.nextElementSibling;
+  // 052: an opened row's reports sit in the block under it (.it-nbx): kept in view with the row (the narrow panel made them fall below its end)
+  const rr = nx && nx.classList.contains('it-nbx') ? {top: r0.top, bottom: nx.getBoundingClientRect().bottom} : r0;
   if(rr.top < lr.top) L.scrollTop -= lr.top - rr.top + 2;
   else if(rr.bottom > lr.bottom) L.scrollTop += Math.min(rr.bottom - lr.bottom + 6, rr.top - lr.top);
   itNearMoreSoon();
@@ -28921,6 +28975,7 @@ function itNearShow(row){
 function itAfterDraw(el){
   itSysWidths(el); itNearFit(el); itNearCap(el);   // v2026.10.30.1; v2026.10.31.1: the word never squeezed
   itNearMoreSoon();   // v2026.11.07.1
+  itNearBtnPaint();   // 052: the count and the amber on Near You's map button
   fillOrgTickers(el);
   itSecFetch([...el.querySelectorAll('[data-it-sys]')].map(x => Number(x.dataset.itSys)).concat(it.feed.slice(0, IT_FEED_SHOWN).map(e => e.p.sys[0] && e.p.sys[0].id)));
   itMapRefresh();   // v2026.11.02.4: redrawn only when what it shows changed
@@ -29121,7 +29176,7 @@ const IT_EX_NOTES = [
   ['Inside your alert range', 'a sound and a desktop notice if you turn them on, and an amber mark on your profile, from any tab.'],   // build queue 036: alerts start off (itDefaults)
   ['Kills nearby', 'from zKillboard as they happen; press one to see the attacking fleet and its fits.']
 ];
-const IT_EX_NOTE3_PHONE = 'switch {near} to Map to see reports and kills around you.';   // {near}: cardName('itnear')
+// build queue 052: note 3's phone wording ("switch Near You to Map …") went: the map is always there, on a phone too   // {near}: cardName('itnear')
 const IT_EX_INFO = '<div class="info-ex"><button type="button" class="sa-link" data-it-act="example">See an example</button>: what Intel shows once it’s running.</div>';
 const IT_EX_KEY = 'dscanItExGone';   // '1' once a real report or kill has arrived; new in v2026.11.07.7 (an older page never reads it)
 let itExOrg = null;   // id -> {kind, name, ticker, logo}: set only while the example is built
@@ -29219,14 +29274,18 @@ function itExampleHtml(){
     itEx.htmlKey = key;
     itEx.html = itExSandbox(() => {
       itFrozenNow = Date.now(); itAnCan = new Map();
-      return `<div class="it-top v-list itx-top"><div class="it-mapcol"><div class="it-h"><h3>${escapeHtml(cardName('itmap'))}</h3><span class="ctx">around you, ${Number(IT_EXAMPLE.mapReach)} jumps</span></div><div class="it-map-box itx-map"><img alt="The example's map: reports and kills around 1DQ1-A"></div><div class="it-map-leg">${itExLegendHtml()}</div></div>`
+      // build queue 052 (plan 4.9): the map picture full width, Near You's list open beside a still copy of its map button at the picture's top
+      // right (pressed, with its badge), the Feed below; on a phone the picture too, the list under it
+      return `<div class="it-top ny-open itx-top"><div class="it-mapcol"><div class="it-h"><h3>${escapeHtml(cardName('itmap'))}</h3><span class="ctx">around you, ${Number(IT_EXAMPLE.mapReach)} jumps</span></div>`
+        + `<div class="it-mapwrap"><div class="it-map-box itx-map"><img alt="The example's map: reports and kills around 1DQ1-A">${itExRailHtml()}</div>`
         + `<div class="it-nearcol"><div class="it-h"><h3>${escapeHtml(cardName('itnear'))}</h3><span class="ctx">last ${Number(IT_EXAMPLE.forget)} min, within ${Number(IT_EXAMPLE.nearRange)} jumps</span></div><div class="itx-near">${itExNearHtml()}</div></div></div>`
+        + `<div class="it-map-leg">${itExLegendHtml()}</div></div></div>`
         + `<div class="it-feedcol"><div class="it-h"><h3>${escapeHtml(cardName('itfeed'))}</h3><span class="ctx">first 5 rows</span></div><div class="itx-feed">${itExFeedHtml()}</div></div>`;
     }).replace(/ data-it-(sys|cap)="/g, ' data-itx-$1="');   // the card's own fetchers and fitters look for these: the example's are its own
   }
   return `<div class="itx" role="region" aria-label="Example: what Intel shows once it’s running">${itExCloseHtml()}<div class="itx-h"><span class="itx-tag">EXAMPLE</span><span class="itx-t">What Intel looks like once it’s running</span>${ctxHtml('made-up pilots on real systems')}</div>`
     + `<div class="itx-wrap"><div class="itx-body" inert>${itExRowsHtml()}</div>${itExMarksHtml()}</div>`
-    + `<ol class="itx-notes">${itExNotesHtml(phone)}</ol><div class="itx-foot">Your own reports replace this example as soon as the first one arrives.</div></div>`;
+    + `<ol class="itx-notes">${itExNotesHtml()}</ol><div class="itx-foot">Your own reports replace this example as soon as the first one arrives.</div></div>`;
 }
 function itExRowsHtml(){ return itEx.html; }   // built above, from the real builders
 function itExLegendHtml(){   // the map's own legend, drawn by itMapLegend into a box of its own (inside itExSandbox only)
@@ -29234,10 +29293,14 @@ function itExLegendHtml(){   // the map's own legend, drawn by itMapLegend into 
   try{ itm.el = box; itMapLegend(); return box.firstChild.innerHTML; }finally{ itm.el = el0; }
 }
 function itExNearHtml(){ return itNearList().map(itNearRowHtml).join(''); }   // inside itExSandbox only
+function itExRailHtml(){   // 052: a still copy of Near You's map button, pressed, with its badge (inside itExSandbox only)
+  const nh = itExNearHtml(), n = (nh.match(/class="it-nb dd/g) || []).length, al = /class="it-nb dd[^"]*\balert\b/.test(nh);
+  return `<div class="it-map-rail" aria-hidden="true"><button type="button" tabindex="-1" aria-pressed="true">${IT_FEED_ICON}<span class="it-ny-badge${itOnHtml(al, 'al')}">${escapeHtml(n ? String(n) : '')}</span></button></div>`;
+}
 function itExFeedHtml(){ return itFeedShown().slice(0, 5).map(itFeedRowHtml).join(''); }
 function itExCloseHtml(){ return itEx.view && !itExAuto() ? '<button type="button" class="x-close" data-it-act="exclose" aria-label="Close the example" title="Close the example">×</button>' : ''; }
 function itExMarksHtml(){ return [1, 2, 3, 4, 5].map(n => `<span class="itx-mk" data-itx-mk="${Number(n)}" hidden aria-hidden="true">${Number(n)}</span>`).join(''); }
-function itExNotesHtml(phone){ return IT_EX_NOTES.map(([b, t], i) => `<li><span class="n">${Number(i + 1)}</span><span><b>${escapeHtml(b)}:</b> ${escapeHtml((i === 2 && phone ? IT_EX_NOTE3_PHONE : t).replace('{near}', cardName('itnear')))}</span></li>`).join(''); }
+function itExNotesHtml(){ return IT_EX_NOTES.map(([b, t], i) => `<li><span class="n">${Number(i + 1)}</span><span><b>${escapeHtml(b)}:</b> ${escapeHtml(t.replace('{near}', cardName('itnear')))}</span></li>`).join(''); }
 // The map, drawn once into a picture by the map's own code on a canvas of its own (itm's state set aside and put back), at the width of
 // its column; again only when that width changes
 function itExMapPic(w){
@@ -29279,16 +29342,14 @@ function itExMount(root){
 function itExFill(f){
   const phone = itExPhone();
   if(phone !== (itEx.htmlKey === 'p')){ itEx.html = null; itRender(true); return; }   // the phone's note 3 and layout: drawn again once
-  const top = f.querySelector('.itx-top');
-  if(top) top.classList.toggle('v-list', phone);
   const img = f.querySelector('.itx-map img'), col = f.querySelector('.itx-map');
   const place = () => itExPlace(f);
-  if(img && col && !phone){
+  if(img && col){   // 052: a phone draws the map picture too
     const w = Math.round(col.clientWidth), url = w > 0 ? itExMapPic(w) : null;
     if(url && img.getAttribute('src') !== url){ img.addEventListener('load', place, {once: true}); img.src = url; }
   }
   itExWidths(f);
-  if(!img || phone || img.complete) place();
+  if(!img || img.complete) place();
 }
 function itExWidths(f){   // the system and jump columns as wide as the example's own widest (the card's itSysWidths measures the real lists)
   const w = (sel) => Math.ceil(Math.max(0, ...[...f.querySelectorAll(sel)].map(x => x.scrollWidth)));
@@ -29300,13 +29361,11 @@ function itExPlace(f){
   const W = f.querySelector('.itx-wrap'); if(!W) return;
   const R = W.getBoundingClientRect(), phone = itExPhone();
   const at = (n, el, dx = 0, dy = 0) => { const m = f.querySelector('[data-itx-mk="' + Number(n) + '"]'); if(!m) return; if(!el || !el.getClientRects().length){ m.hidden = true; return; }
-    const r = el.getBoundingClientRect(); m.style.left = `${Math.round(r.left - R.left + dx)}px`; m.style.top = `${Math.round(r.top - R.top + dy)}px`; m.hidden = false; };
+    const r = el.getBoundingClientRect(); m.style.left = `${Math.round(Math.min(r.left - R.left + dx, R.width - 10))}px`; m.style.top = `${Math.round(r.top - R.top + dy)}px`; m.hidden = false; };   // 052: kept inside the frame (no sideways scroll at 320 px)
   const alerts = f.querySelectorAll('.itx-near .it-nb.alert');
   at(1, f.querySelector('.itx-feed .it-fd.rep'), 0, 14);
   at(2, f.querySelector('.itx-near .it-nb'), 0, 14);
-  const nh = f.querySelector('.it-nearcol > .it-h .ctx');
-  if(phone && nh){ const r = nh.getBoundingClientRect(), m = f.querySelector('[data-itx-mk="3"]'); if(m){ m.style.left = `${Math.round(r.right - R.left + 14)}px`; m.style.top = `${Math.round(r.top - R.top + r.height / 2)}px`; m.hidden = false; } }
-  else at(3, f.querySelector('.itx-map img[src]'), 14, 14);
+  at(3, f.querySelector('.itx-map img[src]'), 14, 14);   // 052: on the map picture on a phone too
   at(4, alerts[1] || alerts[0], 0, 14);
   const kl = f.querySelector('.itx-near .it-kl');
   if(kl) at(5, kl, kl.getBoundingClientRect().width + 16, 7); else at(5, null);   // the mockup's place: just past the badge's right end
@@ -29356,9 +29415,9 @@ function itRender(force){   // force: a press that changes what is open (the gea
     // v.98 (the owner: "the feed keeps growing ... drop entries older than 15 minutes"): the Feed keeps the same time as Near You
     body = `${it.on ? `<div class="it-sub" data-it-status></div>` : `<div class="it-sub">Stopped. The switch beside the gear starts it again.</div>`}
       ${it.on && it.me && !itMySys() ? `<div class="it-sub it-warn">Your system isn’t known yet (it’s read from your Local log when you jump), so no jumps and no alerts until then.</div>` : ''}
-      <div class="it-top v-${it.set.nearView === 'map' ? 'map' : 'list'}" style="--it-near-floor:${IT_NEAR_FLOOR}px">
-        <div class="it-mapcol"><div class="it-h"><h3>${escapeHtml(cardName('itmap'))}</h3><span class="ctx" data-it-mapctx>${escapeHtml(itMapCtx())}</span></div><div id="itMapSlot"></div></div>
-        <div class="it-nearcol"><div class="it-h"><h3>${escapeHtml(cardName('itnear'))}</h3><span class="ctx" data-it-nearctx title="${escapeHtml(itMySys() ? `Systems within ${itNearReach()} jumps (under the gear); farther reports are in the ${cardName('itfeed')}` : '')}">${escapeHtml(itNearCtx())}</span><span class="it-nv" role="group" aria-label="${escapeHtml(cardName('itnear'))}: list or map"><button type="button" data-it-nv="list" aria-pressed="${it.set.nearView !== 'map'}">List</button><button type="button" data-it-nv="map" aria-pressed="${it.set.nearView === 'map'}">${escapeHtml(cardName('itmap'))}</button></span></div><div id="itNearList">${itNearListHtml()}</div><div class="it-more" hidden></div></div>
+      <div class="it-top${itOnHtml(it.set.nearShown, 'ny-open')}">
+        <div class="it-mapcol"><div class="it-h"><h3>${escapeHtml(cardName('itmap'))}</h3><span class="ctx" data-it-mapctx>${escapeHtml(itMapCtx())}</span></div><div class="it-mapwrap"><div id="itMapSlot"></div>
+        <div class="it-nearcol" id="itNearCol"><div class="it-h"><h3>${escapeHtml(cardName('itnear'))}</h3><span class="ctx" data-it-nearctx title="${escapeHtml(itMySys() ? `Systems within ${itNearReach()} jumps (under the gear); farther reports are in the ${cardName('itfeed')}` : '')}">${escapeHtml(itNearCtx())}</span></div><div id="itNearList">${itNearListHtml()}</div><div class="it-more" hidden></div></div></div></div>
       </div>
       <div class="it-feedcol"><div class="it-h"><h3>${escapeHtml(cardName('itfeed'))}</h3>${ctxHtml(`last ${it.set.forget} min, reports and kills`)}</div>${itFeedBarHtml()}<div id="itFeedList">${itFeedListHtml()}</div></div>${itExampleHtml()}`;
   }
@@ -29595,8 +29654,96 @@ function itMapFbarHtml(){
   return `<div class="it-map-fb"><div class="it-map-fn" aria-hidden="true"></div><button type="button" class="it-map-fcur" aria-expanded="false" aria-haspopup="true"></button>`
     + `<div class="it-map-fbtns" role="toolbar" aria-label="Map colours">${itMapFbtnsHtml()}</div></div>`;
 }
-function itMapFbtnsHtml(){ return IT_MAP_FILTERS.map(f => `<button type="button" data-im-f="${escapeHtml(f.k)}" title="${escapeHtml(f.name)}: ${escapeHtml(f.note)}" aria-label="${escapeHtml(f.name)}" aria-pressed="false">${itMapIconHtml(f.k)}</button>`).join('')
-  + `<button type="button" class="it-whl" data-it-whl aria-haspopup="dialog" aria-expanded="false" aria-label="Wormhole list" title="Wormhole list: add or remove">${IT_WH_LIST_ICON}</button>`; }   // build queue 040
+function itMapFbtnsHtml(){
+  return IT_MAP_FILTERS.map(f => IT_MAP_PANEL_BTN[f.k] ? `<span class="it-map-fw">${itMapFbtnHtml(f)}${itMapPanelBtnHtml(f.k)}</span>` : itMapFbtnHtml(f)).join('');
+}
+function itMapFbtnHtml(f){ return `<button type="button" data-im-f="${escapeHtml(f.k)}" title="${escapeHtml(f.name)}: ${escapeHtml(f.note)}" aria-label="${escapeHtml(f.name)}" aria-pressed="false">${itMapIconHtml(f.k)}</button>`; }
+function itMapPanelBtnHtml(k){ return IT_MAP_PANEL_BTN[k](); }
+// build queue 040, moved beside its filter in 052: the filters with a panel and their panel buttons (Sov upgrades adds its own, 053)
+const IT_MAP_PANEL_BTN = {wh: () => `<button type="button" class="it-map-pb it-whl" data-it-whl aria-haspopup="dialog" aria-expanded="false" aria-label="Wormhole list" title="Wormhole list: add or remove">${IT_WH_LIST_ICON}</button>`};
+// build queue 052 (roadmap/intel-layout-sov-plan.md 4.2; the owner: "feed is the one, badge stays"): Near You behind one map control in the
+// rail under the zoom buttons: the feed icon (our own drawing), the number of Near You's rows on it, amber while a row is in your alert
+// range; pressed, its list opens beside the rail inside the map, every control staying where it is (remembered: nearShown, "remember").
+// A view, not a dialog: no close button, no Escape; the button shuts it.
+const IT_FEED_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="12.2" width="3.2" height="3.2" rx=".6" fill="currentColor" stroke="none"/><path d="M2.8 8.6a6.6 6.6 0 016.6 6.6M2.8 4.6a10.6 10.6 0 0110.6 10.6M2.8 .9a14.3 14.3 0 0114.3 14.3"/></svg>';
+function itMapRailHtml(){ return `<div class="it-map-rail" role="toolbar" aria-label="Map panels"><button type="button" data-it-ny aria-controls="itNearCol" aria-pressed="false">${IT_FEED_ICON}<span class="it-ny-badge" aria-hidden="true"></span></button></div>`; }
+function itMapPhone(){ return typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches; }
+function itNearShown(){ return !!it.set.nearShown; }
+function itNearBtnPaint(){   // written only when the count, the amber or the words change
+  const b = itm.box && itm.box.querySelector('[data-it-ny]'); if(!b) return;
+  const L = document.querySelector('#intelPanel #itNearList'), rows = L ? L.querySelectorAll(':scope > .it-nb') : [], n = rows.length;
+  let al = false; for(const r of rows) if(r.classList.contains('alert')){ al = true; break; }
+  const on = itNearShown(), t = `${cardName('itnear')}: ${n} system${n === 1 ? '' : 's'}${al ? ', some in your alert range' : ''} (press to ${on ? 'hide' : 'show'} the list)`;
+  const bd = b.querySelector('.it-ny-badge'), bt = n ? String(n) : '';
+  if(bd.textContent !== bt) bd.textContent = bt;
+  if(bd.classList.contains('al') !== al) bd.classList.toggle('al', al);
+  if(b.title !== t){ b.title = t; b.setAttribute('aria-label', t); }
+  if(b.getAttribute('aria-pressed') !== String(on)) b.setAttribute('aria-pressed', String(on));
+}
+// the owner at the 052 review ("sure"): Near You and a filter's panel side by side only when both fit; otherwise they take turns, as on a phone
+const IT_MAP_PANEL_MIN = 300;
+function itMapRoomForBoth(){
+  if(!itm.box || itMapPhone()) return false;
+  const bs = itm.box.querySelector('.it-map-fbtns'); if(!bs || !bs.offsetParent) return false;
+  const bx = itm.box.getBoundingClientRect(), L = bs.getBoundingClientRect().right - bx.left + 6 + 32 + 8, R = itm.box.clientWidth - 44 - 320 - 8;
+  return R - L >= IT_MAP_PANEL_MIN;
+}
+function itNearToggle(open){
+  open = !!open;
+  if(it.set.nearShown !== open){ it.set.nearShown = open; itWriteSet(); }
+  const top = document.querySelector('#intelPanel .it-top'); if(top && top.classList.contains('ny-open') !== open) top.classList.toggle('ny-open', open);
+  if(open){ if(itMapPhone()) itMapFbarOpen(false); if(itWhListShown() && !itMapRoomForBoth()) itWhListOpen(false, false); }
+  itNearBtnPaint(); if(itm.box){ itm.ctlKey = null; itMapCtlPlace(); itMapYouArrow(); if(itPtLive()) itPtPaint(); }
+  if(open){ const el = document.getElementById('intelPanel'); if(el){ itSysWidths(el); itNearFit(el); itNearCap(el); } itNearMoreSoon(); }   // measured only once it shows
+}
+// build queue 052 (plan 4.3-4.6): where the map's controls sit, worked out when the map's size, the filter, Near You or a panel changes
+// (a key: nothing is measured on a draw that changed none of them; no timers, LESSON #120): the filter column's rows (a second column when
+// the map is too short), the name line right of the panel buttons and level with the filter that is on (under the column when there's no
+// room), the open filter panel right of the panel buttons, level with its filter, inside the map and clear of Near You (a phone: the sheet
+// its CSS makes)
+function itMapCtlPlace(){
+  if(!itm.box || !itm.el || !itm.el.isConnected || itm.box.clientWidth <= 0 || itm.cv.parentNode !== itm.box) return;
+  const box = itm.box, fb = box.querySelector('.it-map-fb'), bs = fb && fb.querySelector('.it-map-fbtns'), fc = fb && fb.querySelector('.it-map-fcur'), fn = fb && fb.querySelector('.it-map-fn'); if(!bs) return;
+  const phone = itMapPhone(), wl = itWhListShown(), key = [box.clientWidth, itm.H, phone, itNearShown(), itm.filter, fb.classList.contains('open'), wl].join('|');
+  if(key === itm.ctlKey) return; itm.ctlKey = key;
+  if(box.classList.contains('pop') !== wl) box.classList.toggle('pop', wl);
+  const one = phone ? 46 : 34, rows = String(Math.min(bs.children.length, Math.max(3, Math.floor((itm.H - 8 - fb.offsetTop - 8) / one))));
+  if(bs.style.getPropertyValue('--it-flr') !== rows) bs.style.setProperty('--it-flr', rows);
+  if(wl && itNearShown() && !itMapRoomForBoth()) itNearToggle(false);   // the window got narrower with both open: the list stays, Near You shuts
+  const bx = box.getBoundingClientRect(), rail = box.querySelector('.it-map-rail'), ny = itNearShown() && document.getElementById('itNearCol');
+  const stop = (ny && ny.offsetParent ? ny.getBoundingClientRect().left : rail ? rail.getBoundingClientRect().left : bx.right) - bx.left;   // Near You's list, else the rail
+  const shut = !bs.offsetParent, sr = (shut ? fc : bs).getBoundingClientRect(), fr = fb.getBoundingClientRect();
+  if(fn){
+    const cur = shut ? fc : [...bs.querySelectorAll('[data-im-f]')].find(x => x.dataset.imF === itm.filter), cr = cur && cur.getBoundingClientRect();
+    const x = sr.right - fr.left + 6 + (phone || shut ? 0 : 32 + 6), maxW = Math.min(340, stop - 8 - (fr.left - bx.left) - x);
+    let css, under = false;
+    if(!cr || !cr.width) css = 'display:none;';
+    else if(maxW < 120){ under = true; css = `left:0px; top:${Math.round(sr.bottom - fr.top + 6)}px; max-width:${Math.round(Math.max(120, Math.min(340, stop - 8 - (fr.left - bx.left))))}px;`; }
+    else css = `left:${Math.round(x)}px; top:${Math.round(cr.top - fr.top + cr.height / 2)}px; max-width:${Math.round(maxW)}px;`;
+    if(fn.style.cssText !== css) fn.style.cssText = css;
+    if(fn.classList.contains('under') !== under) fn.classList.toggle('under', under);
+  }
+  if(wl){
+    const el = itWhL.el;
+    if(phone) el.style.cssText = '';
+    else {
+      const f = bs.querySelector('[data-im-f="wh"]'), fy = f && f.offsetParent ? f.getBoundingClientRect().top - bx.top : 48;
+      const L = Math.round(sr.right - bx.left + 6 + 32 + 8), w = Math.round(Math.max(200, Math.min(400, stop - 8 - L))), top = Math.round(Math.max(8, Math.min(itm.H - 8 - 260, fy - 4)));
+      el.style.cssText = `left:${L}px; top:${top}px; width:${w}px; max-height:${Math.max(160, itm.H - 8 - top)}px;`;
+    }
+  }
+}
+// the owner at the 052 review ("yes"): ⌖, your first view, a jump, a search pick, a Wormholes-list pick and ⤢ use the part of the map no open
+// panel covers (Near You's list on the right, a filter's panel on the left); the whole width when that part is narrower than 96 px (a phone with Near You open)
+function itMapFree(){
+  const W = itm.W; let a = 0, b = W;
+  if(!itm.box || !itm.cv || itm.cv.parentNode !== itm.box || !itm.box.isConnected) return [0, W];   // the Intel example's picture: the whole width
+  const bx = itm.box.getBoundingClientRect(), ny = itNearShown() && document.getElementById('itNearCol');
+  if(ny && ny.offsetParent){ const r = ny.getBoundingClientRect(); if(r.width > 0) b = Math.min(b, r.left - bx.left - 4); }
+  if(itWhListShown()){ const r = itWhL.el.getBoundingClientRect(); if(r.width > 0) a = Math.max(a, r.right - bx.left + 4); }
+  return b - a >= 96 ? [a, b] : [0, W];
+}
+function itMapFreeX(){ const [a, b] = itMapFree(); return (a + b) / 2; }
 function itMapIconHtml(k){ return (IT_MAP_FILTERS.find(f => f.k === k) || IT_MAP_FILTERS[0]).icon; }
 function itMapFbarPaint(changed){
   const fb = itm.el && itm.el.querySelector('.it-map-fb'); if(!fb) return;
@@ -29605,14 +29752,17 @@ function itMapFbarPaint(changed){
   for(const b of fb.querySelectorAll('[data-im-f]')) b.setAttribute('aria-pressed', String(b.dataset.imF === f.k));
   const cur = fb.querySelector('.it-map-fcur'); cur.innerHTML = itMapIconHtml(f.k); cur.title = `Map colours: ${f.name}`; cur.setAttribute('aria-label', `Map colours: ${f.name}`);
   if(changed){ fb.classList.add('named'); clearTimeout(itm.fnT); itm.fnT = setTimeout(() => fb.classList.remove('named'), IT_MAP_NAME_MS); }
+  itMapCtlPlace();   // 052: the name line beside the filter that is on
 }
 function itMapFbarOpen(open){
   const fb = itm.el && itm.el.querySelector('.it-map-fb'); if(!fb) return;
   fb.classList.toggle('open', open); fb.querySelector('.it-map-fcur').setAttribute('aria-expanded', String(open));
+  if(open && itNearShown()) itNearToggle(false);   // 052: a phone: the filter column and Near You take turns
   if(itm.box) itm.box.classList.toggle('fb-open', open);   // 045: the wormholes chip steps aside while the phone's row is open
   if(itm.fbOut){ document.removeEventListener('pointerdown', itm.fbOut, true); itm.fbOut = null; }
   if(open){ itm.fbOut = (e) => { if(!fb.contains(e.target)) itMapFbarOpen(false); }; document.addEventListener('pointerdown', itm.fbOut, true);
     const b = fb.querySelector('[aria-pressed="true"]'); if(b) b.focus(); }
+  itMapCtlPlace();
 }
 function itMapFilterSet(k){
   if(!IT_MAP_FILTERS.some(f => f.k === k)) return;
@@ -29623,7 +29773,7 @@ function itMapFilterSet(k){
 function itMapMake(){
   if(itm.el) return itm.el;
   const el = document.createElement('div'); el.className = 'it-map';
-  el.innerHTML = `<div class="it-map-box"><div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button></div>`
+  el.innerHTML = `<div class="it-map-box"><div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button></div>` + itMapRailHtml()
     + itRpSearchHtml() + `<button type="button" class="it-map-clr" hidden>Hide all routes</button><canvas role="img" aria-label="Map of the systems around you, with the reported pilots and their routes to you"></canvas><canvas class="it-map-fx" aria-hidden="true"></canvas><div class="it-map-whp" aria-hidden="true"></div><button type="button" class="it-map-whn" data-it-whn hidden></button>`
     + `<button type="button" class="it-map-you" hidden title="You're off the map here: press to center on your system" aria-label="Center on your system"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>You</button><div class="it-map-tip" hidden></div><div class="it-map-hint" aria-hidden="true">Use two fingers to move the map</div><div class="it-map-msg" hidden></div>${itMapFbarHtml()}</div>`
     + `<div class="it-map-leg"></div><div class="it-map-row"><span class="it-map-rs"></span><span class="it-map-help wide">drag to move · wheel to zoom</span><span class="it-map-help phone">two fingers move and zoom the map; one finger scrolls the page</span></div>`;
@@ -29659,7 +29809,8 @@ function itMapRefresh(force){
   const mc = document.querySelector('[data-it-mapctx]'); if(mc) mc.textContent = itMapCtx();
   if(why){ itm.home = -1; itm.you.hidden = true; itPtHide(); itMapWhPulse([]); if(itm.whn) itm.whn.hidden = true; return; }
   const phone = typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches;
-  const w = itm.box.clientWidth, h = Math.round(phone ? Math.min(460, Math.max(320, w * 1.1)) : Math.max(IT_MAP_MIN_H, Math.min(560, w * 0.72)));
+  const w = itm.box.clientWidth, h = Math.round(phone ? Math.min(600, Math.max(440, w * 1.45)) : Math.min(720, Math.max(520, w * 0.5)));   // 052: full width and taller
+  { const top = itm.box.closest('.it-top'), mh = `${h + 2}px`; if(top && top.style.getPropertyValue('--it-mh') !== mh){ top.style.setProperty('--it-mh', mh); itNearMoreSoon(); } }   // the panel's height moved: "+N more" again   // Near You's panel ends 8 px above the map's foot
   const reach = itMapReach();
   let laid = false;
   // v2026.11.04.1: a jump (a new system of yours after one before it) keeps your zoom and centers on the new system; the first draw, a
@@ -29681,6 +29832,7 @@ function itMapRefresh(force){
   if(force || laid || itm.stale || key !== itm.key){ itm.key = key; itm.stale = false; itMapDraw(); }
   else if(itPtLive()) itPtPaint();   // build queue 043: the tree shows more than the map's key holds (ships, ages, tags); it compares its own text
   if(itm.beaconPending){ itm.beaconPending = false; itMapBeacon(); }
+  itMapCtlPlace();   // 052: compares its own key
 }
 // what the map shows, as text: drawn again only when it changes. v2026.11.07.1: the system chip. Build queue 040: the wormholes shown and
 // their labels' ages, so a label that ages or a wormhole whose time is up redraws the map through the refreshes it already has (no timer)
@@ -29691,7 +29843,7 @@ function itMapKey(){
 // slide the map so your system is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
 function itMapCenter(draw = true){
   if(!itm.P || itm.home < 0) return;
-  const v = itm.view, i = itm.home; v.tx = itm.W / 2 - itm.P[2 * i] * v.k; v.ty = itm.H / 2 - itm.P[2 * i + 1] * v.k;
+  const v = itm.view, i = itm.home; v.tx = itMapFreeX() - itm.P[2 * i] * v.k; v.ty = itm.H / 2 - itm.P[2 * i + 1] * v.k;   // 052: in the part no panel covers
   if(draw){ itMapTip(-1); itMapDraw(); }
 }
 // three white rings spreading from your system over 1.6 s, then nothing: on their own canvas over the map, so the map itself isn't redrawn
@@ -29724,12 +29876,18 @@ function itMapYouArrow(){
   if(i < 0 || (x >= 6 && x <= W - 6 && y >= 6 && y <= H - 6)){ b.hidden = true; return; }
   const cx = W / 2, cy = H / 2, dx = x - cx, dy = y - cy, s = Math.min((W / 2 - 34) / Math.max(1e-9, Math.abs(dx)), (H / 2 - 24) / Math.max(1e-9, Math.abs(dy)));
   let ax = cx + dx * s, ay = cy + dy * s;
-  const fb = itm.el && b.parentNode === itm.box && itm.box.querySelector('.it-map-fbtns, .it-map-fcur:not([hidden])');   // 039: not over the filter bar (not in the Intel example's picture)
-  if(fb){ const br = itm.box.querySelector('.it-map-fb').getBoundingClientRect(), bx = itm.box.getBoundingClientRect(), top = br.top - bx.top - 16;
-    if(ay > top && Math.abs(ax - (br.left + br.right) / 2 + bx.left) < br.width / 2 + 40) ay = top; }
-  const sb = itm.el && b.parentNode === itm.box && itm.box.querySelector('.it-rp-search');   // 047: nor under the search box
-  if(sb){ const sr = sb.getBoundingClientRect(), bx = itm.box.getBoundingClientRect(), r = [sr.left - bx.left - 40, sr.top - bx.top, sr.right - bx.left + 40, sr.bottom - bx.top + 16];
-    if(sr.width > 0 && ax > r[0] && ax < r[2] && ay < r[3]) ay = r[3]; }
+  // 052 (plan 4.7): off every map control (the filter column and its panel buttons, the rail, zoom, the search box, a panel, Near You's list),
+  // not only a bar at the foot; moved to the nearest side of what it would sit on (not in the Intel example's picture)
+  if(itm.el && b.parentNode === itm.box){
+    const bx = itm.box.getBoundingClientRect(), obs = [];
+    const add = (e) => { if(!e) return; const r = e.getBoundingClientRect(); if(r.width > 0 && r.height > 0) obs.push([r.left - bx.left - 40, r.top - bx.top - 16, r.right - bx.left + 40, r.bottom - bx.top + 16]); };
+    for(const e of itm.box.querySelectorAll('.it-map-fbtns, button.it-map-fcur, .it-map-rail, .it-map-zoom, .it-rp-search, button.it-map-clr:not([hidden]), .it-whp:not([hidden])')) add(e);
+    if(itNearShown()) add(document.getElementById('itNearCol'));
+    for(let pass = 0; pass < 2; pass++) for(const r of obs) if(ax > r[0] && ax < r[2] && ay > r[1] && ay < r[3]){
+      const c = [[r[0], ay], [r[2], ay], [ax, r[1]], [ax, r[3]]].filter(([x, y]) => x >= 34 && x <= W - 34 && y >= 18 && y <= H - 18);
+      if(c.length){ c.sort((p, q) => Math.hypot(p[0] - ax, p[1] - ay) - Math.hypot(q[0] - ax, q[1] - ay)); [ax, ay] = c[0]; }
+    }
+  }
   b.hidden = false; b.style.left = ax + 'px'; b.style.top = ay + 'px';
   b.querySelector('svg').style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
 }
@@ -29801,14 +29959,16 @@ function itMapLayout(){
 // the start: your system in the middle, a typical gate IT_MAP_START_GATE px long
 function itMapStartView(){
   const k = Math.min(itm.kMax, Math.max(itm.kMin, IT_MAP_START_GATE / itm.G)), i = itm.home;
-  itm.view = {k, tx: itm.W / 2 - itm.P[2 * i] * k, ty: itm.H / 2 - itm.P[2 * i + 1] * k};
+  itm.view = {k, tx: itMapFreeX() - itm.P[2 * i] * k, ty: itm.H / 2 - itm.P[2 * i + 1] * k};   // 052: in the part no panel covers
 }
 // ⤢: every system within the reach in view (as before 039)
 function itMapFitView(){
   const P = itm.P, pad = 30; let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
   for(const i of itm.vis){ x0 = Math.min(x0, P[2 * i]); x1 = Math.max(x1, P[2 * i]); y0 = Math.min(y0, P[2 * i + 1]); y1 = Math.max(y1, P[2 * i + 1]); }
-  const k = Math.min(itm.kMax, Math.max(itm.kMin, Math.min((itm.W - 2 * pad) / Math.max(1e-6, x1 - x0), (itm.H - 2 * pad - 40) / Math.max(1e-6, y1 - y0))));
-  itm.view = {k, tx: itm.W / 2 - (x0 + x1) / 2 * k, ty: (itm.H - 40) / 2 - (y0 + y1) / 2 * k};
+  // 052: the 40 px kept for the filter bar at the foot went with the bar; the part no panel covers, past the filter column on the left
+  const [fa, fbx] = itMapFree(), cl = itm.fbBox && itm.cv.parentNode === itm.box ? Math.max(fa, itm.fbBox[2]) : fa, wf = Math.max(80, fbx - cl);
+  const k = Math.min(itm.kMax, Math.max(itm.kMin, Math.min((wf - 2 * pad) / Math.max(1e-6, x1 - x0), (itm.H - 2 * pad) / Math.max(1e-6, y1 - y0))));
+  itm.view = {k, tx: (cl + fbx) / 2 - (x0 + x1) / 2 * k, ty: itm.H / 2 - (y0 + y1) / 2 * k};
 }
 // a typical gate's length on screen now: what the zoom stages go by
 function itMapGatePx(){ return itm.G * itm.view.k; }
@@ -29832,13 +29992,14 @@ const IT_MAP_FILTERS = [
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3.5h13v8.5H8L4.5 15v-3h-2z"/></svg>'},
   {k: 'kills', name: 'Kills from Intel', note: 'systems with kills in Intel in amber, the rest dimmed',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke-width="2.2"/></svg>'},
+  // build queue 040 (the owner: "All of them, anywhere"): every kept wormhole, past "Map: within" too
+  {k: 'wh', name: 'Wormholes', note: 'wormholes Intel reported or you added, kept for the time set in Intel settings; the rest dimmed',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 2.5a6.5 6.5 0 1 1-6.5 6.5"/><path d="M9 5.5a3.5 3.5 0 1 1-3.5 3.5"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>'},
+  // 052 (plan 4.3): the order is free now that a filter's panel button sits beside it; Paths to you last
   // build queue 043 (the owner: "the wormhole filter button needs to be furthest right so it sits next to it's wormhole list button. also
   // fix the orientation of the "path to you" filter button."): before Wormholes; the icon top down like the tree, you filled at the top
   {k: 'paths', name: 'Paths to you', note: 'the gate routes from hostiles inside your alert range to you, as a tree',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="3.5" r="2.2" fill="currentColor"/><circle cx="3.5" cy="14.5" r="1.8"/><circle cx="9" cy="14.5" r="1.8"/><circle cx="14.5" cy="14.5" r="1.8"/><path d="M3.8 12.7C4 9 9 9 9 5.7M14.2 12.7C14 9 9 9 9 5.7M9 12.7v-7"/></svg>'},
-  // build queue 040 (the owner: "All of them, anywhere"): every kept wormhole, past "Map: within" too
-  {k: 'wh', name: 'Wormholes', note: 'wormholes Intel reported or you added, kept for the time set in Intel settings; the rest dimmed',
-    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 2.5a6.5 6.5 0 1 1-6.5 6.5"/><path d="M9 5.5a3.5 3.5 0 1 1-3.5 3.5"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>'}
 ];
 let itMapRegColTab = null;   // region index -> colour index, made once per table
 function itMapRegCol(T){
@@ -29974,8 +30135,8 @@ function itMapDraw(){
   { const fb = itm.box && itm.cv.parentNode === itm.box && itm.box.querySelector('.it-map-fbtns, .it-map-fcur');
     if(fb){ const bx = itm.box.getBoundingClientRect(), rr = [...itm.box.querySelectorAll('.it-map-fbtns, .it-map-fcur')].map(e => e.getBoundingClientRect()).filter(q => q.width > 0)[0];
       if(rr) itm.fbBox = [rr.left - bx.left - 4, rr.top - bx.top - 4, rr.right - bx.left + 4, rr.bottom - bx.top + 4];
-      const lb = whF && itm.fbBox && itm.box.querySelector('.it-map-fbtns button.it-whl'), lr = lb && lb.getBoundingClientRect();   // 040: the list button beside it while Wormholes is on
-      if(lr && lr.width > 0) itm.fbBox[2] = Math.max(itm.fbBox[2], lr.right - bx.left + 4); } }
+      // 052: the filter column, widened by a panel button that shows beside it (its filter on, or hovered)
+      if(itm.fbBox) for(const pb of itm.box.querySelectorAll('.it-map-fbtns button.it-map-pb')){ const lr = pb.getBoundingClientRect(); if(lr.width > 0 && getComputedStyle(pb).visibility !== 'hidden') itm.fbBox[2] = Math.max(itm.fbBox[2], lr.right - bx.left + 4); } } }
   itMapWhChipPaint();   // 045: before the labels, so no label goes under it
   itMapLabels(c, focus, onRoute, C, r);
   itMapRegionNames(c);
@@ -30108,7 +30269,7 @@ function itMapLegend(){
 // map's own reports (itm.rep); written only when its text changes (itPtPaint, from itMapDraw and itMapRefresh, no timer of its own,
 // LESSON #120), its ages on the card's clock (it.drawNow, so they move with Intel's age refresh). Pan and zoom move one transform.
 const IT_PT_KMIN = 0.3, IT_PT_KMAX = 2.5, IT_PT_BW = 150, IT_PT_BH = 60, IT_PT_ROW = 100, IT_PT_GAP = 14, IT_PT_LAB = 70, IT_PT_PAD = 12;
-const itPt = {ov: null, G: null, html: '', pin: -1, hover: -1, v: null, fitKey: '', drag: null, moved: false, paints: 0};
+const itPt = {ov: null, G: null, html: '', pin: -1, hover: -1, v: null, fitKey: '', treeKey: '', hand: false, drag: null, moved: false, paints: 0};
 function itPtPhone(){ return typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches; }
 // the live map with the filter on (never the Intel example's picture, which borrows itm with a canvas of its own)
 function itPtLive(){ return itm.filter === 'paths' && !!itm.el && !!itm.box && itm.cv.parentNode === itm.box; }
@@ -30241,19 +30402,27 @@ function itPtPaint(){
     svg.innerHTML = itPtGatesHtml(G); ov.querySelector('.pt-nodes').innerHTML = itPtBodyHtml(G, now); ov.querySelector('.pt-head').innerHTML = itPtHeadHtml(G);
     if(itPt.pin >= 0 && !G.nodes.has(itPt.pin)) itPt.pin = -1;
   });
-  const fk = [itm.home, it.set.range, itm.box.clientWidth, itm.H].join('|');   // fitted when shown, when you move, the range changes or the box resizes
-  if(!itPt.v || fk !== itPt.fitKey){ itPt.fitKey = fk; itPtFit(); } else itPtApply();
+  // fitted when shown, when you move, the range changes, the box resizes or Near You opens or shuts; 052 (the owner: "paths to you map mode
+  // should run "fit" every time the layout changes"): also when the tree grows or shrinks, unless the view was zoomed or dragged by hand
+  // since the last fit (the owner at the review: "your choice is fine")
+  const fk = [itm.home, it.set.range, itm.box.clientWidth, itm.H, itNearShown()].join('|'), tk = `${G.cw}|${G.ch}`;
+  if(!itPt.v || fk !== itPt.fitKey || (tk !== itPt.treeKey && !itPt.hand)){ itPt.fitKey = fk; itPtFit(); } else itPtApply();
   itPtLight();
 }
 function itPtApply(){ const v = itPt.v, inn = itPt.ov && itPt.ov.querySelector('.pt-in'); if(v && inn) inn.style.transform = `translate(${v.tx}px, ${v.ty}px) scale(${v.k})`; }
 function itPtFit(){
   const G = itPt.G; if(!G) return;
-  const phone = itPtPhone(), W = itm.box.clientWidth, H = itm.H, top = phone ? 84 : 34, foot = phone ? 64 : 56;
-  const all = Math.min(1.2, (W - 16) / G.cw, (H - top - foot) / G.ch);
+  // 052: the room between the filter column (left) and the rail or Near You's list (right); the bar at the foot is gone
+  const phone = itPtPhone(), W = itm.box.clientWidth, H = itm.H, top = phone ? 84 : 34, foot = 16, bx = itm.box.getBoundingClientRect();
+  const col = itm.box.querySelector('.it-map-fbtns'), fc = itm.box.querySelector('button.it-map-fcur'), cr = (col && col.offsetParent ? col : fc) ? (col && col.offsetParent ? col : fc).getBoundingClientRect() : null;
+  const ny = itNearShown() && document.getElementById('itNearCol'), rl = itm.box.querySelector('.it-map-rail'), rr = (ny && ny.offsetParent ? ny : rl) ? (ny && ny.offsetParent ? ny : rl).getBoundingClientRect() : null;
+  let x0 = cr && cr.width ? cr.right - bx.left + 8 : 8, x1 = rr && rr.width ? rr.left - bx.left - 8 : W - 8;
+  if(x1 - x0 < W * 0.35){ x0 = 8; x1 = W - 8; }   // a phone with Near You open: the whole width
+  const room = x1 - x0, all = Math.min(1.2, room / G.cw, (H - top - foot) / G.ch);
   const k = Math.max(IT_PT_KMIN, phone ? Math.max(0.75, all) : all);   // on a phone no smaller than 0.75, centred on you (two fingers to look around)
-  itPt.v = {k, tx: Math.round(G.cw * k <= W ? (W - G.cw * k) / 2 : W / 2 - G.youX * k), ty: top}; itPtApply();
+  itPt.v = {k, tx: Math.round(G.cw * k <= room ? x0 + (room - G.cw * k) / 2 : x0 + room / 2 - G.youX * k), ty: top}; itPt.hand = false; itPt.treeKey = `${G.cw}|${G.ch}`; itPtApply();
 }
-function itPtZoomAt(x, y, f){ const v = itPt.v; if(!v) return; const k = Math.max(IT_PT_KMIN, Math.min(IT_PT_KMAX, v.k * f)); v.tx = x - (x - v.tx) * k / v.k; v.ty = y - (y - v.ty) * k / v.k; v.k = k; itPtApply(); }
+function itPtZoomAt(x, y, f){ const v = itPt.v; if(!v) return; itPt.hand = true; const k = Math.max(IT_PT_KMIN, Math.min(IT_PT_KMAX, v.k * f)); v.tx = x - (x - v.tx) * k / v.k; v.ty = y - (y - v.ty) * k / v.k; v.k = k; itPtApply(); }
 // the map's own rules (itMapBind): a mouse drags and the wheel zooms about the pointer; on touch two fingers move and pinch, one scrolls the page
 function itPtBind(ov){
   const vp = ov.querySelector('.pt-vp'), pts = new Map(), at = (e) => { const r = vp.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
@@ -30271,12 +30440,12 @@ function itPtBind(ov){
       if(a.length < 2 || b.length < 2) return;
       const m0 = [(a[0][0] + a[1][0]) / 2, (a[0][1] + a[1][1]) / 2], m1 = [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2];
       const s = Math.hypot(b[0][0] - b[1][0], b[0][1] - b[1][1]) / Math.max(1, Math.hypot(a[0][0] - a[1][0], a[0][1] - a[1][1])), k = Math.max(IT_PT_KMIN, Math.min(IT_PT_KMAX, v0.k * s));
-      itPt.v = {k, tx: m1[0] - (m0[0] - v0.tx) * k / v0.k, ty: m1[1] - (m0[1] - v0.ty) * k / v0.k}; itPt.moved = true; itPtApply(); e.preventDefault(); return;
+      itPt.v = {k, tx: m1[0] - (m0[0] - v0.tx) * k / v0.k, ty: m1[1] - (m0[1] - v0.ty) * k / v0.k}; itPt.moved = true; itPt.hand = true; itPtApply(); e.preventDefault(); return;
     }
     const [x0, y0] = a[0], [x1, y1] = b[0];
     if(!itPt.moved && Math.hypot(x1 - x0, y1 - y0) < 4) return;
     if(!itPt.moved){ itPt.moved = true; try{ vp.setPointerCapture(e.pointerId); }catch(err){ } vp.classList.add('drag'); }
-    itPt.v = {k: v0.k, tx: v0.tx + x1 - x0, ty: v0.ty + y1 - y0}; itPtApply();
+    itPt.v = {k: v0.k, tx: v0.tx + x1 - x0, ty: v0.ty + y1 - y0}; itPt.hand = true; itPtApply();
   });
   const end = (e) => { pts.delete(e.pointerId); if(pts.size < (e.pointerType === 'touch' ? 2 : 1)){ itPt.drag = null; vp.classList.remove('drag'); } };
   vp.addEventListener('pointerup', end); vp.addEventListener('pointercancel', end);
@@ -30702,6 +30871,10 @@ function itWhAddFull(f){
 }
 // the list's clicks this adds: one ID's ×, and a system's lines
 function itWhListClick(e, p){
+  // build queue 052 (the owner: "left click on system name re-centers map on that system containing the wormhole"): the search box's pick,
+  // in the part of the map the list doesn't cover; on a phone (the list a sheet over the map) the list shuts first
+  const go = e.target.closest('[data-it-whgo]');
+  if(go){ const id = Number(go.dataset.itWhgo); if(itMapPhone()) itWhListOpen(false, false); itRpPick(id); return true; }
   const rt = e.target.closest('[data-it-whraw]');
   if(rt){ const id = Number(rt.dataset.itWhraw); if(itWhRawOpen.has(id)) itWhRawOpen.delete(id); else itWhRawOpen.add(id); itWhListPaint(true); const b = p.querySelector(`[data-it-whraw="${Number(id)}"]`); if(b) b.focus(); return true; }
   const x = e.target.closest('[data-it-whsrm]');
@@ -31102,8 +31275,10 @@ function itMapWhChipPaint(){
   if(b.textContent !== txt) b.textContent = txt;
   if(b.getAttribute('aria-label') !== lab){ b.setAttribute('aria-label', lab); b.title = lab; }
   const bx = itm.box.getBoundingClientRect(), r0 = b.getBoundingClientRect(), fb = itm.fbBox;
-  const up = !!(fb && r0.width > 0 && r0.right - bx.left + 4 > fb[0] && r0.left - bx.left - 4 < fb[2]);   // would meet the filter bar: lifted above it
+  // 052: the filter column runs down the same left edge: the chip steps right of it only when the column really reaches it (up and down too)
+  const up = !!(fb && r0.width > 0 && r0.bottom - bx.top + 4 > fb[1] && r0.top - bx.top - 4 < fb[3]), lx = fb ? `${Math.round(fb[2] + 4)}px` : '';
   if(b.classList.contains('up') !== up) b.classList.toggle('up', up);
+  if(up && b.style.getPropertyValue('--it-whn-l') !== lx) b.style.setProperty('--it-whn-l', lx);
   const r = b.getBoundingClientRect(); if(r.width > 0) itm.chipBox = [r.left - bx.left - 4, r.top - bx.top - 4, r.right - bx.left + 4, r.bottom - bx.top + 4];
 }
 function itMapWhChipNext(){
@@ -31137,12 +31312,14 @@ function itWhListOpen(open, back = true){
   if(!open){
     if(!itWhL.el || itWhL.el.hidden) return;
     itWhL.el.hidden = true; if(btn) btn.setAttribute('aria-expanded', 'false');
+    itm.ctlKey = null; itMapCtlPlace();   // 052: the name line comes back
     document.removeEventListener('pointerdown', itWhL.out, true); document.removeEventListener('keydown', itWhL.key, true); clearInterval(itWhL.t); itWhL.t = 0;
     if(back){ const shown = btn && btn.offsetParent && getComputedStyle(btn).visibility !== 'hidden', to = shown ? btn : itm.el.querySelector('.it-map-fcur'); if(to) to.focus({preventScroll: true}); }
     return;
   }
   if(!itm.box) return;
   if(itm.el.querySelector('.it-map-fb.open')) itMapFbarOpen(false);   // a phone: the filter row closes as the list opens
+  if(itNearShown() && !itMapRoomForBoth()) itNearToggle(false);   // 052: a phone, or no room beside Near You: one at a time (the owner: "sure")
   if(!itWhL.el){
     const p = document.createElement('div');
     p.className = 'it-whp'; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Wormhole list'); p.hidden = true;
@@ -31171,6 +31348,7 @@ function itWhListOpen(open, back = true){
   }
   if(itWhL.el.parentNode !== itm.box) itm.box.appendChild(itWhL.el);
   itWhL.el.hidden = false; if(btn) btn.setAttribute('aria-expanded', 'true');
+  itm.ctlKey = null; itMapCtlPlace();   // 052: right of the panel buttons, level with its filter, clear of Near You
   itWhL.el.querySelector('.it-whp-msg').textContent = '';
   itWhListPaint(true);
   itWhL.el.querySelector('input[name=sys]').focus({preventScroll: true});
@@ -31194,7 +31372,7 @@ function itWhRowsHtml(){
   return list.map(w => {
     const j = my ? itJumps(my, w.id) : null, left = Math.max(1, Math.ceil((w.t + st.keepH * 3600e3 - now) / 3600e3)), name = itSysName(w.id);
     const by = `${itWhByTxt(w)} · ${itAgo(w.t)} ago · gone in ${left} h`;
-    return `<div class="it-whp-r"><span class="it-whp-j">${itJumpsHtml(j)}</span><span class="it-whp-s it-sn ${escapeHtml(itSecClass(w.id))}">${escapeHtml(name)}</span>${itWhBadgeHtml(w.drifter, '')}`
+    return `<div class="it-whp-r"><span class="it-whp-j">${itJumpsHtml(j)}</span><button type="button" class="it-whp-s it-sn it-whp-go ${escapeHtml(itSecClass(w.id))}" data-it-whgo="${Number(w.id)}" title="Show on the map">${escapeHtml(name)}</button>${itWhBadgeHtml(w.drifter, '')}`
       + `<span class="it-whp-by">${itWhRawTogHtml(w)}${itWhSigsHtml(w.sigs, 4, w.id)}${itWhInfoHtml(w.info, w.t)}${escapeHtml(by)}</span><button type="button" data-it-whrm="${Number(w.id)}" aria-label="${escapeHtml(`Remove ${name}`)}">Remove</button>${itWhRawHtml(w)}</div>`;
   }).join('');
 }
@@ -31547,7 +31725,7 @@ function itRpPick(id){
   const inp = itm.el.querySelector('.it-rp-search input'); if(inp) inp.value = itSysName(id);
   itRp.sel = i;
   const v = itm.view, gp = itMapGatePx(); if(gp < IT_RP_PICK_GATE) v.k = Math.min(itm.kMax, v.k * IT_RP_PICK_GATE / Math.max(1e-6, gp));
-  v.tx = itm.W / 2 - itm.P[2 * i] * v.k; v.ty = itm.H / 2 - itm.P[2 * i + 1] * v.k;
+  v.tx = itMapFreeX() - itm.P[2 * i] * v.k; v.ty = itm.H / 2 - itm.P[2 * i + 1] * v.k;   // 052: in the part no panel covers
   if(itm.D[i] > 0 && !itm.pinned.has(id)) itMapPin(id); else itMapDraw();
   itMapTip(i, itm.Q[2 * i], itm.Q[2 * i + 1]);
 }
@@ -31643,6 +31821,7 @@ function itMapBind(){
   el.addEventListener('keydown', (e) => { if(e.key === 'Escape' && itm.el.querySelector('.it-map-fb.open')){ e.stopPropagation(); itMapFbarOpen(false); itm.el.querySelector('.it-map-fcur').focus(); } });
   el.addEventListener('click', (e) => {
     if(e.target.closest('[data-it-whl]')){ itWhListOpen(!itWhListShown()); return; }   // build queue 040: the wormhole list
+    if(e.target.closest('[data-it-ny]')){ itNearToggle(!itNearShown()); return; }   // build queue 052: Near You's panel
     const fb = e.target.closest('[data-im-f]');
     if(fb){ itMapFilterSet(fb.dataset.imF); if(itm.el.querySelector('.it-map-fb.open')){ itMapFbarOpen(false); itm.el.querySelector('.it-map-fcur').focus(); } return; }
     if(e.target.closest('.it-map-fcur')){ itMapFbarOpen(!itm.el.querySelector('.it-map-fb.open')); return; }
@@ -31752,7 +31931,7 @@ function rsBind(root){
   el.addEventListener('change', (e) => { if(e.target && e.target.id === 'intelSw') itToggle(e.target.checked); });   // v2026.10.29.1: the switch on the card
   // v2026.11.02.4: the map's links with the rows, the range steppers, and the phone's List | Map
   itMapRowEvents(el); rsBind(el); itRpBind(el);   // 047: the Routes box, the map's menu, buttons and note
-  el.addEventListener('click', (e) => { const b = e.target.closest('[data-it-nv]'); if(!b) return; it.set.nearView = b.dataset.itNv === 'map' ? 'map' : 'list'; itWriteSet(); itRender(true); const again = el.querySelector(`[data-it-nv="${it.set.nearView}"]`); if(again) again.focus({preventScroll: true}); });
+  // build queue 052: the phone's List | Map switch is gone (the map always shows; Near You is a panel inside it); nearView stays stored
   // v.98: the "From Intel" lines
   document.getElementById('pilotFromIntel').addEventListener('click', (e) => { const b = e.target.closest('[data-fi-act]'); if(b) switchTab('intel'); });
   document.getElementById('saFromIntel').addEventListener('click', (e) => {

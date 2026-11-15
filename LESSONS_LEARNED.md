@@ -196,6 +196,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #164 A text transform that will meet its own output must leave that output unchanged: test it on what it made (export, import, export again).
 - #166 Cutting stored data down for one reader breaks the others: list every reader of that store, and the fields each reads, before trimming it. See also #134.
 - #168 A check that reads the real clock (or "main") passes or fails by when it runs: move what the page does at a set time (EVE's downtime) away from the run, and pin an older page to a commit. See also #115.
+- #169 Don't measure what's hidden, and don't key a cache on an inline element's width: skip what has no size, key on a real width, measure again when it shows.
 
 **Intel and live data (chat logs, zKillboard's feed)**
 
@@ -1075,6 +1076,18 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 169. Don't measure what's hidden, and don't key a cache on an inline element's width
+
+- **What happened (found building 052, 2026-11-15):** Near You became a panel inside the map, shut by default. `itNearCap` cuts a big
+  gang's names to 3 lines by measuring each row's names; rows drawn while the panel was shut measure 0 px, "fit", and the cut was cached
+  ("nothing to cut") under a key built from the names span's `clientWidth`, which is 0 for an inline element whatever the width. Opened, the
+  panel would have shown the whole names list. The same build found the cut measuring only the names span: in the narrow panel the names can
+  start on the line after the word, three lines of names in a four-line entry.
+- **How it was caught:** intel_layout_check's 300-pilot gang ("the names stop at 3 lines") failed once the layout changed.
+- **Do this instead:** skip what has no client rects (nothing to measure) and cache nothing for it; key a measured result on a width that is
+  real (the block's, not an inline span's); measure the box the rule is about (the whole line, not part of it); and measure again when the
+  thing is shown (`itNearToggle` runs the row fitters on open).
 
 ## 168. A check that reads the real clock (or "main") passes or fails by when it runs
 

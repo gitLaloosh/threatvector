@@ -19,6 +19,14 @@ far as a static read can (the look itself: tools/page_checks/ui_rules_check.py):
      (.ttk-why[role="tooltip"]). (The My Fit picker is a menu on a wide window: its head, with the button, shows on a phone only.)
   6. one chevron for a list's expand / collapse (v2026.11.01.6): Intel's rows, the dossier's hull rows and "Show N more hulls", the
      Fleet tab's fleet headings carry IT_CHEV and no arrow glyph (the cards' CC_CHEV waits for the expand/collapse bug).
+Build queue 052 (Project doc roadmap/intel-layout-sov-plan.md section 6; the owner: "sure", "Site panel style", "cyan tick, dark box"):
+  7. (rule A) a button vs a map control: the controls on a map (zoom, the rail, the filter column, its panel buttons, the phone's
+     filter button, Hide all routes, Paths to you's zoom) are neutral: no amber colour, border or fill in their rules, except the count
+     badge that means your alert range (.it-ny-badge.al); the rail's buttons in the zoom buttons' fill and edge;
+  8. (rule B) panels over the map: the Wormholes list (.it-whp) and Near You's panel use --panel and a --line border; Near You's rows
+     --panel-2;
+  9. (rule C) one checkbox and one radio: the global rule (switches excepted) with appearance none, the --bg fill and --field-border,
+     checked a cyan border; no other rule sets appearance, a fill or accent-color on a checkbox or radio.
 """
 import sys, os, re
 
@@ -134,6 +142,34 @@ for m_ in CHEV_BTN.finditer(src):
     if '${IT_CHEV}' not in body: problems.append(f'line {ln}: a list expander without Intel\'s chevron (IT_CHEV)')
     if re.search('[\u25b6\u25bc\u25be\u25b8\u25ba]', body): problems.append(f'line {ln}: a list expander with an arrow glyph (use IT_CHEV)')
 if n_chev < 6: problems.append(f'only {n_chev} list expanders found (Intel rows x2, dossier rows, Show N more hulls x2, fleet headings): update rule 6')
+
+# 7. rule A (052): map controls are neutral (never amber, except the alert-range count badge)
+MAPCTL = re.compile(r'\.it-map-zoom|\.it-map-rail|\.it-map-pb|\.it-map-fbtns|\.it-map-fcur|\.it-map-clr|\.pt-z\b')
+n_ctl = 0
+for sel, body, ln in rules:
+    for part in sel.split(','):
+        if not MAPCTL.search(part) or '.it-ny-badge.al' in part: continue
+        n_ctl += 1
+        if re.search(r'amber|#d99a3c|#e8a33d', body, re.I): problems.append(f'line {ln}: {part.strip()}: amber in a map control (rule A: map controls are neutral)')
+if n_ctl < 8: problems.append(f'only {n_ctl} map-control rules found: update rule 7')
+rail = [b for s_, b, _ in rules if s_.strip() == '.it-map-rail button']
+if not rail or 'rgba(18,23,28,.9)' not in rail[0] or 'var(--line)' not in rail[0]: problems.append('.it-map-rail button: not in the zoom buttons\' fill and edge (rule A)')
+# 8. rule B (052): panels over the map
+for want, fill in (('.it-whp', 'var(--panel)'), ('.it-top .it-nearcol', 'var(--panel)'), ('.it-nearcol .it-nb', 'var(--panel-2)')):
+    hit = [b for s_, b, _ in rules if want in [x.strip() for x in s_.split(',')] and prop(b, 'background') == fill]
+    if not hit: problems.append(f'{want}: no rule with the {fill} fill (rule B: panels over the map)')
+    elif fill == 'var(--panel)' and 'var(--line)' not in (prop(hit[0], 'border') or ''): problems.append(f'{want}: no --line border (rule B)')
+# 9. rule C (052): one checkbox and one radio
+CK = 'input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch])'
+g = [b for s_, b, _ in rules if s_.split(',')[0].strip() == CK]
+if not g or prop(g[0], 'appearance') != 'none' or prop(g[0], 'background') != 'var(--bg)' or 'var(--field-border)' not in (prop(g[0], 'border') or ''):
+    problems.append(f'{CK}: no global rule with appearance none, the --bg fill and --field-border (rule C)')
+if not any(':checked' in s_ and prop(b, 'border-color') == 'var(--cyan)' for s_, b, _ in rules if CK in s_): problems.append('checkbox: no checked rule with a cyan border (rule C)')
+for sel, body, ln in rules:
+    for part in sel.split(','):
+        part = part.strip()
+        if not re.search(r'\[type=["\']?(checkbox|radio)', part) or part.startswith(CK) or part.startswith('input[type=radio]'): continue
+        if re.search(r'(^|;)\s*(-webkit-)?appearance\s*:|(^|;)\s*background(-color)?\s*:|accent-color', body): problems.append(f'line {ln}: {part}: styles a checkbox or radio outside the one rule (rule C)')
 
 for p in problems: print('PROBLEM', p)
 print(f'UI RULES: {len(problems)} problems')

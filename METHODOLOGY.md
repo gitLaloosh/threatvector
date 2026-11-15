@@ -393,8 +393,10 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   the standing (hostile red, neutral grey, friendly blue), its size the gang (solo, 2–10, 11 or more); ✕ counts its
   kills. Hover a system, or a row in Near You or the Feed, for its route to you; press it to keep the route (past the
   map's reach too). Drag or two
-  fingers move it, the wheel or a pinch zooms it (over the map the wheel zooms instead of scrolling the page); on a
-  phone, List | Map in Near You switches between the two. Near You's range (Intel settings): from your alert range to
+  fingers move it, the wheel or a pinch zooms it (over the map the wheel zooms instead of scrolling the page). The filters
+  are a column down the map's left side; a filter with a panel (Wormholes' list) has its own button beside it. Near You
+  is a panel inside the map, behind the feed button under the zoom buttons (its count turns amber when a system is in
+  your alert range); it stays open or shut as you left it, and centring the map uses the part no panel covers. Near You's range (Intel settings): from your alert range to
   the Feed's kill range, alert + 5 unless you set it. Map: within, under the map: from Near You's range up to the Feed's
   largest kill range (30); it follows the Feed's range until you change it, and reports and names show only within it.
   Systems past Near You's range are faded, past the map's reach fainter still; past the Feed's range a system's kills
@@ -489,7 +491,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   table is checked against each new EVE build every day.
 - **Buttons:** a pilot's name opens them in the Pilot Analyzer, in their ship when the line says it. Press a system,
   corporation, alliance or ship to show only it in the Feed; the chips under the filters say what's on (× removes one;
-  press it again for everything). Near You itself is never filtered; beside the map it scrolls, and the count below says
+  press it again for everything). Near You itself is never filtered; its panel scrolls, and the count below says
   how many systems are out of view. A kill badge there shows its kills' value together. The radar icon beside a system
   in Near You sends its pilots and ships to the System Analyzer; Restore my paste puts yours back.
 - **Privacy, the folder and tabs:** nothing from your logs leaves the browser except the words looked up on ESI, and
