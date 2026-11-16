@@ -12,7 +12,8 @@ Uses intel_check.py's made-up folder, mocks and names (you in 1DQ1-A, alert rang
     column's button) with every filter (or the column's button), the rail and zoom still clickable; remembered (nearShown) across a reload;
     pressed again it shuts; a map press on a system leaves it shut;
   * the filter column at the map's left edge, under the search box, inside the map, clear of the zoom buttons and the rail; Paths to you
-    last; (wide) hovering Wormholes shows its panel button right of the column, level with it; the name line right of the panel buttons,
+    last; (wide) Wormholes on shows its panel button right of the column, level with it, and off hovering shows none (058, the owner:
+    "disabling a filter (like security range) should hide the settings button for it"); the name line right of the panel buttons,
     level with the filter that is on, clear of the rail; (phone) the column shut behind its button, opened it shuts Near You and Near You
     shuts it;
   * the Wormholes list: (1440) right of the panel buttons, inside the map, clear of Near You, the name line hidden; (760) no room beside
@@ -85,13 +86,15 @@ def case_wide(b, html, w, out, errs):
       const z=[...document.querySelectorAll('.it-map-zoom button')].filter(e=>e.offsetParent).map(R), ks=[...document.querySelectorAll('.it-map-fbtns [data-im-f]')].map(e=>e.dataset.imF);
       return {{left: f.left-m.left<=12, under: f.top>=q.bottom, inMap: f.bottom<=m.bottom && f.top>=m.top, tall: f.height>f.width, clear: !ov(f,r) && z.every(x=>!ov(f,x)), last: ks[ks.length-1]==='paths'}}; }})()""")
     if not all(col.values()): out.append(f'{w}: the filter column at the left edge under the search box, clear of zoom and the rail, Paths to you last: {col}')
-    pg.hover('[data-im-f="wh"]'); pg.wait_for_timeout(300)
-    pb = pg.evaluate(f"""(()=>{{ const R={R}, p=document.querySelector('button.it-map-pb'), pr=R(p), f=R(document.querySelector('[data-im-f="wh"]')), c=R(document.querySelector('.it-map-fbtns'));
+    pg.hover('[data-im-f="wh"]'); pg.wait_for_timeout(700)
+    if pg.evaluate("getComputedStyle(document.querySelector('[data-it-whl]')).visibility === 'visible'"): out.append(f'{w}: hovering Wormholes while it is off shows its panel button (058: only while on)')
+    pg.evaluate("itMapFilterSet('wh')"); pg.mouse.move(5, 5); pg.wait_for_timeout(700)
+    pb = pg.evaluate(f"""(()=>{{ const R={R}, p=document.querySelector('[data-it-whl]'), pr=R(p), f=R(document.querySelector('[data-im-f="wh"]')), c=R(document.querySelector('.it-map-fbtns'));
       return {{shown: getComputedStyle(p).visibility==='visible', right: pr.left>=c.right, level: Math.abs(pr.top-f.top)<4}}; }})()""")
-    if not all(pb.values()): out.append(f'{w}: hovering Wormholes shows its panel button right of the column, level with it: {pb}')
-    pg.mouse.move(5, 5); pg.wait_for_timeout(700)
+    if not all(pb.values()): out.append(f'{w}: Wormholes on shows its panel button right of the column, level with it: {pb}')
+    pg.evaluate("itMapFilterSet('wh')"); pg.wait_for_timeout(300)
     pg.evaluate("document.querySelector('.it-map-fb').classList.add('named')"); pg.wait_for_timeout(350)
-    nl = pg.evaluate(f"""(()=>{{ const R={R}, n=R(document.querySelector('.it-map-fn')), c=R(document.querySelector('.it-map-fbtns')), f=R([...document.querySelectorAll('.it-map-fbtns [data-im-f]')].find(x=>x.dataset.imF===itm.filter)), r=R(document.querySelector('.it-map-rail'));
+    nl = pg.evaluate(f"""(()=>{{ const R={R}, n=R(document.querySelector('.it-map-fn')), c=R(document.querySelector('.it-map-fbtns')), f=R([...document.querySelectorAll('.it-map-fbtns [data-im-f]')].find(x=>x.dataset.imF===(itMapSt().colour||'sec'))), r=R(document.querySelector('.it-map-rail'));
       return {{right: n.left>=c.right+32, level: Math.abs((n.top+n.bottom)/2-(f.top+f.bottom)/2)<3, clearRail: n.right<=r.left}}; }})()""")
     if not all(nl.values()): out.append(f'{w}: the name line right of the panel buttons, level with the filter that is on, clear of the rail: {nl}')
     # Near You open: inside the map beside the rail, every control clickable; remembered
@@ -115,7 +118,7 @@ def case_wide(b, html, w, out, errs):
     W(pg, F_INTEL, line(time.time(), 'Scout Alt', f'{SYSNAME[near[8]]} wh')); tick(pg, 3200)
     pg.evaluate("document.querySelector('[data-it-whl]').click()"); pg.wait_for_timeout(500)
     if w >= 1200:
-        p = pg.evaluate(f"""(()=>{{ const R={R}, ov={OV}, p=R(document.querySelector('.it-whp')), c=R(document.getElementById('itNearCol')), b=R(document.querySelector('button.it-map-pb')), m=R(itm.box);
+        p = pg.evaluate(f"""(()=>{{ const R={R}, ov={OV}, p=R(document.querySelector('.it-whp')), c=R(document.getElementById('itNearCol')), b=R(document.querySelector('[data-it-whl]')), m=R(itm.box);
           return {{nearOpen: !{SHUT}, clear: !ov(p,c), right: p.left>=b.right, inMap: p.left>=m.left && p.right<=m.right && p.top>=m.top && p.bottom<=m.bottom+1, nameHidden: getComputedStyle(document.querySelector('.it-map-fn')).visibility==='hidden'}}; }})()""")
         if not all(p.values()): out.append(f'{w}: the Wormholes list right of the panel buttons, inside the map, clear of Near You, the name hidden: {p}')
     else:

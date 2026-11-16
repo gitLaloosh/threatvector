@@ -387,9 +387,19 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   within the map's reach are nudged apart, to at least 12 px at that zoom, each staying close to its own place. Zoom out
   for the whole galaxy, in for the game's circles with each system's security (from a gate about 34 px long) and their
   names (from about 80 px); gates between two regions are dotted and region names are written in spaced capitals, yours
-  in white. The bar at the bottom of the map picks the colours: Security status, Jumps from you (0 to 10 or more; grey
-  with no gate route), Region (two regions joined by a gate never share a colour), Intel reports or Kills from Intel (the
-  rest dimmed), Wormholes, Sov upgrades or Paths to you (below); it opens on Security status every visit. A ring marks a system with a report: its colour is
+  in white. The filter column (build queue 058) has three groups. Colour, one or none: Security status (the number the game
+  shows, in tenths; the map's table holds CCP's value to two decimals, so a system just under 0.45 would round to 0.5: CCP's
+  band, from the unrounded value, keeps those 19 at 0.4), Jumps from you (0 to 10 or more; grey with no gate route) or Region
+  (two regions joined by a gate never share a colour; no cyan, amber or lilac, which mean focus, alerts and wormholes);
+  pressing the one that is on turns colour off (every system plain grey, no number). The colour is soft: mixed toward the
+  map's background, zoomed in a dark disc tinted with it. Only, any number, every one that is on must match and any pick
+  inside one counts: Security range (two ends, 0.1 steps, either order, comparing the number the map shows), Within N jumps
+  (1 to 30, by stargate), Intel reports, Kills from Intel, Wormholes and Sov upgrades (below). While one is on, the systems
+  that match are bright anywhere on the map, a little bigger and in full colour, the rest dim, and no system fades with
+  distance; hostile and neutral rings, the alert range's glow and your pin never fade; the legend's second line says what
+  is on and how many match, and "N match ›" at the bottom left moves the view to each, nearest first. View: Paths to you
+  (below), where no Only filter applies. A filter's settings button shows while it is on. What you pick is kept in this
+  browser (localStorage `tvMapStack`); a first visit opens on Security status. A ring marks a system with a report: its colour is
   the standing (hostile red, neutral grey, friendly blue), its size the gang (solo, 2–10, 11 or more); ✕ counts its
   kills. Hover a system, or a row in Near You or the Feed, for its route to you; press it to keep the route (past the
   map's reach too). Drag or two
@@ -433,15 +443,15 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
 - **Wormholes** (build queue 040): a line that says wh, wormhole or drifter (intel words, never looked up as pilots) with a
   system keeps that system as a wormhole (a Drifter one with drifter), with the line's time and who sent it, in this
   browser only (localStorage `tvWormholes`; nothing is sent anywhere), for 24 hours unless you change "keep wormhole
-  reports for" in Intel settings (1 to 48 hours; anything older than 48 hours is deleted). The map's last filter,
-  Wormholes, colours every kept one anywhere in New Eden, past the map's reach too, and dims the rest; on the other filters
-  a wormhole Intel read within "forget reports after" and the map's reach gets two thin rings and "WH · age", like a
-  report. Feed rows and Near You show a Wormhole (or Drifter WH) badge. On the Wormholes filter (build queue 045) the rest
-  steps back: other reports' rings at 20% with no glow, the alert range's wash lighter, labels only for wormholes and you
-  (a wormhole's tag a filled pill, its name where it fits, never over another label); each wormhole a filled disc with a
-  ring (zoomed in, a glowing ring around its circle), a Drifter hot pink with its outer ring dashed; one reported in the last
-  30 minutes sends out a slow ring every 2.2 seconds (none when the device asks for less motion); and "N wormholes ›" at the
-  bottom left moves the view to each in turn, nearest by gate jumps first, then newest. The list button beside Wormholes adds a system by
+  reports for" in Intel settings (1 to 48 hours; anything older than 48 hours is deleted). The Only filter Wormholes
+  matches every kept one anywhere in New Eden, past the map's reach too; with it off, a wormhole Intel read within
+  "forget reports after" and the map's reach gets two thin rings and "WH · age", like a report. Feed rows and Near You show
+  a Wormhole (or Drifter WH) badge. With Wormholes on (build queue 045; 058 for the holes that match every Only filter that
+  is on), each such hole is a filled disc with a ring (zoomed in, a glowing ring around its circle), its tag a filled pill,
+  a Drifter hot pink with its outer ring dashed; one reported in the last 30 minutes sends out a slow ring every 2.2 seconds
+  (none when the device asks for less motion); a kept hole that doesn't match keeps only the thin rings, and only while it
+  is a live report. Other reports keep their rings and names (058). "N match ›" at the bottom left moves the view to each
+  in turn, nearest by gate jumps first, then newest. The list button beside Wormholes (while it is on) adds a system by
   hand (kept the set hours from then; shown only on the filter and in the list) or removes one; a removed one isn't
   brought back by the same line read again, only by a newer one.
 - **Signature IDs and hole details** (build queue 044): in a wormhole line only, a reader runs before the system and pilot
@@ -494,8 +504,9 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   (the four sovereignty hub upgrade groups). Each line is checked as you type: ✓ read, ⚠ read but a word isn't an upgrade's
   name (named), ✗ not read (an unknown system, or no upgrades on the line); a system twice in one list says "also on line N".
   The panel lists the kinds your lists hold (Ratting, Exploration, Navigation, Mining, Other) with how many systems have
-  each, one checkbox per kind (a new list's kinds start ticked); the levels are in the hover. On the filter, systems with a
-  ticked kind stay bright anywhere on the map, past its reach too, and the rest dim; your own system never dims; hovering a
+  each, one checkbox per kind (a new list's kinds start ticked); the levels are in the hover, and a Level row (058) ticks
+  levels 1, 2 or 3 for the kinds that come in levels (any ticked level counts; none ticked, any level). With the filter on,
+  systems with a ticked kind stay bright anywhere on the map, past its reach too, and the rest dim; your own system never dims; hovering a
   system names its upgrades with their levels. A browser whose storage is full keeps the lists for the visit and says so
   (INTEL-11).
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location

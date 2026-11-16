@@ -45,6 +45,8 @@ def start(b, html, errs, W=1440, H=1000):
     ctx = b.new_context(bypass_csp=True, viewport={'width': W, 'height': H})
     ctx.on('page', lambda pg: pg.on('pageerror', lambda e: errs.append(str(e))))
     ctx.add_init_script(FS); route(ctx)
+    # 058: the filters stack, so pressing Wormholes turns it on or off; these turn it on (or off) whatever it was
+    ctx.add_init_script("window.__whOn = () => { if(!itMapSt().only.wh) itMapFilterSet('wh'); }; window.__whOff = () => { if(itMapSt().only.wh) itMapFilterSet('wh'); };")
     pg = ctx.new_page(); pg.goto('file://' + html)
     pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, forget: 15})); }", SIDE)
     pg.reload(); pg.wait_for_timeout(400)
@@ -130,13 +132,13 @@ def cases(b, html, phone=True):
     lab = pg.evaluate("(id) => itMapWhLabel(itWhStore().rep[id])", A)
     if not lab.startswith('WH RZL-429→C1 +1 ·'): out.append(f'the map label: {lab!r}')
     # the split ring: both colours stroked for a mixed system
-    ring = pg.evaluate("""(id) => { itMapFilterSet('sec'); const i = itGraphGet().at.get(id), k = 44 / itm.G; itm.view = {k, tx: itm.W / 2 - itm.P[2 * i] * k, ty: itm.H / 2 - itm.P[2 * i + 1] * k};
+    ring = pg.evaluate("""(id) => { __whOff(); const i = itGraphGet().at.get(id), k = 44 / itm.G; itm.view = {k, tx: itm.W / 2 - itm.P[2 * i] * k, ty: itm.H / 2 - itm.P[2 * i + 1] * k};
       const c = itm.cv.getContext('2d'), s0 = c.stroke, seen = new Set(); c.stroke = function(){ seen.add(String(this.strokeStyle).toLowerCase()); return s0.apply(this, arguments); };
-      try{ itMapDraw(); itMapFilterSet('wh'); itMapDraw(); }finally{ c.stroke = s0; } itMapFilterSet('sec'); return [...seen]; }""", Dd)
+      try{ itMapDraw(); __whOn(); itMapDraw(); }finally{ c.stroke = s0; } __whOff(); return [...seen]; }""", Dd)
     if '#a98bd8' not in ring or '#ff5fbf' not in ring: out.append(f'the split ring: colours stroked {ring}')
     # the owner's hand test ("you can't see the split ring for the two wormhole types"): on the Wormholes filter the boldest mark is split too
     # (the disc zoomed out, the glowing ring zoomed in), and the system's own report ring goes outside the wormhole's marks
-    SPY = """([id, z]) => { itMapFilterSet('wh'); const i = itGraphGet().at.get(id), k = z / itm.G; itm.view = {k, tx: itm.W / 2 - itm.P[2 * i] * k, ty: itm.H / 2 - itm.P[2 * i + 1] * k};
+    SPY = """([id, z]) => { __whOn(); const i = itGraphGet().at.get(id), k = z / itm.G; itm.view = {k, tx: itm.W / 2 - itm.P[2 * i] * k, ty: itm.H / 2 - itm.P[2 * i + 1] * k};
       const c = itm.cv.getContext('2d'), o = {arc: c.arc, stroke: c.stroke, fill: c.fill, bp: c.beginPath}, rec = []; let arcs = [];
       const cx = itm.W / 2, cy = itm.H / 2, at = (x, y) => Math.abs(x - cx) < 0.6 && Math.abs(y - cy) < 0.6;
       c.beginPath = function(){ arcs = []; return o.bp.apply(this, arguments); };
@@ -145,7 +147,7 @@ def cases(b, html, phone=True):
       c.fill = function(){ if(arcs.length) rec.push(['f', String(this.fillStyle).toLowerCase(), 0, Math.max(...arcs)]); return o.fill.apply(this, arguments); };
       try{ itMapDraw(); }finally{ Object.assign(c, o); }
       const d = window.devicePixelRatio || 1, px = (dx) => Array.from(c.getImageData(Math.round((cx + dx) * d), Math.round(cy * d), 1, 1).data).slice(0, 3).join(',');
-      itMapFilterSet('sec'); return [rec, px(-3), px(3)]; }"""
+      __whOff(); return [rec, px(-3), px(3)]; }"""
     rec, pl, pr = pg.evaluate(SPY, [Dd, 14])
     discs = {r[1] for r in rec if r[0] == 'f' and r[3] == 6}
     if discs != {'#a98bd8', '#ff5fbf'} or pl == pr: out.append(f'zoomed out, a mixed system\'s disc is split: fills {discs}, pixels {pl} / {pr}')
@@ -157,7 +159,7 @@ def cases(b, html, phone=True):
     if bold != {'#a98bd8', '#ff5fbf'}: out.append(f'zoomed in, a mixed system\'s glowing ring is split: {bold}')
     if not hostile or min(hostile) <= whr: out.append(f'zoomed in, its report ring ({hostile}) should be outside the wormhole rings ({whr})')
     # ---- the list: ×, the removal mark, the lines as typed, the Add form
-    pg.evaluate("itMapFilterSet('wh'); itWhListOpen(true)"); pg.wait_for_timeout(300)
+    pg.evaluate("__whOn(); itWhListOpen(true)"); pg.wait_for_timeout(300)
     if pg.locator('.it-whp-rows .it-sig').count() < 5: out.append('the list shows no IDs')
     for sig in ('KLM-204', 'BKT-772'): pg.locator(f'[data-it-whsrm="{Dd}|{sig}"]').click(); pg.wait_for_timeout(200)
     dd = pg.evaluate("(id) => { const w = itWhStore().rep[id]; return [w.drifter, w.drN, w.sigs.map(s => s.sig), Object.keys(w.goneSig || {}).sort()]; }", Dd)
@@ -225,14 +227,14 @@ def cases(b, html, phone=True):
         ctx, pg = start(b, html, errs, 390, 844)
         pg.evaluate("""(nm) => { const st = itWhStore(), id = it.names.byLower.get(nm.toLowerCase()); st.rep[id] = itWhDrSet({id, t: Date.now(), who: 'Scout Alt', drifter: false, src: 'intel', sigs: [{sig: 'RZL-429', part: false, type: 'Z971', t: Date.now(), who: 'Scout Alt', info: {life: 'lt1d', mass: 'reduced', size: 'medium'}}, {sig: 'MKV', part: true, type: '', t: Date.now(), who: 'Scout Alt'}], raws: [{t: Date.now(), who: 'Scout Alt', raw: 'x', k: 'intel'}]}); itWhSave(); }""", SYSNAME[near[0]])
         pg.evaluate("() => { const nv = document.querySelector('[data-it-nv=\"map\"]'); if(nv) nv.click(); }"); pg.wait_for_timeout(300)
-        pg.evaluate("itMapFilterSet('wh'); itWhListOpen(true)"); pg.wait_for_timeout(300)
+        pg.evaluate("__whOn(); itWhListOpen(true)"); pg.wait_for_timeout(300)
         X = pg.evaluate("() => { const b = document.querySelector('.it-whp-rows button.it-sigx'); const r = b && b.getBoundingClientRect(); return [r ? Math.round(r.width) : 0, r ? Math.round(r.height) : 0, document.scrollingElement.scrollWidth <= innerWidth + 1]; }")
         if X[0] < 44 or X[1] < 44 or not X[2]: out.append(f'390 px: the × {X[0]}x{X[1]} px, no sideways scroll {X[2]}')
         ctx.close()
     return out, errs
 
 MUTANTS = [
-    ('a wormhole\'s report ring on its marks', "const out = whF && itm.wh.mark.has(i);", "const out = false;"),
+    ('a wormhole\'s report ring on its marks', "const out = itMapWhBoldAt(i);", "const out = false;"),
     ('the boldest mark in one colour', "  const A = itWhArcs(w, 0);\n", "  const A = itWhArcs(w, 0).slice(0, 1);\n"),
     ('the reader after the systems', "  const whd = itWhDetails(W, used);   // build queue 044: a wormhole line's signature IDs, type and the words describing the hole, before systems and pilots\n  const sys = itFindSystems(W, used, mySys, force);",
      "  const sys = itFindSystems(W, used, mySys, force);\n  const whd = itWhDetails(W, used);"),

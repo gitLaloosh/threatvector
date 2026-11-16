@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-16 — Intel map: filters that stack</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel map: filters that stack</h1>
+<p><span class="tag">Page</span> 2026-11-16 &middot; <code>v2026.11.16.3</code> &middot; build queue 058 &middot; plan <code>roadmap/intel-map-stack-plan.md</code>, brief <code>roadmap/map-filter-model-panel.md</code>, mockup <code>Claude outputs/stacked_filters_mockup.html</code></p>
+<h2>Why</h2>
+<ul>
+<li>The map could show one filter at a time. The owner wanted to combine them, for example the systems with a Threat Detection Array at level 3 whose security is between −0.5 and −0.3: "you can sort of stack them on top of each other". A panel review proposed a model, a prototype showed it, and the owner answered 21 questions (Q1-Q21 in the plan).</li>
+</ul>
+<h2>What changed</h2>
+<ul>
+<li>The filter column has three groups. <b>Colour</b>: Security, Jumps from you or Region, one at a time; pressing the one that is on turns colour off (plain grey, no number in the circles). <b>Only</b>: Security range and Within N jumps (new, each with a settings panel), Intel reports, Kills, Wormholes and Sov upgrades; any number at once, all of them must match, any pick inside one counts. <b>View</b>: Paths to you.</li>
+<li>While an Only filter is on, the matches are bright anywhere on the map and a little bigger; the rest are dim, with no distance fade. Hostile and neutral rings, the alert glow and your pin never fade. Only the colour colours a dot: Kills and Wormholes no longer turn dots amber or lilac.</li>
+<li>Soft colour: a system's colour is softened (mixed toward the background zoomed out, a tinted disc zoomed in) so rings, tags and labels stand out; a match keeps its full colour. Zoomed out, the alert glow is half its old size.</li>
+<li>The legend gets a second line while an Only filter is on ("Only 3 match · security −0.5 to −0.3 · … level 3"), and the match chip ("3 match ›") steps through the matches, nearest first. It replaces 045's "N wormholes ›" chip.</li>
+<li>Wormholes: with the filter on, the kept holes that match every Only filter get 045's bold mark, pulse and filled label; the others keep only the off-filter look.</li>
+<li>Sov upgrades: a Level row of boxes 1, 2 and 3 in its panel; any ticked level counts, none ticked means any level.</li>
+<li>A filter's settings button shows only while the filter is on or its panel is open (no longer on hover); switching a filter off shuts its panel.</li>
+<li>Region's colours leave out the page's cyan, the kill amber and the wormhole lilacs.</li>
+<li>The stack is kept between visits in a new localStorage key, <code>tvMapStack</code>. The older page never reads it; this page leaves <code>tvSov</code> as it was. Safe both ways.</li>
+<li>Security shown on the map comes from one function, <code>itMapSecT</code>. The 19 low-sec systems whose security is stored as 0.45 now show 0.4 in the low-sec colour, as in the game (they showed 0.5 in the high-sec colour). See the lesson below.</li>
+<li>Intel's info text, [Map] paragraph, rewritten for the new column (619 of 620 words). METHODOLOGY.md's Intel map section the same.</li>
+</ul>
+<h2>Checks</h2>
+<ul>
+<li>New <code>tools/page_checks/intel_map_stack_check.py</code>: 15 parts at 1440 and 390 px on made-up data (the column, colour off and back, the owner's example matching exactly, matches bright and bigger, soft colour, Kills never amber, rings never faded, the glow, Paths to you, the panels, the settings buttons, Sov levels, wormholes, the 0.45 systems, <code>tvMapStack</code> and bad values, the Intel example, the phone). It records the canvas's <code>arc</code> and <code>fillText</code> calls during a draw rather than reading pixels. 13 mutants, all caught.</li>
+<li>New <code>tools/check_sec_shown.py</code> (a fast lint): only <code>itMapSecT</code> and the route planner read <code>INTEL_MAP.sec</code>, and the page's own function, run on every system, agrees with the band. It fails on main.</li>
+<li>Updated for the new model: <code>intel_map_look_check</code>, <code>intel_map_layout_check</code>, <code>paths_to_you_check</code>, <code>sov_upgrades_check</code>, <code>wormhole_filter_check</code>, <code>wormhole_sig_check</code>, <code>wormhole_share_check</code>.</li>
+<li><code>run_checks.py --auto --ledger</code> against main picked <code>all</code>: 24 lints, the pyfa chain and 101 page checks in 70 minutes. All passed but two. The pyfa chain reported only its notice that pyfa master has new commits (0 steps failed). <code>wormhole_filter_check</code> had a mutant quoting the label line this build had just fixed; it was updated and passes alone. <code>sso_game_check</code> flaked once under load and passed alone. During the build, <code>wormhole_filter_check</code>'s crowded case caught live holes' labels forced over others while the filter was on, and <code>check_html_sinks</code> caught 10 new unescaped template spots. Both were fixed.</li>
+<li>Page size (<code>tools/publish.py --size</code>, gzip -9): source 945,249 &rarr; 952,741 bytes (+7,492); served copy 598,971 &rarr; 603,247 bytes (+4,276), under the 800 KB ceiling.</li>
+</ul>
+<h2>Lesson for future models (LESSON #170)</h2>
+<ul>
+<li><code>INTEL_MAP.sec</code> holds CCP's security rounded to hundredths, and the map rounded that again to tenths in several places of its own. A system at 0.449 was stored as 0.45 and shown as 0.5, in the high-sec colour. The route planner was right only because it reads the band, which is worked out from the unrounded value, and nothing compared the two.</li>
+<li>It was found by reading the plan's one UNVERIFIED row (how the game rounds negative security) against the stored data: counting the systems that sit exactly on an x.x5 and comparing the shown tenth with the band.</li>
+<li>When a table stores a rounded value, work out the shown value in one function, send every reader through it, and check that function against every item. Better still, store the value people see: the generator has the unrounded one. The other x.x5 edge cases are a backlog item, because only the data can settle them.</li>
+</ul>
+</body></html>

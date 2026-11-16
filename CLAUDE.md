@@ -327,7 +327,7 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
 - **Intel's example for new users** (v2026.11.07.7, build queue 017; Project docs roadmap/intel-example-plan.md and
   roadmap/intel-example-build-review.md; mockup `Claude outputs/intel_example_mockup.html`): under the setup steps (and below the empty
   lists on a quiet start), a framed, `inert` example: the page's own Map (a picture, `itExMapPic`: the map's code on a canvas of its own,
-  `itm` set aside and put back), Near You and the Feed's first 5 rows, drawn once from `IT_EXAMPLE` by the real builders inside
+  `itm` set aside and put back; its filters today's defaults, `itMapStackBlank`, never the user's `tvMapStack`, 058), Near You and the Feed's first 5 rows, drawn once from `IT_EXAMPLE` by the real builders inside
   `itExSandbox` (Intel's state, Standings and the map's pins set aside and put back; entries are history, so no alert); five markers placed
   after the draw and on a width change (`itExPlace`, one ResizeObserver), never a timer. Made-up pilots and groups with negative ids:
   nothing about them is asked of anyone (`itExOrg` answers itLogo / itTkHtml / itGrpTk with inline emblems); `tools/check_example_names.py`
@@ -415,7 +415,8 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   view, not a dialog (no close button, no Escape); a map press leaves it shut (the owner at the review: "leave it shut"). The List | Map
   switch is gone; `nearView` stays stored. The filters are a column down the map's left edge under the search box (`.it-map-fb`, a grid
   wrapping into a second column when the map is too short, `--it-flr`); a filter with a panel shares a box with its panel button
-  (`.it-map-fw`, `button.it-map-pb`, `IT_MAP_PANEL_BTN`), shown on hover or focus, while the filter is on and while its panel is open; the
+  (`.it-map-fw`, `button.it-map-pb`, `IT_MAP_PANEL_BTN`), shown while the filter is on and while its panel is open, never on hover of a filter that is off (058,
+  the owner: "disabling a filter (like security range) should hide the settings button for it"); the
   name line to the right of the panel buttons, level with the filter that is on, hidden while a panel is open (`.pop`); a filter's panel
   opens right of the panel buttons, level with its filter, inside the map and clear of Near You; on a phone the column is shut behind its
   one button and takes turns with Near You, a panel is a sheet that shuts Near You; on a wide map with no room for both side by side they
@@ -429,8 +430,8 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   lines or names alone with a kind (`sovParse`: ✓ / ⚠ / ✗ per line, `sovChkHtml`); Edit / Replace / Remove with Undo (`SOV_UNDO_MS`); kept in
   localStorage `tvSov` `{v: 1, lists: [{id, kind, text, at}], pick}` (`sovRead` checks everything; at most `SOV_MAX_LISTS` × `SOV_MAX_CHARS`);
   alliance data: never sent, exported or put in a check or the repo (checks use made-up lists). Names from CCP's data only: `INTEL_SOV` `[typeId,
-  name, kind, level]` (`tools/gen_intel_tables.py`: the four sov hub upgrade groups, published types only). Picks are kinds (`sovIndex`, `sovLitSet`
-  once a draw as `itm.sov`): picked systems bright anywhere, past "Map: within" too (the owner at the review: "Bright anywhere"), the rest dimmed,
+  name, kind, level]` (`tools/gen_intel_tables.py`: the four sov hub upgrade groups, published types only). Picks are kinds (`sovIndex`; since 058
+  an Only filter, in `itMapMatch`, with a Level row of boxes 1-3 in its panel, `sovLvHtml`, kept in `tvMapStack`): picked systems bright anywhere, past "Map: within" too (the owner at the review: "Bright anywhere"), the rest dimmed,
   yours never; the hover names the upgrades with levels (`sovTipHtml`); the map's key follows lists and picks (`sovMapKey`). One filter panel at a
   time through `itMapPanel` / `itMapPanelClose` (the owner: "Yes, one shared path"): placement, `itMapFree` and take-turns read the open one; the
   Sov panel sits beside Near You only with `SOV_PANEL_MIN` (420 px) of room ("420 px, one column below"; its picks one column under about 560 px).
@@ -455,9 +456,10 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   pair: 8-10 s at a 30-jump reach in the mockup); opens on you with a median gate `IT_MAP_START_GATE` (16 px; `itMapStartView`), ⤢ the
   reach (`itMapFitView`). Zoom stages by `itMapGatePx`: dots, circles with the security number (`itMapSecText`) from 34 px, names from
   80 px (`itm.stage`); gates between regions dotted; region names (`itMapRegionNames`) after the system names and giving way to them.
-  The filters (`IT_MAP_FILTERS`, `itm.filter`, not saved; `itMapFcol`, `itMapDimmed`; scales `IT_MAP_JUMPS`, `IT_MAP_REGION` by
-  `itMapRegCol`; a column down the left since 052): the name line fades by one timeout per press; on a phone one 44 px button opens the
-  column. The legend's filter line (`itMapFLegHtml`) is one line of one height for every filter. Past the reach:
+  The filters (`IT_MAP_FILTERS`; `itMapFcol`, `itMapDimmed`; scales `IT_MAP_JUMPS`, `IT_MAP_REGION` by `itMapRegCol`; a column down the left
+  since 052; stacked since 058, below): the name line fades by one timeout per press; on a phone one 44 px button opens the
+  column. The legend's colour line (`itMapFLegHtml`) is one line of one height whatever is on; a second line lists the Only filters while any is
+  on (058, Q14). Past the reach:
   faint, no reports, but hover and press give routes (the owner: "yes"). `mapReach` reads "Map: within". `intel_map_look_check.py`.
   Build queue 043 (roadmap/paths-to-you-plan.md, mockup `Claude outputs/paths_to_you_mockup.html`): the filter Paths to you (last since 052;
   before it Wormholes, its list button `[data-it-whl]` beside it): the galaxy's canvases hidden under an HTML overlay in `itm.box`
@@ -470,13 +472,12 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   since 052) when shown, when you move, the range changes, the box resizes or Near You opens or shuts, and when the tree grows or shrinks
   unless the view was zoomed or dragged by hand since the last fit (`itPt.hand`; the owner: "paths to you map mode should run "fit" every
   time the layout changes", then "your choice is fine"). `paths_to_you_check.py`.
-  Build queue 045 (roadmap/wormholes-standout-plan.md, mockup `Claude outputs/wormholes_standout_mockup.html`): on the Wormholes filter only,
-  other reports' rings fade (`IT_MAP_WH_FADE`) and only wormholes and you are labelled (a wormhole's tag a filled pill, never forced over
-  another label); each wormhole a bold mark (`itMapWhBold`), a Drifter hot pink (`--it-wh-drifter` #ff5fbf) with its outer ring dashed (on
-  every filter); a hole reported within `IT_MAP_WH_FRESH_MS` pulses (`itMapWhPulse`: CSS rings in `.it-map-whp`, transform and opacity,
-  written only when their places change, none with reduced motion); "N wormholes ›" (`button.it-map-whn`, `itMapWhChipPaint` /
-  `itMapWhChipNext`) steps the view through them nearest first, right of the filter column when it reaches the chip (052), hidden while a phone's
-  filter row is open. `wormhole_filter_check.py`.
+  Build queue 045 (roadmap/wormholes-standout-plan.md, mockup `Claude outputs/wormholes_standout_mockup.html`), as 058 left it: with the Wormholes
+  filter on, each kept hole that matches every Only filter that is on (`itMapWhBoldAt`) gets a bold mark (`itMapWhBold`) and a filled tag (never
+  forced over another label); a Drifter hot pink (`--it-wh-drifter` #ff5fbf) with its outer ring dashed (on every filter); a matching hole
+  reported within `IT_MAP_WH_FRESH_MS` pulses (`itMapWhPulse`: CSS rings in `.it-map-whp`, transform and opacity, written only when their places
+  change, none with reduced motion). 045's step-back of the other reports (faded rings, wormhole-only labels) and its "N wormholes ›" chip went
+  with 058 (Q7, Q21c: the match chip). `wormhole_filter_check.py`.
   Tag-only lines (045, the Bubble bug): a line with no pilots whose news is a Bubble, Camp / gate or "at the ESS" (`itTagOnly`) reaches
   Near You as kind 'tag': its own row (no word, no alert, no map ring, never a tree source) or only its tag on a row that exists, never
   changing what that row was reported as (`st.rt`, the newest real report; `itNearDemote` turns a row tag-only once that is past
@@ -518,6 +519,20 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   tab's "Set my destination in EVE", `tvRouteSend`); without them a note with Continue to EVE, then "press again" (sent only while that switch is on: off with the permission held, a note with Turn it on, and nothing turns the switch on but the person, the owner's hand test; logged off in the game ESI still answers 204 and the game drops it, so known
   logged off (`ssoOnShown()` false) nothing is sent, a note with Retry (`itRp.force`; "Send anyway" until the hand test), and not known the note adds `IT_RP_OFF_NOTE`; Threat Vector's route's note and the Routes box say the game's avoidance list can't be read (`IT_RP_GAME_AVOID`; a game-avoided system stays a waypoint, the hand test); never sent by itself on
   return). A failure stops the rest (ROUTE-01; 403 SSO-07 off; 401 SSO-08). `route_planner_check.py` (stand-in SSO and ESI).
+- **The filters stacked** (v2026.11.16.3, build queue 058; Project doc roadmap/intel-map-stack-plan.md, mockup `Claude outputs/stacked_filters_mockup.html`;
+  the owner: "i need the ability to have filters from some existing types work together ... so you can sort of stack them on top of each other",
+  his answers Q1-Q21): the column in three groups (`IT_MAP_FILTERS[].g`, `.it-map-fsep` between them): Colour, one or none (Security, Jumps,
+  Region; the one that is on, pressed again: no colour, `IT_MAP_PLAIN` grey, no number); Only, any number, every one that is on must match and any
+  pick inside one counts (Security range and Within N jumps, new, with their settings panel `itMp` / `itMpOpen`, rule B, through `itMapPanel`;
+  Intel reports, Kills, Wormholes, Sov upgrades); View (Paths to you; no Only filter applies there, `itMapOnlyOn`). State `itm.st` (`itMapSt`),
+  kept in localStorage `tvMapStack` `{v: 1, colour, view, only, secr, near, sovLv, seen}` (`itMapStackRead` checks each field; tvSov untouched).
+  The match set (`itMapMatch`: one Uint8Array, again only when its key changes, LESSON #120; `itm.mt` once a draw): a match bright anywhere and
+  bigger (1.6 px zoomed out, a quarter zoomed in), the rest `IT_MAP_DIM`, no distance fade on dots (Q5, Q6); only the colour colours a dot (Q3:
+  Kills and Wormholes don't); soft colour (`itMapMix`: 45% toward the background zoomed out, a 38% tinted disc zoomed in), a match in full
+  (`itMapColRaw`); hostile and neutral rings, the alert glow (half size zoomed out) and your pin never fade (Q7). The legend's second line
+  (`itMapOnlyHtml`: "Only N match · …", the count first); the match chip (`button.it-map-mt`, `itMapMtPaint` / `itMapMtNext`, rule A) steps
+  nearest first in the part no panel covers. Security everywhere on the map from one function, `itMapSecT` (tenths; CCP's band at the 0.45
+  line, LESSON #170; `tools/check_sec_shown.py`). Region's colours leave out cyan, amber and the lilacs (Q13). `intel_map_stack_check.py`.
 - **The Wormholes tab** (v2026.11.14.1, build queue 048, part 1 of the Project doc roadmap/wormhole-mapping-plan.md; mockup `Claude outputs/
   wormholes_tab_mockup.html` stays with the plan in Project docs until its last part): `#tabBtnWh` right after Intel (`TAB_PANELS`), "BETA" (the
   page's `.it-gtag`) until the owner says it's done; its name is `CARD_NAMES.whmap`. The chain is `tvWhChain` `{v: 1, sys, links, pos}` (D32: its own

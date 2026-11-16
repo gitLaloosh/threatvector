@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MuQd3Z4Xy+L8a3zaZynixX5bRK6MEiv56oEtvCJOiJM='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-nB70DyYsGj9vehf6+wVz68YJ3xPw+PovlY2jps4dFRY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2771,18 +2771,27 @@
     .it-map-fb:not(.open) .it-map-fbtns{display:none;} .it-map-fb.open button.it-map-fcur{display:none;}
   }
   /* build queue 040, moved in 052: a filter with a panel (Wormholes' list now, Sov upgrades later) and its panel button share a box
-     (.it-map-fw); the button floats right of the column, level with its filter: shown while the filter is hovered or focused (gone 0.6 s after
-     the pointer leaves, so it can be reached; a bridge across the gap keeps the hover), on its own hover or focus, while its panel is open and
-     while the filter is on. Touch screens: only while the filter is on. On a phone only the panel button of the filter that is on shows,
-     inside the column beside it. The panel: a dialog over the map, placed by itMapCtlPlace (right of the panel buttons, level with its filter,
-     clear of Near You). */
+     (.it-map-fw); the button floats right of the column, level with its filter: shown while the filter is on or its panel is open, never on
+     hover of a filter that is off (058, the owner: "disabling a filter (like security range) should hide the settings button for it"). On a
+     phone only the panel buttons of the filters that are on show, inside the column beside them. The panel: a dialog over the map, placed by
+     itMapCtlPlace (right of the panel buttons, level with its filter, clear of Near You). */
   .it-map-fw{position:relative; display:inline-flex; align-items:center;}
   .it-map-fw::before{content:''; position:absolute; left:100%; top:0; bottom:0; width:12px;}
   button.it-map-pb{position:absolute; left:calc(100% + 9px); top:0; width:32px; height:32px; min-height:32px; margin:0; padding:0; display:inline-flex; align-items:center; justify-content:center;
     border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92); color:var(--heading); cursor:pointer; visibility:hidden; opacity:0; transition:opacity .15s, visibility 0s .6s;}
   button.it-map-pb:hover{border-color:color-mix(in srgb, var(--cyan) 55%, transparent);} button.it-map-pb:focus-visible{outline:2px solid var(--cyan); outline-offset:1px;} button.it-map-pb svg{display:block;}
   .it-map-fw > [aria-pressed="true"] ~ button.it-map-pb, button.it-map-pb[aria-expanded="true"]{visibility:visible; opacity:1; transition-delay:0s;}
-  @media (hover: hover){ .it-map-fw:hover > button.it-map-pb, .it-map-fw:focus-within > button.it-map-pb{visibility:visible; opacity:1; transition-delay:0s;} }
+  /* 058: the line between the column's groups (colour, only, view); the folded phone button's count of the Only filters that are on (neutral, rule A) */
+  .it-map-fbtns .it-map-fsep{display:block; width:24px; height:1px; margin:4px; background:var(--line);}
+  button.it-map-fcur{position:relative;}
+  .it-map-fbd{position:absolute; top:-5px; right:-5px; min-width:16px; height:16px; box-sizing:border-box; padding:0 4px; border-radius:8px; border:1px solid var(--line); background:var(--tag-on); color:var(--heading); font:700 10px/14px var(--sans); text-align:center;}
+  /* 058 (4.5): Security range's and Within N jumps' panel (.it-whp, rule B) */
+  .it-mpp .it-mp-row{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center; margin:4px 0 8px;}
+  .it-mpp .it-mp-q{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 8px; color:var(--text-dim);}
+  .it-mpp .it-mp-q button{min-height:28px; padding:0 10px; font-size:12px;}
+  .it-mpp .it-mp-note{color:var(--text-dim); line-height:1.4;} .it-mpp .it-mp-cnt{margin-top:8px; color:var(--heading);}
+  .it-map-leg .it-map-fl.it-map-only{display:block; height:auto; overflow:visible; white-space:normal; line-height:1.45; color:var(--text);}   /* Q14: it wraps; the colour line stays one line */
+  .it-sov-lv{margin:8px 0 10px;} .it-sov-lvr{display:flex; flex-wrap:wrap; align-items:center; gap:4px 14px;} .it-sov-lvr > b{font:600 12px var(--sans); color:var(--heading);} .it-sov-lva, .it-sov-lvn{color:var(--text-dim);} .it-sov-lvn{margin-top:2px; line-height:1.4;}
   .it-whp{position:absolute; left:94px; top:48px; z-index:5; width:min(400px, calc(100% - 16px)); max-height:calc(100% - 16px); overflow:auto; box-sizing:border-box; padding:10px 12px;
     border:1px solid var(--line); border-radius:6px; background:var(--panel); box-shadow:0 8px 24px rgba(0,0,0,.5); font:400 12px var(--sans); color:var(--text); text-align:left;}
   .it-whp[hidden]{display:none;}
@@ -2813,7 +2822,7 @@
   .it-sov-r{display:flex; gap:6px; align-items:baseline; padding:1px 0;} .it-sov-r .m{width:14px; flex:none; text-align:center;} .it-sov-r .ln{flex:none; min-width:52px; color:var(--text-dim);} .it-sov-r .s{font-weight:600;} .it-sov-r .d{min-width:0; color:var(--text-dim); overflow-wrap:anywhere;}
   .it-sov-r.ok .m{color:var(--it-clear);} .it-sov-r.warn .m{color:var(--amber);} .it-sov-r.bad .m{color:var(--danger);} .it-sov-r.dup{opacity:.7;}
   .it-sovtip{color:var(--heading);}
-  @media (max-width: 599px){ .it-sov-k{min-height:44px;} .it-sov-l button, .it-sov-kind select{min-height:44px;} }
+  @media (max-width: 599px){ .it-map-fbtns .it-map-fsep{width:36px;} .it-mpp .it-mp-q button{min-height:44px;} .it-sov-k{min-height:44px;} .it-sov-l button, .it-sov-kind select{min-height:44px;} }
   /* build queue 044: signature IDs (mono, the wormhole colour; a Drifter one pink with DR), life / mass / size tags, the × per ID, the Add form's second row, the lines as typed */
   .it-gtag.it-sig{font-family:var(--mono, monospace); text-transform:none; letter-spacing:.3px; color:var(--it-wh); background:color-mix(in srgb, var(--it-wh) 12%, transparent);} .it-sig b{font-weight:600; color:var(--text); margin-left:3px;}
   .it-gtag.it-sig.more{font-family:var(--sans);} .it-gtag.it-sig.dr{color:var(--it-wh-drifter); background:color-mix(in srgb, var(--it-wh-drifter) 14%, transparent);}
@@ -2843,10 +2852,11 @@
   .it-map-whp i{position:absolute; box-sizing:border-box; border:2px solid var(--it-wh); border-radius:50%; opacity:0; animation:it-whp 2.2s ease-out infinite;} .it-map-whp i.dr{border-color:var(--it-wh-drifter);}
   @keyframes it-whp{0%{transform:scale(1); opacity:.75;} 100%{transform:scale(var(--s, 2.5)); opacity:0;}}
   @media (prefers-reduced-motion: reduce){ .it-map-whp{display:none;} }
-  button.it-map-whn{position:absolute; left:8px; bottom:8px; z-index:3; min-height:32px; padding:0 12px; border-radius:16px; border:1px solid var(--it-wh); background:color-mix(in srgb, var(--it-wh) 20%, #0c1014); color:var(--heading); font:700 12px var(--sans); cursor:pointer;}
-  button.it-map-whn:hover{background:color-mix(in srgb, var(--it-wh) 34%, #0c1014);} button.it-map-whn[hidden]{display:none;} button.it-map-whn.up{left:var(--it-whn-l, 60px);}
-  button.it-map-whn:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
-  @media (max-width: 599px){ button.it-map-whn{min-height:44px;} .it-map-box.fb-open button.it-map-whn{display:none;} }
+  /* 058: the match chip (045's wormholes chip made general), a map control (rule A): neutral, cyan border on hover */
+  button.it-map-mt{position:absolute; left:8px; bottom:8px; z-index:3; min-height:32px; padding:0 12px; border-radius:6px; border:1px solid var(--line); background:rgba(18,23,28,.9); color:var(--heading); font:700 12px var(--sans); cursor:pointer;}
+  button.it-map-mt:hover:not(:disabled){border-color:color-mix(in srgb, var(--cyan) 55%, transparent);} button.it-map-mt:disabled{color:var(--text-dim); cursor:default;} button.it-map-mt[hidden]{display:none;} button.it-map-mt.up{left:var(--it-mt-l, 60px);}
+  button.it-map-mt:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+  @media (max-width: 599px){ button.it-map-mt{min-height:44px;} .it-map-box.fb-open button.it-map-mt{display:none;} }
   @media (max-width: 599px){
     .it-map-fb{top:112px;}   /* 052: under the search box, which runs under the zoom row */
     .it-whp-j{min-width:0;} .it-whp-r button{padding:2px 8px;} .it-whp-r button.it-whp-go{min-height:44px; padding:0 4px;}
@@ -3352,7 +3362,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.3</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3733,7 +3743,7 @@ const CARD_INFO = {
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. Filters (left) pick what it shows. Paths to you: routes from hostiles in your alert range, as a tree. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map); the rest fades, one reported in the last 30 minutes pulses, the chip steps through them. Sov upgrades: your pasted lists; picked ones stay bright. Systems past {card:itnear}'s range are faded.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. Filters (left): one colour (press it again for none); Only filters, any number, all must match (their settings beside them); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter on, systems past {card:itnear}'s range are faded.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; jump counts stay the shortest by stargate.",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list.",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
@@ -29300,7 +29310,7 @@ function itExSandbox(fn){
   try{
     for(const [id, n] of Object.entries(X.sys)){ byLower.set(n.toLowerCase(), Number(id)); byId.set(Number(id), n); }
     it.names = {byLower, byId, list: [...byLower.keys()], heads: new Map()};
-    it.sec = new Map(Object.keys(X.sys).map(id => { const i = g.at.get(Number(id)); return [Number(id), T && i !== undefined ? T.sec[i] / 100 : -0.5]; }));
+    it.sec = new Map(Object.keys(X.sys).map(id => { const i = g.at.get(Number(id)); return [Number(id), T && i !== undefined ? itMapSecT(i) / 10 : -0.5]; }));
     it.set = {...itDefaults(), range: X.range, nearRange: X.nearRange, mapReach: X.mapReach, forget: X.forget, channels: ['example'], sound: false, notify: false, alias: '', hideFriendly: false};
     it.set.feed = {...(itDefaults().feed || {}), dist: 0};
     it.me = {sys: X.sys[X.home]}; it.fl = []; it.rawOpen = new Set(); it.nearOpen = new Set(); it.armed = null; it.q = ''; it.shape = null; it.gateDest = new Map();
@@ -29384,7 +29394,7 @@ function itExMapPic(w){
     const cv = document.createElement('canvas'), you = document.createElement('span'), dpr = window.devicePixelRatio || 1, h = Math.round(Math.max(IT_MAP_MIN_H, Math.min(560, w * 0.72)));
     you.innerHTML = '<svg></svg>';
     try{
-      Object.assign(itm, {cv, you, W: w, H: h, reach: IT_EXAMPLE.mapReach, home, hover: -1, rowHover: -1, pinned: new Set(), filter: 'sec'});
+      Object.assign(itm, {cv, you, W: w, H: h, reach: IT_EXAMPLE.mapReach, home, hover: -1, rowHover: -1, pinned: new Set(), st: itMapStackBlank()});   // 058: today's defaults (Security, soft, no Only filter), never saved
       cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
       itMapBfs(home); itMapLayout(); itm.rep = itMapReports();
       // 039: the map opens on you, zoomed in; the example shows every report it has, so it opens on the whole reach when one would be out of view
@@ -29694,9 +29704,20 @@ function itMapLy(i, j){
 }
 // to 2 decimals, rounded up (the owner: "Round up to 0.01"): 7.004 shows 7.01, so a system that reads within a jump range always is
 function itMapLyText(d){ return (Math.ceil(d * 100 - 1e-9) / 100).toFixed(2); }   // 1e-9: float noise on an exact value doesn't push it up a step
-function itMapSecClass(s100){ return s100 <= 0 ? 0 : Math.max(1, Math.min(10, Math.round(s100 / 10))); }
+// build queue 058 (the owner at its review, "yes": one place works out the security the game shows, and a check keeps it so): INTEL_MAP.sec
+// holds CCP's security rounded to hundredths, so rounding it again to tenths can land on the wrong side: 19 low-sec systems (just under 0.45,
+// stored as 45) read 0.5 and took the high-sec colour. 047's INTEL_MAP.band, from CCP's unrounded value, settles the 0.45 line. Every map
+// reader of T.sec goes through itMapSecT, in tenths (tools/check_sec_shown.py; LESSON #170); the other edge values wait for the table to carry
+// the value the game shows (backlog)
+function itMapSecT(i){
+  const T = itMapTable(), s = T.sec[i];
+  if(s <= 0){ const t = Math.round(s / 10); return t === 0 ? 0 : t; }   // -0 reads as 0
+  const t = Math.max(1, Math.min(10, Math.round(s / 10)));   // a system above 0.0 never shows 0.0
+  return t >= 5 && T.band && T.band[i] === 1 ? 4 : t;   // under 0.45 before rounding: low-sec
+}
+function itMapSecClass(i){ return Math.max(0, itMapSecT(i)); }
 function itMapTier(n){ return n <= 1 ? 'solo' : n <= 10 ? 'small' : 'fleet'; }
-const itm = {el: null, home: -1, reach: 0, W: 0, H: 0, P: null, Q: null, vis: [], D: null, G: 1, kMin: 1, kMax: 12, filter: 'sec', par: null, view: {k: 1, tx: 0, ty: 0}, hover: -1, rowHover: -1,
+const itm = {el: null, home: -1, reach: 0, W: 0, H: 0, P: null, Q: null, vis: [], D: null, G: 1, kMin: 1, kMax: 12, st: null, par: null, view: {k: 1, tx: 0, ty: 0}, hover: -1, rowHover: -1,
   pinned: new Set(), key: '', draws: 0, layouts: 0, layoutMs: 0, drag: null, pinch: null, justDragged: false, rep: new Map(), stale: false,
   beacon: 0, beacons: 0, beaconDone: false};
 // what the map shows for each system with a report or a kill in the time set, within the map's reach (Near You's rule for friendlies)
@@ -29723,24 +29744,30 @@ function itMapReach(){ return Math.max(itNearReach(), Math.min(IT_MAP_MAX, it.se
 // name line fades")
 function itMapFbarHtml(){
   return `<div class="it-map-fb"><div class="it-map-fn" aria-hidden="true"></div><button type="button" class="it-map-fcur" aria-expanded="false" aria-haspopup="true"></button>`
-    + `<div class="it-map-fbtns" role="toolbar" aria-label="Map colours">${itMapFbtnsHtml()}</div></div>`;
+    + `<div class="it-map-fbtns" role="toolbar" aria-label="Map filters">${itMapFbtnsHtml()}</div></div>`;
 }
+// 058: a thin line between the groups (colour, only, view)
 function itMapFbtnsHtml(){
-  return IT_MAP_FILTERS.map(f => IT_MAP_PANEL_BTN[f.k] ? `<span class="it-map-fw">${itMapFbtnHtml(f)}${itMapPanelBtnHtml(f.k)}</span>` : itMapFbtnHtml(f)).join('');
+  const sep = (t) => `<span class="it-map-fsep" aria-hidden="true" title="${escapeHtml(t)}"></span>`, G = {only: 'Only: switch on any number; every one that is on must match', view: 'View'};
+  return IT_MAP_FILTERS.map((f, k) => (k && f.g !== IT_MAP_FILTERS[k - 1].g ? sep(G[f.g] || '') : '') + (IT_MAP_PANEL_BTN[f.k] ? `<span class="it-map-fw">${itMapFbtnHtml(f)}${itMapPanelBtnHtml(f.k)}</span>` : itMapFbtnHtml(f))).join('');
 }
 function itMapFbtnHtml(f){ return `<button type="button" data-im-f="${escapeHtml(f.k)}" title="${escapeHtml(f.name)}: ${escapeHtml(f.note)}" aria-label="${escapeHtml(f.name)}" aria-pressed="false">${itMapIconHtml(f.k)}</button>`; }
 function itMapPanelBtnHtml(k){ return IT_MAP_PANEL_BTN[k](); }
 // build queue 040, moved beside its filter in 052: the filters with a panel and their panel buttons (Sov upgrades adds its own, 053)
+// 058: Security range's and Within N jumps' settings panels (itMp)
 const IT_MAP_PANEL_BTN = {wh: () => `<button type="button" class="it-map-pb it-whl" data-it-whl aria-haspopup="dialog" aria-expanded="false" aria-label="Wormhole list" title="Wormhole list: add or remove">${IT_WH_LIST_ICON}</button>`,
-  sov: () => sovPanelBtnHtml()};
+  sov: () => sovPanelBtnHtml(),
+  secr: () => `<button type="button" class="it-map-pb" data-it-mpn="secr" aria-haspopup="dialog" aria-expanded="false" aria-label="Security range: from and to" title="Security range: from and to">${IT_MAP_SET_ICON}</button>`,
+  near: () => `<button type="button" class="it-map-pb" data-it-mpn="near" aria-haspopup="dialog" aria-expanded="false" aria-label="Within N jumps: how many" title="Within N jumps: how many">${IT_MAP_SET_ICON}</button>`};
 // build queue 053 (the owner at its review: "Yes, one shared path"): the filter panel that is open, one at a time (the Wormholes list or Sov
 // upgrades): its filter, its element, the room it needs beside Near You and the width it takes
 function itMapPanel(){
   if(itWhListShown()) return {k: 'wh', el: itWhL.el, min: IT_MAP_PANEL_MIN, w: 400, room: 260};
   if(typeof sovShown === 'function' && sovShown()) return {k: 'sov', el: sovP.el, min: SOV_PANEL_MIN, w: SOV_PANEL_W, room: 420};   // room: the height kept below its top (the Sov panel is taller)
+  if(itMpShown()) return {k: itMp.k, el: itMp.el, min: IT_MAP_PANEL_MIN, w: 320, room: 240};   // 058: Security range or Within N jumps
   return null;
 }
-function itMapPanelClose(back){ itWhListOpen(false, back); sovOpen(false, back); }
+function itMapPanelClose(back){ itWhListOpen(false, back); sovOpen(false, back); itMpOpen('', back); }
 // build queue 052 (roadmap/intel-layout-sov-plan.md 4.2; the owner: "feed is the one, badge stays"): Near You behind one map control in the
 // rail under the zoom buttons: the feed icon (our own drawing), the number of Near You's rows on it, amber while a row is in your alert
 // range; pressed, its list opens beside the rail inside the map, every control staying where it is (remembered: nearShown, "remember").
@@ -29784,7 +29811,7 @@ function itNearToggle(open){
 function itMapCtlPlace(){
   if(!itm.box || !itm.el || !itm.el.isConnected || itm.box.clientWidth <= 0 || itm.cv.parentNode !== itm.box) return;
   const box = itm.box, fb = box.querySelector('.it-map-fb'), bs = fb && fb.querySelector('.it-map-fbtns'), fc = fb && fb.querySelector('.it-map-fcur'), fn = fb && fb.querySelector('.it-map-fn'); if(!bs) return;
-  const phone = itMapPhone(), pn = itMapPanel(), wl = !!pn, key = [box.clientWidth, itm.H, phone, itNearShown(), itm.filter, fb.classList.contains('open'), pn ? pn.k : ''].join('|');
+  const phone = itMapPhone(), pn = itMapPanel(), wl = !!pn, key = [box.clientWidth, itm.H, phone, itNearShown(), itMapStKey(), fb.classList.contains('open'), pn ? pn.k : ''].join('|');   // 058: the stack
   if(key === itm.ctlKey) return; itm.ctlKey = key;
   if(box.classList.contains('pop') !== wl) box.classList.toggle('pop', wl);
   const one = phone ? 46 : 34, rows = String(Math.min(bs.children.length, Math.max(3, Math.floor((itm.H - 8 - fb.offsetTop - 8) / one))));
@@ -29794,7 +29821,7 @@ function itMapCtlPlace(){
   const stop = (ny && ny.offsetParent ? ny.getBoundingClientRect().left : rail ? rail.getBoundingClientRect().left : bx.right) - bx.left;   // Near You's list, else the rail
   const shut = !bs.offsetParent, sr = (shut ? fc : bs).getBoundingClientRect(), fr = fb.getBoundingClientRect();
   if(fn){
-    const cur = shut ? fc : [...bs.querySelectorAll('[data-im-f]')].find(x => x.dataset.imF === itm.filter), cr = cur && cur.getBoundingClientRect();
+    const at = itMapPaths() ? 'paths' : itMapSt().colour || 'sec', cur = shut ? fc : [...bs.querySelectorAll('[data-im-f]')].find(x => x.dataset.imF === at), cr = cur && cur.getBoundingClientRect();   // 058: beside the colour that is on (no colour: Security's place)
     const x = sr.right - fr.left + 6 + (phone || shut ? 0 : 32 + 6), maxW = Math.min(340, stop - 8 - (fr.left - bx.left) - x);
     let css, under = false;
     if(!cr || !cr.width) css = 'display:none;';
@@ -29825,12 +29852,17 @@ function itMapFree(){
 }
 function itMapFreeX(){ const [a, b] = itMapFree(); return (a + b) / 2; }
 function itMapIconHtml(k){ return (IT_MAP_FILTERS.find(f => f.k === k) || IT_MAP_FILTERS[0]).icon; }
+// 058: pressed: the colour that is on, Paths to you while it shows, each Only filter that is on. The name line names the colour (or the view);
+// the phone's folded button shows the colour's icon and a neutral count of the Only filters that are on (rule A: never amber)
+function itMapFnameHtml(f){ return f ? `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(f.note)}</span>` : '<b>No colour</b> <span>press Security, Jumps or Region to colour the systems again</span>'; }
 function itMapFbarPaint(changed){
   const fb = itm.el && itm.el.querySelector('.it-map-fb'); if(!fb) return;
-  const f = IT_MAP_FILTERS.find(x => x.k === itm.filter) || IT_MAP_FILTERS[0];
-  fb.querySelector('.it-map-fn').innerHTML = `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(f.note)}</span>`;
-  for(const b of fb.querySelectorAll('[data-im-f]')) b.setAttribute('aria-pressed', String(b.dataset.imF === f.k));
-  const cur = fb.querySelector('.it-map-fcur'); cur.innerHTML = itMapIconHtml(f.k); cur.title = `Map colours: ${f.name}`; cur.setAttribute('aria-label', `Map colours: ${f.name}`);
+  const s = itMapSt(), paths = itMapPaths(), k0 = paths ? 'paths' : s.colour, f = IT_MAP_FILTERS.find(x => x.k === k0), n = itMapOnlyCount();
+  const fn = fb.querySelector('.it-map-fn'), fh = itMapFnameHtml(f);
+  if(fn.innerHTML !== fh) fn.innerHTML = itMapFnameHtml(f);
+  for(const b of fb.querySelectorAll('[data-im-f]')){ const k = b.dataset.imF, on = k === 'paths' ? paths : IT_MAP_COLOURS.includes(k) ? k === s.colour && !paths : !!s.only[k]; if(b.getAttribute('aria-pressed') !== String(on)) b.setAttribute('aria-pressed', String(on)); }
+  const cur = fb.querySelector('.it-map-fcur'), nm = f ? f.name : 'no colour', lab = `Map filters: ${nm}${n ? `, ${n} Only filter${n > 1 ? 's' : ''} on` : ''}`;
+  cur.innerHTML = itMapIconHtml(f ? f.k : 'sec') + (n ? `<span class="it-map-fbd" aria-hidden="true">${Number(n)}</span>` : ''); cur.title = lab; cur.setAttribute('aria-label', lab);
   if(changed){ fb.classList.add('named'); clearTimeout(itm.fnT); itm.fnT = setTimeout(() => fb.classList.remove('named'), IT_MAP_NAME_MS); }
   itMapCtlPlace();   // 052: the name line beside the filter that is on
 }
@@ -29844,23 +29876,102 @@ function itMapFbarOpen(open){
     const b = fb.querySelector('[aria-pressed="true"]'); if(b) b.focus(); }
   itMapCtlPlace();
 }
+// 058: a colour turns on (the one that is on, pressed again: no colour; leaving Paths to you keeps the colour and the stack); Paths to you shows
+// or goes; an Only filter turns on or off. Switched on the first time, Security range and Within N jumps open their settings, and Sov
+// upgrades with nothing picked opens its panel; switched off, a filter's panel shuts (the owner: "disabling a filter (like security range)
+// should hide the settings button for it")
 function itMapFilterSet(k){
-  if(!IT_MAP_FILTERS.some(f => f.k === k)) return;
-  const changed = k !== itm.filter; itm.filter = k;
-  if(changed && k === 'wh') itm.whStep = -1;   // 045: the chip counts from the nearest again
-  itMapFbarPaint(true); itMapLegend(); if(changed){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); }   // 040: the key follows the filter (what the wormholes show depends on it)
-  if(changed && k === 'sov' && !sovStore().lists.length && !sovBridgeEnds().length && itm.box && itm.box.isConnected) sovOpen(true, false, 'paste');   // 053: no lists yet: its panel opens at the paste box
+  const f = IT_MAP_FILTERS.find(x => x.k === k); if(!f) return;
+  const s = itMapSt(), live = !!(itm.box && itm.box.isConnected);
+  let open = '';
+  if(f.g === 'colour'){ s.colour = s.colour === k && s.view === 'map' ? '' : k; s.view = 'map'; }
+  else if(f.g === 'view') s.view = s.view === 'paths' ? 'map' : 'paths';
+  else {
+    s.only[k] = !s.only[k];
+    if(!s.only[k]){ if(itMp.k === k) itMpOpen('', false); if(k === 'sov') sovOpen(false, false); if(k === 'wh') itWhListOpen(false, false); }
+    else if((k === 'secr' || k === 'near') && !s.seen[k]){ s.seen[k] = true; open = k; }
+    else if(k === 'sov' && !sovStore().lists.length && !sovBridgeEnds().length) open = 'sov-paste';   // 053: no lists yet: its panel opens at the paste box
+    else if(k === 'sov' && !sovStore().pick.length) open = 'sov';
+  }
+  itMapStackSave(); itm.mtStep = -1;   // the chip counts from the nearest again (045's did on choosing Wormholes)
+  itMapFbarPaint(true); itMapLegend(); itMpPaint(); if(sovShown()) sovPaint(true);
+  if(itm.P && itm.home >= 0){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); }   // 040: the key follows the filters (what the wormholes show depends on them)
+  if(open && live){ if(open.startsWith('sov')) sovOpen(true, false, open === 'sov-paste' ? 'paste' : ''); else itMpOpen(open); }
+}
+// ---- 058 (plan 4.5): the settings panels of Security range and Within N jumps, one element, a filter panel like the Wormholes list's
+// (itMapPanel: one at a time, taking turns with Near You, itMapFree; rule B, the shared close button, Escape, a press outside), placed by
+// itMapCtlPlace beside its filter. Its steppers are the page's one stepper (RS mapSecLo / mapSecHi / mapNear, rsBind)
+const itMp = {el: null, k: '', out: null, key: null, built: ''};
+function itMpShown(){ return !!(itMp.el && itMp.k && !itMp.el.hidden && itMp.el.isConnected); }
+function itMpBodyHtml(k){
+  if(k === 'secr') return `<div class="it-mp-row">${rsHtml('mapSecLo')}${rsHtml('mapSecHi')}</div><div class="it-mp-q"><span>Quick:</span><button type="button" data-it-mpq="hi">High</button><button type="button" data-it-mpq="low">Low</button><button type="button" data-it-mpq="null">Null</button></div>`
+    + '<div class="it-mp-note">Both ends count, in either order. It compares the number the map shows (one decimal).</div><div class="it-mp-cnt" role="status"></div>';
+  return `<div class="it-mp-row">${rsHtml('mapNear')}</div><div class="it-mp-note">By stargate from your system, as Jumps from you counts. “Map: within” still sets how far reports and names show.</div><div class="it-mp-cnt" role="status"></div>`;
+}
+function itMpMake(){
+  const p = document.createElement('div');
+  p.className = 'it-whp it-mpp'; p.setAttribute('role', 'dialog'); p.hidden = true;
+  p.innerHTML = '<div class="it-whp-h"><h4></h4><button type="button" class="x-close" data-it-mpx aria-label="Close" title="Close (Esc)">×</button></div><div class="it-mp-b"></div>';
+  p.addEventListener('click', (e) => {
+    if(e.target.closest('[data-it-mpx]')){ itMpOpen('', true); return; }
+    const q = e.target.closest('[data-it-mpq]');
+    if(q){ itMapSt().secr = {hi: {lo: 5, hi: 10}, low: {lo: 1, hi: 4}, null: {lo: -10, hi: 0}}[q.dataset.itMpq]; itMpChanged(); }
+  });
+  itMp.el = p;
+}
+function itMpOpen(k, back = true){
+  const btn = (x) => x && itm.el ? itm.el.querySelector(`[data-it-mpn="${escapeHtml(x)}"]`) : null;
+  if(!k){
+    if(!itMpShown()){ itMp.k = ''; return; }
+    const b = btn(itMp.k); itMp.el.hidden = true; itMp.k = ''; if(b) b.setAttribute('aria-expanded', 'false');
+    itm.ctlKey = null; itMapCtlPlace();
+    document.removeEventListener('pointerdown', itMp.out, true); document.removeEventListener('keydown', itMp.key, true);
+    if(back){ const shown = b && b.offsetParent && getComputedStyle(b).visibility !== 'hidden', to = shown ? b : itm.el.querySelector('.it-map-fcur'); if(to) to.focus({preventScroll: true}); }
+    return;
+  }
+  if(!itm.box || !itMapSt().only[k] || (k !== 'secr' && k !== 'near')) return;
+  if(itMpShown()) itMpOpen('', false);
+  if(itm.el.querySelector('.it-map-fb.open')) itMapFbarOpen(false);
+  itWhListOpen(false, false); sovOpen(false, false);   // one filter panel at a time
+  if(itNearShown() && !itMapRoomForBoth(IT_MAP_PANEL_MIN)) itNearToggle(false);
+  if(!itMp.el) itMpMake();
+  if(itMp.el.parentNode !== itm.box) itm.box.appendChild(itMp.el);
+  const name = (IT_MAP_FILTERS.find(f => f.k === k) || {}).name || '';
+  itMp.k = k; itMp.el.setAttribute('aria-label', name); itMp.el.querySelector('h4').textContent = name;
+  itMp.el.hidden = false; { const b = btn(k); if(b) b.setAttribute('aria-expanded', 'true'); }
+  itMpPaint(); itm.ctlKey = null; itMapCtlPlace();
+  const f = itMp.el.querySelector('.rs-b:not(:disabled)'); if(f) f.focus({preventScroll: true});
+  itMp.out = (e) => { if(!itMp.el.contains(e.target) && !(e.target.closest && e.target.closest('[data-it-mpn]'))) itMpOpen('', false); };
+  itMp.key = (e) => { if(e.key === 'Escape' && itMpShown()){ e.preventDefault(); e.stopPropagation(); itMpOpen('', true); } };
+  document.addEventListener('pointerdown', itMp.out, true); document.addEventListener('keydown', itMp.key, true);
+}
+function itMpPaint(){
+  if(!itMpShown()) return;
+  const body = itMp.el.querySelector('.it-mp-b');
+  if(itMp.built !== itMp.k || !body.firstChild){ itMp.built = itMp.k; body.innerHTML = itMpBodyHtml(itMp.k); }
+  rsPaint(itMp.el); itMpCountPaint();
+}
+function itMpCountPaint(){   // written only when its words change
+  const c = itMpShown() && itMp.el.querySelector('.it-mp-cnt'); if(!c) return;
+  const mt = itm.mt, n = mt ? mt.list.length : 0, t = `${n} system${n === 1 ? '' : 's'} match every Only filter that is on`;
+  if(c.textContent !== t) c.textContent = t;
+}
+// a setting changed in a panel (a stepper, a quick pick, a Sov level): kept, and the map, its legend and the panel drawn again
+function itMpChanged(){
+  itMapStackSave(); itMapLegend();
+  if(itm.P && itm.home >= 0){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); }
+  itMpPaint();
 }
 function itMapMake(){
   if(itm.el) return itm.el;
   const el = document.createElement('div'); el.className = 'it-map';
   el.innerHTML = `<div class="it-map-box"><div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button></div>` + itMapRailHtml()
-    + itRpSearchHtml() + `<button type="button" class="it-map-clr" hidden>Hide all routes</button><canvas role="img" aria-label="Map of the systems around you, with the reported pilots and their routes to you"></canvas><canvas class="it-map-fx" aria-hidden="true"></canvas><div class="it-map-whp" aria-hidden="true"></div><button type="button" class="it-map-whn" data-it-whn hidden></button>`
+    + itRpSearchHtml() + `<button type="button" class="it-map-clr" hidden>Hide all routes</button><canvas role="img" aria-label="Map of the systems around you, with the reported pilots and their routes to you"></canvas><canvas class="it-map-fx" aria-hidden="true"></canvas><div class="it-map-whp" aria-hidden="true"></div><button type="button" class="it-map-mt" data-it-mt hidden></button>`
     + `<button type="button" class="it-map-you" hidden title="You're off the map here: press to center on your system" aria-label="Center on your system"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>You</button><div class="it-map-tip" hidden></div><div class="it-map-hint" aria-hidden="true">Use two fingers to move the map</div><div class="it-map-msg" hidden></div>${itMapFbarHtml()}</div>`
     + `<div class="it-map-leg"></div><div class="it-map-row"><span class="it-map-rs"></span><span class="it-map-help wide">drag to move · wheel to zoom</span><span class="it-map-help phone">two fingers move and zoom the map; one finger scrolls the page</span></div>`;
   itm.el = el; itm.box = el.querySelector('.it-map-box'); itm.cv = el.querySelector('canvas'); itm.tip = el.querySelector('.it-map-tip'); itm.hint = el.querySelector('.it-map-hint');
   itm.fx = el.querySelector('canvas.it-map-fx'); itm.you = el.querySelector('.it-map-you');
-  itm.whp = el.querySelector('.it-map-whp'); itm.whn = el.querySelector('.it-map-whn'); itm.whn.addEventListener('click', itMapWhChipNext);   // 045
+  itm.whp = el.querySelector('.it-map-whp'); itm.mtb = el.querySelector('.it-map-mt'); itm.mtb.addEventListener('click', itMapMtNext);   // 045, 058: the match chip
   itMapBind(); itRpSearchBind();   // 047: the search box
   // v2026.11.08.3 (026, plan section 5): on the next frame, once a frame; redrawing inside the observer's callback changed layout in the
   // same frame ("ResizeObserver loop completed with undelivered notifications"), as the Intel example's observer already avoids
@@ -29888,7 +29999,7 @@ function itMapRefresh(force){
   itm.el.querySelector('[data-im-z="me"]').hidden = !!why;   // nothing to center on
   itMapLegend();
   const mc = document.querySelector('[data-it-mapctx]'); if(mc) mc.textContent = itMapCtx();
-  if(why){ itm.home = -1; itm.you.hidden = true; itPtHide(); itMapWhPulse([]); if(itm.whn) itm.whn.hidden = true; return; }
+  if(why){ itm.home = -1; itm.you.hidden = true; itPtHide(); itMapWhPulse([]); if(itm.mtb) itm.mtb.hidden = true; return; }
   const phone = typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches;
   const w = itm.box.clientWidth, h = Math.round(phone ? Math.min(600, Math.max(440, w * 1.45)) : Math.min(720, Math.max(520, w * 0.5)));   // 052: full width and taller
   { const top = itm.box.closest('.it-top'), mh = `${h + 2}px`; if(top && top.style.getPropertyValue('--it-mh') !== mh){ top.style.setProperty('--it-mh', mh); itNearMoreSoon(); } }   // the panel's height moved: "+N more" again   // Near You's panel ends 8 px above the map's foot
@@ -29919,7 +30030,7 @@ function itMapRefresh(force){
 // their labels' ages, so a label that ages or a wormhole whose time is up redraws the map through the refreshes it already has (no timer)
 function itMapKey(){
   const fq = itFlSys();
-  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|rp:${itRpAside ? '' : itRp.key}`;   // 047: Threat Vector's route
+  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}`;   // 058: the stack   // 047: Threat Vector's route
 }
 // slide the map so your system is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
 function itMapCenter(draw = true){
@@ -30060,31 +30171,104 @@ function itMapCol(name, d){ const v = typeof getComputedStyle === 'function' ? g
 // each system's colour; Security status first and on every visit (not kept, like the dossier's sort). The scales are named here, beside
 // IT_MAP_SEC: jumps 0 to 10+ (IT_MAP_JUMPS), regions (IT_MAP_REGION, given so that no two regions joined by a gate share one).
 const IT_MAP_JUMPS = ['#ffffff', '#4acff3', '#62daa6', '#71e452', '#eeff83', '#de6a0c', '#ce4611', '#bb1014', '#8f2f69', '#7a4a6e', '#6a5a78'];
-const IT_MAP_REGION = ['#4fc3d9', '#d99a3c', '#9b7bd8', '#5fbf7f', '#d9687f', '#c9c35a', '#5f8fd9', '#c98fd0'];
+// 058 (Q13, the owner: "Reserve them"): no accent cyan (focus, routes), kill amber or wormhole lilacs among the regions' colours
+const IT_MAP_REGION = ['#5fbf7f', '#d9687f', '#c9c35a', '#5f8fd9', '#3f9f8f', '#b08a6a', '#8fa0b8', '#9fbf4f'];
 const IT_MAP_NONE = '#4a535b', IT_MAP_KILL = '#d99a3c', IT_MAP_FAINT = 0.22, IT_MAP_DIM = 0.16, IT_MAP_NAME_MS = 4000;
+// 058: each filter's group (g): colour (one, or none), only (any number, all must match), view (Paths to you); the column draws a line between groups
+const IT_MAP_SET_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/><circle cx="6" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="9" r="1.6" fill="currentColor"/><circle cx="8" cy="13" r="1.6" fill="currentColor"/></svg>';
 const IT_MAP_FILTERS = [
-  {k: 'sec', name: 'Security status', note: 'each system in its security colour, as in the game',
+  {k: 'sec', g: 'colour', name: 'Security status', note: 'colour: each system in its security colour, as in the game',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6.5"/><path d="M9 2.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>'},
-  {k: 'jumps', name: 'Jumps from you', note: 'by stargate jumps from your system; zoomed in, the number',
+  {k: 'jumps', g: 'colour', name: 'Jumps from you', note: 'colour: by stargate jumps from your system; zoomed in, the number',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="3.5" cy="13.5" r="2"/><circle cx="9" cy="5.5" r="2"/><circle cx="14.5" cy="11.5" r="2"/><path d="M4.7 11.8l3.1-4.5M10.6 6.9l2.6 3.1"/></svg>'},
-  {k: 'region', name: 'Region', note: 'one colour per region; neighbouring regions differ',
+  {k: 'region', g: 'colour', name: 'Region', note: 'colour: one per region; neighbouring regions differ',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="5.5" height="5.5" fill="currentColor"/><rect x="10" y="2.5" width="5.5" height="5.5"/><rect x="2.5" y="10" width="5.5" height="5.5"/><rect x="10" y="10" width="5.5" height="5.5" fill="currentColor"/></svg>'},
-  {k: 'reports', name: 'Intel reports', note: 'systems with a report or a kill in Intel bright, the rest dimmed',
+  // 058: the two new Only filters, each with its settings panel (IT_MAP_PANEL_BTN)
+  {k: 'secr', g: 'only', name: 'Security range', note: 'only: systems whose security is in your range',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2.5a6.5 6.5 0 1 0 0 13"/><path d="M9 2.5a6.5 6.5 0 0 1 0 13" stroke-dasharray="2 2"/><path d="M6 9h6M6 7v4M12 7v4"/></svg>'},
+  {k: 'near', g: 'only', name: 'Within N jumps', note: 'only: systems this many stargate jumps from you or fewer',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="1.6" fill="currentColor"/><circle cx="9" cy="9" r="4"/><circle cx="9" cy="9" r="7" stroke-dasharray="2 2.2"/></svg>'},
+  {k: 'reports', g: 'only', name: 'Intel reports', note: 'only: systems with a report or a live wormhole report',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3.5h13v8.5H8L4.5 15v-3h-2z"/></svg>'},
-  {k: 'kills', name: 'Kills from Intel', note: 'systems with kills in Intel in amber, the rest dimmed',
+  {k: 'kills', g: 'only', name: 'Kills from Intel', note: 'only: systems with kills in Intel',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke-width="2.2"/></svg>'},
   // build queue 040 (the owner: "All of them, anywhere"): every kept wormhole, past "Map: within" too
-  {k: 'wh', name: 'Wormholes', note: 'wormholes Intel reported or you added, kept for the time set in Intel settings; the rest dimmed',
+  {k: 'wh', g: 'only', name: 'Wormholes', note: 'only: systems with a kept wormhole (reported or added; its list beside it)',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 2.5a6.5 6.5 0 1 1-6.5 6.5"/><path d="M9 5.5a3.5 3.5 0 1 1-3.5 3.5"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>'},
   // build queue 053 (roadmap/intel-layout-sov-plan.md 5.6): your pasted sov lists; picked upgrades bright anywhere, the rest dimmed
-  {k: 'sov', name: 'Sov upgrades', note: 'systems with the upgrades you picked bright, the rest dimmed',
+  {k: 'sov', g: 'only', name: 'Sov upgrades', note: 'only: systems with an upgrade you picked (at a level you ticked)',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2.5l5.5 2.2v4.1c0 3.3-2.3 5.6-5.5 6.7-3.2-1.1-5.5-3.4-5.5-6.7V4.7z"/><path d="M6.5 9l1.8 1.8L11.8 7"/></svg>'},
   // 052 (plan 4.3): the order is free now that a filter's panel button sits beside it; Paths to you last
   // build queue 043 (the owner: "the wormhole filter button needs to be furthest right so it sits next to it's wormhole list button. also
   // fix the orientation of the "path to you" filter button."): before Wormholes; the icon top down like the tree, you filled at the top
-  {k: 'paths', name: 'Paths to you', note: 'the gate routes from hostiles inside your alert range to you, as a tree',
+  {k: 'paths', g: 'view', name: 'Paths to you', note: 'view: the gate routes from hostiles inside your alert range to you, as a tree',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="3.5" r="2.2" fill="currentColor"/><circle cx="3.5" cy="14.5" r="1.8"/><circle cx="9" cy="14.5" r="1.8"/><circle cx="14.5" cy="14.5" r="1.8"/><path d="M3.8 12.7C4 9 9 9 9 5.7M14.2 12.7C14 9 9 9 9 5.7M9 12.7v-7"/></svg>'},
 ];
+// ---- build queue 058 (Project doc roadmap/intel-map-stack-plan.md, mockup Claude outputs/stacked_filters_mockup.html; the owner: "i need the
+// ability to have filters from some existing types work together ... so you can sort of stack them on top of each other"): one colour, or none
+// (the one that is on, pressed again: Q1, "i can't toggle anything "off""); any number of Only filters, every one that is on must match and any
+// pick inside one counts (Q2); a view, Paths to you (Q4). Each Only filter keeps its settings while off. Remembered (Q11) in localStorage
+// tvMapStack, a new key: the older page never reads it, and this page never writes tvSov for it (053's reader drops unknown fields)
+const MAP_STACK_KEY = 'tvMapStack', IT_MAP_COLOURS = ['sec', 'jumps', 'region'], IT_MAP_ONLY = ['secr', 'near', 'reports', 'kills', 'wh', 'sov'];
+const IT_MAP_PLAIN = '#56616b';   // no colour: every system this grey, no number in its circle
+function itMapStackBlank(){ return {v: 1, colour: 'sec', view: 'map', only: Object.fromEntries(IT_MAP_ONLY.map(k => [k, false])), secr: {lo: -5, hi: -3}, near: {n: 5}, sovLv: [], seen: {secr: false, near: false}}; }   // Q16: Security, soft
+function itMapStackRead(){
+  const o = itMapStackBlank(); let s = null; try{ s = JSON.parse(localStorage.getItem(MAP_STACK_KEY)); }catch(e){ s = null; }
+  if(!s || typeof s !== 'object' || s.v !== 1) return o;   // a bad value reads as the defaults, field by field below
+  const int = (v, a, b, d) => Number.isInteger(v) && v >= a && v <= b ? v : d;
+  if(s.colour === '' || IT_MAP_COLOURS.includes(s.colour)) o.colour = s.colour;
+  if(s.view === 'paths') o.view = 'paths';
+  if(s.only && typeof s.only === 'object') for(const k of IT_MAP_ONLY) o.only[k] = s.only[k] === true;
+  if(s.secr && typeof s.secr === 'object'){ o.secr.lo = int(s.secr.lo, -10, 10, o.secr.lo); o.secr.hi = int(s.secr.hi, -10, 10, o.secr.hi); }   // tenths
+  if(s.near && typeof s.near === 'object') o.near.n = int(s.near.n, 1, 30, o.near.n);
+  if(Array.isArray(s.sovLv)) o.sovLv = [...new Set(s.sovLv.filter(n => n === 1 || n === 2 || n === 3))].sort();   // an entry outside 1-3 is dropped
+  if(s.seen && typeof s.seen === 'object') for(const k of ['secr', 'near']) o.seen[k] = s.seen[k] === true;
+  return o;
+}
+function itMapSt(){ return itm.st || (itm.st = itMapStackRead()); }
+function itMapStackSave(){ try{ localStorage.setItem(MAP_STACK_KEY, JSON.stringify(itMapSt())); }catch(e){ /* a full storage: kept for this visit */ } }
+function itMapPaths(){ return itMapSt().view === 'paths'; }
+function itMapOnlyOn(){ const s = itMapSt(); return s.view !== 'paths' && IT_MAP_ONLY.some(k => s.only[k]); }   // Paths to you: no Only filter applies there
+function itMapOnlyCount(){ const s = itMapSt(); return IT_MAP_ONLY.filter(k => s.only[k]).length; }
+function itMapStKey(){ const s = itMapSt(); return JSON.stringify([s.colour, s.view, s.only, s.secr, s.near, s.sovLv]); }
+function itMapWhOn(){ return itMapOnlyOn() && itMapSt().only.wh; }
+// which systems match every Only filter that is on: one array, worked out again only when its key changes, never tested per system per draw
+// (LESSON #120); null with none on. Your system always matches (it never dims). The list: the matches but you, nearest by stargate first,
+// then the newest wormhole (the chip steps through it)
+const itMt = {key: null, m: null, list: []};
+function itMapMatch(wh){
+  if(!itm.D || !itMapOnlyOn()) return null;
+  const s = itMapSt(), o = s.only, W = wh || itm.wh || itMapWh(), T = itMapTable();
+  const key = `${itMapStKey()}|${itm.home}|${o.wh || o.reports ? `${[...W.kept.keys()].join(',')}/${[...W.live.keys()].join(',')}` : ''}|${o.sov ? `${sovIndexKey()}#${sovStore().pick.join(',')}` : ''}|${o.reports || o.kills ? [...itm.rep].map(([i, r]) => `${i}:${r.kills || 0}`).join(',') : ''}`;
+  if(key === itMt.key) return itMt;
+  const n = T.n, m = new Uint8Array(n), D = itm.D, lo = Math.min(s.secr.lo, s.secr.hi), hi = Math.max(s.secr.lo, s.secr.hi);
+  const sv = o.sov ? sovIndex() : null, pick = new Set(o.sov ? sovStore().pick : []), lvT = sovTable().lv, lv = s.sovLv;
+  for(let i = 0; i < n; i++){
+    let ok = true;
+    if(o.secr){ const t = itMapSecT(i); ok = t >= lo && t <= hi; }   // Q9: the number the map shows, both ends, either order
+    if(ok && o.near) ok = D[i] >= 0 && D[i] <= s.near.n;   // by stargate, as Jumps from you
+    if(ok && o.reports) ok = itm.rep.has(i) || W.live.has(i);
+    if(ok && o.kills) ok = !!(itm.rep.get(i) || {}).kills;
+    if(ok && o.wh) ok = W.kept.has(i);
+    if(ok && o.sov){ const e = sv.at.get(i); ok = false; if(e) for(const [k, l] of e) if(pick.has(k) && (!lvT.has(k) || !lv.length || lv.includes(l))){ ok = true; break; } }   // Q10: any ticked level; none ticked: any
+    m[i] = ok ? 1 : 0;
+  }
+  if(itm.home >= 0) m[itm.home] = 1;
+  const list = []; for(let i = 0; i < n; i++) if(m[i] && i !== itm.home) list.push(i);
+  const far = (i) => D[i] >= 0 ? D[i] : 1e4, t = (i) => { const w = W.kept.get(i); return w ? w.t : 0; };
+  list.sort((a, b) => far(a) - far(b) || t(b) - t(a));
+  Object.assign(itMt, {key, m, list}); itm.mtStep = -1;   // the chip counts from the nearest again
+  return itMt;
+}
+function itMapMatched(i){ const t = itm.mt; return !!(t && t.m[i]); }   // the draw's match set (itMapDraw reads it once)
+// Q15 (the owner: "the base color groups sort of washing out the other data"): soft colour. A system no Only filter picks out: zoomed out its
+// colour mixed 45% toward the map's background, zoomed in a dark disc tinted with it (38% colour, no coloured outline: a ring means a report)
+const itMapMixC = new Map();
+function itMapMix(hex, keep){
+  const k = hex + keep; if(itMapMixC.has(k)) return itMapMixC.get(k);
+  const n = parseInt(hex.slice(1), 16), bg = [12, 16, 20], c = [n >> 16, (n >> 8) & 255, n & 255].map((v, j) => Math.round(v * keep + bg[j] * (1 - keep)));
+  const out = '#' + c.map(v => v.toString(16).padStart(2, '0')).join(''); itMapMixC.set(k, out); return out;
+}
 let itMapRegColTab = null;   // region index -> colour index, made once per table
 function itMapRegCol(T){
   if(itMapRegColTab && itMapRegColTab.T === T) return itMapRegColTab.c;
@@ -30095,31 +30279,26 @@ function itMapRegCol(T){
   itMapRegColTab = {T, c};
   return c;
 }
-// the number in a zoomed-in circle, and the hover's: rounded the way the dot's colour is picked (itMapSecClass: a system above 0.0 never
-// shows 0.0)
-function itMapSecText(s100){ const v = s100 > 0 ? itMapSecClass(s100) / 10 : Math.round(s100 / 10) / 10; return (Object.is(v, -0) || v === 0 ? 0 : v).toFixed(1); }
-function itMapFcol(i){
-  const T = itMapTable(), f = itm.filter;
-  if(f === 'jumps') return itm.D[i] < 0 ? IT_MAP_NONE : IT_MAP_JUMPS[Math.min(IT_MAP_JUMPS.length - 1, itm.D[i])];
-  if(f === 'region') return IT_MAP_REGION[itMapRegCol(T)[T.reg[i]]];
-  if(f === 'kills') return (itm.rep.get(i) || {}).kills ? IT_MAP_KILL : IT_MAP_NONE;
-  if(f === 'wh'){ const r = itm.wh && itm.wh.kept.get(i); return r ? itMapWhCol(r) : IT_MAP_NONE; }   // build queue 040
-  return IT_MAP_SEC[itMapSecClass(T.sec[i])];
+// the number in a zoomed-in circle, the hover's and Security range's: the value the dot's colour is picked from (itMapSecT)
+function itMapSecText(i){ return (itMapSecT(i) / 10).toFixed(1); }
+// a system's colour, from the colour that is on (058: only it colours a dot, Q3; none: plain grey). full: as the scale has it; else your
+// system and the matches keep it and the rest are softened (Q15, zoomed out)
+function itMapColRaw(i){
+  const T = itMapTable(), c = itMapSt().colour;
+  if(c === 'jumps') return itm.D[i] < 0 ? IT_MAP_NONE : IT_MAP_JUMPS[Math.min(IT_MAP_JUMPS.length - 1, itm.D[i])];
+  if(c === 'region') return IT_MAP_REGION[itMapRegCol(T)[T.reg[i]]];
+  if(c === 'sec') return IT_MAP_SEC[itMapSecClass(i)];
+  return IT_MAP_PLAIN;
 }
-function itMapDimmed(i){
-  if(i === itm.home) return false;
-  if(itm.filter === 'wh') return !(itm.wh && itm.wh.kept.has(i));   // build queue 040
-  if(itm.filter === 'sov') return !(itm.sov && itm.sov.has(i));   // build queue 053: the systems with an upgrade you picked
-  if(itm.filter === 'reports') return !itm.rep.has(i) && !(itm.wh && itm.wh.live.has(i));   // 040: a live wormhole report is a report
-  if(itm.filter === 'kills') return !(itm.rep.get(i) || {}).kills;
-  return false;
-}
+function itMapFcol(i){ const c = itMapColRaw(i); return i === itm.home || itMapMatched(i) ? c : itMapMix(c, 0.55); }
+// 058: dimmed means "doesn't match" only (Q5), while an Only filter is on; your system never
+function itMapDimmed(i){ return i !== itm.home && !!itm.mt && !itm.mt.m[i]; }
 function itMapDraw(){
   if(!itm.P || itm.home < 0) return;
   itm.draws++;
   itm.wh = itMapWh();   // build queue 040: the kept wormholes, and those shown as reports (itMapFcol, itMapDimmed, the labels and the hover read it)
-  itm.sov = itm.filter === 'sov' ? sovLitSet() : null;   // build queue 053: the systems with a picked sov upgrade, once a draw
-  if(itPtLive()){ itMapWhPulse([]); itMapWhChipPaint(); itPtPaint(); return; }   // build queue 043: the tree covers the map, so the galaxy under it isn't drawn
+  itm.mt = itMapMatch(itm.wh);   // 058: the systems every Only filter that is on picks out, once a draw (null with none on)
+  if(itPtLive()){ itMapWhPulse([]); itMapMtPaint(); itPtPaint(); return; }   // build queue 043: the tree covers the map, so the galaxy under it isn't drawn
   if(itm.cv.parentNode === itm.box) itPtHide();
   const T = itMapTable(), n = T.n, c = itm.cv.getContext('2d'), dpr = window.devicePixelRatio || 1, W = itm.W, H = itm.H, v = itm.view, P = itm.P, Q = itm.Q, D = itm.D, R = itm.reach, near = itNearReach();
   const C = {hostile: itMapCol('--danger', '#c65b4e'), neutral: '#b9c3ca', friendly: itMapCol('--side-friendly', '#4f8fe0'), cyan: itMapCol('--cyan', '#4fc3d9'), amber: itMapCol('--amber', '#d99a3c'), clear: itMapCol('--it-clear', '#3fb950'), gate: '#26303b', gateX: '#3a4753'};
@@ -30128,10 +30307,13 @@ function itMapDraw(){
   const on = (i) => D[i] >= 0 && D[i] <= R, X = (i) => Q[2 * i], Y = (i) => Q[2 * i + 1], m = 30;
   const seen = (i) => Q[2 * i] > -m && Q[2 * i] < W + m && Q[2 * i + 1] > -m && Q[2 * i + 1] < H + m;
   const g = itMapGatePx(), big = g >= 34, r = big ? Math.max(9, Math.min(15, g * 0.2)) : 0, names = g >= 80 && !!it.names;
-  const whF = itm.filter === 'wh', alpha = (i) => itMapDimmed(i) ? IT_MAP_DIM : (whF && itm.wh.kept.has(i)) || (itm.sov && itm.sov.has(i)) ? 1 : !on(i) ? IT_MAP_FAINT : D[i] > near ? 0.45 : 1;   // 040: a kept wormhole bright anywhere (the owner: "All of them, anywhere")
-  // the alert range: a soft amber under the systems inside it
-  c.fillStyle = whF ? 'rgba(217,154,60,.02)' : 'rgba(217,154,60,.07)';   // 045: lighter on the Wormholes filter
-  for(const i of itm.vis) if(D[i] <= it.set.range && seen(i)){ c.beginPath(); c.arc(X(i), Y(i), big ? r + 9 : 22 * Math.min(1.4, Math.sqrt(g / IT_MAP_START_GATE)), 0, 6.283); c.fill(); }
+  // 058: with an Only filter on, a match is bright anywhere and the rest dim, no distance fade on dots (Q5, Q6; the gates still fade past the
+  // reach); with none on, today's fades
+  const mt = itm.mt, alpha = (i) => mt ? (mt.m[i] ? 1 : IT_MAP_DIM) : !on(i) ? IT_MAP_FAINT : D[i] > near ? 0.45 : 1;
+  // the alert range: a soft amber under the systems inside it, never faded (Q7); zoomed out half today's size, zoomed in today's (the owner:
+  // "i'm fine with today's diameter while zoomed in but want the new smaller diameter when zoomed out")
+  c.fillStyle = 'rgba(217,154,60,.07)';
+  for(const i of itm.vis) if(D[i] <= it.set.range && seen(i)){ c.beginPath(); c.arc(X(i), Y(i), big ? r + 9 : 11 * Math.min(1.4, Math.sqrt(g / IT_MAP_START_GATE)), 0, 6.283); c.fill(); }
   // the gates: inside the reach or faint past it; between two regions dotted, as the game draws them
   const paths = [[], [], [], []];
   for(let i = 0; i < n; i++){
@@ -30168,8 +30350,8 @@ function itMapDraw(){
   itm.nameBoxes = []; itm.stage = names ? 2 : big ? 1 : 0;   // the zoom stage: dots, circles, circles with names
   if(!big){
     const dotR = g < 5 ? 1.4 : g < 10 ? 2 : 3, by = new Map();
-    for(let i = 0; i < n; i++){ if(i === itm.home || itm.rep.has(i) || !seen(i)) continue; const key = itMapFcol(i) + '|' + alpha(i); (by.get(key) || by.set(key, []).get(key)).push(i); }
-    for(const [key, list] of by){ const [col, a] = key.split('|'); c.fillStyle = col; c.globalAlpha = Number(a); const rr = Number(a) === IT_MAP_FAINT ? Math.max(1.2, dotR - 0.6) : dotR;
+    for(let i = 0; i < n; i++){ if(i === itm.home || itm.rep.has(i) || !seen(i)) continue; const key = itMapFcol(i) + '|' + alpha(i) + '|' + (mt && mt.m[i] ? 1 : 0); (by.get(key) || by.set(key, []).get(key)).push(i); }
+    for(const [key, list] of by){ const [col, a, hit] = key.split('|'); c.fillStyle = col; c.globalAlpha = Number(a); const rr = Number(a) === IT_MAP_FAINT ? Math.max(1.2, dotR - 0.6) : hit === '1' ? dotR + 1.6 : dotR;   // 058 (Q8): a match 1.6 px bigger
       c.beginPath(); for(const i of list){ c.moveTo(X(i) + rr, Y(i)); c.arc(X(i), Y(i), rr, 0, 6.283); } c.fill(); }
   } else {
     c.save(); c.textAlign = 'center'; c.textBaseline = 'middle';
@@ -30177,11 +30359,12 @@ function itMapDraw(){
     if(focus >= 0) taken.add(focus);
     for(let i = 0; i < n; i++){
       if(!seen(i)) continue;
-      const x = X(i), y = Y(i), a = alpha(i);
-      c.globalAlpha = a; c.fillStyle = itMapFcol(i); c.beginPath(); c.arc(x, y, r, 0, 6.283); c.fill();
+      const x = X(i), y = Y(i), a = alpha(i), hit = !!(mt && mt.m[i]) && i !== itm.home;
+      // 058: a match's disc a quarter bigger in its full colour (Q8); the rest a dark disc tinted with their colour (Q15); you as the scale has it
+      c.globalAlpha = a; c.fillStyle = hit || i === itm.home ? itMapColRaw(i) : itMapMix(itMapColRaw(i), 0.38); c.beginPath(); c.arc(x, y, hit ? r * 1.25 : r, 0, 6.283); c.fill();
       c.globalAlpha = 1; c.lineWidth = 1.5; c.strokeStyle = '#0c1014'; c.stroke();
       c.globalAlpha = Math.max(a, 0.35); c.font = tf; c.fillStyle = '#fff';
-      c.fillText(itm.filter === 'jumps' ? (D[i] < 0 ? '–' : String(D[i])) : itMapSecText(T.sec[i]), x, y + 0.5);
+      const col = itMapSt().colour; if(col) c.fillText(col === 'jumps' ? (D[i] < 0 ? '–' : String(D[i])) : itMapSecText(i), x, y + 0.5);   // no colour: no number
       if(names && !taken.has(i)){ const nm = it.names.byId.get(ids[i]); if(nm){ c.font = nf; c.fillStyle = '#b7c1c8'; c.globalAlpha = Math.max(a, 0.4); c.fillText(nm, x, y + r + 9); const w = c.measureText(nm).width; itm.nameBoxes.push([x - w / 2, y + r + 3, x + w / 2, y + r + 15]); } }
     }
     c.restore(); c.globalAlpha = 1;
@@ -30191,11 +30374,11 @@ function itMapDraw(){
   for(const [i, rp] of itm.rep){
     const tier = itMapTier(Math.max(1, rp.n));
     if(rp.side !== 'clear'){
-      const out = whF && itm.wh.mark.has(i);   // 044: on the Wormholes filter a wormhole's own report goes outside its marks, never on them
+      const out = itMapWhBoldAt(i);   // 044: a wormhole's bold marks (058: a matching kept hole with Wormholes on) keep its own report outside them
       const col = C[rp.side], rad = big ? r + 4 + grow[tier] + (out ? 9 : 0) : out ? 13 + grow[tier] : IT_MAP_RING[tier];
-      const fade = whF && !itm.wh.kept.has(i);   // 045: on the Wormholes filter the other reports step back (the owner: "wormholes are getting lost in the chaos")
-      c.save(); c.shadowColor = col; c.shadowBlur = fade ? 0 : 10; c.strokeStyle = col; c.lineWidth = big ? 2.5 : 2.2; c.globalAlpha = fade ? IT_MAP_WH_FADE : 0.95; c.beginPath(); c.arc(X(i), Y(i), rad, 0, 6.283); c.stroke(); c.restore();
-      if(!big){ c.fillStyle = col; c.globalAlpha = fade ? 0.03 : 0.12; c.beginPath(); c.arc(X(i), Y(i), rad, 0, 6.283); c.fill(); c.globalAlpha = 1; }
+      // 058 (Q7, the owner: "Never fade"): hostile and neutral rings at full strength whatever is filtered (045's step-back is gone)
+      c.save(); c.shadowColor = col; c.shadowBlur = 10; c.strokeStyle = col; c.lineWidth = big ? 2.5 : 2.2; c.globalAlpha = 0.95; c.beginPath(); c.arc(X(i), Y(i), rad, 0, 6.283); c.stroke(); c.restore();
+      if(!big){ c.fillStyle = col; c.globalAlpha = 0.12; c.beginPath(); c.arc(X(i), Y(i), rad, 0, 6.283); c.fill(); c.globalAlpha = 1; }
     }
     if(!big){ c.globalAlpha = itMapDimmed(i) ? IT_MAP_DIM : 1; c.fillStyle = itMapFcol(i); c.beginPath(); c.arc(X(i), Y(i), 4.5, 0, 6.283); c.fill(); c.globalAlpha = 1; }
   }
@@ -30208,7 +30391,7 @@ function itMapDraw(){
   for(const [i, w] of itm.wh.mark){
     if(!seen(i)) continue;
     const x = X(i), y = Y(i), r1 = big ? r + 3 : 4.5, r2 = big ? r + 7 : 8.5;
-    if(whF){ itMapWhBold(c, x, y, w, big, r); if(now - w.t < IT_MAP_WH_FRESH_MS) pulse.push({x, y, r: big ? r + 9 : 10.5, dr: !!w.drifter}); continue; }
+    if(itMapWhBoldAt(i)){ itMapWhBold(c, x, y, w, big, r); if(now - w.t < IT_MAP_WH_FRESH_MS) pulse.push({x, y, r: big ? r + 9 : 10.5, dr: !!w.drifter}); continue; }   // 058 (Q21a): the holes that match
     itWhRingDraw(c, x, y, r1, w, []); itWhRingDraw(c, x, y, r2, w, [2.2, 1.8]);   // 044: split by kind (plain and Drifter holes in one system share the rings)
   }
   itMapWhPulse(pulse);
@@ -30223,7 +30406,7 @@ function itMapDraw(){
       if(rr) itm.fbBox = [rr.left - bx.left - 4, rr.top - bx.top - 4, rr.right - bx.left + 4, rr.bottom - bx.top + 4];
       // 052: the filter column, widened by a panel button that shows beside it (its filter on, or hovered)
       if(itm.fbBox) for(const pb of itm.box.querySelectorAll('.it-map-fbtns button.it-map-pb')){ const lr = pb.getBoundingClientRect(); if(lr.width > 0 && getComputedStyle(pb).visibility !== 'hidden') itm.fbBox[2] = Math.max(itm.fbBox[2], lr.right - bx.left + 4); } } }
-  itMapWhChipPaint();   // 045: before the labels, so no label goes under it
+  itMapMtPaint();   // 058 (045's chip made general): before the labels, so no label goes under it
   itMapLabels(c, focus, onRoute, C, r);
   itMapRegionNames(c);
   itMapYouArrow();
@@ -30270,11 +30453,12 @@ function itMapLabels(c, focus, onRoute, C, cr = 0){   // cr: the circles' radius
   const add = (r) => cells(r, (k) => { (grid.get(k) || grid.set(k, []).get(k)).push(r); });
   const hit = (r) => cells(r, (k) => (grid.get(k) || []).some(q => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]));
   const WH = itm.wh || {mark: new Map()}, mk = (i) => itm.rep.has(i) || WH.mark.has(i);   // 040: a wormhole's rings take room like a report's
-  const whS = itm.filter === 'wh';   // 045: on the Wormholes filter only the wormholes' marks and your pin keep their room; labels for wormholes and you only
-  for(let i = 0; i < itm.D.length; i++){ const x = Q[2 * i], y = Q[2 * i + 1]; if(x < -10 || y < -10 || x > W + 10 || y > H + 10) continue; if(whS && !WH.mark.has(i) && i !== itm.home) continue; const rr = cr ? (WH.mark.has(i) ? cr + 7 : cr) : WH.mark.has(i) ? 9 : itm.rep.has(i) ? 6 : 4; add([x - rr, y - rr, x + rr, y + rr]); }
+  // 058 (Q7): 045's "only wormholes and you are labelled" went with its step-back: reports keep their names; a matching hole's tag is filled
+  const whS = itMapWhOn();   // Wormholes on: a hole's tag gets the farther spots too
+  for(let i = 0; i < itm.D.length; i++){ const x = Q[2 * i], y = Q[2 * i + 1]; if(x < -10 || y < -10 || x > W + 10 || y > H + 10) continue; const rr = cr ? (WH.mark.has(i) ? cr + 7 : cr) : WH.mark.has(i) ? 9 : itm.rep.has(i) ? 6 : 4; add([x - rr, y - rr, x + rr, y + rr]); }
   for(const b of itm.nameBoxes || []) add(b);   // 039: the names under the circles
   if(itm.fbBox) add(itm.fbBox);   // and the filter bar
-  if(itm.chipBox) add(itm.chipBox);   // 045: and the wormholes chip
+  if(itm.chipBox) add(itm.chipBox);   // 045: and the chip (058: the match chip)
   const hx = Q[2 * itm.home], hy = Q[2 * itm.home + 1] - (cr ? cr - 6 : 0), pin = [hx - 9, hy - 29, hx + 9, hy + (cr ? 2 * cr - 6 : 0)];   // your pin's box: no name goes over it (v2026.11.04.1)
   add(pin);
   c.textBaseline = 'middle';
@@ -30301,51 +30485,52 @@ function itMapLabels(c, focus, onRoute, C, cr = 0){   // cr: the circles' radius
     if(r.kills) pcs.push({t: '✕' + r.kills, col: C.amber, font: '700 11px system-ui, sans-serif'});
     return pcs;
   };
-  const whTag = (i) => { const w = WH.mark.get(i); return w ? [whS ? {t: itMapWhLabel(w), bg: itMapWhCol(w), col: '#0c1014', font: TAG} : {t: itMapWhLabel(w), bg: 'rgba(12,16,20,.85)', col: itMapWhCol(w), font: TAG}] : []; };   // 045: a filled pill on the Wormholes filter   // 040: WH and its age
+  const whTag = (i) => { const w = WH.mark.get(i); return w ? [itMapWhBoldAt(i) ? {t: itMapWhLabel(w), bg: itMapWhCol(w), col: '#0c1014', font: TAG} : {t: itMapWhLabel(w), bg: 'rgba(12,16,20,.85)', col: itMapWhCol(w), font: TAG}] : []; };   // 045: a filled pill for a bold hole (058: one that matches)   // 040: WH and its age
   // you: the only filled label on the map (with your system's own report, if any), beside the pin's head when there's room (right, left,
   // above it), else beside the dot
   put(itm.home, [{t: `YOU · ${nm(itm.home)}`, bg: '#fff', col: '#0c1014', font: '700 11px system-ui, sans-serif'}, ...(itm.rep.has(itm.home) ? tags(itm.rep.get(itm.home)) : []), ...whTag(itm.home)], true,
     (w) => [[hx + 11, hy - 26], [hx - 11 - w, hy - 26], [hx - w / 2, hy - 47], [hx + 11, hy - 7], [hx - 11 - w, hy - 7], [hx - w / 2, hy + 10]]);
   const order = [...itm.rep.keys()].filter(i => i !== itm.home).sort((a, b) => a === focus ? -1 : b === focus ? 1 : D[a] - D[b]);
-  for(const i of order){
-    if(!whS){ put(i, [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}, ...tags(itm.rep.get(i)), ...whTag(i)], true); continue; }
-    if(!WH.mark.has(i) && i !== focus) continue;   // 045: a report without a wormhole has no label here; one with a wormhole: its name and pill where they fit, else the pill alone, never over another label
-    const n0 = itm.labels.length; put(i, [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}, ...whTag(i)], i === focus); if(itm.labels.length === n0) put(i, whTag(i), false);
-  }
-  // 040: a wormhole with no other report. A live one (the other filters) is a report: named, always. On the Wormholes filter the kept ones
-  // nearest first, only where there's room (at the galaxy's zoom there can be hundreds); inside "Map: within" with the name too
+  for(const i of order) put(i, [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}, ...tags(itm.rep.get(i)), ...whTag(i)], true);
+  // 040: a wormhole with no other report. A live one is a report: named, always. With Wormholes on (058) the matching kept ones nearest
+  // first, only where there's room (at the galaxy's zoom there can be hundreds); inside "Map: within" with the name too, else the pill alone
   const whOnly = [...WH.mark.keys()].filter(i => i !== itm.home && !itm.rep.has(i)).sort((a, b) => (D[a] < 0 ? 1e4 : D[a]) - (D[b] < 0 ? 1e4 : D[b]));
   for(const i of whOnly){ const live = !!(WH.live && WH.live.has(i)), named = live || (D[i] >= 0 && D[i] <= itm.reach);
-    const n0 = itm.labels.length; put(i, [...(named ? [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}] : []), ...whTag(i)], (live && !whS) || i === focus); if(whS && itm.labels.length === n0) put(i, whTag(i), false); }
+    const n0 = itm.labels.length; put(i, [...(named ? [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}] : []), ...whTag(i)], (live && !itMapWhBoldAt(i)) || i === focus); if(itMapWhBoldAt(i) && itm.labels.length === n0) put(i, whTag(i), false); }
   if(focus >= 0 && focus !== itm.home && !itm.rep.has(focus) && !WH.mark.has(focus)) put(focus, [{t: nm(focus), col: C.cyan, font: F}], true);   // 039: any system, past the reach too
-  for(const i of onRoute) if(i !== itm.home && i !== focus && !(itm.rep.has(i) && !whS) && !WH.mark.has(i)) put(i, [{t: nm(i), col: '#6f7c86', font: '10px system-ui, sans-serif'}], false);
+  for(const i of onRoute) if(i !== itm.home && i !== focus && !itm.rep.has(i) && !WH.mark.has(i)) put(i, [{t: nm(i), col: '#6f7c86', font: '10px system-ui, sans-serif'}], false);
 }
 // 039: the filter's own line in the legend, first and always one line (the same height for every filter, so Near You, as tall as the map's
 // column beside it, doesn't move when the filter changes: the build review, LESSON #113)
 function itMapSwIsHtml(cols){ return cols.map(col => `<i style="background:${escapeHtml(col)}"></i>`).join(''); }
 function itMapSwHtml(cols){ return `<span class="sw">${itMapSwIsHtml(cols)}</span>`; }
 function itMapFLegHtml(){
-  switch(itm.filter){
+  if(itMapPaths()) return `<b>Paths to you</b> ${itMapSwHtml([itMapCol('--danger', '#c65b4e')])} hostile ${itMapSwHtml(['#b9c3ca'])} neutral · within ${Number(it.set.range)} jumps (your alert range) · lines point toward you`;   // 043
+  switch(itMapSt().colour){
     case 'jumps': return `<b>Jumps</b> 0 ${itMapSwHtml(IT_MAP_JUMPS)} 10+ · grey: no gate route`;
     case 'region': return '<b>Region</b> a colour each; neighbours differ';
-    case 'reports': return '<b>Intel reports</b> bright: a report · dim: none';
-    case 'kills': return `<b>Kills</b> ${itMapSwHtml([IT_MAP_KILL])} kills in Intel · dim: none`;
-    case 'paths': return `<b>Paths to you</b> ${itMapSwHtml([itMapCol('--danger', '#c65b4e')])} hostile ${itMapSwHtml(['#b9c3ca'])} neutral · within ${Number(it.set.range)} jumps (your alert range) · lines point toward you`;   // 043
-    case 'sov': return sovLegHtml();   // build queue 053
-    case 'wh': return `<b>Wormholes</b> ${itMapSwHtml([itMapWhCol({})])} reported ${itMapSwHtml([itMapWhCol({drifter: true})])} Drifter · split: both · last ${Number(itWhStore().keepH)} h · dim: none`;   // 040
-    default: return `<b>Security</b> 1.0 ${itMapSwHtml(IT_MAP_SEC.slice().reverse())} 0.0`;
+    case 'sec': return `<b>Security</b> 1.0 ${itMapSwHtml(IT_MAP_SEC.slice().reverse())} 0.0`;
+    default: return `<b>No colour</b> ${itMapSwHtml([IT_MAP_PLAIN])} every system plain · press Security, Jumps or Region to colour them`;   // 058
   }
 }
 function itMapFLegTitle(){
-  if(itm.filter === 'sov') return sovLegTitle();   // build queue 053
+  if(itMapPaths()) return 'Every shortest stargate route to you from a system with hostiles, neutrals or kills inside your alert range; a system on several routes is shown once. Hover or press a system to trace its routes.';
   return {jumps: 'Jumps by stargate from your system, 0 to 10 or more; grey: no gate route to you', region: 'One colour per region; two regions joined by a gate never share one',
-    reports: 'Systems with a report or a kill in Intel bright, the rest dimmed', kills: 'Systems with kills in Intel in amber, the rest dimmed',
-    paths: 'Every shortest stargate route to you from a system with hostiles, neutrals or kills inside your alert range; a system on several routes is shown once. Hover or press a system to trace its routes.',
-    wh: `Systems where Intel reported a wormhole (wh, wormhole or drifter) or you added one, in the last ${Number(itWhStore().keepH)} h, anywhere on the map; the rest dimmed; a pulsing one was reported in the last 30 minutes`}[itm.filter] || 'Each system in its security colour, 1.0 to 0.0 and below';
+    sec: 'Each system in its security colour, 1.0 to 0.0 and below'}[itMapSt().colour] || 'No colour: the systems are plain grey, so reports, wormholes, kills and the systems your Only filters match stand out';
+}
+// 058 (Q14, the owner: "Second line"): the Only filters that are on, the count first so a narrow screen never loses it; it wraps
+function itMapOnlyLineHtml(){ return itMapOnlyOn() ? `<div class="it-map-fl it-map-only" title="Every Only filter that is on must match; inside one, any pick counts. Hostile and neutral rings, the alert glow and your pin never fade.">${itMapOnlyHtml()}</div>` : ''; }   // 058: the legend's second line
+function itMapOnlyHtml(){
+  const s = itMapSt(), o = s.only, mt = itMapMatch(), n = mt ? mt.list.length : 0, p = [], t = (v) => (v / 10).toFixed(1);
+  if(o.secr){ const lo = Math.min(s.secr.lo, s.secr.hi), hi = Math.max(s.secr.lo, s.secr.hi); p.push(lo === hi ? `security ${t(lo)}` : `security ${t(lo)} to ${t(hi)}`); }
+  if(o.near) p.push(`within ${s.near.n} jump${s.near.n === 1 ? '' : 's'}`);
+  if(o.sov){ const ks = sovPicked().map(sovShow); p.push((!sovStore().lists.length && !sovBridgeEnds().length ? 'no sov lists yet' : ks.length ? (ks.length > 2 ? `${ks.slice(0, 2).join(', ')} +${ks.length - 2}` : ks.join(', ')) : 'no upgrade picked') + (s.sovLv.length ? ` level ${s.sovLv.join(', ')}` : '')); }
+  if(o.reports) p.push('a report'); if(o.kills) p.push('kills in Intel'); if(o.wh) p.push(`a wormhole (last ${Number(itWhStore().keepH)} h)`);
+  return `<b>Only</b> <b>${Number(n)} match</b> · ${escapeHtml(p.join(' · '))}`;
 }
 function itMapLegend(){
   const leg = itm.el.querySelector('.it-map-leg'), ring = (col, r) => `<i class="ring" style="width:${r * 2}px;height:${r * 2}px;border-color:${col}"></i>`;
-  const h = `<div class="it-map-fl" title="${escapeHtml(itMapFLegTitle())}">${itMapFLegHtml()}</div><span><svg class="pin" width="11" height="15" viewBox="-1 -1 16 22" aria-hidden="true"><path d="M7 20C5.5 16 0 12 0 7a7 7 0 0 1 14 0c0 5-5.5 9-7 13z" fill="#fff" stroke="#0c1014" stroke-width="2"/><circle cx="7" cy="7" r="2.6" fill="#0c1014"/></svg>you</span><span>${ring('var(--danger)', 6)}hostile</span><span>${ring('#b9c3ca', 6)}neutral</span><span>${ring('var(--side-friendly)', 6)}friendly</span><span class="sz">${ring('#9aa6ae', 4)}solo ${ring('#9aa6ae', 6)}2–10 ${ring('#9aa6ae', 8.5)}11+</span>${IT_WH_LEG_HTML}`
+  const h = `<div class="it-map-fl" title="${escapeHtml(itMapFLegTitle())}">${itMapFLegHtml()}</div>${itMapOnlyLineHtml()}<span><svg class="pin" width="11" height="15" viewBox="-1 -1 16 22" aria-hidden="true"><path d="M7 20C5.5 16 0 12 0 7a7 7 0 0 1 14 0c0 5-5.5 9-7 13z" fill="#fff" stroke="#0c1014" stroke-width="2"/><circle cx="7" cy="7" r="2.6" fill="#0c1014"/></svg>you</span><span>${ring('var(--danger)', 6)}hostile</span><span>${ring('#b9c3ca', 6)}neutral</span><span>${ring('var(--side-friendly)', 6)}friendly</span><span class="sz">${ring('#9aa6ae', 4)}solo ${ring('#9aa6ae', 6)}2–10 ${ring('#9aa6ae', 8.5)}11+</span>${IT_WH_LEG_HTML}`
     + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span><span><i class="dot"></i>within your alert range (${it.set.range})</span><span>faded: past ${escapeHtml(cardName('itnear'))} (${itNearReach()})</span><span>faint: past ${escapeHtml(cardName('itmap'))}: within (${Number(itMapReach())})</span><span>✕ kills</span>`;
   if(leg._h !== h){ leg.innerHTML = h; leg._h = h; }
 }
@@ -30360,7 +30545,7 @@ const IT_PT_KMIN = 0.3, IT_PT_KMAX = 2.5, IT_PT_BW = 150, IT_PT_BH = 60, IT_PT_R
 const itPt = {ov: null, G: null, html: '', pin: -1, hover: -1, v: null, fitKey: '', treeKey: '', hand: false, drag: null, moved: false, paints: 0};
 function itPtPhone(){ return typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches; }
 // the live map with the filter on (never the Intel example's picture, which borrows itm with a canvas of its own)
-function itPtLive(){ return itm.filter === 'paths' && !!itm.el && !!itm.box && itm.cv.parentNode === itm.box; }
+function itPtLive(){ return itMapPaths() && !!itm.el && !!itm.box && itm.cv.parentNode === itm.box; }
 // the systems the routes start from: a report that is hostile or neutral, or kills (not a clear), within your alert range (the owner)
 function itPtSources(){
   const D = itm.D, R = it.set.range, out = [];
@@ -30440,9 +30625,9 @@ function itPtSubHtml(n, now){
 function itPtNodeHtml(G, n, now){
   const [x, y] = G.P.get(n.i), T = itMapTable(), r = itm.rep.get(n.i), name = itSysName(itGraphGet().ids[n.i]);
   const side = r && (r.side === 'hostile' || r.side === 'neutral') && r.n > 0 ? ` ${r.side}` : '', cls = `pt-b${n.i === itm.home ? ' you' : ''}${side}`;
-  const tip = `${name} (${itMapSecText(T.sec[n.i])}) · ${n.d === 0 ? 'your system' : `${n.d} jump${n.d === 1 ? '' : 's'} from you`}`;
+  const tip = `${name} (${itMapSecText(n.i)}) · ${n.d === 0 ? 'your system' : `${n.d} jump${n.d === 1 ? '' : 's'} from you`}`;
   return `<button type="button" class="${escapeHtml(cls)}" data-pt="${Number(n.i)}" style="left:${Math.round(x)}px;top:${Math.round(y)}px;width:${Number(IT_PT_BW)}px;height:${Number(IT_PT_BH)}px" title="${escapeHtml(tip)}">`
-    + `<span class="pt-t"><span class="it-sn s${Number(itMapSecClass(T.sec[n.i]))}">${escapeHtml(name)}</span></span>${itPtSubHtml(n, now)}${itPtTagsHtml(it.near.get(itGraphGet().ids[n.i]), now, itGraphGet().ids[n.i])}</button>`;
+    + `<span class="pt-t"><span class="it-sn s${Number(itMapSecClass(n.i))}">${escapeHtml(name)}</span></span>${itPtSubHtml(n, now)}${itPtTagsHtml(it.near.get(itGraphGet().ids[n.i]), now, itGraphGet().ids[n.i])}</button>`;
 }
 // the row labels on the left, then every system
 function itPtBodyHtml(G, now){
@@ -30575,7 +30760,7 @@ function itMapTip(i, x, y){
   const T = itMapTable(), ids = itGraphGet().ids, r = itm.rep.get(i), d = itm.D[i];
   const wh = itm.wh && itm.wh.mark.get(i);   // 040: the wormhole shown at this system, if any
   const where = d === 0 ? 'you are here' : d < 0 ? 'no gate route to you' : `${d} jump${d === 1 ? '' : 's'}`;
-  let h = `<b>${escapeHtml(itSysName(ids[i]))}</b> <span class="d">${escapeHtml(T.regions[T.reg[i]] || '')} · ${escapeHtml(itMapSecText(T.sec[i]))} · ${escapeHtml(where)}</span>`;
+  let h = `<b>${escapeHtml(itSysName(ids[i]))}</b> <span class="d">${escapeHtml(T.regions[T.reg[i]] || '')} · ${escapeHtml(itMapSecText(i))} · ${escapeHtml(where)}</span>`;
   // v2026.11.04.1: how far in light-years, as a jump drive measures it (the owner: "the distance in LY (from the player's current system)")
   const ly = i !== itm.home ? itMapLy(i, itm.home) : null;
   if(ly !== null) h += `<br><span class="ly"><b>${itMapLyText(ly)} LY</b> <span class="d">from ${escapeHtml(itSysName(ids[itm.home]))}</span></span>`;
@@ -30587,7 +30772,7 @@ function itMapTip(i, x, y){
   } else if(d > itm.reach || d < 0) h += `<br><span class="d">past ${escapeHtml(cardName('itmap'))}: within (${Number(itm.reach)}): reports aren’t shown here</span>`;
   else if(i !== itm.home) h += `<br><span class="d">nothing reported in the last ${it.set.forget} min</span>`;
   if(wh) h += `<br>${itMapWhTipHtml(wh)}`;
-  if(itm.filter === 'sov') h += sovTipHtml(i);   // build queue 053: every kind the system has in your lists, with its level
+  if(itMapOnlyOn() && itMapSt().only.sov) h += sovTipHtml(i);   // 058: while Sov upgrades is on   // build queue 053: every kind the system has in your lists, with its level
   if(d > itKillRange()) h += `<br><span class="d">past the Feed's kill range (${itKillRange()}): its kills aren’t read</span>`;
   if(d > 0){
     const rt = itMapRoute(i).map(([a]) => itSysName(ids[a])).concat(itSysName(ids[itm.home]));
@@ -31307,14 +31492,20 @@ function itMapWh(){
     kept.set(i, w);
     if(w.src === 'intel' && w.t >= fresh && D && D[i] >= 0 && D[i] <= itm.reach) live.set(i, w);
   }
-  return {kept, live, mark: itm.filter === 'wh' ? kept : live};
+  // 058 (Q21): with Wormholes on, the kept holes that match every Only filter that is on join the live ones; a kept hole that doesn't match
+  // keeps only the off-filter rule (live: thin rings, as a report; else no wormhole mark). The owner: "045's bold + pulse", "Off-filter rule"
+  const out = {kept, live, mark: live};
+  if(itMapWhOn()){ const mt = itMapMatch(out), mark = new Map(live); if(mt) for(const [i, w] of kept) if(mt.m[i]) mark.set(i, w); out.mark = mark; }
+  return out;
 }
-function itMapWhKey(wh){ return (itm.filter === 'wh' ? 'W' : '') + [...wh.mark].map(([i, w]) => `${i}:${itMapWhLabel(w)}:${itWhKinds(w).length}`).join(','); }   // 044: the label and the ring's kinds
+// a hole drawn with 045's bold mark, pulse and filled tag (Q21a): Wormholes on, kept and matching
+function itMapWhBoldAt(i){ return !!(itm.wh && itm.mt && itMapSt().only.wh && itm.wh.kept.has(i) && itm.mt.m[i]); }
+function itMapWhKey(wh){ return (itMapWhOn() ? 'W' : '') + [...wh.mark].map(([i, w]) => `${i}:${itMapWhLabel(w)}:${itWhKinds(w).length}`).join(','); }   // 044: the label and the ring's kinds
 function itMapWhCol(w){ if(!itWhColC) itWhColC = [itMapCol('--it-wh', '#a98bd8'), itMapCol('--it-wh-drifter', '#ff5fbf')]; return itWhColC[w && w.drifter ? 1 : 0]; }
 // build queue 045 (roadmap/wormholes-standout-plan.md; the owner: "wormholes are getting lost in the chaos here", then "that looks fantastic. keep all
-// of it. 1-4 and the chip."): on the Wormholes filter only. The other reports' rings fade to IT_MAP_WH_FADE; a hole reported within
-// IT_MAP_WH_FRESH_MS pulses (CSS, transform and opacity: LESSON #120; none with reduced motion)
-const IT_MAP_WH_FADE = 0.2, IT_MAP_WH_FRESH_MS = 30 * 60000;
+// of it. 1-4 and the chip."): with the Wormholes filter on (058: and the hole matching), a hole reported within IT_MAP_WH_FRESH_MS pulses (CSS,
+// transform and opacity: LESSON #120; none with reduced motion). 045's fade of the other reports went with 058 (Q7: rings never fade)
+const IT_MAP_WH_FRESH_MS = 30 * 60000;
 // the bolder mark: zoomed out a filled disc with a glow, a dark edge and a ring; zoomed in a glowing ring around the circle and a second one
 // outside it; a Drifter's outer ring dashed (044 D15)
 // 044 (the owner's hand test: "you can't see the split ring for the two wormhole types"): a system with both kinds splits its boldest
@@ -31349,31 +31540,31 @@ function itMapWhPulse(list){
     box.appendChild(e);
   }
 }
-// the "N wormholes" chip, bottom left: each press moves the view (same zoom) to the next one, nearest by gate jumps first, then newest
-function itMapWhChipList(){
-  const k = itm.wh && itm.wh.kept, D = itm.D || []; if(!k) return [];
-  return [...k.keys()].sort((a, b) => ((D[a] >= 0 ? D[a] : 1e4) - (D[b] >= 0 ? D[b] : 1e4)) || (k.get(b).t - k.get(a).t));
-}
-function itMapWhChipPaint(){
-  const b = itm.whn; itm.chipBox = null; if(!b || !itm.box) return;
-  const L = itm.filter === 'wh' && !itPtLive() ? itMapWhChipList() : [];
-  if(!L.length){ if(!b.hidden) b.hidden = true; return; }
-  const n = L.length, at = itm.whStep >= 0 && itm.whStep < n ? itm.whStep : -1, ids = itGraphGet().ids, s = n === 1 ? '' : 's';
-  const txt = at < 0 ? `${n} wormhole${s} ›` : `${at + 1}/${n} · ${itSysName(ids[L[at]])} ›`, lab = `${n} wormhole${s} on the map: ${at < 0 ? 'show the nearest' : 'show the next'}`;
+// 058 (Q12, Q21c, the owner: "Keep it", "Match chip replaces it"): 045's "N wormholes" chip made general. Bottom left, while an Only filter
+// is on: "N match ›"; each press moves the view (same zoom) to the next match in the part of the map no panel covers, nearest by stargate
+// first, then the newest wormhole ("2 of 5 ›"); "No system matches" when none does. A map control (rule A)
+function itMapMtPaint(){
+  const b = itm.mtb; itm.chipBox = null; if(!b || !itm.box) return;
+  const mt = itm.mt && !itPtLive() ? itm.mt : null;
+  if(!mt){ if(!b.hidden) b.hidden = true; return; }
+  const L = mt.list, n = L.length, at = itm.mtStep >= 0 && itm.mtStep < n ? itm.mtStep : -1;
+  const txt = !n ? 'No system matches' : at < 0 ? `${n} match ›` : `${at + 1} of ${n} ›`;
+  const lab = !n ? 'No system on the map matches every Only filter that is on' : `${n} system${n === 1 ? '' : 's'} match every Only filter that is on: ${at < 0 ? 'show the nearest' : 'show the next'}`;
   if(b.hidden) b.hidden = false;
   if(b.textContent !== txt) b.textContent = txt;
+  if(b.disabled !== !n) b.disabled = !n;
   if(b.getAttribute('aria-label') !== lab){ b.setAttribute('aria-label', lab); b.title = lab; }
   const bx = itm.box.getBoundingClientRect(), r0 = b.getBoundingClientRect(), fb = itm.fbBox;
   // 052: the filter column runs down the same left edge: the chip steps right of it only when the column really reaches it (up and down too)
   const up = !!(fb && r0.width > 0 && r0.bottom - bx.top + 4 > fb[1] && r0.top - bx.top - 4 < fb[3]), lx = fb ? `${Math.round(fb[2] + 4)}px` : '';
   if(b.classList.contains('up') !== up) b.classList.toggle('up', up);
-  if(up && b.style.getPropertyValue('--it-whn-l') !== lx) b.style.setProperty('--it-whn-l', lx);
+  if(up && b.style.getPropertyValue('--it-mt-l') !== lx) b.style.setProperty('--it-mt-l', lx);
   const r = b.getBoundingClientRect(); if(r.width > 0) itm.chipBox = [r.left - bx.left - 4, r.top - bx.top - 4, r.right - bx.left + 4, r.bottom - bx.top + 4];
 }
-function itMapWhChipNext(){
-  const L = itMapWhChipList(); if(!L.length || !itm.P) return;
-  itm.whStep = ((itm.whStep >= 0 ? itm.whStep : -1) + 1) % L.length;
-  const i = L[itm.whStep], v = itm.view; v.tx = itm.W / 2 - itm.P[2 * i] * v.k; v.ty = itm.H / 2 - itm.P[2 * i + 1] * v.k;
+function itMapMtNext(){
+  const mt = itm.mt, L = mt ? mt.list : []; if(!L.length || !itm.P) return;
+  itm.mtStep = ((itm.mtStep >= 0 ? itm.mtStep : -1) + 1) % L.length;
+  const i = L[itm.mtStep], v = itm.view; v.tx = itMapFreeX() - itm.P[2 * i] * v.k; v.ty = itm.H / 2 - itm.P[2 * i + 1] * v.k;
   itMapTip(-1); itMapDraw();
 }
 // a label's age in whole minutes, then hours: it changes at most once a minute, so the map's key does too
@@ -31409,6 +31600,7 @@ function itWhListOpen(open, back = true){
   if(!itm.box) return;
   if(itm.el.querySelector('.it-map-fb.open')) itMapFbarOpen(false);   // a phone: the filter row closes as the list opens
   if(typeof sovOpen === 'function') sovOpen(false, false);   // 053: one filter panel at a time
+  itMpOpen('', false);   // 058
   if(itNearShown() && !itMapRoomForBoth()) itNearToggle(false);   // 052: a phone, or no room beside Near You: one at a time (the owner: "sure")
   if(!itWhL.el){
     const p = document.createElement('div');
@@ -31567,24 +31759,12 @@ function sovIndex(){
   return (sovIx = {key, at, cnt, lv, from});
 }
 function sovPicked(){ const p = new Set(sovStore().pick); return [...sovIndex().cnt.keys()].filter(k => p.has(k)); }
-function sovLitSet(){   // the systems with a picked kind (one set a draw: itMapDimmed and the draw read it)
-  const p = new Set(sovStore().pick), out = new Set();
-  for(const [i, e] of sovIndex().at) for(const k of e.keys()) if(p.has(k)){ out.add(i); break; }
-  return out;
-}
-function sovMapKey(){ return itm.filter === 'sov' ? `${sovIndexKey()}#${sovStore().pick.join(',')}` : ''; }
+function sovMapKey(){ return itMapOnlyOn() && itMapSt().only.sov ? `${sovIndexKey()}#${sovStore().pick.join(',')}` : ''; }
 function sovUpText(e){ return [...e].map(([k, v]) => sovShow(k) + (v ? ` ${v}` : '')).join(', '); }
 function sovTipHtml(i){
   const e = sovIndex().at.get(i);
   return `<br><span class="it-sovtip">Sov upgrades:</span> <span class="d">${escapeHtml(e ? sovUpText(e) : 'none in your lists')}</span>`;
 }
-function sovLegHtml(){
-  const st = sovStore();
-  if(!st.lists.length && !sovBridgeEnds().length) return '<b>Sov upgrades</b> no lists yet: paste one in its panel · dim: none';
-  const p = sovPicked(), names = p.map(sovShow), shown = names.length > 3 ? `${names.slice(0, 3).join(', ')} +${names.length - 3} more` : names.join(', ');
-  return `<b>Sov upgrades</b> bright: ${escapeHtml(shown || 'none picked')} · dim: none · hover a system for its upgrades`;
-}
-function sovLegTitle(){ const p = sovPicked(); return `Systems with an upgrade you picked in the Sov upgrades panel bright, anywhere on the map; the rest dimmed. Picked: ${p.length ? p.map(sovShow).join(', ') : 'none'}`; }
 
 // ---- the panel: a dialog over the map like the Wormholes list (one filter panel at a time, itMapPanel) ----
 const sovP = {el: null, out: null, key: null, lists: false, paste: false, edit: '', rep: '', msg: '', unsaved: false, undo: null, undoT: 0, names: '', html: {}};
@@ -31602,7 +31782,7 @@ function sovOpen(open, back = true, at = ''){
   }
   if(!itm.box) return;
   if(itm.el.querySelector('.it-map-fb.open')) itMapFbarOpen(false);
-  itWhListOpen(false, false);   // one filter panel at a time
+  itWhListOpen(false, false); itMpOpen('', false);   // one filter panel at a time
   if(itNearShown() && !itMapRoomForBoth(SOV_PANEL_MIN)) itNearToggle(false);
   if(!sovP.el) sovMake();
   if(sovP.el.parentNode !== itm.box) itm.box.appendChild(sovP.el);
@@ -31627,7 +31807,7 @@ function sovMake(){
   p.className = 'it-whp it-sovp'; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Sov upgrades'); p.hidden = true;
   p.innerHTML = '<div class="it-whp-h"><h4>Sov upgrades</h4><span class="it-whp-keep">your lists, in this browser only</span><button type="button" class="x-close" data-sov-x aria-label="Close" title="Close (Esc)">×</button></div>'
     + '<div class="it-sov-warn" role="alert"></div><div class="it-whp-msg" role="status"></div>'
-    + '<div class="it-sov-sec">Show on the map</div><div class="it-sov-picks"></div>'
+    + '<div class="it-sov-sec">Show on the map</div><div class="it-sov-picks"></div><div class="it-sov-lv"></div>'
     + `<button type="button" class="it-whp-xb it-sov-lx" data-sov-tog="lists" aria-expanded="false" aria-controls="itSovLists" title="Each list is kept on its own until you edit, replace or remove it"><span>Lists</span> ${IT_CHEV}</button>`
     + `<div class="it-sov-lists" id="itSovLists" hidden><div class="it-sov-rows"></div><button type="button" class="it-whp-xb" data-sov-tog="paste" aria-expanded="false" aria-controls="itSovPaste">Paste a list ${IT_CHEV}</button>`
     + '<div class="it-whp-box" id="itSovPaste" hidden><div class="it-whp-bl"></div><textarea rows="5" spellcheck="false" maxlength="100000" aria-label="A sov list" placeholder="One system a line: System &lt;- Upgrade, Upgrade (e.g. Major Threat Detection Array 3), or system names alone"></textarea>'
@@ -31638,6 +31818,8 @@ function sovMake(){
   p.addEventListener('change', (e) => {
     const k = e.target.dataset && e.target.dataset.sovPick;
     if(k !== undefined){ const st = sovStore(), s = new Set(st.pick); if(e.target.checked) s.add(k); else s.delete(k); st.pick = [...s]; sovSave(); sovChanged(); return; }
+    const lv = e.target.dataset && Number(e.target.dataset.sovLv);   // 058 (Q10): the Level boxes, kept in tvMapStack
+    if(lv){ const m = itMapSt(), z = new Set(m.sovLv); if(e.target.checked) z.add(lv); else z.delete(lv); m.sovLv = [...z].sort(); sovPaint(true); itMpChanged(); const b = p.querySelector(`[data-sov-lv="${Number(lv)}"]`); if(b) b.focus({preventScroll: true}); return; }
     if(e.target.matches('[data-sov-kind]')) sovCheckPaint();
   });
   p.addEventListener('input', (e) => { if(e.target.matches('#itSovPaste textarea')) sovCheckPaint(); else if(e.target.matches('[data-sov-et]')) sovEditPaint(); });
@@ -31647,7 +31829,7 @@ function sovKindOptsHtml(){ return sovBareKinds().map(k => `<option value="${esc
 // a list changed, or the picks, or the names arrived: the panel, the map's key line and (on this filter) the map
 function sovChanged(){
   if(sovShown()) sovPaint(true);
-  if(itm.el){ itMapLegend(); if(itm.filter === 'sov' && itm.P){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); } }
+  if(itm.el){ itMapLegend(); if(itMapOnlyOn() && itMapSt().only.sov && itm.P){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); } }
 }
 function sovPaint(force){
   const p = sovP.el; if(!p) return;
@@ -31655,6 +31837,7 @@ function sovPaint(force){
   p.querySelector('.it-sov-warn').textContent = sovP.unsaved ? withCode('Not saved: this browser’s storage is full. Your sov lists work until you close the page; remove something kept in this browser, then change a list to save them.', 'INTEL-11') : '';
   p.querySelector('.it-whp-msg').textContent = sovP.msg;
   { const x = p.querySelector('.it-sov-picks'), h = sovPicksHtml(); if(sovP.html.picks !== h){ sovP.html.picks = h; x.innerHTML = sovPicksHtml(); } }   // built again for the write (the sinks lint: innerHTML takes a builder)
+  { const x = p.querySelector('.it-sov-lv'), h = sovLvHtml(); if(sovP.html.lv !== h){ sovP.html.lv = h; x.innerHTML = sovLvHtml(); } }   // 058
   const lx = p.querySelector('[data-sov-tog="lists"]'); lx.querySelector('span').textContent = `Lists (${n})`; lx.setAttribute('aria-expanded', String(sovP.lists));
   p.querySelector('#itSovLists').hidden = !sovP.lists;
   { const x = p.querySelector('.it-sov-rows'), h = sovRowsHtml(); if(sovP.html.rows !== h && (force || !x.contains(document.activeElement))){ sovP.html.rows = h; x.innerHTML = sovRowsHtml(); } }   // never under a focused button but on our own change
@@ -31666,6 +31849,12 @@ function sovPaint(force){
   box.querySelector('[data-sov-cancel]').hidden = !rl;
   const ks = box.querySelector('[data-sov-kind]'); if(rl && rl.kind) ks.value = rl.kind; ks.disabled = !!rl;
   sovCheckPaint();
+}
+// 058 (Q10, the owner: "why not checkboxes so we can select more than one?"): a box per level, for the kinds that come in levels; any ticked
+// level counts, none ticked means any level
+function sovLvHtml(){
+  const lv = itMapSt().sovLv, boxHtml = (n) => `<label class="it-sov-k"><input type="checkbox" data-sov-lv="${Number(n)}"${escapeHtml(lv.includes(n) ? ' checked' : '')}> <span>${Number(n)}</span></label>`;
+  return `<div class="it-sov-lvr"><b>Level</b>${boxHtml(1)}${boxHtml(2)}${boxHtml(3)}<span class="it-sov-lva">${escapeHtml(lv.length ? '' : 'none ticked: any level')}</span></div><div class="it-sov-lvn">For the kinds that come in levels (Threat Detection, Exploration, Prospecting); the rest match as picked.</div>`;
 }
 function sovPicksHtml(){
   if(sovP.names && sovP.names !== 'busy') return `<div class="it-whp-none">${escapeHtml(sovP.names)}</div>`;
@@ -32229,6 +32418,7 @@ function itMapBind(){
   el.addEventListener('click', (e) => {
     if(e.target.closest('[data-it-whl]')){ itWhListOpen(!itWhListShown()); return; }   // build queue 040: the wormhole list
     if(e.target.closest('[data-it-sovl]')){ sovOpen(!sovShown()); return; }   // build queue 053: the Sov upgrades panel
+    { const mp = e.target.closest('[data-it-mpn]'); if(mp){ itMpOpen(itMpShown() && itMp.k === mp.dataset.itMpn ? '' : mp.dataset.itMpn); return; } }   // 058: Security range's or Within N jumps' settings
     if(e.target.closest('[data-it-ny]')){ itNearToggle(!itNearShown()); return; }   // build queue 052: Near You's panel
     const fb = e.target.closest('[data-im-f]');
     if(fb){ itMapFilterSet(fb.dataset.imF); if(itm.el.querySelector('.it-map-fb.open')){ itMapFbarOpen(false); itm.el.querySelector('.it-map-fcur').focus(); } return; }
@@ -32270,12 +32460,20 @@ const RS = {
     set: (v) => { it.set.mapReach = v === itKillRange() ? null : v; },
     why: (end) => end === 'lo' ? `Can't be less than ${cardName('itnear')} (${itNearReach()}): every row there has its dot` : `The Feed's largest kill range (${IT_MAP_MAX})`,
     note: () => it.set.mapReach == null ? `follows the Feed (${itKillRange()})` : `yours · the Feed: ${itKillRange()}${itMapReach() > itKillRange() ? ', no kills read past it' : ''}`, unit: ''},
+  // 058 (4.5): the map's Security range (its two ends in tenths, shown as the map shows them, 0.1 steps) and Within N jumps. show / read: the
+  // value as text and back; after: what a new value does instead of the Intel settings' save (kept in tvMapStack)
+  mapSecLo: {label: 'From', title: () => 'Security range: one end (both ends count, in either order)', steps: () => itRangeList(-10, 10), value: () => itMapSt().secr.lo, set: (v) => { itMapSt().secr.lo = v; },
+    why: (end) => end === 'lo' ? 'The lowest security (-1.0)' : 'The highest security (1.0)', unit: '', aria: 'security', show: (v) => (v / 10).toFixed(1), read: (t) => Math.round(parseFloat(t) * 10), after: () => itMpChanged()},
+  mapSecHi: {label: 'To', title: () => 'Security range: the other end (both ends count, in either order)', steps: () => itRangeList(-10, 10), value: () => itMapSt().secr.hi, set: (v) => { itMapSt().secr.hi = v; },
+    why: (end) => end === 'lo' ? 'The lowest security (-1.0)' : 'The highest security (1.0)', unit: '', aria: 'security', show: (v) => (v / 10).toFixed(1), read: (t) => Math.round(parseFloat(t) * 10), after: () => itMpChanged()},
+  mapNear: {label: 'Within', title: () => 'Within N jumps: systems this many stargate jumps from you or fewer', steps: () => itRangeList(1, 30), value: () => itMapSt().near.n, set: (v) => { itMapSt().near.n = v; },
+    why: (end) => end === 'lo' ? 'At least 1 jump' : 'At most 30 jumps', after: () => itMpChanged()},
 };
 function itRangeList(lo, hi){ const a = []; for(let v = lo; v <= hi; v++) a.push(v); return a; }
 const rsLabel = (s) => typeof s.label === 'function' ? s.label() : s.label;
 function rsHtml(key){
   const s = RS[key], unit = s.unit === undefined ? 'jumps' : s.unit;
-  return `<span class="rs" role="group" data-rs="${key}" aria-label="${escapeHtml(rsLabel(s))}" title="${escapeHtml(s.title())}"><span class="rs-l">${escapeHtml(rsLabel(s))}</span><span class="rs-c"><button type="button" class="rs-b" data-rs-d="-1">−</button><input class="rs-v" inputmode="numeric" autocomplete="off" aria-label="${escapeHtml(rsLabel(s))} (jumps)"><button type="button" class="rs-b" data-rs-d="1">+</button></span>${unit ? `<span class="rs-u">${unit}</span>` : ''}<span class="rs-n"></span><span class="rs-live" aria-live="polite"></span></span>`;
+  return `<span class="rs" role="group" data-rs="${key}" aria-label="${escapeHtml(rsLabel(s))}" title="${escapeHtml(s.title())}"><span class="rs-l">${escapeHtml(rsLabel(s))}</span><span class="rs-c"><button type="button" class="rs-b" data-rs-d="-1">−</button><input class="rs-v" inputmode="${escapeHtml(s.show ? 'decimal' : 'numeric')}" autocomplete="off" aria-label="${escapeHtml(rsLabel(s))} (${escapeHtml(s.aria || 'jumps')})"><button type="button" class="rs-b" data-rs-d="1">+</button></span>${unit ? `<span class="rs-u">${unit}</span>` : ''}<span class="rs-n"></span><span class="rs-live" aria-live="polite"></span></span>`;
 }
 function rsPaint(root){
   if(!root || !root.querySelectorAll) return;
@@ -32283,20 +32481,24 @@ function rsPaint(root){
   for(const g of root.querySelectorAll('.rs[data-rs]')){
     const s = RS[g.dataset.rs]; if(!s) continue;
     const steps = s.steps(), v = s.value(), [mi, pl] = g.querySelectorAll('.rs-b'), inp = g.querySelector('.rs-v');
-    if(document.activeElement !== inp) inp.value = v;
+    const sh = s.show || String;
+    if(document.activeElement !== inp) inp.value = sh(v);
     inp.readOnly = phone;
     const lo = !steps.some(x => x < v), hi = !steps.some(x => x > v);
     mi.disabled = lo; pl.disabled = hi;
-    mi.title = lo ? s.why('lo') : `Fewer (${[...steps].reverse().find(x => x < v)})`; pl.title = hi ? s.why('hi') : `More (${steps.find(x => x > v)})`;
+    mi.title = lo ? s.why('lo') : `${s.show ? 'Lower' : 'Fewer'} (${sh([...steps].reverse().find(x => x < v))})`; pl.title = hi ? s.why('hi') : `${s.show ? 'Higher' : 'More'} (${sh(steps.find(x => x > v))})`;
     mi.setAttribute('aria-label', `${rsLabel(s)}: fewer`); pl.setAttribute('aria-label', `${rsLabel(s)}: more`);
     g.querySelector('.rs-n').textContent = s.note ? s.note() : '';
   }
 }
 function rsSet(key, v, g){
   const s = RS[key]; if(!s || v === s.value()) { rsPaint(document); return; }
-  s.set(v); itWriteSet();
+  s.set(v);
+  const live = g && g.querySelector('.rs-live');
+  if(s.after){ s.after(); rsPaint(document); if(live) live.textContent = `${rsLabel(s)} ${s.show ? s.show(s.value()) : s.value()}`; return; }   // 058: the map's own settings
+  itWriteSet();
   rsPaint(document);
-  const live = g && g.querySelector('.rs-live'); if(live) live.textContent = `${rsLabel(s)} ${s.value()}`;
+  if(live) live.textContent = `${rsLabel(s)} ${s.value()}`;
   const nc = document.querySelector('[data-it-nearctx]'); if(nc) nc.textContent = itNearCtx();
   itRenderLists(); itMapRefresh(true);   // the card itself is drawn again when the settings close (itRender waits while they're in use)
 }
@@ -32316,14 +32518,15 @@ function rsBind(root){
   });
   for(const t of ['pointerup', 'pointercancel']) document.addEventListener(t, rsHoldStop);
   root.addEventListener('click', (e) => { const b = e.target.closest('.rs-b'); if(!b || b.disabled || e.detail !== 0) return; const g = b.closest('[data-rs]'); rsStep(g.dataset.rs, Number(b.dataset.rsD), g); });   // Enter or Space on a focused button
-  const typed = (inp) => { const g = inp.closest('[data-rs]'), s = RS[g.dataset.rs], n = parseInt(inp.value, 10), steps = s.steps();
-    if(!Number.isFinite(n)){ inp.value = s.value(); return; }
-    rsSet(g.dataset.rs, steps.reduce((a, b) => Math.abs(b - n) < Math.abs(a - n) ? b : a, steps[0]), g); inp.value = s.value(); };
+  const shown = (s) => s.show ? s.show(s.value()) : s.value();
+  const typed = (inp) => { const g = inp.closest('[data-rs]'), s = RS[g.dataset.rs], n = s.read ? s.read(inp.value) : parseInt(inp.value, 10), steps = s.steps();
+    if(!Number.isFinite(n)){ inp.value = shown(s); return; }
+    rsSet(g.dataset.rs, steps.reduce((a, b) => Math.abs(b - n) < Math.abs(a - n) ? b : a, steps[0]), g); inp.value = shown(s); };
   root.addEventListener('keydown', (e) => {
     const inp = e.target.closest && e.target.closest('.rs-v'); if(!inp) return;
     const g = inp.closest('[data-rs]');
     if(e.key === 'Enter'){ e.preventDefault(); typed(inp); }
-    else if(e.key === 'ArrowUp' || e.key === 'ArrowDown'){ e.preventDefault(); rsStep(g.dataset.rs, e.key === 'ArrowUp' ? 1 : -1, g); inp.value = RS[g.dataset.rs].value(); }
+    else if(e.key === 'ArrowUp' || e.key === 'ArrowDown'){ e.preventDefault(); rsStep(g.dataset.rs, e.key === 'ArrowUp' ? 1 : -1, g); inp.value = shown(RS[g.dataset.rs]); }
   });
   root.addEventListener('focusout', (e) => { const inp = e.target.closest && e.target.closest('.rs-v'); if(inp && !inp.readOnly) typed(inp); });
 }
@@ -32834,7 +33037,7 @@ function whPlace(id){
   if(whIsJ(id)){ const T = whTable(), i = T.at.get(id); if(i === undefined) return ''; const c = T.con[i]; return `${T.cons[c]} / ${T.regions[T.conr[c]]}`; }
   try{ return sysRegion(id) || ''; }catch(e){ return ''; }
 }
-function whSec(id){ if(whIsJ(id)) return null; const g = itGraphGet(), T = itMapTable(), i = g.at.get(id); return i === undefined || !T ? null : T.sec[i]; }
+function whSec(id){ if(whIsJ(id)) return null; const g = itGraphGet(), T = itMapTable(), i = g.at.get(id); return i === undefined || !T ? null : i; }   // 058: the map index (itMapSecT reads it)
 function whSecKey(id){ const v = whSec(id); return v === null ? null : itMapSecClass(v); }
 function whSecTxt(id){ const v = whSec(id); if(v === null) return 'k-space'; const k = itMapSecClass(v); return `${k >= 5 ? 'Highsec' : k > 0 ? 'Lowsec' : 'Nullsec'} ${itMapSecText(v)}`; }
 function whClsName(k){ return k ? (IT_WH_DEST[k] || ['?'])[0] : '?'; }
