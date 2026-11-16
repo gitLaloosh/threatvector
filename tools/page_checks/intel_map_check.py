@@ -8,7 +8,7 @@ upper bound range", from Near You's reach, following the Feed until set), a Near
 alert range, can't be greater than feed range") and one stepper for all four ranges ("Yes, all four"). Runs intel_check.py's start
 (its made-up Chatlogs folder, ESI and system names; you in 1DQ1-A; real systems and gates, made-up pilots), then:
   * the table: INTEL_MAP aligned to INTEL_JUMPS (same fingerprint, every system), decoded;
-  * layout B at 1440 px: the map left of Near You, both at the top, the Feed below;
+  * at 1440 px (since build queue 052, layout A): the map full width, Near You's panel inside it on the right, the Feed below;
   * the map holds exactly the systems within its reach by gate jumps (the Feed's 10), counted here independently;
   * made-up reports: a solo hostile, a small gang, a fleet, a neutral pair, a clear system: each one's ring in its standing's
     colour and its gang's size (pixels read off the canvas), the clear one without a ring;
@@ -51,7 +51,9 @@ _tail = r'''
     lay = pg.evaluate("""() => { const r = (s) => { const e = document.querySelector(s); if(!e) return null; const b = e.getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top), Math.round(b.right), Math.round(b.bottom)]; };
       return [r('#intelPanel .it-mapcol'), r('#intelPanel .it-nearcol'), r('#intelPanel .it-feedcol'), !!document.querySelector('#itMapSlot .it-map canvas')]; }""")
     m_, n_, f_ = lay[0], lay[1], lay[2]
-    check(m_ and n_ and f_ and lay[3] and m_[2] <= n_[0] and abs(m_[1] - n_[1]) < 4 and f_[1] >= max(m_[3], n_[3]) - 2, f'layout B at 1440 px: the map left of Near You at the top, the Feed below {lay}')
+    # build queue 052 (layout A): the map full width, Near You's panel inside it (its right part, open: intel_check seeds nearShown), the Feed below
+    check(m_ and n_ and f_ and lay[3] and n_[0] >= m_[0] and n_[2] <= m_[2] and n_[1] > m_[1] and n_[3] <= m_[3] and n_[0] > (m_[0] + m_[2]) / 2 and f_[1] >= m_[3] - 2 and f_[2] - f_[0] >= m_[2] - m_[0] - 4,
+          f'052 at 1440 px: the map full width, Near You inside it on the right, the Feed below {lay}')
     # ---- the systems in reach ----
     want = sorted(k for k, v in D0.items() if v <= 10)
     got = pg.evaluate("() => [itMapReach(), itm.vis.map(i => itGraphGet().ids[i]).sort((a, b) => a - b)]")
@@ -176,7 +178,7 @@ _tail = r'''
     check(m4[0] == '20' and 'yours' in m4[1] and sv2 == 20, f'set by hand (20), the map stays when the Feed goes back to 10 {m4[:2]} (kept: {sv2})')
     check(not errs, f'no page errors {errs[:3]}')
     # ---- a saved setting from before ----
-    old = {'channels': ['region.intel'], 'me': MAIN, 'range': 3, 'killRange': 10, 'forget': 15}
+    old = {'nearShown': True, 'channels': ['region.intel'], 'me': MAIN, 'range': 3, 'killRange': 10, 'forget': 15}
     pg.evaluate("(o) => { localStorage.setItem('dscanIntel', JSON.stringify(o)); }", dict(old, nearRange='x', mapReach=99)); pg.reload(); pg.wait_for_timeout(400)
     ld = pg.evaluate("() => [it.set.nearRange, it.set.mapReach, itNearReach(), itMapReach(), it.set.nearView]")
     check(ld == [None, None, 8, 10, 'list'], f'a saved setting from before (nonsense values ignored): the defaults, Near You 8, the map 10 {ld}')
@@ -191,11 +193,12 @@ _tail = r'''
     m.eval_on_selector('#tabBtnIntel', 'b => b.click()'); setup_logs(m); m.click('[data-it-act="folder"]'); m.wait_for_timeout(500); m.click('#intelSwLabel'); tick(m, 3000)
     for _, txt in REP[:3]: W(m, F_INTEL, line(time.time(), 'Scout Alt', txt))
     tick(m, 4000)
-    ph = m.evaluate("() => { const v = (s) => { const e = document.querySelector(s); return !!e && e.getClientRects().length > 0; }; return [v('.it-nv'), v('#itNearList'), v('.it-mapcol'), itm.draws, document.documentElement.scrollWidth]; }")
-    check(ph[0] and ph[1] and not ph[2] and ph[3] == 0 and ph[4] <= 390, f'a phone: List | Map in Near You, the list first, the map not drawn; no sideways scroll {ph}')
-    m.click('[data-it-nv="map"]'); tick(m, 600)
-    ph2 = m.evaluate("() => { const v = (s) => { const e = document.querySelector(s); return !!e && e.getClientRects().length > 0; }; return [v('#itNearList'), v('.it-map canvas'), itm.draws > 0, itm.rep.size, document.documentElement.scrollWidth]; }")
-    check(not ph2[0] and ph2[1] and ph2[2] and ph2[3] >= 3 and ph2[4] <= 390, f'Map: the map with its reports, no list, no sideways scroll {ph2}')
+    # build queue 052: no List | Map switch on a phone: the map always drawn, Near You's list (seeded open) a panel inside it; shut for the map's own checks
+    ph = m.evaluate("() => { const v = (s) => { const e = document.querySelector(s); return !!e && e.getClientRects().length > 0; }; return [v('[data-it-nv]'), v('#itNearList'), v('.it-map canvas'), itm.draws > 0, itm.rep.size, document.documentElement.scrollWidth]; }")
+    check(not ph[0] and ph[1] and ph[2] and ph[3] and ph[4] >= 3 and ph[5] <= 390, f'a phone: no List | Map, the map drawn with its reports, Near You\'s list in it, no sideways scroll {ph}')
+    m.click('[data-it-ny]'); tick(m, 400)
+    ph2 = m.evaluate("() => [getComputedStyle(document.getElementById('itNearCol')).display, document.documentElement.scrollWidth]")
+    check(ph2[0] == 'none' and ph2[1] <= 390, f'a phone: Near You\'s button shuts its list, the map in full view {ph2}')
     m.click('.it-map-zoom [data-im-z="fit"]'); tick(m, 200)   # 039: the map opens zoomed in on you; ⤢ brings every report into view
     lb = m.evaluate("() => [itm.W, itm.H, itm.labels.length, itm.labels.filter(([i, x0, y0, x1, y1]) => x0 < 0 || y0 < 0 || x1 > itm.W || y1 > itm.H).length, itm.rep.size]")
     check(lb[2] >= lb[4] + 1 and lb[3] == 0, f'a phone, ⤢: you and every report named, every name inside the map (none cut off at its edge) {lb}')

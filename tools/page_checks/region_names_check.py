@@ -61,7 +61,7 @@ def intel_cases(b, html, out, errs, phone=True):
         ctx = b.new_context(bypass_csp=True, viewport={'width': w, 'height': 1100}); ctx.on('page', lambda pg: pg.on('pageerror', lambda e: errs.append(str(e))))
         ctx.add_init_script(FS); route(ctx)
         pg = ctx.new_page(); pg.goto('file://' + html)
-        pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false, forget: 15, hideFriendly: true})); }", SIDE)
+        pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({nearShown: true, channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false, forget: 15, hideFriendly: true})); }", SIDE)
         pg.reload(); pg.wait_for_timeout(400)
         setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
         W(pg, F_INTEL, ''.join(line(T0 + dt, who, msg) for dt, who, msg in LINES)); tick(pg, 3200)

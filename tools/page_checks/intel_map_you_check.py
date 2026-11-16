@@ -38,6 +38,7 @@ _tail = r'''
     from decimal import Decimal, ROUND_CEILING
     HOME = SYSID['1DQ1-A']; D0 = bfs(HOME)
     tick(pg, 2000)
+    pg.evaluate("itNearToggle(false)"); tick(pg, 300)   # build queue 052: Near You's panel shut, so "the middle" is the map's (intel_map_layout_check covers centring beside it)
     # ---- the table, decoded here ----
     MP = json.loads(_re.search(r'^const INTEL_MAP = (.*);$', open(HTML, encoding='utf-8').read(), _re.M).group(1))
     raw = base64.b64decode(MP.get('p3', '')); P3 = [int.from_bytes(raw[i:i + 3], 'little', signed=True) for i in range(0, len(raw), 3)]
@@ -73,7 +74,7 @@ _tail = r'''
     head = [pg.evaluate(PX, p) for p in ([0, -16], [4, -21], [-4, -17])]
     white = lambda c: min(c[:3]) > 225 and c[3] > 240
     dark = [pg.evaluate(PX, p) for p in ([-8, -19], [8, -19], [0, -19])]   # its dark outline over the cyan hover ring (21 px out), its hole
-    check(hr == [12, True] and all(white(c) for c in head) and all(max(c[:3]) < 50 and c[3] > 240 for c in dark),
+    check(hr == [12, True] and all(white(c) for c in head) and all(max(c[:3]) < 50 and c[3] > 225 for c in dark),   # 052: the map's height can be odd now (H/2 a half pixel): the outline's edge pixel is antialiased (236 seen)
           f'a fleet of 12 in your system and the hover on it: the pin\'s head white where the red ring and the cyan hover ring cross it, its dark outline and hole over them {hr} {head} {dark}')
     dot = pg.evaluate(PX, [0, 3])
     check(dot[3] > 200 and abs(dot[0] - 0x8f) < 30 and abs(dot[1] - 0x2f) < 30 and abs(dot[2] - 0x69) < 30, f'your system\'s security dot (1DQ1-A, null-sec) under the pin\'s tip {dot}')
@@ -169,7 +170,7 @@ _tail = r'''
     m.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); }", SIDE)
     m.evaluate("(o) => localStorage.setItem('dscanIntel', JSON.stringify(o))", old); m.reload(); m.wait_for_timeout(400)
     m.eval_on_selector('#tabBtnIntel', 'b => b.click()'); setup_logs(m); m.click('[data-it-act="folder"]'); m.wait_for_timeout(500); m.click('#intelSwLabel'); tick(m, 3000)
-    m.click('[data-it-nv="map"]'); tick(m, 600)
+    if m.query_selector('[data-it-nv="map"]'): m.click('[data-it-nv="map"]'); tick(m, 600)   # before 052 (no List | Map switch since)
     m.evaluate("() => document.querySelector('.it-map-box').scrollIntoView({block: 'center'})"); tick(m, 300)
     bs = m.evaluate("() => [...document.querySelectorAll('.it-map-zoom button')].map(b => { const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; })")
     m.evaluate("(id) => { const i = itGraphGet().at.get(id); itm.view.tx = itm.W / 2 - itm.P[2 * i] * itm.view.k; itm.view.ty = itm.H / 3 - itm.P[2 * i + 1] * itm.view.k; itMapDraw(); }", SYSID['E-VKJV'])   # 039: zoomed in on you, it may sit under the filter button

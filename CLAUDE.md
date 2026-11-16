@@ -246,9 +246,23 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
 - **Text field** (text, search, select, textarea): `--bg` fill, `--field-border`, 4px corners; hover
   `--field-border-hover`; focus a cyan border and the `--accent-ring` ring (never amber, never the browser's own);
   disabled 45%. 36px tall, 32px in filter bars; paste boxes stay monospace.
+- **Button vs map control** (rule A, build queue 052; the owner: "the buttons should match the design rules for the site", then "sure"):
+  buttons (actions in panels and cards) are the global `button`, amber outline and text; one main action per panel is `.mys-primary`
+  (amber fill). Map controls (zoom, center on me, the filter column, the rail, panel buttons, Hide all routes) are neutral like
+  `.it-map-zoom`: `rgba(18,23,28,.9)` fill, `--line` border, cyan border on hover, `--tag-on` pressed; 30 px (filter buttons 32), 44 px
+  on a phone; never amber, except a count badge that means your alert range (`.it-ny-badge.al`). `check_ui_rules.py` (7).
+- **Panels over the map** (rule B, 052; the owner: "Site panel style"): `--panel`, a 1 px `--line` border, 6 px corners, shadow
+  `0 8px 24px rgba(0,0,0,.5)`, padding 10-12 px, a 14 px bold `--heading` heading; rows or cards inside `--panel-2`. The Wormholes list,
+  Near You's panel (and Sov upgrades, 053). `check_ui_rules.py` (8).
+- **Checkbox and radio** (rule C, 052; the owner: "can we treat radio buttons and checkboxes like text inputs with regard to colors?", then
+  "cyan tick, dark box"): one global rule (switches `.mys-sw`, `.dmg-sw`, `[role=switch]` excepted): `appearance:none`, 16 px, `--bg`
+  fill, `--field-border`, 3 px corners (the radio round); hover `--field-border-hover`; keyboard focus a cyan border and `--accent-ring`;
+  disabled 45%; checked a cyan border and a cyan tick (a dot) on the dark box. The label stays the tap area. No other rule sets
+  appearance, a fill or accent-color on one. `check_ui_rules.py` (9).
 - **Intel lists** (v2026.10.30.1, the owner): the jump count first; system names in a column as wide as the widest system name
   (measured in the drawn font, `itSysWidths`); the region (build queue 038, `sysRegion`): in the Feed its own column after the system,
-  as wide as the widest region name; in Near You (narrow beside the map) a line under the system (the owner at the build); rows on a phone
+  as wide as the widest region name; in Near You (a 320 px panel in the map since 052) a line under the system (the owner at the build), the
+  tags on their own line under it; rows on a phone
   show the system only; sentences elsewhere say "System (Region, N jumps)" (`sysBracket`); the left edge only means "within your alert range", in the "N near" colour
   (amber); no background highlighting; standing colours on words and names (neutral a bright grey). Intel channel names are
   shown only under the gear, never elsewhere (the owner: "security reasons"). `tools/page_checks/intel_layout_check.py`.
@@ -272,9 +286,8 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   adds a chip (`it.fl`, `itFlToggle`) on its own line under the filter bar ("Only" · chips · "Clear all" with 2+); pressed again
   removes it; a second system replaces the first; every chip and the typed text must match (`itFlMatch`; a kill matches a ship that
   died or killed). Near You is never filtered; the map reads the system chip (`itFlSys`). Chips aren't saved. Near You's kill badges
-  add up their kills' ISK (zKillboard's values, `itIsk`). Near You's height (over 900 px): as tall as the map column, never under
-  `IT_NEAR_FLOOR` (the map's smallest box + heading), the list scrolls inside (`contain: size`), "+N more systems below"
-  (`itNearMore`, after a draw and on its scroll, never a timer); opening a row or a map press that keeps a route scrolls the list
+  add up their kills' ISK (zKillboard's values, `itIsk`). Near You's list scrolls inside its panel (052: the map's height less the rail's
+  top and 8 px, `--it-mh`), "+N more systems below" (`itNearMore`, after a draw and on its scroll, never a timer); opening a row or a map press that keeps a route scrolls the list
   (`itNearShow`, never the page); a redraw keeps its scroll and focus. `intel_filters_check.py`.
   One close button (v2026.11.01.3): every info and settings panel (role="dialog") has the shared `button.x-close`, 32 px in its top
   right (44 px on a phone), at every width; Esc and a press outside still close, the focus back on the opener. Menus (⋮ fit actions,
@@ -385,8 +398,23 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   A refused file's warning (INTEL-09/10) goes at the slot's next press (v2026.11.11.1, build queue 033): a built-in chosen, the list
   pressed or opened from the keys, "Your own file…", ▶ Test; taken off the page in place (`itSndMsgDrop`, `it.lastHtml = null`), never
   by a redraw, which would replace the list under the pointer (LESSON #152).
-- **Intel map** (v2026.11.02.4, Project doc roadmap/intel-map-plan.md): layout B, the map beside Near You and the Feed below (a
-  List | Map switch in Near You on a phone, `it.set.nearView`). `INTEL_MAP` (CCP position2D /1e14, security in hundredths, region)
+- **The Intel tab's layout** (v2026.11.15.3, build queue 052, part 1 of the Project doc roadmap/intel-layout-sov-plan.md; mockup `Claude
+  outputs/intel_layout_mockup.html`; the owner's picks: layout A, filters "Down the left", the feed icon, "cyan tick"): the map full width
+  and taller (wide `min(720, max(520, w·0.5))`, phone `min(600, max(440, w·1.45))`), the Feed below. Near You is a panel inside the map
+  (`#itNearCol`, in `.it-mapwrap` beside `#itMapSlot`; 320 px, phone the map's width less the rail, under the filter column's button) behind
+  one map control in the rail under the zoom buttons (`.it-map-rail`, `[data-it-ny]`, `IT_FEED_ICON`, the rows' count, amber while one is in
+  your alert range, `itNearBtnPaint`); shut by default, remembered as `nearShown` in `dscanIntel` (the owner: "remember"; `itNearToggle`); a
+  view, not a dialog (no close button, no Escape); a map press leaves it shut (the owner at the review: "leave it shut"). The List | Map
+  switch is gone; `nearView` stays stored. The filters are a column down the map's left edge under the search box (`.it-map-fb`, a grid
+  wrapping into a second column when the map is too short, `--it-flr`); a filter with a panel shares a box with its panel button
+  (`.it-map-fw`, `button.it-map-pb`, `IT_MAP_PANEL_BTN`), shown on hover or focus, while the filter is on and while its panel is open; the
+  name line to the right of the panel buttons, level with the filter that is on, hidden while a panel is open (`.pop`); a filter's panel
+  opens right of the panel buttons, level with its filter, inside the map and clear of Near You; on a phone the column is shut behind its
+  one button and takes turns with Near You, a panel is a sheet that shuts Near You; on a wide map with no room for both side by side they
+  take turns too (`itMapRoomForBoth`, the owner: "sure"). Placed by `itMapCtlPlace` (a key: the map's size, the filter, Near You, the
+  panel; no timers). ⌖, your first view, a jump, a search pick, a Wormholes-list pick and ⤢ use the part of the map no panel covers
+  (`itMapFree`, the owner: "yes"; the whole width when that part is under 96 px). Hide all routes sits left of the zoom buttons (a phone: top left). `intel_map_layout_check.py`.
+- **Intel map** (v2026.11.02.4, Project doc roadmap/intel-map-plan.md): was layout B, the map beside Near You (052 above). `INTEL_MAP` (CCP position2D /1e14, security in hundredths, region)
   comes only from `tools/jump_table_update.py`, aligned to `INTEL_JUMPS` (its `jumps` = the jump table's md5; `gen_intel_tables.py`
   keeps it and says when it no longer fits). One canvas (`itm`), made once and moved into each card (`#itMapSlot`); drawn only when
   what it shows changed (`itMapRefresh`'s key), never while hidden. Reach ("Map: within" since 039): from Near You's reach to `IT_MAP_MAX` (the
@@ -405,24 +433,27 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   pair: 8-10 s at a 30-jump reach in the mockup); opens on you with a median gate `IT_MAP_START_GATE` (16 px; `itMapStartView`), ⤢ the
   reach (`itMapFitView`). Zoom stages by `itMapGatePx`: dots, circles with the security number (`itMapSecText`) from 34 px, names from
   80 px (`itm.stage`); gates between regions dotted; region names (`itMapRegionNames`) after the system names and giving way to them.
-  The filter bar (`IT_MAP_FILTERS`, `itm.filter`, not saved; `itMapFcol`, `itMapDimmed`; scales `IT_MAP_JUMPS`, `IT_MAP_REGION` by
-  `itMapRegCol`): its name line fades by one timeout per press; on a phone one 44 px button opens the row. The legend's filter line
-  (`itMapFLegHtml`) is one line of one height for every filter, so Near You (as tall as the map's column) never moves. Past the reach:
+  The filters (`IT_MAP_FILTERS`, `itm.filter`, not saved; `itMapFcol`, `itMapDimmed`; scales `IT_MAP_JUMPS`, `IT_MAP_REGION` by
+  `itMapRegCol`; a column down the left since 052): the name line fades by one timeout per press; on a phone one 44 px button opens the
+  column. The legend's filter line (`itMapFLegHtml`) is one line of one height for every filter. Past the reach:
   faint, no reports, but hover and press give routes (the owner: "yes"). `mapReach` reads "Map: within". `intel_map_look_check.py`.
-  Build queue 043 (roadmap/paths-to-you-plan.md, mockup `Claude outputs/paths_to_you_mockup.html`): the filter Paths to you, just before
-  Wormholes (always last, beside its list button `[data-it-whl]`): the galaxy's canvases hidden under an HTML overlay in `itm.box`
+  Build queue 043 (roadmap/paths-to-you-plan.md, mockup `Claude outputs/paths_to_you_mockup.html`): the filter Paths to you (last since 052;
+  before it Wormholes, its list button `[data-it-whl]` beside it): the galaxy's canvases hidden under an HTML overlay in `itm.box`
   (`itPt`, `itPtPaint`): a top-down tree of every shortest stargate route to you from each system with hostiles, neutrals or kills
   inside the alert range (`it.set.range`, never Near You's), each system a button; no security number; the count a 3 px tag (`.it-kl
   kh/kn`); Camp / ESS / Bubble / kills from Near You's own rules in short form (`itEssTagHtml`, `itGateTagHtml(st, now, true)`,
   `itBubTagHtml`, `itKillBadges(ks, 0, true)`) and, since 045, a short WH / DRIFTER badge (`itWhNear`); a tag never makes a source.
   Written only when its text changes (from itMapDraw and itMapRefresh; ages on `it.drawNow`), never in
-  the Intel example's picture (`itPtLive`: the live canvas only). `paths_to_you_check.py`.
+  the Intel example's picture (`itPtLive`: the live canvas only). Fitted (`itPtFit`, between the filter column and the rail or Near You
+  since 052) when shown, when you move, the range changes, the box resizes or Near You opens or shuts, and when the tree grows or shrinks
+  unless the view was zoomed or dragged by hand since the last fit (`itPt.hand`; the owner: "paths to you map mode should run "fit" every
+  time the layout changes", then "your choice is fine"). `paths_to_you_check.py`.
   Build queue 045 (roadmap/wormholes-standout-plan.md, mockup `Claude outputs/wormholes_standout_mockup.html`): on the Wormholes filter only,
   other reports' rings fade (`IT_MAP_WH_FADE`) and only wormholes and you are labelled (a wormhole's tag a filled pill, never forced over
   another label); each wormhole a bold mark (`itMapWhBold`), a Drifter hot pink (`--it-wh-drifter` #ff5fbf) with its outer ring dashed (on
   every filter); a hole reported within `IT_MAP_WH_FRESH_MS` pulses (`itMapWhPulse`: CSS rings in `.it-map-whp`, transform and opacity,
   written only when their places change, none with reduced motion); "N wormholes ›" (`button.it-map-whn`, `itMapWhChipPaint` /
-  `itMapWhChipNext`) steps the view through them nearest first, lifted above the filter bar when they'd meet, hidden while a phone's
+  `itMapWhChipNext`) steps the view through them nearest first, right of the filter column when it reaches the chip (052), hidden while a phone's
   filter row is open. `wormhole_filter_check.py`.
   Tag-only lines (045, the Bubble bug): a line with no pilots whose news is a Bubble, Camp / gate or "at the ESS" (`itTagOnly`) reaches
   Near You as kind 'tag': its own row (no word, no alert, no map ring, never a tree source) or only its tag on a row that exists, never
@@ -445,6 +476,9 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   beats a `you` line (a newer one is a `note`, "!"), a value with no line is kept, `goneSig` / `gone` win unless newer, the cap keeps lines
   that decide a detail; names loaded first (`itLoadNames`). Stored: lines gain `n` (repeats, also your own), `k: 'shared'`, `via`; IDs `note`,
   `via`; entries `via`. Imported holes act as Intel's (the owner); titles say "from a shared list" (`itWhByTxt`). `wormhole_share_check.py`.
+  052 (the owner: "left click on system name re-centers map on that system containing the wormhole"): each row's system name is a button
+  (`[data-it-whgo]`, "Show on the map") doing the search box's pick (`itRpPick`) in the part of the map the list doesn't cover; on a phone
+  the list shuts first. `intel_map_layout_check.py`.
   047: the card's redraw takes the map box (and the open Wormholes list) out of the page until `itMapMount` puts it back, so `itRender`
   keeps the list's scroll and puts it back (the owner: "the user keeps losing their place in the list"); focus already followed (`mf`).
   Build queue 047 (roadmap/route-planner-plan.md, mockup `Claude outputs/route_planner_mockup.html`; the owner: "seeing the route in the tool
@@ -585,7 +619,7 @@ still gets its own targeted check and mutants.
 **How the numbers are worked out, for people:** `METHODOLOGY.md` (was the "How effective HP and DPS are
 calculated" note on the page, removed in v2026.10.14.51); each card's short version is its ⓘ panel (`CARD_INFO`).
 Change both when a calculation's assumptions change. Since build queue 036 (v2026.11.11.3) the panels are short (`check_subtext.py`:
-85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"), the detail is in METHODOLOGY.md (its Intel, Who's in the
+85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"; 620 since 052, "raise it"), the detail is in METHODOLOGY.md (its Intel, Who's in the
 system and Sides sections too), and nothing on the page links to it (build queue 037 took 036's footer link out, the owner: "i dont want that link displayed"). A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
 panel never inherits a heading's case or spacing (`.info-body`; `info_panels_check.py`).
 

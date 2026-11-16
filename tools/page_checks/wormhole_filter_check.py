@@ -72,7 +72,7 @@ def start(b, html, w, errs, h=1000, touch=False, store=None, lines=True):
     ctx.on('page', lambda pg: pg.on('pageerror', lambda e: errs.append(str(e))))
     ctx.add_init_script(FS); route(ctx)
     pg = ctx.new_page(); pg.goto('file://' + html)
-    pg.evaluate("([s, w]) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false, forget: 15, hideFriendly: true}));"
+    pg.evaluate("([s, w]) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({nearShown: true, channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false, forget: 15, hideFriendly: true}));"
                 " if(w) localStorage.setItem('tvWormholes', JSON.stringify(w)); }", [SIDE, store if store is not None else seed(time.time())])
     pg.reload(); pg.wait_for_timeout(400)
     setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
@@ -272,11 +272,12 @@ def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'stand', 'key', 't
     ctx.close()
     if 'phone' in parts:
         ctx, pg = start(b, html, 390, errs, h=844, touch=True)
+        pg.evaluate("itMapFilterSet('wh')"); pg.wait_for_timeout(200)   # 052: on a phone only the panel button of the filter that is on shows, in the column
         pg.click('.it-map-fcur'); pg.wait_for_timeout(300)
         P = pg.evaluate("() => { const l = document.querySelector('[data-it-whl]'), r = l.getBoundingClientRect(), row = document.querySelector('.it-map-fbtns').getBoundingClientRect(), box = itm.box.getBoundingClientRect();"
                         " const inBox = [...itm.box.querySelectorAll('[data-im-f], [data-it-whl]')].every(b => { const q = b.getBoundingClientRect(); return q.left >= box.left - 0.5 && q.right <= box.right + 0.5; });"
                         " return [getComputedStyle(l).visibility, Math.round(r.width), Math.round(r.height), r.right <= row.right + 0.5 && r.left >= row.left - 0.5, inBox]; }")
-        if P != ['visible', 44, 44, True, True]: out.append(f'390 px: the list button {P} (want visible, 44 px, inside the opened row, every button inside the map box)')
+        if P != ['visible', 44, 44, True, True]: out.append(f'390 px: the list button {P} (want visible with Wormholes on, 44 px, inside the opened column, every button inside the map box)')
         pg.click('[data-it-whl]'); pg.wait_for_timeout(300)
         if pg.evaluate("[document.querySelector('.it-whp').hidden, document.querySelector('.it-map-fb').classList.contains('open')]") != [False, False]: out.append('390 px: the list didn\'t open, or the filter row stayed open')
         if not pg.evaluate("document.scrollingElement.scrollWidth <= innerWidth + 1"): out.append('390 px: sideways scroll with the list open')

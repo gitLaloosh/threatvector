@@ -8,7 +8,7 @@ status number" and "add badges for gate camps, ess and kills"; the button before
 the top line the count only, the map's drag help kept under the box, the count a 3 px tag (the tag rule). Uses intel_check.py's made-up
 folder, mocks and names; the systems around 1DQ1-A have no loops, so you jump (a Local line) to a made-up area with one, its systems
 named PTnn-Z here; every pilot and line is made up. The expected tree is worked out here from the jump table on its own. Checks:
-  * the bar: seven filters, Paths to you just before Wormholes, the list button right after Wormholes; the name line;
+  * the bar: seven filters, Paths to you last (052), the list button right after Wormholes; the name line;
   * the tree: exactly your system, the sources (a hostile or neutral report, or kills, within the alert range; a clear and a report past
     the alert range left out) and the systems on their shortest routes; exactly the gates on those routes; a system with two shortest
     routes has both gates;
@@ -105,7 +105,7 @@ def start(b, html, w, errs, h=1000, touch=False):
     ctx.on('page', lambda pg: pg.on('pageerror', lambda e: errs.append(str(e))))
     ctx.add_init_script(FS); route(ctx)
     pg = ctx.new_page(); pg.goto('file://' + html)
-    pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: %d, sound: false, notify: false, forget: 15, hideFriendly: true})); }" % R, SIDE)
+    pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({nearShown: true, channels: ['region.intel'], me: 95000001, range: %d, sound: false, notify: false, forget: 15, hideFriendly: true})); }" % R, SIDE)
     pg.reload(); pg.wait_for_timeout(400)
     setup_logs(pg); W(pg, F_LOCAL_MAIN, line(time.time() - 600, 'EVE System', f'Channel changed to Local : {SYSNAME[HOME]}*'))
     pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel'); tick(pg)
@@ -137,7 +137,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
         out.append('no Paths to you filter on the page'); ctx.close(); return out, errs
     if 'bar' in parts:
         o = pg.evaluate("() => [[...document.querySelectorAll('.it-map-fbtns [data-im-f]')].map(b => b.dataset.imF), (() => { const w = document.querySelector('[data-im-f=wh]'); return !!w.nextElementSibling && w.nextElementSibling.matches('[data-it-whl]'); })()]")
-        if o != [['sec', 'jumps', 'region', 'reports', 'kills', 'paths', 'wh'], True]: out.append(f'the bar: {o} (want Paths to you just before Wormholes, the list button after it)')
+        if o != [['sec', 'jumps', 'region', 'reports', 'kills', 'wh', 'paths'], True]: out.append(f'the bar: {o} (want Paths to you last since 052, the list button right after Wormholes)')
     pg.click('[data-im-f="paths"]'); pg.wait_for_timeout(300)
     T = pg.evaluate(TREE)
     got_n = {x['id'] for x in T['nodes']}; got_e = {tuple(e) for e in T['edges']}
@@ -204,7 +204,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
         k0 = pg.evaluate('itPt.v.k')
         pg.click('[data-pt-z="in"]'); k1 = pg.evaluate('itPt.v.k'); pg.click('[data-pt-z="out"]'); pg.click('[data-pt-z="out"]'); k2 = pg.evaluate('itPt.v.k'); pg.click('[data-pt-z="fit"]'); k3 = pg.evaluate('itPt.v.k')
         if not (k1 > k0 > k2) or abs(k3 - k0) > 1e-9: out.append(f'+ / − / Fit: {k0} -> {k1} -> {k2} -> {k3}')
-        bx = pg.evaluate("(() => { const r = document.querySelector('.pt-vp').getBoundingClientRect(); return [r.left + r.width - 40, r.top + r.height - 70]; })()")
+        bx = pg.evaluate("(() => { const r = document.querySelector('.pt-vp').getBoundingClientRect(); return [r.left + r.width * 0.45, r.top + r.height - 70]; })()")   # 052: clear of the filter column and Near You's panel
         y0 = pg.evaluate('scrollY'); pg.mouse.move(*bx); pg.mouse.wheel(0, -300); pg.wait_for_timeout(200)
         if pg.evaluate('itPt.v.k') <= k0 or pg.evaluate('scrollY') != y0: out.append('the wheel doesn\'t zoom, or the page scrolled')
         tx = pg.evaluate('itPt.v.tx'); pg.mouse.move(*bx); pg.mouse.down(); pg.mouse.move(bx[0] - 120, bx[1] + 10, steps=6); pg.mouse.up(); pg.wait_for_timeout(100)
@@ -242,8 +242,9 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
     ctx.close()
     if 'phone' in parts:
         ctx, pg = start(b, html, 390, errs, h=844, touch=True)
+        pg.evaluate("itMapFilterSet('wh')"); pg.wait_for_timeout(200)   # 052: a phone shows the panel button of the filter that is on only
         pg.tap('#intelPanel .it-map-fcur'); pg.wait_for_timeout(200)
-        P = pg.evaluate("""() => { const box = itm.box.getBoundingClientRect(), bs = [...itm.box.querySelectorAll('[data-im-f], [data-it-whl]')].map(b => b.getBoundingClientRect());
+        P = pg.evaluate("""() => { const box = itm.box.getBoundingClientRect(), bs = [...itm.box.querySelectorAll('[data-im-f], [data-it-whl]')].filter(b => b.offsetParent).map(b => b.getBoundingClientRect());
           const w = itm.box.querySelector('[data-im-f=wh]').getBoundingClientRect(), l = itm.box.querySelector('[data-it-whl]').getBoundingClientRect();
           return [bs.length, bs.every(q => Math.round(q.width) === 44 && Math.round(q.height) === 44), bs.every(q => q.left >= box.left - 0.5 && q.right <= box.right + 0.5 && q.top >= box.top - 0.5 && q.bottom <= box.bottom + 0.5),
             Math.abs(w.top - l.top) < 1 && l.left > w.left && l.left - w.right < 8]; }""")
@@ -260,7 +261,7 @@ MUTANTS = [
      "      { const y = T.adj[x].find(y => on(y) && D[y] === D[x] - 1); if(y !== undefined){ const k = x + '>' + y; (edges.get(k) || edges.set(k, {x, y, from: new Set()}).get(k)).from.add(h); } }", ('tree',)),
     ('Near You\'s range for the alert range', "  const D = itm.D, R = it.set.range, out = [];", "  const D = itm.D, R = itNearReach(), out = [];", ('tree',)),
     ('the security number back', '<span class="it-sn s${Number(itMapSecClass(T.sec[n.i]))}">${escapeHtml(name)}</span>', '<span class="it-sn s${Number(itMapSecClass(T.sec[n.i]))}">${escapeHtml(name)} ${escapeHtml(itMapSecText(T.sec[n.i]))}</span>', ('look',)),
-    ('Wormholes no longer last', "function itMapFbtnsHtml(){ return IT_MAP_FILTERS.map(f =>", "function itMapFbtnsHtml(){ return [...IT_MAP_FILTERS.filter(f => f.k !== 'paths'), IT_MAP_FILTERS.find(f => f.k === 'paths')].map(f =>", ('bar',)),
+    ('Paths to you no longer last (052)', "  return IT_MAP_FILTERS.map(f => IT_MAP_PANEL_BTN[f.k] ?", "  return [...IT_MAP_FILTERS.filter(f => f.k !== 'wh'), IT_MAP_FILTERS.find(f => f.k === 'wh')].map(f => IT_MAP_PANEL_BTN[f.k] ?", ('bar',)),
     ('the tree written on every draw', "    if(text === itPt.html) return;   // written only when what it shows changed\n", "", ('redraw',)),
     ('the example\'s picture hiding it', "  if(itm.cv.parentNode === itm.box) itPtHide();\n", "  itPtHide();\n", ('example',)),
     ('the grey gate tag shown', "  if(short && cls === 'gt') return '';   // the tree shows camps only\n", "", ('badges',)),

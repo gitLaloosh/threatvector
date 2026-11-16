@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-15 — The Intel tab's new layout (part 1) and three UI rules</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The Intel tab's new layout (part 1) and three UI rules</h1>
+<p><span class="tag">Intel</span> 2026-11-15 &middot; <code>v2026.11.15.3</code> &middot; build queue 052 &middot; plan <code>roadmap/intel-layout-sov-plan.md</code> (part 1;
+mockup <code>Claude outputs/intel_layout_mockup.html</code>, round 6b)</p>
+
+<h2>Why</h2>
+<p>The owner asked for a design cycle on the whole Intel tab before adding a second filter with a panel (Sov upgrades, build queue 053): "i'm
+wondering if the intel map needs to be more like the wormholes map. incorporate near you into a bigger map, place the feed below it." Six mockup
+rounds later he picked layout A with the filters "Down the left", the feed icon for Near You ("feed is the one, badge stays"), the site's panel
+style for every panel over the map, and checkboxes in the text field's colours ("cyan tick, dark box"). At the build review: "1. your choice is
+fine, 2. yes, 3. sure, 4. leave it shut" (Paths to you re-fits unless moved by hand; centring uses the part no panel covers; Near You and a
+filter's panel take turns when they don't both fit; a map press leaves Near You shut).</p>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The map</b> takes the card's full width and is taller (wide <code>min(720, max(520, w·0.5))</code>, phone <code>min(600, max(440, w·1.45))</code>);
+the Feed is below it, full width. The phone's List | Map switch is gone (the map always shows).</li>
+<li><b>Near You</b> is a panel inside the map behind one map button (the feed icon, our own drawing) in a rail under the zoom buttons. The button
+carries the number of Near You's rows, amber while one is in your alert range. Pressed, the list (320 px; a phone: the map's width less the rail,
+under the filter column's button) opens beside the rail; every control stays where it was and clickable. Open or shut is remembered
+(<code>nearShown</code>, shut by default). A map press on a system leaves it shut.</li>
+<li><b>The filters</b> are a column down the map's left edge under the search box (wrapping into a second column on a short map; a phone keeps it
+shut behind its one button, taking turns with Near You). Paths to you is last now. A filter with a panel (Wormholes' list) has its panel button
+to its right; the name line sits right of the panel buttons, level with the filter that's on, and hides while a panel is open. The Wormholes list
+opens right of the panel buttons, level with its filter, inside the map and clear of Near You; a phone gets a sheet over the map.</li>
+<li><b>When both don't fit</b> (a window between a phone and about 1000 px wide), Near You and the Wormholes list take turns, as on a phone.</li>
+<li><b>Centring</b> (⌖, the first view, a jump, ⤢, a search pick) uses the part of the map no panel covers.</li>
+<li><b>The Wormholes list:</b> each row's system name is a button ("Show on the map") that centres the map on that system in the part the list
+doesn't cover, its tooltip open; on a phone the list shuts first (the owner: "left click on system name re-centers map on that system").</li>
+<li><b>Paths to you</b> fits again when its tree grows or shrinks, unless you zoomed or dragged it since the last fit (the owner: "paths to you map
+mode should run "fit" every time the layout changes"); its fit leaves room for the filter column and Near You, and ⤢ no longer keeps 40 px for a
+bar at the foot.</li>
+<li><b>Three UI rules</b> in CLAUDE.md, checked by <code>check_ui_rules.py</code> (7-9): A, buttons vs map controls (map controls are neutral, never
+amber but for the alert-range badge); B, panels over the map (<code>--panel</code>, a <code>--line</code> border, rows <code>--panel-2</code>: Near You's
+list adopts it); C, one checkbox and one radio in the text field's colours, checked a cyan tick or dot on the dark box (switches excepted).</li>
+<li><b>The Intel example</b> follows: the map picture full width with Near You's list open beside a still copy of its button; on a phone the map
+picture too, the list under it; note 3's phone wording ("switch Near You to Map…") is gone.</li>
+<li>Hide all routes moved left of the zoom buttons (a phone: top left); the route planner's note sits at the map's foot.</li>
+<li><b>Fixed on the way:</b> the "+N more systems below" count is worked out again when its line appears (the line takes room from the list); an
+opened Near You row keeps its reports in view, not only its first line; the names of a big gang are cut to 3 lines measured on the whole line
+(the narrow panel can start them on the line after the word), never while the panel is shut, and again when it opens.</li>
+<li>Info text: <code>intel</code>'s Near You line and [Map]; its cap 620 words (the owner: "raise it"). METHODOLOGY.md's Intel map paragraph.</li>
+</ul>
+
+<h2>Stored data</h2>
+<p>One new field, <code>nearShown</code> (true/false), in <code>dscanIntel</code>. Upgrading: a missing field reads as shut. Reverting: the older page
+ignores it and drops it the next time it saves its settings, which is harmless. <code>nearView</code> (the old List | Map choice) is left as it
+is, so a reverted page still has it.</p>
+
+<h2>Checks</h2>
+<ul>
+<li><code>tools/page_checks/intel_map_layout_check.py</code> (new): at 1440, 760 and 390 px: the map's size, Near You shut by default and its
+button, opened, remembered, every control clickable, a map press leaving it shut; the filter column, panel buttons and name line; the Wormholes
+list beside Near You (1440), taking turns (760), a sheet (390); a list name centring its system in the free part; ⌖ beside Near You; Paths to you
+re-fitting when the tree grows and not after a zoom by hand; checkboxes drawn by the site, switches untouched; 5 mutants.</li>
+<li>Updated for the new layout: <code>intel_map_check</code>, <code>intel_filters_check</code>, <code>intel_layout_check</code>,
+<code>intel_map_look_check</code>, <code>intel_map_you_check</code>, <code>intel_example_check</code>, <code>paths_to_you_check</code>,
+<code>wormhole_filter_check</code>; the Intel checks' shared setups open Near You's panel (its shut default is the new check's).</li>
+<li><code>check_ui_rules.py</code> rules 7-9, each with a mutant tried by hand (amber on the rail, Near You's fill, no appearance, a local checkbox fill).</li>
+</ul>
+<p>Page size: source 933,406 bytes; served 590,418 bytes (gzip -9).</p>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #169: a list that is hidden by default must not be measured while hidden. The names cut (<code>itNearCap</code>) cached "it fits" for rows drawn while
+Near You's panel was shut (a hidden row is 0 px tall), so a long names list would have stayed uncut once the panel opened. Skip what can't be seen,
+key the cache on a width that is real (an inline element's clientWidth is always 0), and measure again when the panel opens.</p>
+</body>
+</html>

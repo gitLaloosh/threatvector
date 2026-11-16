@@ -173,7 +173,7 @@ with sync_playwright() as p:
         ctx = new_ctx(w)
         if init: ctx.add_init_script(init)
         pg = ctx.new_page(); pg.goto('file://' + HTML)
-        pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, killRange: 3, sound: true, notify: true, forget: 15, hideFriendly: true})); }", SIDE)
+        pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({nearShown: true, channels: ['region.intel'], me: 95000001, range: 3, killRange: 3, sound: true, notify: true, forget: 15, hideFriendly: true})); }", SIDE)
         pg.reload(); pg.wait_for_timeout(400)
         setup_logs(pg); pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.click('[data-it-act="folder"]'); pg.wait_for_timeout(300); pg.click('#intelSwLabel')
         return ctx, pg

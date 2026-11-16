@@ -6,8 +6,8 @@ Project doc roadmap/near-you-height-plan.md; mockups near_you_height_mockup.html
 The owner, 2026-11-03: "implement a max hight on the "near you" list to match the height of the map side. currently a longer "near you"
 list pushes the feed further down the page." 2026-11-06: "Chips beside the search", "1. yes, 2. OK, 3. yes, 4. yes, 5. yes". Runs
 intel_kills_check.py's start (made-up logs and kills, R2Z2 and ESI mocked; you in 1DQ1-A), adds made-up reports in 13 more systems, then:
-  * the height (over 900 px): at 1440 and 1024 Near You's column as tall as the map's (±1 px), the Feed right under the map column; the
-    list scrolls inside; its floor is the map's smallest box and heading (IT_NEAR_FLOOR); 900 px and under unchanged (no cap);
+  * the height (since build queue 052): at 1440, 1024 and 800 Near You's panel inside the map, as tall as it less 54 px, the Feed right
+    under the map; the list scrolls inside;
   * "+N more systems below": the right count, 0 and hidden at the list's end, kept right after a redraw that adds a row, hidden under
     900 px; written only after a draw or a scroll (no timer: nothing changes while nothing happens);
   * the wheel over the list scrolls the list, and at its end the page (not trapped, LESSON #96);
@@ -44,14 +44,14 @@ _tail = r'''
       return {map: R('#intelPanel .it-mapcol'), near: R('#intelPanel .it-nearcol'), feed: R('#intelPanel .it-feedcol'), top: R('#intelPanel .it-top'), gap: parseFloat(getComputedStyle(document.querySelector('#intelPanel .it-top')).rowGap) || 0,
         sh: L.scrollHeight, ch: L.clientHeight, contain: cs.contain, minh: cs.minHeight, ov: getComputedStyle(L).overflowY, more: (document.querySelector('#intelPanel .it-more') || {}).textContent, moreHidden: (document.querySelector('#intelPanel .it-more') || {}).hidden}; }"""
     CNT = """() => { const L = document.querySelector('#itNearList'), b = L.getBoundingClientRect().bottom; return [...L.querySelectorAll(':scope > .it-nb')].filter(r => r.getBoundingClientRect().top >= b - 4).length; }"""
-    floor = pg.evaluate("() => IT_NEAR_FLOOR")
-    for w in (1440, 1024):
+    BOX = "() => itm.box.getBoundingClientRect().height"
+    for w in (1440, 1024, 800):   # build queue 052: Near You is a panel inside the map at every width, as tall as the map less 54 px
         pg.set_viewport_size({'width': w, 'height': 1000}); pg.wait_for_timeout(700)
         g = pg.evaluate(GEO); want = pg.evaluate(CNT)
-        check(n_rows >= 10 and abs(g['near'][2] - g['map'][2]) <= 1 and abs(g['top'][1] - g['map'][1]) <= 1 and g['feed'][0] >= g['top'][1] and g['feed'][0] - g['top'][1] < 30 and g['sh'] > g['ch'] + 20 and g['ov'] == 'auto',
-              f'{w} px, {n_rows} rows: Near You as tall as the map column ({g["near"][2]:.0f} / {g["map"][2]:.0f}), the row no taller than the map ({g["top"][1]:.0f} / {g["map"][1]:.0f}), the Feed right under it ({g["feed"][0]:.0f}), the list scrolls inside')
+        bh = pg.evaluate(BOX)
+        check(n_rows >= 10 and abs(g['near'][2] - (bh - 54)) <= 1 and g['near'][1] <= g['map'][1] and g['feed'][0] >= g['map'][1] and g['feed'][0] - g['top'][1] < 30 and g['sh'] > g['ch'] + 20 and g['ov'] == 'auto',
+              f'{w} px, {n_rows} rows: Near You\'s panel inside the map, as tall as it less 54 px ({g["near"][2]:.0f} / {bh:.0f}), the Feed right under the map ({g["feed"][0]:.0f}), the list scrolls inside')
         check(want > 0 and g['more'] == f'+{want} more system{"s" if want != 1 else ""} below' and not g['moreHidden'], f'... "+N more systems below" says how many are out of view ({g["more"]!r}, {want} counted)')
-        check(g['minh'] == f'{floor}px', f'... its floor is the map\'s smallest box and heading ({g["minh"]}, IT_NEAR_FLOOR {floor})')
     pg.set_viewport_size({'width': 1440, 'height': 1000}); pg.wait_for_timeout(500)
     # "+N" at the list's end, and no timer
     pg.evaluate("() => { const L = document.querySelector('#itNearList'); L.scrollTop = L.scrollHeight; }"); pg.wait_for_timeout(300)
@@ -61,12 +61,7 @@ _tail = r'''
     pg.evaluate("""() => { window.__mw = 0; const m = document.querySelector('#intelPanel .it-more'); new MutationObserver((r) => { window.__mw += r.length; }).observe(m, {childList: true, characterData: true, subtree: true, attributes: true}); }""")
     pg.wait_for_timeout(3000); mw = pg.evaluate("() => window.__mw")
     check(mw == 0, f'... nothing rewrites it while nothing changes (no timer): {mw} changes in 3 s')
-    # 900 px and under: unchanged
-    pg.set_viewport_size({'width': 800, 'height': 1000}); pg.wait_for_timeout(600)
-    g8 = pg.evaluate(GEO)
-    check(g8['ov'] == 'visible' and g8['sh'] <= g8['ch'] + 1 and 'size' not in (g8['contain'] or '') and g8['moreHidden'] is not False and pg.evaluate("() => getComputedStyle(document.querySelector('#intelPanel .it-more')).display") == 'none',
-          f'800 px: one column as before, Near You not capped, no "+N" line ({g8["ov"]}, {g8["contain"]})')
-    pg.set_viewport_size({'width': 1440, 'height': 1000}); pg.wait_for_timeout(600)
+    # 052: 900 px and under is capped too (the panel inside the map, checked at 800 above)
     # the wheel: the list first, then the page at its end
     pg.evaluate("() => window.scrollTo(0, 0)")
     box = pg.evaluate("() => { const r = document.querySelector('#itNearList').getBoundingClientRect(); return [r.left + r.width / 2, r.top + 40]; }")

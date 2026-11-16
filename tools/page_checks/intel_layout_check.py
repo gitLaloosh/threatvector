@@ -7,8 +7,9 @@ Runs intel_kills_check.py's start (made-up logs and kills, R2Z2 and ESI mocked) 
   * the page opened on Intel; the tabs Intel, System Analyzer, Pilot Analyzer, Fit Analyzer;
   * Near You, layout D (v2026.10.31.6; the owner's layout, Project doc roadmap/near-you-layout-d.md), with the analyze icon in its
     own column after the jumps (v2026.10.31.7, the owner's idea): line 1 the jump count (a column wide enough for "88 Jumps" and the
-    In system callout), the analyze icon, the system in a column as wide as the widest system name in the table (measured in the font
-    the browser draws), the tags, the time at the right (lined up); the icon right against its system; line 2 the kill badges under the system, only when there are kills; then the toggle
+    In system callout), the analyze icon, the system in a column at least as wide as the widest system name in the table (measured in
+    the font the browser draws), the time at the right (lined up); since build queue 052 (Near You a 320 px panel in the map) the tags
+    on their own line under the system; the icon right against its system; line 2 the kill badges under the system, only when there are kills; then the toggle
     under the jumps and the word and names from under the system; no Assess column; nothing overlaps; the left edge amber (the "N near"
     alert's colour) only within the alert range, no background on any row; a gang of 300 named in a report: "300 hostile", the
     names cut to 3 lines with "+N more";
@@ -48,7 +49,7 @@ _tail = r'''
         const kids = [...r.children].filter(c => c.getBoundingClientRect().width > 0).map(R);
         let overlap = 0; for(let x = 0; x < kids.length; x++) for(let y = x + 1; y < kids.length; y++){ const A = kids[x], B = kids[y]; if(A.left < B.right - 1 && B.left < A.right - 1 && A.top < B.bottom - 1 && B.top < A.bottom - 1) overlap++; }
         const cy = (e) => e.top + e.height / 2;
-        return {sys: r.querySelector('.sys').textContent, jx: j.left, jr: j.right, jtxt: r.querySelector('.j').textContent, jw: parseFloat(cs.gridTemplateColumns.split(' ')[0]), anr: an.right, gap: parseFloat(cs.columnGap), sx: s.left, sw: parseFloat(cs.gridTemplateColumns.split(' ')[2]), sb: s.bottom, l1b: Math.max(j.bottom, s.bottom, an.bottom, tg.height ? tg.bottom : 0, a.bottom), rg: parseFloat(cs.rowGap), ax: an.left, tgx: tg.left, ar: Math.round(a.right),
+        return {sys: r.querySelector('.sys').textContent, jx: j.left, jr: j.right, jtxt: r.querySelector('.j').textContent, jw: parseFloat(cs.gridTemplateColumns.split(' ')[0]), anr: an.right, gap: parseFloat(cs.columnGap), sx: s.left, sw: parseFloat(cs.gridTemplateColumns.split(' ')[2]), sb: s.bottom, l1b: Math.max(j.bottom, s.bottom, an.bottom, tg.height ? tg.bottom : 0, a.bottom), rg: parseFloat(cs.rowGap), ax: an.left, tgx: tg.left, tgt: tg.top, tgw: tg.width, ar: Math.round(a.right),
           line1: Math.max(...[j, s, a].map(e => Math.abs(cy(e) - cy(s)))), anc: r.querySelector(':scope > .it-an') ? Math.abs(cy(an) - cy(s)) : 0,
           kb: kb ? [kb.top, kb.left, kb.bottom] : null, rlb: (() => { const g = r.querySelector(':scope > .it-rg'); return g && getComputedStyle(g).display !== 'none' ? R(g).bottom : null; })(), rt: [rt.left, rt.top], wl: [wl.left, wl.top], word1: b ? b.getBoundingClientRect().height <= 20 : true,
           inside: kids.every(k => k.left >= rr.left - 1 && k.right <= rr.right + 1), overlap, alert: r.classList.contains('alert'), edge: cs.boxShadow, bg: cs.backgroundColor,
@@ -56,14 +57,16 @@ _tail = r'''
     G = pg.evaluate("""() => { const c = document.createElement('canvas').getContext('2d'); c.font = getComputedStyle(document.querySelector('#itNearList .it-nb .sys')).font;
       let widest = 0, wn = ''; for(const n of it.names.byId.values()){ const w = c.measureText(n).width; if(w > widest){ widest = w; wn = n; } } return {widest, wn}; }""")
     rows = pg.evaluate(GEO); r0 = rows[0]
-    chk(all(r['jx'] < r['ax'] < r['sx'] < r['tgx'] for r in rows), f'Near You line 1: the jump count, the analyze icon, the system, the tags {[(r["sys"], round(r["jx"]), round(r["ax"]), round(r["sx"]), round(r["tgx"])) for r in rows][:3]}')
+    # build queue 052: Near You is a 320 px panel in the map: line 1 the jump count, the analyze icon, the system, the time; the tags on their own line under the system
+    chk(all(r['jx'] < r['ax'] < r['sx'] for r in rows) and all(abs(r['tgx'] - r['sx']) < 1.5 and r['tgt'] >= r['sb'] - 1 for r in rows if r['tgw'] > 0),   # rows without tags: none (the busy row below has them)
+        f'Near You line 1: the jump count, the analyze icon, the system; the tags under the system {[(r["sys"], round(r["jx"]), round(r["ax"]), round(r["sx"]), round(r["tgx"]), round(r["tgt"] - r["sb"])) for r in rows][:3]}')
     chk(all(abs(r['sx'] - r['anr'] - r['gap']) < 1 for r in rows if r['an']), f'the icon right against its system (one column gap) {[(r["sys"], round(r["sx"] - r["anr"], 1)) for r in rows if r["an"]]}')
     JW = pg.evaluate("""() => { const j = document.querySelector('#itNearList .it-nb .j'), w = []; for(const t of ['88 Jumps', '<span class="it-here">In system</span>']){
       const x = j.cloneNode(false); x.innerHTML = t; x.style.cssText = 'position:absolute; visibility:hidden; display:inline-block'; j.parentNode.appendChild(x); w.push(x.getBoundingClientRect().width); x.remove(); } return w; }""")
     chk(all(r['jw'] >= max(JW) - 0.5 and r['jr'] <= r['ax'] + 0.5 for r in rows), f'the jump column fits "88 Jumps" and In system ({[round(x, 1) for x in JW]} px): {rows[0]["jw"]} px; no jump count runs into the icon {[(r["jtxt"], round(r["jr"]), round(r["ax"])) for r in rows][:4]}')
     chk(all(r['line1'] <= 4 and r['anc'] <= 4 for r in rows) and len({r['ar'] for r in rows}) == 1, f'... and the time at the right, all on one line, the times lined up {[(r["sys"], round(r["line1"], 1), r["ar"]) for r in rows]}')
-    chk(all(abs(r['sw'] - r0['sw']) < 0.5 for r in rows) and r0['sw'] >= G['widest'] - 0.5, f'the system column as wide as the widest system name in the table ({G["wn"]}, {G["widest"]:.1f} px): {r0["sw"]:.1f} px on every row')
-    chk(len({round(r['ax']) for r in rows}) == 1 and len({round(r['tgx']) for r in rows}) == 1, f'the icons and the tags start at the same place on every row {sorted({round(r["ax"]) for r in rows})} {sorted({round(r["tgx"]) for r in rows})}')
+    chk(all(abs(r['sw'] - r0['sw']) < 0.5 for r in rows) and r0['sw'] >= G['widest'] - 0.5, f'the system column at least as wide as the widest system name in the table ({G["wn"]}, {G["widest"]:.1f} px; 052: the rest of the narrow row): {r0["sw"]:.1f} px on every row')
+    chk(len({round(r['ax']) for r in rows}) == 1 and len({round(r['tgx']) for r in rows if r['tgw'] > 0}) <= 1, f'the icons and the tags start at the same place on every row {sorted({round(r["ax"]) for r in rows})} {sorted({round(r["tgx"]) for r in rows if r["tgw"] > 0})}')
     kr = [r for r in rows if r['kb']]
     chk(kr and all(r['kb'][0] >= (r['rlb'] or r['sb']) - 1 and abs(r['kb'][1] - r['sx']) < 1.5 and r['wl'][1] >= r['kb'][2] - 1 for r in kr) and not [r for r in rows if not r['kb'] and r['wl'][1] - (r['rlb'] or r['l1b']) > r['rg'] + 1.5],
           f'the kill badges on their own line under the system name (and its region line, build queue 038), only when there are kills (rows without them: no empty line) {[(r["sys"], r["kb"] and [round(x) for x in r["kb"]], round(r["sb"]), [round(x) for x in r["wl"]]) for r in rows]}')
