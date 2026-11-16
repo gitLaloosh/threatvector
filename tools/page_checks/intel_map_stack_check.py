@@ -55,6 +55,10 @@ WH = [(at(1, 3), 5 * MIN, 'intel', False), (at(2, 4), 8 * MIN, 'intel', True), (
 def wh_seed(now):
     return {'v': 1, 'keepH': 24, 'gone': {}, 'rep': {str(i): {'id': i, 't': int((now - age) * 1000), 'who': '' if src == 'you' else 'Scout Alt', 'drifter': dr, 'src': src} for i, age, src, dr in WH}}
 
+# every stepper's number shown whole in the settings panel, at its widest ("-1.0"): text width against the box (the owner's hand test, 2026-11-16: "0.:" and "-0")
+FITS = """() => { const out = []; for(const k of ['mapSecLo', 'mapSecHi', 'mapNear']){ const inp = document.querySelector(`.it-mpp [data-rs=${k}] .rs-v`); if(!inp) continue;
+  const v = inp.value; inp.value = k === 'mapNear' ? '30' : '-1.0'; const c = document.createElement('canvas').getContext('2d'), cs = getComputedStyle(inp); c.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  const need = c.measureText(inp.value).width + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight); if(inp.offsetParent && need > inp.clientWidth + 0.5) out.push([k, inp.value, Math.round(need), inp.clientWidth]); inp.value = v; } return out; }"""
 def start(b, html, w, errs, h=1000, touch=False, stack=None):
     ctx = b.new_context(bypass_csp=True, viewport={'width': w, 'height': h}, has_touch=touch, is_mobile=touch, device_scale_factor=2 if touch else 1)
     ctx.on('page', lambda pg: pg.on('pageerror', lambda e: errs.append(str(e))))
@@ -215,6 +219,8 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
             if v != ['-0.4', -4]: out.append(f'From steps by 0.1: {v} (want -0.4)')
             pg.click('.it-mpp [data-it-mpq="null"]'); pg.wait_for_timeout(150)
             if pg.evaluate("() => [itMapSt().secr.lo, itMapSt().secr.hi, itMapMatch().list.length > 0]") != [-10, 0, True]: out.append('quick Null isn\'t -1.0 to 0.0, or matches nothing')
+            cut = pg.evaluate(FITS)
+            if cut: out.append(f'the panel\'s numbers cut off (the owner\'s hand test, 2026-11-16): {cut}')
             if pg.evaluate("() => (document.querySelector('.it-mpp .it-mp-cnt') || {}).textContent || ''") != f"{pg.evaluate('() => itMapMatch().list.length')} systems match every Only filter that is on": out.append('the panel\'s count')
             pg.keyboard.press('Escape'); pg.wait_for_timeout(150)
             if not pg.evaluate("() => document.querySelector('.it-mpp').hidden && document.activeElement === document.querySelector('[data-it-mpn=secr]')"): out.append('Escape doesn\'t shut the panel with focus back on its button')
@@ -304,6 +310,8 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
         r = pg.evaluate("() => { const x = document.querySelector('.it-mpp'), r = x.getBoundingClientRect(), b = itm.box.getBoundingClientRect(), q = [...x.querySelectorAll('.it-mp-q button, .rs-b')].map(e => Math.round(e.getBoundingClientRect().height));"
                         " return [!x.hidden, r.left >= b.left - 1 && r.right <= b.right + 1, Math.min(...q)]; }")
         if r[:2] != [True, True] or r[2] < 44: out.append(f'390 px: the Security range sheet {r} (want open inside the map, 44 px targets)')
+        cut = pg.evaluate(FITS)
+        if cut: out.append(f'390 px: the panel\'s numbers cut off: {cut}')
         pg.click('.it-mpp .x-close'); pg.wait_for_timeout(200)
         ch = pg.evaluate("() => { const c = document.querySelector('.it-map-mt'); return [!c.hidden, Math.round(c.getBoundingClientRect().height)]; }")
         if ch != [True, 44]: out.append(f'390 px: the match chip {ch} (want shown, 44 px)')
@@ -324,6 +332,7 @@ MUTANTS = [
     ('a match not bigger (Q8)', "hit === '1' ? dotR + 1.6 : dotR;", "dotR;", ('ex',)),
     ('the 0.45 line ignored', "return t >= 5 && T.band && T.band[i] === 1 ? 4 : t;", "return t;", ('sec',)),
     ('a number in the circles with no colour', "const col = itMapSt().colour; if(col) c.fillText(", "const col = itMapSt().colour || 'sec'; if(col) c.fillText(", ('colour',)),
+    ('the panel\'s numbers cut off (the hand test)', ".it-mpp .rs-v{width:5.2ch;}", ".it-mpp .rs-v{}", ('panel',)),
     ('the example writing the user\'s stack', "st: itMapStackBlank()});", "st: itMapSt()}); itMapSt().colour = 'region'; itMapStackSave();", ('example',)),
 ]
 

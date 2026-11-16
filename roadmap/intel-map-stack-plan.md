@@ -187,6 +187,9 @@ Served 590,418 bytes on 51207b6 (ceiling 800,000). Estimate: a few KB of code an
   wormhole-only labels need a match (or the focus).
 - **A matching hole's label isn't forced** over another label (045's rule, kept: a live hole's label is forced only while it isn't bold);
   `wormhole_filter_check`'s crowded case caught the build forcing it.
+- **Hand test fix (the owner, 2026-11-16, a screenshot of the Security range panel):** the From / To numbers were cut off ("0.:", "-0"): the
+  shared stepper's box is 3.2ch, wide enough for jumps only. The panel's steppers are 5.2ch (`.it-mpp .rs-v`); `intel_map_stack_check` now
+  measures each number at its widest ("-1.0") against its box at 1440 and 390 px, with a mutant.
 - **The chip** reads "N match ›", then "k of N ›" while stepping; any filter press starts the count again (`itm.mtStep = -1`).
 - **Sov's legend and hover:** 053's own legend line (`sovLegHtml`) went; the Only line names the picks and levels. The Sov hover line shows only
   while Sov is on.
