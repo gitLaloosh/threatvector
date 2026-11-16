@@ -56,6 +56,8 @@ def start(b, html, w, errs, h=1000, touch=False, store=None, ny=False):
     ctx = b.new_context(bypass_csp=True, viewport={'width': w, 'height': h}, has_touch=touch, is_mobile=touch, device_scale_factor=2 if touch else 1)
     ctx.on('page', lambda pg: pg.on('pageerror', lambda e: errs.append(str(e))))
     ctx.add_init_script(FS); route(ctx)
+    # 058: the filters stack, so pressing Sov upgrades turns it on or off; these turn it on (or off) whatever it was
+    ctx.add_init_script("window.__sovOn = () => { if(!itMapSt().only.sov) itMapFilterSet('sov'); }; window.__sovOff = () => { if(itMapSt().only.sov) itMapFilterSet('sov'); };")
     pg = ctx.new_page(); pg.goto('file://' + html)
     pg.evaluate("([s, v, ny]) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({nearShown: ny, channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false, forget: 15, hideFriendly: true}));"
                 " if(v !== null) localStorage.setItem('tvSov', typeof v === 'string' ? v : JSON.stringify(v)); }", [SIDE, store, ny])
@@ -104,7 +106,7 @@ def cases(b, html, parts=('table', 'store', 'filter', 'paste', 'map', 'lists', '
         P = pg.evaluate("() => { const p = document.querySelector('.it-sovp'); return p && [p.hidden, p.getAttribute('role'), !!p.querySelector('button.x-close'), !document.querySelector('#itSovPaste').hidden, document.activeElement && document.activeElement.matches('#itSovPaste textarea'), document.querySelector('[data-it-sovl]').getAttribute('aria-expanded')]; }")
         if P != [False, 'dialog', True, True, True, 'true']: out.append(f'no lists, the filter chosen: the panel {P} (want open, a dialog with the shared close button, at the paste box with the focus in it)')
     if 'paste' in parts:
-        pg.evaluate("() => { itMapFilterSet('sov'); if(!sovShown()) sovOpen(true, false, 'paste'); }"); pg.wait_for_timeout(200)
+        pg.evaluate("() => { __sovOn(); if(!sovShown()) sovOpen(true, false, 'paste'); }"); pg.wait_for_timeout(200)
         paste(pg, UPG)
         C1 = pg.evaluate("""() => ({sum: (document.querySelector('.it-sov-chk .it-sov-sum') || {}).textContent, kind: document.querySelector('.it-sov-kind').hidden,
           rows: [...document.querySelectorAll('.it-sov-chk .it-sov-r')].map(r => [r.classList[1], r.classList.contains('dup'), (r.querySelector('.ln') || {}).textContent, (r.querySelector('.d') || {}).textContent || ''])})""")
@@ -133,15 +135,15 @@ def cases(b, html, parts=('table', 'store', 'filter', 'paste', 'map', 'lists', '
             out.append(f"the picks: {G['groups']}")
         if 'Levels: 3 in 1 system, 2 in 1 system, 1 in 1 system' not in G['tip']: out.append(f"Major Threat Detection Array's hover: {G['tip']!r}")
     if 'map' in parts:
-        M_ = pg.evaluate("""([ids, home]) => { const g = itGraphGet(); itMapFilterSet('sov'); itMapDraw(); const dim = ids.map(id => itMapDimmed(g.at.get(id)));
-          const leg = document.querySelector('.it-map-fl'), legT = leg.textContent, legTitle = leg.title;
+        M_ = pg.evaluate("""([ids, home]) => { const g = itGraphGet(); __sovOn(); itMapDraw(); const dim = ids.map(id => itMapDimmed(g.at.get(id)));
+          const leg = document.querySelector('.it-map-leg .it-map-only') || {}, legT = leg.textContent || '', legTitle = leg.title || '';   // 058: the legend's second line
           itMapTip(g.at.get(ids[0]), 50, 50); const tip = itm.tip.textContent; itMapTip(-1);
           const k0 = itMapKey(); const st = sovStore(); st.pick = st.pick.filter(k => k !== 'Major Threat Detection Array'); sovSave(); sovChanged(); const k1 = itMapKey();
           const dim2 = ids.map(id => itMapDimmed(g.at.get(id))), homeDim = itMapDimmed(g.at.get(home));
           const d0 = itm.draws; itMapRefresh(); const d1 = itm.draws;
           return {dim, legT, legTitle, tip, keyMoved: k0 !== k1, dim2, homeDim, redraw: d1 - d0}; }""", [[A, B, C, X, FAR, near[5]], HOME])
         if M_['dim'] != [False, False, False, False, False, True]: out.append(f"Sov upgrades: dimmed {M_['dim']} (want the listed systems bright, an unlisted one dimmed)")
-        if not M_['legT'].startswith('Sov upgrades bright: ') or 'hover a system for its upgrades' not in M_['legT'] or 'Picked:' not in M_['legTitle']: out.append(f"the legend's line: {M_['legT']!r}")
+        if not M_['legT'].startswith('Only ') or 'match · ' not in M_['legT'] or 'Major Threat Detection Array' not in M_['legT'] or 'Every Only filter' not in M_['legTitle']: out.append(f"the legend's Only line: {M_['legT']!r}")
         if 'Sov upgrades: Major Threat Detection Array 3, Cyno beacon, Tritanium Prospecting Array 3' not in M_['tip']: out.append(f"the hover on {N(A)}: {M_['tip'][:200]!r}")
         if not M_['keyMoved'] or M_['redraw'] != 0: out.append(f"the map's key: moved with a pick {M_['keyMoved']}, a refresh after it redrew {M_['redraw']} (want moved, none)")
         if M_['dim2'][:5] != [False, False, False, False, True] or M_['homeDim']: out.append(f"Major Threat Detection Array unpicked: dimmed {M_['dim2']}, your system {M_['homeDim']} (want only the far one, which has nothing else, dimmed now; yours never)")
@@ -150,9 +152,9 @@ def cases(b, html, parts=('table', 'store', 'filter', 'paste', 'map', 'lists', '
         if not reach[1] > reach[0]: out.append(f'the far system {N(FAR)} is inside the reach {reach}: pick another')
         px, col = pg.evaluate(PX, [FAR, 44 / pg.evaluate('itm.G')])
         if not near_col(px, col): out.append(f'a picked system past "Map: within" drawn {px[:3]} (want bright, {col})')
-        pg.evaluate("() => { itMapFilterSet('sec'); itMapStartView(); itMapDraw(); }")
+        pg.evaluate("() => { __sovOff(); itMapStartView(); itMapDraw(); }")
     if 'lists' in parts:
-        pg.evaluate("() => { itMapFilterSet('sov'); if(!sovShown()) sovOpen(true, false); sovP.lists = true; sovPaint(true); }"); pg.wait_for_timeout(200)
+        pg.evaluate("() => { __sovOn(); if(!sovShown()) sovOpen(true, false); sovP.lists = true; sovPaint(true); }"); pg.wait_for_timeout(200)
         ids = pg.evaluate("() => sovStore().lists.map(l => l.id)")
         if len(ids) == 2:
             pg.click(f'[data-sov-ed="{ids[1]}"]'); pg.wait_for_timeout(200)
@@ -181,14 +183,14 @@ def cases(b, html, parts=('table', 'store', 'filter', 'paste', 'map', 'lists', '
         if any('sov' in k.lower() for k in di): out.append(f'dscanIntel changed its form: {sorted(di)}')
         ctx.close(); ctx, pg = start(b, html, 1440, errs, store=None)
     if 'full' in parts:
-        pg.evaluate("() => { itMapFilterSet('sov'); if(!sovShown()) sovOpen(true, false, 'paste'); const s0 = Storage.prototype.setItem; Storage.prototype.setItem = function(k, v){ if(k === 'tvSov') throw new DOMException('full', 'QuotaExceededError'); return s0.call(this, k, v); }; }")
+        pg.evaluate("() => { __sovOn(); if(!sovShown()) sovOpen(true, false, 'paste'); const s0 = Storage.prototype.setItem; Storage.prototype.setItem = function(k, v){ if(k === 'tvSov') throw new DOMException('full', 'QuotaExceededError'); return s0.call(this, k, v); }; }")
         paste(pg, f'{N(A)} <- Major Threat Detection Array 3'); pg.click('[data-sov-add]'); pg.wait_for_timeout(300)
         f = pg.evaluate("() => [document.querySelector('.it-sov-warn').textContent, sovStore().lists.length, localStorage.getItem('tvSov'), itMapDimmed(itGraphGet().at.get(%d))]" % A)
         if '(INTEL-11)' not in f[0] or f[1] != 1 or f[2] is not None or f[3]: out.append(f'a full storage: {f} (want INTEL-11 shown, the list kept for the visit and used on the map, nothing written)')
         ctx.close(); ctx, pg = start(b, html, 1440, errs, store=None)
     if 'names' in parts:
         n = pg.evaluate("""async (t) => { const keep = it.names, load = itLoadNames; it.names = null; let done; window.itLoadNames = () => new Promise((ok, no) => { done = [ok, no]; });
-          itMapFilterSet('sov'); if(!sovShown()) sovOpen(true, false, 'paste');
+          __sovOn(); if(!sovShown()) sovOpen(true, false, 'paste');
           const ta = document.querySelector('#itSovPaste textarea'); ta.value = t; ta.dispatchEvent(new Event('input', {bubbles: true}));
           const wait = document.querySelector('.it-sov-chk').textContent, dis = document.querySelector('[data-sov-add]').disabled;
           done[1](codedError('INTEL-03', 'ESI named 0 of 5268 systems.')); await new Promise(r => setTimeout(r, 50)); const err = document.querySelector('.it-sov-picks').textContent;
@@ -198,7 +200,7 @@ def cases(b, html, parts=('table', 'store', 'filter', 'paste', 'map', 'lists', '
         pg.evaluate("() => sovOpen(false, false)")
     if 'one' in parts:
         pg.evaluate("() => { const st = sovStore(); st.lists = [{id: 'z', kind: '', text: %s, at: Date.now()}]; st.pick = ['Major Threat Detection Array']; sovIx = null; sovSave(); }" % json.dumps(UPG))
-        o = pg.evaluate("""() => { itMapFilterSet('sov'); sovOpen(true, false); const a = [sovShown(), itWhListShown()]; itWhListOpen(true); const b = [sovShown(), itWhListShown()];
+        o = pg.evaluate("""() => { __sovOn(); sovOpen(true, false); const a = [sovShown(), itWhListShown()]; itWhListOpen(true); const b = [sovShown(), itWhListShown()];
           sovOpen(true, false); const c = [sovShown(), itWhListShown()]; return [a, b, c]; }""")
         if o != [[True, False], [False, True], [True, False]]: out.append(f'one filter panel at a time: {o}')
         pg.evaluate("() => itNearToggle(true)"); pg.wait_for_timeout(300)
@@ -219,7 +221,7 @@ def cases(b, html, parts=('table', 'store', 'filter', 'paste', 'map', 'lists', '
     ctx.close()
     if 'phone' in parts:
         ctx, pg = start(b, html, 390, errs, h=844, touch=True, store={'v': 1, 'lists': [{'id': 'p', 'kind': '', 'text': UPG, 'at': int(time.time() * 1000)}], 'pick': ['Major Threat Detection Array']}, ny=True)
-        pg.evaluate("itMapFilterSet('sov')"); pg.wait_for_timeout(200)
+        pg.evaluate("__sovOn()"); pg.wait_for_timeout(200)
         pg.click('.it-map-fcur'); pg.wait_for_timeout(300)
         P = pg.evaluate("() => { const l = document.querySelector('[data-it-sovl]'), r = l.getBoundingClientRect(); return [getComputedStyle(l).visibility, Math.round(r.width), Math.round(r.height)]; }")
         if P != ['visible', 44, 44]: out.append(f'390 px: the panel button {P} (want visible with Sov upgrades on, 44 px)')
@@ -234,9 +236,9 @@ def cases(b, html, parts=('table', 'store', 'filter', 'paste', 'map', 'lists', '
 
 MUTANTS = [
     ('no level read', "m.set(u.kind, Math.max(m.get(u.kind) || 0, u.level)); got++;", "m.set(u.kind, 0); got++;", ('paste', 'map')),
-    ('the dimming ignoring the picks', "  for(const [i, e] of sovIndex().at) for(const k of e.keys()) if(p.has(k)){ out.add(i); break; }", "  for(const [i] of sovIndex().at) out.add(i);", ('paste', 'map')),
-    ('picked ones faint past the reach', " || (itm.sov && itm.sov.has(i)) ? 1 : !on(i)", " ? 1 : !on(i)", ('paste', 'map')),
-    ('two panels open at once', "  itWhListOpen(false, false);   // one filter panel at a time", "", ('one',)),
+    ('the dimming ignoring the picks', "if(e) for(const [k, l] of e) if(pick.has(k) && (!lvT.has(k)", "if(e) for(const [k, l] of e) if((!lvT.has(k)", ('paste', 'map')),   # 058: in itMapMatch
+    ('picked ones faint past the reach', "alpha = (i) => mt ? (mt.m[i] ? 1 : IT_MAP_DIM)", "alpha = (i) => mt ? (mt.m[i] ? (!on(i) ? IT_MAP_FAINT : 1) : IT_MAP_DIM)", ('paste', 'map')),   # 058: a match bright anywhere
+    ('two panels open at once', "  itWhListOpen(false, false); itMpOpen('', false);   // one filter panel at a time", "  itMpOpen('', false);", ('one',)),
     ('a full storage not said', "p.querySelector('.it-sov-warn').textContent = sovP.unsaved ?", "p.querySelector('.it-sov-warn').textContent = false ?", ('full',)),
     ('a paste checked without names', "  if(!it.names) return `<div class=\"it-whp-none\">${escapeHtml(sovP.names && sovP.names !== 'busy' ? sovP.names : 'Loading system names…')}</div>`;", "", ('names',)),
 ]

@@ -8,7 +8,7 @@ status number" and "add badges for gate camps, ess and kills"; the button before
 the top line the count only, the map's drag help kept under the box, the count a 3 px tag (the tag rule). Uses intel_check.py's made-up
 folder, mocks and names; the systems around 1DQ1-A have no loops, so you jump (a Local line) to a made-up area with one, its systems
 named PTnn-Z here; every pilot and line is made up. The expected tree is worked out here from the jump table on its own. Checks:
-  * the bar: eight filters, Paths to you last (052), Sov upgrades before it (053), the list button right after Wormholes; the name line;
+  * the column: ten filters, Paths to you last (052), Sov upgrades before it (053), Security range and Within N jumps (058), the list button right after Wormholes; the name line;
   * the tree: exactly your system, the sources (a hostile or neutral report, or kills, within the alert range; a clear and a report past
     the alert range left out) and the systems on their shortest routes; exactly the gates on those routes; a system with two shortest
     routes has both gates;
@@ -137,7 +137,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
         out.append('no Paths to you filter on the page'); ctx.close(); return out, errs
     if 'bar' in parts:
         o = pg.evaluate("() => [[...document.querySelectorAll('.it-map-fbtns [data-im-f]')].map(b => b.dataset.imF), (() => { const w = document.querySelector('[data-im-f=wh]'); return !!w.nextElementSibling && w.nextElementSibling.matches('[data-it-whl]'); })()]")
-        if o != [['sec', 'jumps', 'region', 'reports', 'kills', 'wh', 'sov', 'paths'], True]: out.append(f'the bar: {o} (want Paths to you last since 052, Sov upgrades before it since 053, the list button right after Wormholes)')
+        if o != [['sec', 'jumps', 'region', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'paths'], True]: out.append(f'the bar: {o} (want Paths to you last since 052, Sov upgrades before it since 053, the list button right after Wormholes)')
     pg.click('[data-im-f="paths"]'); pg.wait_for_timeout(300)
     T = pg.evaluate(TREE)
     got_n = {x['id'] for x in T['nodes']}; got_e = {tuple(e) for e in T['edges']}
@@ -229,7 +229,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
         if s != [True, 'visible', False]: out.append(f'Security: the tree hidden, the map back {s}')
         pg.click('[data-im-f="paths"]'); pg.wait_for_timeout(200)
     if 'example' in parts:
-        e = pg.evaluate("() => { itEx.map = null; itExMapPic(600); return [itm.filter, itPt.ov.hidden, itm.el.classList.contains('pt-on')]; }")
+        e = pg.evaluate("() => { itEx.map = null; itExMapPic(600); return [itMapPaths() ? 'paths' : itMapSt().colour, itPt.ov.hidden, itm.el.classList.contains('pt-on')]; }")
         if e != ['paths', False, True]: out.append(f'the Intel example\'s picture changed the tree: {e} (want paths, shown)')
     if 'time' in parts:   # the largest alert range (10) with a report in every system within it (LESSON #160): a build and a write, printed
         far = [x for x in AREA if 1 <= DH[x] <= 10] + [x for x, v in sorted(DH.items()) if 8 <= v <= 10 and x not in AREA]
@@ -248,7 +248,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
           const w = itm.box.querySelector('[data-im-f=wh]').getBoundingClientRect(), l = itm.box.querySelector('[data-it-whl]').getBoundingClientRect();
           return [bs.length, bs.every(q => Math.round(q.width) === 44 && Math.round(q.height) === 44), bs.every(q => q.left >= box.left - 0.5 && q.right <= box.right + 0.5 && q.top >= box.top - 0.5 && q.bottom <= box.bottom + 0.5),
             Math.abs(w.top - l.top) < 1 && l.left > w.left && l.left - w.right < 8]; }""")
-        if P != [9, True, True, True]: out.append(f'390 px: the opened row {P} (want 8 filters + the list button, 44 px, inside the box, Wormholes beside its list button)')
+        if P != [11, True, True, True]: out.append(f'390 px: the opened column {P} (want 10 filters + the list button, 44 px, inside the box, Wormholes beside its list button)')
         pg.tap('#intelPanel [data-im-f="paths"]'); pg.wait_for_timeout(300)
         Q = pg.evaluate("() => [[...document.querySelectorAll('.pt-z button')].every(b => Math.round(b.getBoundingClientRect().height) === 44), itPt.v.k >= 0.75, !itPt.ov.hidden, document.scrollingElement.scrollWidth <= innerWidth + 1]")
         if Q != [True, True, True, True]: out.append(f'390 px: the tree {Q} (want 44 px buttons, fitted at 0.75 or more, shown, no sideways scroll)')
@@ -260,8 +260,8 @@ MUTANTS = [
     ('one route per system', "      for(const y of T.adj[x]) if(on(y) && D[y] === D[x] - 1){ const k = x + '>' + y; (edges.get(k) || edges.set(k, {x, y, from: new Set()}).get(k)).from.add(h); }",
      "      { const y = T.adj[x].find(y => on(y) && D[y] === D[x] - 1); if(y !== undefined){ const k = x + '>' + y; (edges.get(k) || edges.set(k, {x, y, from: new Set()}).get(k)).from.add(h); } }", ('tree',)),
     ('Near You\'s range for the alert range', "  const D = itm.D, R = it.set.range, out = [];", "  const D = itm.D, R = itNearReach(), out = [];", ('tree',)),
-    ('the security number back', '<span class="it-sn s${Number(itMapSecClass(T.sec[n.i]))}">${escapeHtml(name)}</span>', '<span class="it-sn s${Number(itMapSecClass(T.sec[n.i]))}">${escapeHtml(name)} ${escapeHtml(itMapSecText(T.sec[n.i]))}</span>', ('look',)),
-    ('Paths to you no longer last (052)', "  return IT_MAP_FILTERS.map(f => IT_MAP_PANEL_BTN[f.k] ?", "  return [...IT_MAP_FILTERS.filter(f => f.k !== 'wh'), IT_MAP_FILTERS.find(f => f.k === 'wh')].map(f => IT_MAP_PANEL_BTN[f.k] ?", ('bar',)),
+    ('the security number back', '<span class="it-sn s${Number(itMapSecClass(n.i))}">${escapeHtml(name)}</span>', '<span class="it-sn s${Number(itMapSecClass(n.i))}">${escapeHtml(name)} ${escapeHtml(itMapSecText(n.i))}</span>', ('look',)),
+    ('Paths to you no longer last (052)', "  return IT_MAP_FILTERS.map((f, k) => (k && f.g", "  return [...IT_MAP_FILTERS.filter(f => f.k !== 'wh'), IT_MAP_FILTERS.find(f => f.k === 'wh')].map((f, k) => (k && f.g", ('bar',)),
     ('the tree written on every draw', "    if(text === itPt.html) return;   // written only when what it shows changed\n", "", ('redraw',)),
     ('the example\'s picture hiding it', "  if(itm.cv.parentNode === itm.box) itPtHide();\n", "  itPtHide();\n", ('example',)),
     ('the grey gate tag shown', "  if(short && cls === 'gt') return '';   // the tree shows camps only\n", "", ('badges',)),

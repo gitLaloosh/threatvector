@@ -94,6 +94,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #17 One module, two kinds of effect (module states).
 - #30 A name that resolves is an item, not necessarily the right kind of item.
 - #34 JavaScript rounds a tie up; pyfa rounds it to even.
+- #170 A value stored rounded is rounded again wherever it is shown: work the shown value out in one place, and check every item against it.
 
 **The page: layout, controls and what people see**
 
@@ -1076,6 +1077,21 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 170. A value stored rounded is rounded again wherever it is shown: work the shown value out in one place, and check every item against it
+
+- **What happened (found at build queue 058's review, 2026-11-16):** `INTEL_MAP.sec` holds CCP's security rounded to hundredths
+  (`tools/jump_table_update.py`). The map rounded that again to tenths for its colours and numbers, in several functions of their own
+  (`itMapSecClass` / `itMapSecText` callers, the Wormholes tab's `whSec`, the Intel example's values). A system at 0.449 was stored as 45 and
+  then shown as 0.5 in the high-sec colour: 19 such systems, all low-sec. The route planner (047) was right only because it reads
+  `INTEL_MAP.band`, worked out from the unrounded value; nothing compared the two. 058's Security range filter, which compares "the number the
+  map shows", would have matched those 19 under "High".
+- **How it was caught:** reading the plan's one UNVERIFIED row (how the game rounds negative security) against the stored data: counting the
+  systems that sit on an exact x.x5 and comparing the shown tenth with the band.
+- **Do this instead:** one function works out the shown value (`itMapSecT`, tenths, the band settling the 0.45 line), every reader goes through
+  it, and a check (`tools/check_sec_shown.py`) refuses any other reader of the stored field and runs the page's own function on every system
+  against the band. When a table stores a rounded value, say so beside it, and prefer storing the value people see (the generator has the
+  unrounded one). The 582 systems on an x.x5 edge stay a backlog item: only the data can settle them.
 
 ## 169. Don't measure what's hidden, and don't key a cache on an inline element's width
 

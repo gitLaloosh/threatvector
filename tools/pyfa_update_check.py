@@ -106,6 +106,7 @@ if '--run' in sys.argv:
         ('error codes registry and ERRORS.md', 'python3 -I tools/gen_errors_md.py index.html', lambda o: o.strip().splitlines()[-1].endswith('ERRORS.md is up to date')),
         ('card names from one list', 'python3 -I tools/check_card_names.py index.html', lambda o: o.strip().splitlines()[-1].endswith(' 0 problems')),  # v2026.10.14.45
         ('subtext rule (info panels, one-line context)', 'python3 -I tools/check_subtext.py index.html', lambda o: o.strip().splitlines()[-1].endswith(' 0 problems')),  # v2026.10.14.48
+        ('the security the map shows (one function, CCP\'s band)', 'python3 -I tools/check_sec_shown.py index.html', lambda o: o.strip().splitlines()[-1].endswith(' 0 problems')),  # build queue 058, LESSON #170
         ('fighter ability icons cover every fighter', env + 'python3 -I tools/gen_fighter_ability_icons.py --check index.html', lambda o: o.strip().splitlines()[-1].endswith(' 0 problems')),  # v2026.10.14.66
         ('Intel tables: ship names vs pyfa, gates vs the client (EVE_RES)', env + 'python3 -I tools/gen_intel_tables.py index.html', lambda o: o.strip().splitlines()[-1].startswith('intel tables match')),  # v2026.10.14.96
         ('personal data in the repository (LESSON #90)', 'python3 -I tools/check_pii.py .', lambda o: bool(re.search(r' 0 problems($|[;( ])', o.strip().splitlines()[-1]))),  # v2026.10.14.101; v.103: a note after it ("; N reviewed images no longer in any file") is not a failure
