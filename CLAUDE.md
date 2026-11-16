@@ -414,6 +414,20 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   take turns too (`itMapRoomForBoth`, the owner: "sure"). Placed by `itMapCtlPlace` (a key: the map's size, the filter, Near You, the
   panel; no timers). ⌖, your first view, a jump, a search pick, a Wormholes-list pick and ⤢ use the part of the map no panel covers
   (`itMapFree`, the owner: "yes"; the whole width when that part is under 96 px). Hide all routes sits left of the zoom buttons (a phone: top left). `intel_map_layout_check.py`.
+- **Sov upgrades** (v2026.11.16.1, build queue 053, part 2 of the Project doc roadmap/intel-layout-sov-plan.md, now `roadmap/`; mockup `Claude
+  outputs/intel_layout_mockup.html`; the owner: "Paste now, ESI later", "Kind, level shown", "Until replaced", "Bright / dim"): the map filter `sov`
+  (before Paths to you) with its panel button (`[data-it-sovl]`, `sovOpen`, `.it-whp.it-sovp`: rule B, the shared close button, Esc, a press
+  outside). Lists pasted by hand, each on its own ("each list on it's own so it can be replaced or edited separately"): `System <- Upgrade, Upgrade`
+  lines or names alone with a kind (`sovParse`: ✓ / ⚠ / ✗ per line, `sovChkHtml`); Edit / Replace / Remove with Undo (`SOV_UNDO_MS`); kept in
+  localStorage `tvSov` `{v: 1, lists: [{id, kind, text, at}], pick}` (`sovRead` checks everything; at most `SOV_MAX_LISTS` × `SOV_MAX_CHARS`);
+  alliance data: never sent, exported or put in a check or the repo (checks use made-up lists). Names from CCP's data only: `INTEL_SOV` `[typeId,
+  name, kind, level]` (`tools/gen_intel_tables.py`: the four sov hub upgrade groups, published types only). Picks are kinds (`sovIndex`, `sovLitSet`
+  once a draw as `itm.sov`): picked systems bright anywhere, past "Map: within" too (the owner at the review: "Bright anywhere"), the rest dimmed,
+  yours never; the hover names the upgrades with levels (`sovTipHtml`); the map's key follows lists and picks (`sovMapKey`). One filter panel at a
+  time through `itMapPanel` / `itMapPanelClose` (the owner: "Yes, one shared path"): placement, `itMapFree` and take-turns read the open one; the
+  Sov panel sits beside Near You only with `SOV_PANEL_MIN` (420 px) of room ("420 px, one column below"; its picks one column under about 560 px).
+  System names loaded before a paste is checked (`sovNames`, INTEL-03); a full storage is INTEL-11 in the panel, the lists kept for the visit. The
+  Jump bridge kind reads `sovBridgeEnds()`, which build queue 041 fills in. `sov_upgrades_check.py`.
 - **Intel map** (v2026.11.02.4, Project doc roadmap/intel-map-plan.md): was layout B, the map beside Near You (052 above). `INTEL_MAP` (CCP position2D /1e14, security in hundredths, region)
   comes only from `tools/jump_table_update.py`, aligned to `INTEL_JUMPS` (its `jumps` = the jump table's md5; `gen_intel_tables.py`
   keeps it and says when it no longer fits). One canvas (`itm`), made once and moved into each card (`#itMapSlot`); drawn only when
