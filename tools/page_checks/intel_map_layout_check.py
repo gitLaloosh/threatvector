@@ -190,7 +190,7 @@ def cases(b, html, which=('1440', '760', '390', 'paths')):
 MUTANTS = [
     ('the name button not wired', "if(go){ const id = Number(go.dataset.itWhgo); if(itMapPhone()) itWhListOpen(false, false); itRpPick(id); return true; }", "", ('1440',)),
     ('centring ignoring the panels', "  return b - a >= 96 ? [a, b] : [0, W];\n}", "  return [0, W];\n}", ('1440',)),
-    ('no turn-taking at 760', "  return R - L >= IT_MAP_PANEL_MIN;\n}", "  return true;\n}", ('760',)),
+    ('no turn-taking at 760', "  return R - L >= min;\n}", "  return true;\n}", ('760',)),   # 053: the room asked for is the open panel's
     ('the fit key without the tree\'s size', "(tk !== itPt.treeKey && !itPt.hand)", "false", ('paths',)),
     ('Near You open by default', "      if(r.nearShown === true) d.nearShown = true;", "      d.nearShown = r.nearShown !== false;", ('1440',)),
 ]

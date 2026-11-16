@@ -389,12 +389,12 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   names (from about 80 px); gates between two regions are dotted and region names are written in spaced capitals, yours
   in white. The bar at the bottom of the map picks the colours: Security status, Jumps from you (0 to 10 or more; grey
   with no gate route), Region (two regions joined by a gate never share a colour), Intel reports or Kills from Intel (the
-  rest dimmed), Paths to you (below) or Wormholes; it opens on Security status every visit. A ring marks a system with a report: its colour is
+  rest dimmed), Wormholes, Sov upgrades or Paths to you (below); it opens on Security status every visit. A ring marks a system with a report: its colour is
   the standing (hostile red, neutral grey, friendly blue), its size the gang (solo, 2–10, 11 or more); ✕ counts its
   kills. Hover a system, or a row in Near You or the Feed, for its route to you; press it to keep the route (past the
   map's reach too). Drag or two
   fingers move it, the wheel or a pinch zooms it (over the map the wheel zooms instead of scrolling the page). The filters
-  are a column down the map's left side; a filter with a panel (Wormholes' list) has its own button beside it. Near You
+  are a column down the map's left side; a filter with a panel (Wormholes' list, Sov upgrades) has its own button beside it, and one such panel is open at a time. Near You
   is a panel inside the map, behind the feed button under the zoom buttons (its count turns amber when a system is in
   your alert range); it stays open or shut as you left it, and centring the map uses the part no panel covers. Near You's range (Intel settings): from your alert range to
   the Feed's kill range, alert + 5 unless you set it. Map: within, under the map: from Near You's range up to the Feed's
@@ -486,6 +486,18 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   report, but never a value you set by hand: a newer shared report that disagrees shows as "!" beside the ID. A value with no line
   behind it is kept. A system or ID you removed comes back only with a report newer than the removal. A line that still decides a
   detail is kept when a system has more than 10. Imported holes count like Intel's reports (their hover says "from a shared list").
+- **Sov upgrades** (build queue 053): lists you paste into the filter's panel, each kept on its own until you edit, replace or
+  remove it (Remove has Undo for 6 seconds), in this browser only (localStorage `tvSov`, at most 10 lists of 100,000 characters;
+  nothing is sent, exported or shared). A list is either `System <- Upgrade, Upgrade` lines, each upgrade named as in the game
+  with its level as a trailing number ("Major Threat Detection Array 3"), or system names alone with what they have (Cyno
+  beacons by default; any upgrade that has no level, but the jump bridge). The upgrade names come from CCP's published data
+  (the four sovereignty hub upgrade groups). Each line is checked as you type: ✓ read, ⚠ read but a word isn't an upgrade's
+  name (named), ✗ not read (an unknown system, or no upgrades on the line); a system twice in one list says "also on line N".
+  The panel lists the kinds your lists hold (Ratting, Exploration, Navigation, Mining, Other) with how many systems have
+  each, one checkbox per kind (a new list's kinds start ticked); the levels are in the hover. On the filter, systems with a
+  ticked kind stay bright anywhere on the map, past its reach too, and the rest dim; your own system never dims; hovering a
+  system names its upgrades with their levels. A browser whose storage is full keeps the lists for the visit and says so
+  (INTEL-11).
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location
   on, whichever is newer. Jumps are gate jumps from EVE's published stargate data (no jump bridges or wormholes); the
   table is checked against each new EVE build every day.
@@ -495,7 +507,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   how many systems are out of view. A kill badge there shows its kills' value together. The radar icon beside a system
   in Near You sends its pilots and ships to the System Analyzer; Restore my paste puts yours back.
 - **Privacy, the folder and tabs:** nothing from your logs leaves the browser except the words looked up on ESI, and
-  nothing is kept after you close the page. Chrome or Edge read the folder once you allow it, and ask again on a later
+  nothing is kept after you close the page but wormhole reports and sov lists. Chrome or Edge read the folder once you allow it, and ask again on a later
   visit: Allow this time (this visit only; Chrome may also take it back while the tab is in the background, which stops
   Intel reading), Allow on every visit (no more questions) or Don't allow. Until you answer, step 1 shows Allow reading
   and steps 2 and 3 wait for the folder. The logs are read every 2 seconds, also in a hidden tab. Intel runs in one tab

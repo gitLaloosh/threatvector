@@ -5,6 +5,10 @@
   INTEL_PROBES (build queue 049) every published probe's name (English, and Chinese) -> type ID, from pyfa's SDE data: the
                groups Scanner Probe, Survey Probe and Interdiction Probe (by name, category Charge), so a probe dragged in from
                D-Scan ("Sisters Core Scanner Probe") is read as probes, never as the ship "Probe" and a pilot
+  INTEL_SOV    (build queue 053) every published sovereignty hub upgrade, from pyfa's SDE data: the groups 4768 Site Detection,
+               4772 Service Infrastructure, 4838 Colony Resources Management and 4839 System Effect Generator (by ID), rows
+               [typeId, name, kind, level]: kind is the name less a trailing " 1"-" 3", level that number or null. Unpublished
+               types (Placeholder, QA, "Systemwide Modifier Upgrade B1") are left out by `published`, never by name
   INTEL_MAP    (v2026.11.02.4) kept as it is: tools/jump_table_update.py derives it from CCP's static data, aligned to
                INTEL_JUMPS; when the jump table here changes, that script must be run again (this one says so and fails)
 
@@ -71,6 +75,16 @@ for t, v in sorted(types.items(), key=lambda x: int(x[0])):
         n = v.get('typeName') or {}
         probeRows[str(int(t))] = [n.get('en-us', ''), n.get('zh', '')]
 assert len(probeRows) >= 5, probeRows
+# build queue 053 (roadmap/intel-layout-sov-plan.md 5.1): the sov hub upgrades, for the Intel map's Sov upgrades filter
+SOV_GROUPS = (4768, 4772, 4838, 4839)
+for g in SOV_GROUPS: assert str(g) in groups, f'group {g} is gone from CCP\'s data'
+sovRows = []
+for t, v in sorted(types.items(), key=lambda x: int(x[0])):
+    if v.get('groupID') in SOV_GROUPS and v.get('published'):
+        nm = ((v.get('typeName') or {}).get('en-us') or '').strip()
+        lv = re.match(r'^(.*\S) ([1-3])$', nm)
+        sovRows.append([int(t), nm, lv.group(1) if lv else nm, int(lv.group(2)) if lv else None])
+assert len(sovRows) >= 30, len(sovRows)
 
 # ---- jumps, from the client ----
 RES = os.environ.get('EVE_RES')
@@ -115,19 +129,20 @@ if RES and all(_oj.get(k) == jumps[k] for k in ('sys', 'edges', 'n', 'systems'))
 _mp = re.search(r'^const INTEL_MAP = .*;$', cur, re.M)
 new = ('const INTEL_JUMPS = ' + json.dumps(jumps, separators=(',', ':')) + ';\n'
        + 'const INTEL_SHIPS = ' + json.dumps(shipRows, ensure_ascii=False, separators=(',', ':')) + ';\n'
-       + 'const INTEL_PROBES = ' + json.dumps(probeRows, ensure_ascii=False, separators=(',', ':')) + ';'
+       + 'const INTEL_PROBES = ' + json.dumps(probeRows, ensure_ascii=False, separators=(',', ':')) + ';\n'
+       + 'const INTEL_SOV = ' + json.dumps(sovRows, ensure_ascii=False, separators=(',', ':')) + ';'
        + ('\n' + _mp.group(0) if _mp else ''))
 _mj = cur_json('INTEL_MAP')
 if _mj and _mj.get('jumps') != jumps['md5']:
     print(f"INTEL_MAP is aligned to jump table {_mj.get('jumps')}, not {jumps['md5']}: run tools/jump_table_update.py --write")
 if new == cur:
-    print(f"intel tables match: {len(shipRows)} ships and {len(probeRows)} probes (pyfa), {jumps['n']} gate connections between {jumps['systems']} systems "
+    print(f"intel tables match: {len(shipRows)} ships, {len(probeRows)} probes and {len(sovRows)} sov upgrades (pyfa), {jumps['n']} gate connections between {jumps['systems']} systems "
           f"(client build {CLIENT_BUILD}, the page's table from build {jumps['build']}){'' if RES else ' -- jumps: skipped (no EVE_RES, the table in the page kept)'}")
     sys.exit(0)
 if WRITE:
     out = src[:m.start(1)] + new + src[m.end(1):]
     open(HTML, 'w', encoding='utf-8').write(out)
-    print(f"written: {len(shipRows)} ships, {len(probeRows)} probes, {jumps['n']} connections, {jumps['systems']} systems, build {jumps['build']}")
+    print(f"written: {len(shipRows)} ships, {len(probeRows)} probes, {len(sovRows)} sov upgrades, {jumps['n']} connections, {jumps['systems']} systems, build {jumps['build']}")
     sys.exit(0)
 old = cur_json('INTEL_SHIPS') or {}
 print('intel tables differ:')
@@ -136,6 +151,7 @@ if old != shipRows:
     chg = [t for t in shipRows if t in old and old[t] != shipRows[t]]
     print(f'  ships: +{len(add)} -{len(gone)} changed {len(chg)}', [shipRows[t][0] for t in add[:8]], [old[t][0] for t in gone[:8]])
 if (cur_json('INTEL_PROBES') or {}) != probeRows: print(f'  probes: {len(cur_json("INTEL_PROBES") or {})} in the page, {len(probeRows)} in pyfa')
+if (cur_json('INTEL_SOV') or []) != sovRows: print(f'  sov upgrades: {len(cur_json("INTEL_SOV") or [])} in the page, {len(sovRows)} in pyfa')
 oj = cur_json('INTEL_JUMPS') or {}
 if RES and oj != jumps:
     print(f"  jumps: page build {oj.get('build')} md5 {oj.get('md5')} n {oj.get('n')} -> client build {jumps['build']} md5 {jumps['md5']} n {jumps['n']}")

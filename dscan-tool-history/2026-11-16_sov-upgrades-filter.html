@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-16 — The Intel map's Sov upgrades filter (part 2)</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The Intel map's Sov upgrades filter (part 2)</h1>
+<p><span class="tag">Intel</span> 2026-11-16 &middot; <code>v2026.11.16.1</code> &middot; build queue 053 &middot; plan <code>roadmap/intel-layout-sov-plan.md</code> (part 2, section 14;
+mockup <code>Claude outputs/intel_layout_mockup.html</code>)</p>
+
+<h2>Why</h2>
+<p>The owner, 2026-11-14: "i've got a list of sov upgrades that i'd like to be able to apply to the map like filters but i'd like to be able to pick and
+choose which ones". The design cycle that followed gave the Intel tab its new layout (052, part 1) and this filter (part 2): "Paste now, ESI later",
+"Kind, level shown", "Until replaced", "Bright / dim", "More kinds later", and lists "each on it's own so it can be replaced or edited separately".
+At the build review: "Yes, one shared path", "420 px, one column below", "Bright anywhere", "INTEL-11 when storage is full", "Load names before
+checking". The Wormholes tab's panels, first meant to ride along, were taken out to be planned on their own.</p>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The table:</b> <code>INTEL_SOV</code>, 44 sovereignty hub upgrades from CCP's data (the four upgrade groups, published types only), written by
+<code>tools/gen_intel_tables.py</code> as <code>[typeId, name, kind, level]</code>.</li>
+<li><b>The filter:</b> Sov upgrades, before Paths to you, with its panel button beside it. The panel (the site's panel style, the shared close
+button, Escape, a press outside) shows the kinds your lists hold, grouped Ratting / Exploration / Navigation / Mining / Other, one checkbox each
+with its count of systems and, in the hover, the levels. Systems with a ticked kind stay bright anywhere on the map, past its reach too; the rest dim;
+yours never. The hover names a system's upgrades with their levels; the key line under the map names what's bright.</li>
+<li><b>Lists:</b> pasted as <code>System &lt;- Upgrade, Upgrade</code> lines or as system names alone with a kind (Cyno beacons by default), each line
+checked as you type (✓ / ⚠ naming what isn't an upgrade / ✗), each list on its own with Edit, Replace and Remove (Undo for 6 seconds). Kept in this
+browser only, in a new localStorage key <code>tvSov</code>; never sent, exported or put in a check or the repo.</li>
+<li><b>One filter panel at a time:</b> 052's placement now reads whichever panel is open (<code>itMapPanel</code>); the Sov panel sits beside Near You
+only with 420 px of room, its picks in one column below about 530 px.</li>
+<li><b>INTEL-11</b> (new): the browser's storage is full; the lists work for the visit. The system names load before a paste is checked (INTEL-03
+when ESI can't give them).</li>
+<li><b>Info text:</b> Intel's [Map] and [Privacy and tabs]; METHODOLOGY.md's Intel section.</li>
+</ul>
+
+<h2>Checks</h2>
+<p><code>tools/page_checks/sov_upgrades_check.py</code>: the table, the store (a bad value empty, bad lists dropped, kept across a reload), the filter and
+its panel, pasting (every mark), the picks and their hover, the map (bright / dim, far past the reach by the pixel, the hover, the key line, the map's
+key), Edit / Replace / Remove / Undo, a full storage, the names, one panel at a time and the room beside Near You at 1440 and 760 px, a phone sheet at
+390 px; 6 mutants. Every list in it is made up.</p>
+</body></html>
