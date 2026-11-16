@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-+Ys80jCcHSEAdz63wElRtgqQ5fg9DHP378Wx4K/QsDo='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MuQd3Z4Xy+L8a3zaZynixX5bRK6MEiv56oEtvCJOiJM='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -24599,10 +24599,15 @@ function eveFeatMsgHtml(k){
 // whose Log in again works there); o.more: lines under the status line (D6)
 function eveFeatHtml(k, m, o){
   const f = m.F[k], L = eveFeatLine(k, f, m), npc = m.eve && k === 'stand' && f.npc, iv = !!(o && o.intel);
-  const name = iv ? `<span class="pp-fn">${escapeHtml(SSO_FEAT_NAME[k])}</span>` : `<label class="pp-fn" for="ppSw-${escapeHtml(k)}">${escapeHtml(SSO_FEAT_NAME[k])}</label>`;
-  return `<div class="pp-feat"${iv ? ' data-it-glrow' : ` data-feat="${escapeHtml(k)}"`}><span class="pp-led" data-l="${escapeHtml(L.s)}" aria-hidden="true"></span><div class="pp-ft">${name}${eveFeatInfoHtml(k)}
-    <div class="pp-fs" data-l="${escapeHtml(L.s)}">${eveLineHtml(L)}</div>${iv ? (o.more || '') : eveFeatMsgHtml(k)}</div>
-    ${iv ? '' : `<input type="checkbox" class="mys-sw" role="switch" id="ppSw-${escapeHtml(k)}" data-sso="${escapeHtml(k)}"${itOnHtml(f.on && !npc, 'checked')}${itOnHtml(!ssoClientId() || npc, 'disabled')}>`}</div>`;
+  return `<div class="pp-feat"${eveFeatAttrHtml(k, iv)}><span class="pp-led" data-l="${escapeHtml(L.s)}" aria-hidden="true"></span><div class="pp-ft">${eveFeatNameHtml(k, iv)}${eveFeatInfoHtml(k)}
+    <div class="pp-fs" data-l="${escapeHtml(L.s)}">${eveLineHtml(L)}</div>${eveFeatMoreHtml(k, o)}</div>
+    ${eveFeatSwHtml(k, f, npc, iv)}</div>`;
+}
+function eveFeatAttrHtml(k, iv){ return iv ? ' data-it-glrow' : ` data-feat="${escapeHtml(k)}"`; }
+function eveFeatNameHtml(k, iv){ return iv ? `<span class="pp-fn">${escapeHtml(SSO_FEAT_NAME[k])}</span>` : `<label class="pp-fn" for="ppSw-${escapeHtml(k)}">${escapeHtml(SSO_FEAT_NAME[k])}</label>`; }
+function eveFeatMoreHtml(k, o){ return o && o.intel ? o.more || '' : eveFeatMsgHtml(k); }   // o.more: built by its caller (itGlNoLogHtml)
+function eveFeatSwHtml(k, f, npc, iv){
+  return iv ? '' : `<input type="checkbox" class="mys-sw" role="switch" id="ppSw-${escapeHtml(k)}" data-sso="${escapeHtml(k)}"${itOnHtml(f.on && !npc, 'checked')}${itOnHtml(!ssoClientId() || npc, 'disabled')}>`;
 }
 function eveFeatsHtml(m){ return ['online', 'loc', 'stand', 'wp'].map(k => eveFeatHtml(k, m)).join(''); }
 function eveGoHtml(m){
@@ -27296,6 +27301,7 @@ async function itLookAgain(){
 function itPermLostText(){ return withCode(`The page can't read “${it.dirName}” any more: the browser took back the permission. Press Allow reading (in Chrome's box, Allow on every visit keeps it).`, 'INTEL-02'); }
 function itMySys(){ const w = whIntelSys(); return w !== undefined ? w : itGlSys() || itLogSys(); }   // 048 (D14): in a hole, the k-space system you came in through
 // 054 (the owner at the review: "Yes, that wording"): a You with no Local log hears its system from EVE, not from a log
+function itNoSysWarnHtml(){ return it.on && it.me && !itMySys() ? `<div class="it-sub it-warn">${escapeHtml(itNoSysText())}, so no jumps and no alerts until then.</div>` : ''; }
 function itNoSysText(){ return it.me && it.me.noLog ? 'Your system isn’t known yet (it comes from EVE once it answers)' : 'Your system isn’t known yet (it’s read from your Local log when you jump)'; }
 function itLogSys(){ const s = it.me && it.me.sys; return s && it.names ? it.names.byLower.get(s.toLowerCase()) || null : null; }
 
@@ -29135,6 +29141,7 @@ function itChansHtml(chans){
   if(chans.length) return chans.map(c => `<label><input type="checkbox" data-it-chan="${escapeHtml(c)}"${itOnHtml(it.set.channels.includes(c), 'checked')}> ${escapeHtml(c)}</label>`).join('');
   return itWaiting() ? '' : `<div class="c">${escapeHtml(it.dir && it.read ? 'No channel logs from the last 2 days.' : 'Found in the folder.')}</div>`;
 }
+function itYouListHtml(chars){ return itFollowLogin() ? '' : itCharsHtml(chars); }   // 054 (D1): no radios while You follows the login
 function itCharsHtml(chars){
   if(chars.length) return chars.map(c => `<label><input type="radio" name="itMe" data-it-me="${Number(c.id)}"${itOnHtml(c.id === it.set.me, 'checked')}> ${escapeHtml(c.name)} <span class="it-dim">${escapeHtml(c.sys || '')}</span></label>`).join('');
   return `<div class="c">${escapeHtml(itYouEmptyText())}</div>`;
@@ -29159,7 +29166,7 @@ function itSettingsHtml(numbered){
   return `<div class="it-setup">
     <div class="it-box">${n(1, 'Chat logs folder')}<div class="v">${it.dir ? escapeHtml(it.dirName) : 'not chosen'}</div>${itFolderStateHtml()}</div>
     <div class="it-box${itWaitHtml('cls')}">${n(2, 'Intel channels')}${itWaitHtml('note')}${itChansHtml(chans)}</div>
-    <div class="it-box">${n(3, 'You')}${itFollowLogin() ? '' : itCharsHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
+    <div class="it-box">${n(3, 'You')}${itYouListHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
     <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
     ${itRpBoxHtml(numbered)}
     ${numbered ? '' : itAliasBoxHtml()}
@@ -29478,7 +29485,7 @@ function itRender(force){   // force: a press that changes what is open (the gea
   } else {
     // v.98 (the owner: "the feed keeps growing ... drop entries older than 15 minutes"): the Feed keeps the same time as Near You
     body = `${it.on ? `<div class="it-sub" data-it-status></div>` : `<div class="it-sub">Stopped. The switch beside the gear starts it again.</div>`}
-      ${it.on && it.me && !itMySys() ? `<div class="it-sub it-warn">${escapeHtml(itNoSysText())}, so no jumps and no alerts until then.</div>` : ''}
+      ${itNoSysWarnHtml()}
       <div class="it-top${itOnHtml(it.set.nearShown, 'ny-open')}">
         <div class="it-mapcol"><div class="it-h"><h3>${escapeHtml(cardName('itmap'))}</h3><span class="ctx" data-it-mapctx>${escapeHtml(itMapCtx())}</span></div><div class="it-mapwrap"><div id="itMapSlot"></div>
         <div class="it-nearcol" id="itNearCol"><div class="it-h"><h3>${escapeHtml(cardName('itnear'))}</h3><span class="ctx" data-it-nearctx title="${escapeHtml(itMySys() ? `Systems within ${itNearReach()} jumps (under the gear); farther reports are in the ${cardName('itfeed')}` : '')}">${escapeHtml(itNearCtx())}</span></div><div id="itNearList">${itNearListHtml()}</div><div class="it-more" hidden></div></div></div></div>

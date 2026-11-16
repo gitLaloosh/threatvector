@@ -443,7 +443,7 @@ with sync_playwright() as p:
     for m in r: check(False, '054: ' + m)
     check(not r, f'054: You follows the login while the switch is on (every step above; {len(r)} wrong)')
     FOLLOW_MUTANTS = [
-        ('the radios still drawn while following', "${itFollowLogin() ? '' : itCharsHtml(chars)}", "${itCharsHtml(chars)}"),
+        ('the radios still drawn while following', "return itFollowLogin() ? '' : itCharsHtml(chars);", "return itCharsHtml(chars);"),
         ('You from the pick while following', "  if(!itFollowLogin()) return it.set.me ?", "  if(true) return it.set.me ?"),
         ('no itGlReset on a change of You', "  it.alerted = new Map(); itGlReset();\n  if(!scan) itRender();", "  it.alerted = new Map();\n  if(!scan) itRender();"),
         ('no itMeSync from renderSidePanel', "  pfTry(() => itMeSync(), false);", "  0;"),
