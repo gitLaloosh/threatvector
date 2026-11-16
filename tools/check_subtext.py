@@ -52,7 +52,7 @@ for k, paras in INFO.items():
             if ck not in NAMES: problems.append(f'CARD_INFO["{k}"]: {{card:{ck}}} is not a key in CARD_NAMES')
 # build queue 036: the length cap (Project doc roadmap/info-panels-plan.md, item 4)
 INFO_OPEN_MAX, INFO_ALL_MAX = 85, 210
-INFO_ALL_MAX_BY_KEY = {'intel': 620}   # the owner, 2026-11-11: "for now, let's allow it to go beyond the 350 cap"; 2026-11-13 (047): "push the cap to 600 and add what you need to"; 2026-11-15 (052, the plan's Q3): "raise it"
+INFO_ALL_MAX_BY_KEY = {'intel': 670}   # the owner, 2026-11-11: "for now, let's allow it to go beyond the 350 cap"; 2026-11-13 (047): "push the cap to 600 and add what you need to"; 2026-11-15 (052, the plan's Q3): "raise it"; 2026-11-16 (041 and 057): "Raise to 670 (Recommended)"
 INFO_CAP_EXEMPT = {}   # build queue 038: the hidden 'fleet' and 'vs' panels were taken out with their cards
 def _name(ck):
     v = NAMES.get(ck, ck)

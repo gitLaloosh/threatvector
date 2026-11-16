@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-YALfCIES3m2yDI6fAT1dSNKyIaqmOkkaJd5FhXoRudU='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UzyAhNSw8E7l+6CVxrz71mbeL7hHSrpOdNh+uXVcvsk='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2461,6 +2461,7 @@
   }
   /* v2026.10.14.96 Intel (roadmap/intel-plan.md): the Intel card, the header slider, the settings */
   :root{--it-clear:#3fb950;}
+  :root{--it-bridge:#00f000;}   /* build queue 041: jump bridges on the map, the game's own green (measured from the owner's in-game screenshot) */
   :root{--it-wh:#a98bd8; --it-wh-drifter:#ff5fbf;}   /* build queue 040: wormholes on the map, the badge and the list; 045: Drifter hot pink (044 D15, the owner: "let's do pink and dashed") */
   .it-whtip{color:var(--it-wh); font-weight:600;} .it-whtip.dr{color:var(--it-wh-drifter);}
   /* v.97 (the owner: "i accidently turned intel off thinking the pill was clickable"): the "N near" pill is its own button beside
@@ -2636,6 +2637,10 @@
   .it-gtag.camp{color:#f08b7e; background:color-mix(in srgb, var(--danger) 22%, transparent);} .it-gtag.camp.kz{color:#f0a868; background:color-mix(in srgb, #d9803c 22%, transparent);} .it-gtag.gt{color:var(--text); background:rgba(255,255,255,.08);}
   .it-alias textarea{width:100%; box-sizing:border-box; margin-top:6px; background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:4px; font:12.5px var(--mono); padding:6px 8px; resize:vertical;}
   .it-alias ul{list-style:none; margin:6px 0 0; padding:0;} .it-alias li{font:12px var(--sans);} .it-alias li.ok{color:var(--it-clear);} .it-alias li.bad{color:#f08b7e;}
+  .it-jb .jb-on{display:flex; align-items:center; gap:8px; min-height:32px; margin:2px 0 6px;} .it-jb .jb-on .d{color:var(--text-dim);}
+  .it-jb li.jb-warn{color:var(--amber);} .it-jb li.jb-dup, .it-jb li.jb-wait{color:var(--text-dim);} .it-jb ul{max-height:240px; overflow:auto;}
+  .it-map-tip .jb{color:var(--it-bridge);}   /* build queue 041: the hover's "N of the M jumps by jump bridge" */
+  @media (max-width:599px){ .it-jb .jb-on{min-height:44px;} }
   .it-tw{margin-left:6px; font:600 10.5px var(--sans); color:var(--amber); white-space:nowrap;}
   .it-ess{display:inline-block; margin-left:8px; font:700 10px/16px var(--sans); text-transform:uppercase; letter-spacing:.5px; color:#f08b7e; background:color-mix(in srgb, var(--danger) 22%, transparent); padding:0 6px; border-radius:3px; white-space:nowrap; vertical-align:1px;}   /* v2026.10.31.4: the ESS being robbed */
   /* v.100 (the owner: "a subtle button to expand the text to be at the bottom"): the line as typed, who sent it and the channel */
@@ -3366,7 +3371,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.4</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.5</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3748,7 +3753,7 @@ const CARD_INFO = {
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
   "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. Filters (left): one colour (press it again for none); Only filters, any number, all must match (their settings beside them); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter on, systems past {card:itnear}'s range are faded.",
-  "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; jump counts stay the shortest by stargate.",
+  "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus your jump bridges with Use jump bridges on the map (green curves; the alert glow and Paths to you stay by stargate).",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list.",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
   "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI; only wormhole reports and sov lists are kept after you close the page.",
@@ -26624,7 +26629,7 @@ const it = {
 function itKfNew(){ return {seq: null, busy: false, waitUntil: 0, head: false, fails: 0, blk: 0, seen: new Set(), reqs: 0, lastGot: 0, target: 0, seqAt: 0, halt: false, skipped: 0, allSkip: 0, ups: [], behind: false, behindOk: 0, skipMode: false, retrying: false}; }   // blk (v2026.11.06.1): counted reads in a row with nothing the browser may read (itFeedDown)   // seq = the next number to read; head = at the live end; lastGot = when a kill was last read; target = sequence.json's newest number (every one up to it is published); seqAt = when sequence.json was last read (v2026.10.29.8)
 // v2026.11.08.4 (028; the owner: "have desktop notifications unchecked by default ... same with sounds"): sound and notify start off; a
 // saved setting keeps its value (itReadSet), so nobody's choice changes. gameLoc: Use my game location (box 3).
-function itDefaults(){ return {channels: [], me: null, range: 3, killRange: IT_KILL_RANGE_DEFAULT, nearRange: null, mapReach: null, nearView: 'list', nearShown: false, sound: false, notify: false, gameLoc: false, volume: IT_VOL_DEFAULT, soundNear: 'chime', soundHere: 'klaxon', sndPrev: {near: 'chime', here: 'klaxon'}, forget: 15, hideFriendly: true, feed: {types: 'all', dist: 0, sort: 'new'}, alias: ''}; }
+function itDefaults(){ return {channels: [], me: null, range: 3, killRange: IT_KILL_RANGE_DEFAULT, nearRange: null, mapReach: null, nearView: 'list', nearShown: false, sound: false, notify: false, gameLoc: false, volume: IT_VOL_DEFAULT, soundNear: 'chime', soundHere: 'klaxon', sndPrev: {near: 'chime', here: 'klaxon'}, forget: 15, hideFriendly: true, feed: {types: 'all', dist: 0, sort: 'new'}, alias: '', bridges: '', bridgesOn: false}; }
 function itReadSet(){
   const d = itDefaults();
   try{
@@ -26648,6 +26653,8 @@ function itReadSet(){
         const pv = r.sndPrev && r.sndPrev[sl]; if(IT_SOUNDS.some(x => x[0] === pv)) d.sndPrev[sl] = pv;
       }
       if(typeof r.alias === 'string') d.alias = r.alias.slice(0, IT_ALIAS_MAX);   // v2026.10.31.5: your shorthands
+      if(typeof r.bridges === 'string') d.bridges = r.bridges.slice(0, IT_BRIDGE_MAX);   // build queue 041: your jump bridges, one per line
+      if(r.bridgesOn === true) d.bridgesOn = true;   // 041: Use jump bridges on the map (missing = off, the owner: "default setting will be off")
       const f = r.feed && typeof r.feed === 'object' ? r.feed : {};   // v.99: the Feed's filters
       if(IT_FEED_TYPES.some(x => x[0] === f.types)) d.feed.types = f.types;
       if(IT_FEED_DIST.includes(Number(f.dist))) d.feed.dist = Number(f.dist);
@@ -26913,6 +26920,107 @@ function itAliases(){
   }
   itAliasMemo = {text, N, map, rows};
   return itAliasMemo;
+}
+// ---- build queue 041 (Project doc roadmap/jump-bridges-plan.md; mockup Claude outputs/jump_bridges_mockup.html; the owner: "add jump bridges
+// to the map (as a setting that can be toggled off and on). when turned on, jump ranges will be calculated using bridges. default setting
+// will be off."). Your alliance's bridges, pasted one per line under the gear (it.set.bridges; "Lift hold, cleaned list only": his own list
+// is alliance data, never in a check, a mockup or the repo). Read here, the one place: the map's bridge graph (itBridgeAdj) and 053's Sov
+// filter (sovBridgeEnds) both come from it. Near You, its alerts and the Feed never use it (the owner: "ideally i'd like to only have near
+// you not use bridges"): itJumps stays by stargate.
+const IT_BRIDGE_MAX = 12000;   // characters kept (a few hundred lines)
+const IT_BRIDGE_SEP = /»|«|<->|->|<-|=>|→|←|⇄|↔/;   // D7: on a line with one of these, the bridge is the last name before it and the first after
+let itBridgeMemo = null;
+// the system ids named in a piece of a line, in order: 1-3 words, the longest name first, any case; words of digits only (another tool's
+// structure ids, D8) and everything else are passed over
+function itBridgeNames(part){
+  const N = it.names, out = []; if(!N) return out;
+  const W = part.split(/[\s,;|]+/).map(w => w.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '')).filter(w => w && !/^\d+$/.test(w));
+  for(let i = 0; i < W.length;){
+    let hit = 0;
+    for(let k = Math.min(3, W.length - i); k >= 1; k--){ const id = N.byLower.get(W.slice(i, i + k).join(' ').toLowerCase()); if(id){ out.push(id); hit = k; break; } }
+    i += hit || 1;
+  }
+  return out;
+}
+// the list: rows ✓ ok / ⚠ warn (counted, with why: D1) / dup (the same two systems again, either way round: D6, not counted twice) /
+// ✗ bad (not counted); edges [a, b] in map indexes; ends: both ends' system ids, unique and sorted (sovBridgeEnds); key: what was counted
+function itBridges(){
+  const text = String(it.set && it.set.bridges || ''), N = it.names;
+  if(itBridgeMemo && itBridgeMemo.text === text && itBridgeMemo.N === N) return itBridgeMemo;
+  const g = itGraphGet(), rows = [], edges = [], pair = new Map(), used = new Map();
+  text.split(/\r?\n/).forEach((raw, li) => {
+    const ln = raw.trim(); if(!ln) return;
+    const n = li + 1;
+    if(!N) return rows.push({n, ln, st: 'wait'});   // checked once the system names are in (itBridgeNamesLoad)
+    const m = ln.match(IT_BRIDGE_SEP);
+    let ids;
+    if(m){ const L = itBridgeNames(ln.slice(0, m.index)), R = itBridgeNames(ln.slice(m.index + m[0].length)); ids = [L[L.length - 1], R[0]].filter(x => x !== undefined); }
+    else {
+      const f = itBridgeNames(ln), u = [...new Set(f)];
+      if(u.length > 2) return rows.push({n, ln, st: 'bad', msg: 'more than two systems: one bridge per line'});
+      ids = f.length === 2 && u.length === 1 ? f : u;
+    }
+    if(ids.length === 2 && ids[0] === ids[1]) return rows.push({n, ln, st: 'bad', msg: 'the same system twice'});
+    if(ids.length < 2) return rows.push({n, ln, st: 'bad', msg: ids.length ? `needs two systems (found only ${itSysName(ids[0])})` : 'needs two systems'});
+    const [a, b] = ids, ia = g.at.get(a), ib = g.at.get(b);
+    if(ia === undefined || ib === undefined) return rows.push({n, ln, st: 'bad', msg: `${itSysName(ia === undefined ? a : b)} has no stargates`});
+    const k = Math.min(ia, ib) * 65536 + Math.max(ia, ib);
+    if(pair.has(k)) return rows.push({n, ln, st: 'dup', a, b, msg: `same bridge as line ${pair.get(k)}`});   // D6: SMT lists each direction
+    pair.set(k, n);
+    const warn = [];
+    for(const id of [a, b]){ if(used.has(id)) warn.push(`${itSysName(id)} is also on line ${used.get(id)} (one jump bridge per system)`); else used.set(id, n); }
+    const ly = itMapTable() ? itMapLy(ia, ib) : null;
+    if(ly !== null && Number(itMapLyText(ly)) > 5) warn.push('more than 5 LY apart (an Ansiblex reaches 5)');   // rounded up as the hover shows it
+    edges.push([ia, ib]); rows.push({n, ln, st: warn.length ? 'warn' : 'ok', a, b, ly, msg: warn.join('; ')});
+  });
+  const ends = [...new Set(edges.flatMap(([x, y]) => [g.ids[x], g.ids[y]]))].sort((x, y) => x - y);
+  itBridgeMemo = {text, N, rows, edges, pairs: new Set(pair.keys()), ends, adj: null, key: edges.map(e => `${e[0]}-${e[1]}`).join(',')};
+  return itBridgeMemo;
+}
+function itBridgeOn(){ return !!(it.set && it.set.bridgesOn) && itBridges().edges.length > 0; }   // the map counts bridges
+function itBridgeKey(){ return itBridgeOn() ? itBridges().key : ''; }   // what the map's search counted (itm.jbKey)
+function itBridgeIs(a, b){ return itBridges().pairs.has(Math.min(a, b) * 65536 + Math.max(a, b)); }
+// the map's graph with the bridges: the stargates plus each bridge both ways, every list in index order (one route per system, as T.adj).
+// The one place the map's bridge graph is built (057 leaves out the bridges you can't use here)
+function itBridgeAdj(){
+  const B = itBridges(); if(B.adj) return B.adj;
+  const T = itMapTable(); B.adj = T.adj.map(a => a.slice());
+  for(const [a, b] of B.edges){ B.adj[a].push(b); B.adj[b].push(a); }
+  for(const a of B.adj) a.sort((p, q) => p - q);
+  return B.adj;
+}
+// the rows under the box, the count beside the switch; the names are loaded first (as Sov's paste)
+function itBridgeRowsHtml(){
+  const B = itBridges(), nm = (id) => itSysName(id);
+  if(!B.N && B.rows.length) return '<li class="jb-wait">Checked once the system names are loaded…</li>';
+  return B.rows.map(r => {
+    if(r.st === 'bad') return `<li class="bad">✗ ${escapeHtml(r.ln)}: ${escapeHtml(r.msg)}</li>`;
+    if(r.st === 'dup') return `<li class="jb-dup">${escapeHtml(`${nm(r.a)} ⇄ ${nm(r.b)} · ${r.msg}`)}</li>`;
+    const t = `${r.st === 'warn' ? '⚠' : '✓'} ${nm(r.a)} ⇄ ${nm(r.b)}${r.ly !== null ? ` · ${itMapLyText(r.ly)} LY` : ''}${r.msg ? `: ${r.msg}` : ''}`;
+    return `<li class="${escapeHtml(r.st === 'warn' ? 'jb-warn' : 'ok')}">${escapeHtml(t)}</li>`;
+  }).join('');
+}
+function itBridgeCountText(){ const n = itBridges().edges.length; return `(${n} bridge${n === 1 ? '' : 's'})`; }
+let itBridgeNamesBusy = false;
+function itBridgeNamesLoad(){
+  if(it.names || itBridgeNamesBusy || !String(it.set.bridges || '').trim()) return;
+  itBridgeNamesBusy = true;
+  itLoadNames().then(() => { itBridgeNamesBusy = false; itBridgePaint(); if(typeof itm !== 'undefined' && itm.el) itMapRefresh(); }).catch(() => { itBridgeNamesBusy = false; });
+}
+function itBridgeBoxHtml(numbered){
+  if(numbered) return '';   // gear only, as Routes and Shorthands (not in the Intel example's numbered setup)
+  itBridgeNamesLoad();
+  return `<div class="it-box it-alias it-jb" data-it-jb-box><div class="k">Jump bridges</div>`
+    + `<label class="jb-on"><input type="checkbox" data-it-jbon${itOnHtml(!!it.set.bridgesOn, 'checked')}> Use jump bridges on the map <span class="d" data-it-jb-n>${escapeHtml(itBridgeCountText())}</span></label>`
+    + '<div class="c">One per line: <code>1DQ1-A » 8QT-H4</code>, <code>A → B</code> or two names; the rest of the line is ignored. Kept in this browser only.</div>'
+    + `<textarea data-it-jb rows="4" maxlength="${IT_BRIDGE_MAX}" spellcheck="false" aria-label="Your jump bridges, one per line: two system names" placeholder="1DQ1-A » 8QT-H4">${escapeHtml(it.set.bridges || '')}</textarea><ul>${itBridgeRowsHtml()}</ul></div>`;
+}
+// only the rows and the count are written again, so the text box keeps its caret and focus
+function itBridgePaint(){
+  const box = document.querySelector('[data-it-jb-box]'); if(!box) return;
+  const ul = box.querySelector('ul'), n = box.querySelector('[data-it-jb-n]');
+  if(ul) ul.innerHTML = itBridgeRowsHtml();
+  if(n) n.textContent = itBridgeCountText();
 }
 // v2026.10.31.5 (the owner: "people will often use shorthand to communicate which gate enemies are on ... usually consists of three
 // characters, one of which may be a "-" ... used in conjunction with "gate""): the word before gate / gt / gat names one of the
@@ -29182,6 +29290,7 @@ function itSettingsHtml(numbered){
     <div class="it-box">${n(3, 'You')}${itYouListHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
     <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
     ${itRpBoxHtml(numbered)}
+    ${itBridgeBoxHtml(numbered)}
     ${numbered ? '' : itAliasBoxHtml()}
     ${leaveHosts().length ? `<div class="it-box">${n(5, 'Links outside this site')}<div class="c">${escapeHtml(leaveHosts().map(leaveName).join(', '))} open${leaveHosts().length === 1 ? 's' : ''} without asking (you chose “Don't ask again”).</div><button type="button" data-it-act="leaveask">Ask again</button></div>` : ''}
   </div>`;
@@ -29811,7 +29920,7 @@ function itMapFbtnsHtml(){
   const sep = (t) => `<span class="it-map-fsep" aria-hidden="true" title="${escapeHtml(t)}"></span>`, G = {only: 'Only: switch on any number; every one that is on must match', view: 'View'};
   return IT_MAP_FILTERS.map((f, k) => (k && f.g !== IT_MAP_FILTERS[k - 1].g ? sep(G[f.g] || '') : '') + (IT_MAP_PANEL_BTN[f.k] ? `<span class="it-map-fw">${itMapFbtnHtml(f)}${itMapPanelBtnHtml(f.k)}</span>` : itMapFbtnHtml(f))).join('');
 }
-function itMapFbtnHtml(f){ return `<button type="button" data-im-f="${escapeHtml(f.k)}" title="${escapeHtml(f.name)}: ${escapeHtml(f.note)}" aria-label="${escapeHtml(f.name)}" aria-pressed="false">${itMapIconHtml(f.k)}</button>`; }
+function itMapFbtnHtml(f){ return `<button type="button" data-im-f="${escapeHtml(f.k)}" title="${escapeHtml(f.name)}: ${escapeHtml(itMapFNote(f))}" aria-label="${escapeHtml(f.name)}" aria-pressed="false">${itMapIconHtml(f.k)}</button>`; }
 function itMapPanelBtnHtml(k){ return IT_MAP_PANEL_BTN[k](); }
 // build queue 040, moved beside its filter in 052: the filters with a panel and their panel buttons (Sov upgrades adds its own, 053)
 // 058: Security range's and Within N jumps' settings panels (itMp)
@@ -29915,7 +30024,9 @@ function itMapFreeX(){ const [a, b] = itMapFree(); return (a + b) / 2; }
 function itMapIconHtml(k){ return (IT_MAP_FILTERS.find(f => f.k === k) || IT_MAP_FILTERS[0]).icon; }
 // 058: pressed: the colour that is on, Paths to you while it shows, each Only filter that is on. The name line names the colour (or the view);
 // the phone's folded button shows the colour's icon and a neutral count of the Only filters that are on (rule A: never amber)
-function itMapFnameHtml(f){ return f ? `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(f.note)}</span>` : '<b>No colour</b> <span>press Security, Jumps or Region to colour the systems again</span>'; }
+// build queue 041: a filter's note; Jumps from you says so while your jump bridges are counted
+function itMapFNote(f){ return f.k === 'jumps' && itBridgeOn() ? 'colour: jumps from your system, your jump bridges counted; zoomed in, the number' : f.note; }
+function itMapFnameHtml(f){ return f ? `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(itMapFNote(f))}</span>` : '<b>No colour</b> <span>press Security, Jumps or Region to colour the systems again</span>'; }
 // 055: marks a filter column (the live map's, or the Intel example's copy before it is made still) from a stack: one painter for both
 function itMapFbarMark(fb, s){
   const paths = s.view === 'paths', k0 = paths ? 'paths' : s.colour, f = IT_MAP_FILTERS.find(x => x.k === k0), n = IT_MAP_ONLY.filter(k => s.only[k]).length;
@@ -29971,7 +30082,7 @@ function itMpShown(){ return !!(itMp.el && itMp.k && !itMp.el.hidden && itMp.el.
 function itMpBodyHtml(k){
   if(k === 'secr') return `<div class="it-mp-row">${rsHtml('mapSecLo')}${rsHtml('mapSecHi')}</div><div class="it-mp-q"><span>Quick:</span><button type="button" data-it-mpq="hi">High</button><button type="button" data-it-mpq="low">Low</button><button type="button" data-it-mpq="null">Null</button></div>`
     + '<div class="it-mp-note">Both ends count, in either order. It compares the number the map shows (one decimal).</div><div class="it-mp-cnt" role="status"></div>';
-  return `<div class="it-mp-row">${rsHtml('mapNear')}</div><div class="it-mp-note">By stargate from your system, as Jumps from you counts. “Map: within” still sets how far reports and names show.</div><div class="it-mp-cnt" role="status"></div>`;
+  return `<div class="it-mp-row">${rsHtml('mapNear')}</div><div class="it-mp-note">${escapeHtml(itBridgeOn() ? 'From your system, your jump bridges counted, as Jumps from you counts.' : 'By stargate from your system, as Jumps from you counts.')} “Map: within” still sets how far reports and names show.</div><div class="it-mp-cnt" role="status"></div>`;
 }
 function itMpMake(){
   const p = document.createElement('div');
@@ -30087,8 +30198,10 @@ function itMapRefresh(force){
   // happened while nobody could see the map)
   const moved = home !== itm.home, jumped = moved && itm.home >= 0, k0 = itm.view.k;
   const beacon = moved && (!itm.beaconDone || (jumped && it.me && it.me.sysAt && Date.now() - it.me.sysAt < 5000));
-  if(moved){ itMapBfs(home); itm.pinned.clear(); }
-  if(moved || reach !== itm.reach || w !== itm.W || h !== itm.H){
+  const jbMoved = !moved && itBridgeKey() !== itm.jbKey;   // 041: the setting or the list changed: searched again and laid out again, as a reach change
+  if(moved || jbMoved){ itMapBfs(home); if(moved) itm.pinned.clear(); }
+  if(jbMoved){ const jf = itm.el.querySelector('[data-im-f="jumps"]'), f = IT_MAP_FILTERS.find(x => x.k === 'jumps'); if(jf && f) jf.title = `${f.name}: ${itMapFNote(f)}`; }
+  if(moved || jbMoved || reach !== itm.reach || w !== itm.W || h !== itm.H){
     itm.home = home; itm.reach = reach; itm.W = w; itm.H = h;
     const dpr = window.devicePixelRatio || 1; itm.cv.width = Math.round(w * dpr); itm.cv.height = Math.round(h * dpr); itm.cv.style.height = h + 'px';
     itMapLayout(); laid = true;
@@ -30107,7 +30220,7 @@ function itMapRefresh(force){
 // their labels' ages, so a label that ages or a wormhole whose time is up redraws the map through the refreshes it already has (no timer)
 function itMapKey(){
   const fq = itFlSys();
-  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}`;   // 058: the stack   // 047: Threat Vector's route
+  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}`;   // 058: the stack   // 047: Threat Vector's route   // 041: the bridges counted
 }
 // slide the map so your system is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
 function itMapCenter(draw = true){
@@ -30161,11 +30274,19 @@ function itMapYouArrow(){
   b.querySelector('svg').style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
 }
 function itSysNamesReady(){ return it.names ? it.names.list.length : 0; }
-// gate jumps from you, and each system's step toward you: breadth first, neighbours in index order (one consistent route per system)
+// build queue 041: a jump bridge's curve from (x1, y1) to (x2, y2), bowed to one side by a fifth of its length (the bridges, and a route's bridge step)
+function itMapArc(c, x1, y1, x2, y2){ const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, dx = x2 - x1, dy = y2 - y1; c.moveTo(x1, y1); c.quadraticCurveTo(mx - dy * 0.22, my + dx * 0.22, x2, y2); }
+// gate jumps from you, and each system's step toward you: breadth first, neighbours in index order (one consistent route per system).
+// Build queue 041: itm.Dg is always by stargate (the alert glow, the Near You fade, Paths to you, the kill-range line, Threat Vector's route's
+// comparison); itm.D / itm.par count your jump bridges too while "Use jump bridges on the map" is on (the owner: "when turned on, jump ranges
+// will be calculated using bridges"; at the re-plan "Both count bridges"), else they are itm.Dg's. itm.jbKey: what was counted
 function itMapBfs(home){
-  const T = itMapTable(), n = T.n, D = new Int16Array(n).fill(-1), par = new Int32Array(n).fill(-1), q = [home]; D[home] = 0;
-  for(let h = 0; h < q.length; h++){ const x = q[h]; for(const y of T.adj[x]) if(D[y] < 0){ D[y] = D[x] + 1; par[y] = x; q.push(y); } }
-  itm.D = D; itm.par = par;
+  const T = itMapTable(), n = T.n;
+  const bfs = (adj) => { const D = new Int16Array(n).fill(-1), par = new Int32Array(n).fill(-1), q = [home]; D[home] = 0;
+    for(let h = 0; h < q.length; h++){ const x = q[h]; for(const y of adj[x]) if(D[y] < 0){ D[y] = D[x] + 1; par[y] = x; q.push(y); } } return [D, par]; };
+  const [Dg, pg] = bfs(T.adj), jb = itBridgeKey();
+  if(jb){ const [D, par] = bfs(itBridgeAdj()); itm.D = D; itm.par = par; } else { itm.D = Dg; itm.par = pg; }
+  itm.Dg = Dg; itm.jbKey = jb;
 }
 // Build queue 039 (Project doc roadmap/map-look-plan.md; mockup Claude outputs/map_look_mockup.html): the map laid out like EVE's own 2D
 // map (the owner: "is there any way to make it look more alike so players know what they're looking at"). Every system in the table at
@@ -30316,14 +30437,14 @@ const itMt = {key: null, m: null, list: []};
 function itMapMatch(wh){
   if(!itm.D || !itMapOnlyOn()) return null;
   const s = itMapSt(), o = s.only, W = wh || itm.wh || itMapWh(), T = itMapTable();
-  const key = `${itMapStKey()}|${itm.home}|${o.wh || o.reports ? `${[...W.kept.keys()].join(',')}/${[...W.live.keys()].join(',')}` : ''}|${o.sov ? `${sovIndexKey()}#${sovStore().pick.join(',')}` : ''}|${o.reports || o.kills ? [...itm.rep].map(([i, r]) => `${i}:${r.kills || 0}`).join(',') : ''}`;
+  const key = `${itMapStKey()}|${itm.home}|${itm.jbKey || ''}|${o.wh || o.reports ? `${[...W.kept.keys()].join(',')}/${[...W.live.keys()].join(',')}` : ''}|${o.sov ? `${sovIndexKey()}#${sovStore().pick.join(',')}` : ''}|${o.reports || o.kills ? [...itm.rep].map(([i, r]) => `${i}:${r.kills || 0}`).join(',') : ''}`;
   if(key === itMt.key) return itMt;
   const n = T.n, m = new Uint8Array(n), D = itm.D, lo = Math.min(s.secr.lo, s.secr.hi), hi = Math.max(s.secr.lo, s.secr.hi);
   const sv = o.sov ? sovIndex() : null, pick = new Set(o.sov ? sovStore().pick : []), lvT = sovTable().lv, lv = s.sovLv;
   for(let i = 0; i < n; i++){
     let ok = true;
     if(o.secr){ const t = itMapSecT(i); ok = t >= lo && t <= hi; }   // Q9: the number the map shows, both ends, either order
-    if(ok && o.near) ok = D[i] >= 0 && D[i] <= s.near.n;   // by stargate, as Jumps from you
+    if(ok && o.near) ok = D[i] >= 0 && D[i] <= s.near.n;   // as Jumps from you counts (041: your jump bridges too while they're on; itm.jbKey is in the key)
     if(ok && o.reports) ok = itm.rep.has(i) || W.live.has(i);
     if(ok && o.kills) ok = !!(itm.rep.get(i) || {}).kills;
     if(ok && o.wh) ok = W.kept.has(i);
@@ -30378,6 +30499,7 @@ function itMapDraw(){
   if(itPtLive()){ itMapWhPulse([]); itMapMtPaint(); itPtPaint(); return; }   // build queue 043: the tree covers the map, so the galaxy under it isn't drawn
   if(itm.cv.parentNode === itm.box) itPtHide();
   const T = itMapTable(), n = T.n, c = itm.cv.getContext('2d'), dpr = window.devicePixelRatio || 1, W = itm.W, H = itm.H, v = itm.view, P = itm.P, Q = itm.Q, D = itm.D, R = itm.reach, near = itNearReach();
+  const Dg = itm.Dg || D;   // 041: the alert glow and the Near You fade stay by stargate (hostiles can't use your bridges)
   const C = {hostile: itMapCol('--danger', '#c65b4e'), neutral: '#b9c3ca', friendly: itMapCol('--side-friendly', '#4f8fe0'), cyan: itMapCol('--cyan', '#4fc3d9'), amber: itMapCol('--amber', '#d99a3c'), clear: itMapCol('--it-clear', '#3fb950'), gate: '#26303b', gateX: '#3a4753'};
   c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
   for(let i = 0; i < n; i++){ Q[2 * i] = P[2 * i] * v.k + v.tx; Q[2 * i + 1] = P[2 * i + 1] * v.k + v.ty; }
@@ -30386,11 +30508,11 @@ function itMapDraw(){
   const g = itMapGatePx(), big = g >= 34, r = big ? Math.max(9, Math.min(15, g * 0.2)) : 0, names = g >= 80 && !!it.names;
   // 058: with an Only filter on, a match is bright anywhere and the rest dim, no distance fade on dots (Q5, Q6; the gates still fade past the
   // reach); with none on, today's fades
-  const mt = itm.mt, alpha = (i) => mt ? (mt.m[i] ? 1 : IT_MAP_DIM) : !on(i) ? IT_MAP_FAINT : D[i] > near ? 0.45 : 1;
+  const mt = itm.mt, alpha = (i) => mt ? (mt.m[i] ? 1 : IT_MAP_DIM) : !on(i) ? IT_MAP_FAINT : Dg[i] < 0 || Dg[i] > near ? 0.45 : 1;
   // the alert range: a soft amber under the systems inside it, never faded (Q7); zoomed out half today's size, zoomed in today's (the owner:
   // "i'm fine with today's diameter while zoomed in but want the new smaller diameter when zoomed out")
   c.fillStyle = 'rgba(217,154,60,.07)';
-  for(const i of itm.vis) if(D[i] <= it.set.range && seen(i)){ c.beginPath(); c.arc(X(i), Y(i), big ? r + 9 : 11 * Math.min(1.4, Math.sqrt(g / IT_MAP_START_GATE)), 0, 6.283); c.fill(); }
+  for(const i of itm.vis) if(Dg[i] >= 0 && Dg[i] <= it.set.range && seen(i)){ c.beginPath(); c.arc(X(i), Y(i), big ? r + 9 : 11 * Math.min(1.4, Math.sqrt(g / IT_MAP_START_GATE)), 0, 6.283); c.fill(); }
   // the gates: inside the reach or faint past it; between two regions dotted, as the game draws them
   const paths = [[], [], [], []];
   for(let i = 0; i < n; i++){
@@ -30406,6 +30528,16 @@ function itMapDraw(){
   paths.forEach((p, k) => { if(!p.length) return; c.strokeStyle = k & 1 ? C.gateX : C.gate; c.globalAlpha = k & 2 ? 0.55 : 1; c.setLineDash(k & 1 ? (big ? [3, 4] : [2, 3]) : []);
     c.beginPath(); for(let e = 0; e < p.length; e += 2){ c.moveTo(X(p[e]), Y(p[e])); c.lineTo(X(p[e + 1]), Y(p[e + 1])); } c.stroke(); });
   c.setLineDash([]); c.globalAlpha = 1;
+  // build queue 041: your jump bridges, while the setting is on: solid curves in the game's green (the owner's in-game screenshot), under the
+  // systems and the routes, faint past the reach; curved like the game's, so one never reads as a gate
+  if(itm.jbKey){
+    c.strokeStyle = itMapCol('--it-bridge', '#00f000'); c.lineWidth = big ? 1.75 : 1.25;
+    for(const [a, b] of itBridges().edges){
+      if((X(a) < 0 && X(b) < 0) || (X(a) > W && X(b) > W) || (Y(a) < 0 && Y(b) < 0) || (Y(a) > H && Y(b) > H)) continue;
+      c.globalAlpha = on(a) || on(b) ? 0.85 : 0.35; c.beginPath(); itMapArc(c, X(a), Y(a), X(b), Y(b)); c.stroke();
+    }
+    c.globalAlpha = 1;
+  }
   // routes: none until asked; the hovered system's (the map or a row) dashed, the pressed ones solid, hostile drawn last. Any system with
   // a gate route to you has one (the owner at the build review, "yes": past the reach too)
   const focus = itm.hover >= 0 ? itm.hover : itm.rowHover, onRoute = new Set(), gr = itGraphGet();
@@ -30419,7 +30551,7 @@ function itMapDraw(){
     c.strokeStyle = rp && rp.side !== 'clear' ? C[rp.side] : C.cyan;
     c.lineWidth = (rp && rp.n ? Math.min(7, 1.5 + Math.log2(rp.n + 1)) : 2) + (lit ? 1.5 : 0);
     c.setLineDash(itm.pinned.has(gr.ids[i]) ? [] : [6, 4]); c.lineCap = 'round';
-    c.beginPath(); for(const [a, b] of route){ c.moveTo(X(a), Y(a)); c.lineTo(X(b), Y(b)); } c.stroke();
+    c.beginPath(); for(const [a, b] of route){ if(T.adj[a].includes(b)) { c.moveTo(X(a), Y(a)); c.lineTo(X(b), Y(b)); } else itMapArc(c, X(a), Y(a), X(b), Y(b)); } c.stroke();   // 041 (D13): a step that isn't a gate is its bridge's curve
   }
   c.setLineDash([]); c.globalAlpha = 1;
   // the systems: zoomed out a dot each, one path per colour and fade; zoomed in (a gate 34 px or longer) the game's circles with the
@@ -30584,7 +30716,7 @@ function itMapSwHtml(cols){ return `<span class="sw">${itMapSwIsHtml(cols)}</spa
 function itMapFLegHtml(){
   if(itMapPaths()) return `<b>Paths to you</b> ${itMapSwHtml([itMapCol('--danger', '#c65b4e')])} hostile ${itMapSwHtml(['#b9c3ca'])} neutral · within ${Number(it.set.range)} jumps (your alert range) · lines point toward you`;   // 043
   switch(itMapSt().colour){
-    case 'jumps': return `<b>Jumps</b> 0 ${itMapSwHtml(IT_MAP_JUMPS)} 10+ · grey: no gate route`;
+    case 'jumps': return itBridgeOn() ? `<b>Jumps</b> 0 ${itMapSwHtml(IT_MAP_JUMPS)} 10+ · your jump bridges counted · grey: no route` : `<b>Jumps</b> 0 ${itMapSwHtml(IT_MAP_JUMPS)} 10+ · grey: no gate route`;   // 041
     case 'region': return '<b>Region</b> a colour each; neighbours differ';
     case 'sec': return `<b>Security</b> 1.0 ${itMapSwHtml(IT_MAP_SEC.slice().reverse())} 0.0`;
     default: return `<b>No colour</b> ${itMapSwHtml([IT_MAP_PLAIN])} every system plain · press Security, Jumps or Region to colour them`;   // 058
@@ -30592,7 +30724,7 @@ function itMapFLegHtml(){
 }
 function itMapFLegTitle(){
   if(itMapPaths()) return 'Every shortest stargate route to you from a system with hostiles, neutrals or kills inside your alert range; a system on several routes is shown once. Hover or press a system to trace its routes.';
-  return {jumps: 'Jumps by stargate from your system, 0 to 10 or more; grey: no gate route to you', region: 'One colour per region; two regions joined by a gate never share one',
+  return {jumps: itBridgeOn() ? 'Jumps from your system, your jump bridges counted (Intel settings), 0 to 10 or more; grey: no route to you' : 'Jumps by stargate from your system, 0 to 10 or more; grey: no gate route to you', region: 'One colour per region; two regions joined by a gate never share one',
     sec: 'Each system in its security colour, 1.0 to 0.0 and below'}[itMapSt().colour] || 'No colour: the systems are plain grey, so reports, wormholes, kills and the systems your Only filters match stand out';
 }
 // 058 (Q14, the owner: "Second line"): the Only filters that are on, the count first so a narrow screen never loses it; it wraps
@@ -30625,14 +30757,14 @@ function itPtPhone(){ return typeof matchMedia === 'function' && matchMedia('(ma
 function itPtLive(){ return itMapPaths() && !!itm.el && !!itm.box && itm.cv.parentNode === itm.box; }
 // the systems the routes start from: a report that is hostile or neutral, or kills (not a clear), within your alert range (the owner)
 function itPtSources(){
-  const D = itm.D, R = it.set.range, out = [];
+  const D = itm.Dg || itm.D, R = it.set.range, out = [];   // 041 (D9): by stargate, as the tree is traced (hostiles can't use your bridges)
   for(const [i, r] of itm.rep) if(r.side !== 'clear' && (r.side === 'hostile' || r.side === 'neutral' || r.kills > 0) && D[i] >= 0 && D[i] <= R) out.push(i);
   return out;
 }
 // every shortest route from each source to you (the owner: "every shortest route"): a breadth-first search from the source, no deeper than
 // its own distance; x is on a route when D[x] + d(x) = D[source], a gate x -> y when both are and y is one jump nearer you
 function itPtBuild(){
-  const T = itMapTable(), D = itm.D, R = it.set.range, home = itm.home, src = itPtSources();
+  const T = itMapTable(), D = itm.Dg || itm.D, R = it.set.range, home = itm.home, src = itPtSources();   // 041 (D9): the stargate count
   const nodes = new Map(), edges = new Map();   // i -> {i, d, from}; "x>y" -> {x, y, from} (y one jump nearer you)
   const node = (i) => { let n = nodes.get(i); if(!n){ n = {i, d: D[i], from: new Set()}; nodes.set(i, n); } return n; };
   node(home);
@@ -30831,6 +30963,15 @@ function itPtLight(){
 }
 // 039: any system on the map, past the reach too (its tip and route); zoomed in, anywhere on its circle
 function itMapPick(x, y){ const g = itMapGatePx(), rr = g >= 34 ? Math.max(14, Math.min(15, g * 0.2) + 2) : 14; let best = -1, bd = rr * rr; for(let i = 0; i < itm.D.length; i++){ const d = (itm.Q[2 * i] - x) ** 2 + (itm.Q[2 * i + 1] - y) ** 2; if(d < bd){ bd = d; best = i; } } return best; }
+// build queue 041 (the plan's change 8): with your bridges counted, a system they bring nearer says how many of the map's jumps are by bridge
+// (along itm.par) and the count by stargate alone (itm.Dg, what Near You and the Feed show)
+function itMapJbTipHtml(i){
+  if(!itm.jbKey || !itm.Dg || !(itm.D[i] > 0)) return '';
+  let n = 0, k = i; while(k !== itm.home && itm.par[k] >= 0 && n < 9999){ if(itBridgeIs(k, itm.par[k])) n++; k = itm.par[k]; }
+  if(!n) return '';
+  const gj = itm.Dg[i], a = `${n} of the ${itm.D[i]} jump${itm.D[i] === 1 ? '' : 's'} by jump bridge`, b = `by stargate only ${gj < 0 ? 'no route' : `${gj} jump${gj === 1 ? '' : 's'}`}`;
+  return `<br><span class="jb">${escapeHtml(a)}</span> <span class="d">· ${escapeHtml(b)}</span>`;
+}
 function itMapTip(i, x, y){
   const tip = itm.tip;
   if(i < 0){ tip.hidden = true; return; }
@@ -30838,6 +30979,7 @@ function itMapTip(i, x, y){
   const wh = itm.wh && itm.wh.mark.get(i);   // 040: the wormhole shown at this system, if any
   const where = d === 0 ? 'you are here' : d < 0 ? 'no gate route to you' : `${d} jump${d === 1 ? '' : 's'}`;
   let h = `<b>${escapeHtml(itSysName(ids[i]))}</b> <span class="d">${escapeHtml(T.regions[T.reg[i]] || '')} · ${escapeHtml(itMapSecText(i))} · ${escapeHtml(where)}</span>`;
+  h += itMapJbTipHtml(i);   // 041: how many of those jumps are by jump bridge, and the count by stargate
   // v2026.11.04.1: how far in light-years, as a jump drive measures it (the owner: "the distance in LY (from the player's current system)")
   const ly = i !== itm.home ? itMapLy(i, itm.home) : null;
   if(ly !== null) h += `<br><span class="ly"><b>${itMapLyText(ly)} LY</b> <span class="d">from ${escapeHtml(itSysName(ids[itm.home]))}</span></span>`;
@@ -30850,10 +30992,11 @@ function itMapTip(i, x, y){
   else if(i !== itm.home) h += `<br><span class="d">nothing reported in the last ${it.set.forget} min</span>`;
   if(wh) h += `<br>${itMapWhTipHtml(wh)}`;
   if(itMapOnlyOn() && itMapSt().only.sov) h += sovTipHtml(i);   // 058: while Sov upgrades is on   // build queue 053: every kind the system has in your lists, with its level
-  if(d > itKillRange()) h += `<br><span class="d">past the Feed's kill range (${itKillRange()}): its kills aren’t read</span>`;
+  const dg = itm.Dg ? itm.Dg[i] : d;   // 041: the Feed reads kills by stargate (itJumps), whatever the map counts
+  if(dg > itKillRange()) h += `<br><span class="d">past the Feed's kill range (${itKillRange()}): its kills aren’t read</span>`;
   if(d > 0){
     const rt = itMapRoute(i).map(([a]) => itSysName(ids[a])).concat(itSysName(ids[itm.home]));
-    h += `<br><span class="d">route: ${escapeHtml(rt.length > 9 ? [...rt.slice(0, 4), '…', ...rt.slice(-3)].join(' → ') : rt.join(' → '))}</span><br><span class="d">press to ${itm.pinned.has(ids[i]) ? 'hide' : 'keep'} this route</span>`;
+    h += `<br><span class="d">route${escapeHtml(itm.jbKey ? ' by stargate' : '')}: ${escapeHtml(rt.length > 9 ? [...rt.slice(0, 4), '…', ...rt.slice(-3)].join(' → ') : rt.join(' → '))}</span><br><span class="d">press to ${itm.pinned.has(ids[i]) ? 'hide' : 'keep'} this route</span>`;
   }
   const rp = itRpTipHtml(i); h += rp.h;   // 047: Threat Vector's route, what it couldn't avoid, the right-click hint or (a phone) the buttons
   tip.innerHTML = h; tip.hidden = false; tip.classList.toggle('it-rp-act', rp.act);
@@ -31824,7 +31967,7 @@ function sovIsBare(text){ return !/<-/.test(String(text)) && /\S/.test(String(te
 
 // ---- every list together: graph index -> Map(kind -> level); worked out again only when the lists or the names change ----
 let sovIx = null;
-function sovBridgeEnds(){ return []; }   // build queue 041 fills this in from its Jump bridges list (both ends of each bridge): the Jump bridge kind
+function sovBridgeEnds(){ return itBridges().ends; }   // build queue 041 (D10): both ends of every counted bridge in its Jump bridges list, whatever the switch: the Jump bridge kind
 function sovIndexKey(){ const st = sovStore(); return st.lists.map(l => `${l.id}:${l.at}:${l.kind}:${l.text.length}`).join(',') + `|${itSysNamesReady()}|${sovBridgeEnds().join(',')}`; }
 function sovIndex(){
   const key = sovIndexKey(); if(sovIx && sovIx.key === key) return sovIx;
@@ -32211,8 +32354,9 @@ function itRpTouch(){ return typeof matchMedia === 'function' && (matchMedia('(h
 function itRpTipHtml(i){
   if(itRpAside || i < 0 || i === itm.home) return {h: '', act: false};
   const ids = itGraphGet().ids, gid = ids[i], d = itm.D[i], path = d > 0 ? itRpPath(i) : null;
+  const jb = !!(itm.jbKey && itm.Dg), sd = jb ? itm.Dg[i] : d;   // 041 (D11): Threat Vector's route is by stargate until 057, so it's compared with the stargate count
   let h = '', act = false;
-  if(path && path.length - 1 !== d) h += `<br><span class="it-rp-n">Threat Vector's route: <b>${Number(path.length - 1)} jumps</b> <span class="d">(shortest ${Number(d)})</span></span>`;
+  if(path && path.length - 1 !== sd) h += `<br><span class="it-rp-n">Threat Vector's route: <b>${Number(path.length - 1)} jumps</b> <span class="d">(shortest${escapeHtml(jb ? ' by stargate' : '')} ${Number(sd)})</span></span>`;
   const w = itRpWarn(path);
   if(w.length) h += `<br><span class="it-rp-w">${escapeHtml(itRpWarnText(w))}</span>`;
   if(itRpSet().list.includes(gid)) h += '<br><span class="d">on your avoid list</span>';
@@ -32249,7 +32393,7 @@ function itRpMenuOpen(i, x, y, opener){
   itRp.out = (e) => { if(itRp.menu && !itRp.menu.contains(e.target)) itRpMenuClose(false); };
   document.addEventListener('pointerdown', itRp.out, true);
 }
-function itRpWhereHtml(i){ const w = i === itm.home ? 'you are here' : itm.D[i] < 0 ? 'no gate route' : ''; return w ? ` <span class="d">· ${escapeHtml(w)}</span>` : ''; }
+function itRpWhereHtml(i){ const w = i === itm.home ? 'you are here' : (itm.Dg || itm.D)[i] < 0 ? 'no gate route' : ''; return w ? ` <span class="d">· ${escapeHtml(w)}</span>` : ''; }
 function itRpMenuClose(back = true){
   if(!itRp.menu) return;
   itRp.menu.remove(); itRp.menu = null;
@@ -32638,6 +32782,8 @@ function rsBind(root){
       if(it.on) itTick(); else itRender();
       return;
     }
+    if(t.dataset.itJbon !== undefined){ it.set.bridgesOn = t.checked; itWriteSet(); itBridgePaint(); itMapRefresh(); return; }   // build queue 041: the map searches again (itMapRefresh)
+    if(t.dataset.itJb !== undefined) return;   // 041: the list is read as it's typed (the input listener)
     if(t.dataset.itAlias !== undefined){   // v2026.10.31.5: for new lines; only the list under the box is redrawn (change comes on blur, maybe from a click elsewhere)
       it.set.alias = String(t.value || '').slice(0, IT_ALIAS_MAX); itWriteSet();
       const ul = t.parentNode && t.parentNode.querySelector('ul'); if(ul) ul.innerHTML = itAliasRowsHtml();
@@ -32668,6 +32814,7 @@ function rsBind(root){
   });
   el.addEventListener('input', (e) => {
     if(e.target.matches('[data-it-q]')){ it.q = e.target.value; itRenderLists(); }   // v.99: Search
+    else if(e.target.matches('[data-it-jb]')){ it.set.bridges = String(e.target.value || '').slice(0, IT_BRIDGE_MAX); itWriteSet(); itBridgePaint(); itMapRefresh(); }   // build queue 041: rows and count in place, the map searched again only when what's counted changed
     else if(e.target.matches('[data-it-vol]')){ const v = Number(e.target.value) || 0, o = e.target.parentNode.querySelector('.it-vol-v'); if(o) o.textContent = `${v}%`; it.set.volume = v; if(itMasterG) itMasterG.gain.value = itVolGain(); }   // v2026.11.01.8: kept on change
   });
   // v2026.11.11.1 (build queue 033): the sound list pressed, or opened or changed from the keys: that slot's old warning goes (itSndMsgDrop)

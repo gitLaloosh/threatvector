@@ -540,6 +540,20 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   (`itMapOnlyHtml`: "Only N match · …", the count first); the match chip (`button.it-map-mt`, `itMapMtPaint` / `itMapMtNext`, rule A) steps
   nearest first in the part no panel covers. Security everywhere on the map from one function, `itMapSecT` (tenths; CCP's band at the 0.45
   line, LESSON #170; `tools/check_sec_shown.py`). Region's colours leave out cyan, amber and the lilacs (Q13). `intel_map_stack_check.py`.
+- **Jump bridges** (v2026.11.16.5, build queue 041; roadmap/jump-bridges-plan.md, mockup `Claude outputs/jump_bridges_mockup.html`; the owner: "add
+  jump bridges to the map (as a setting that can be toggled off and on). when turned on, jump ranges will be calculated using bridges. default
+  setting will be off.", "ideally i'd like to only have near you not use bridges", at the re-plan "Both count bridges", "Switch governs both; gates
+  until 057"): Intel settings → Jump bridges, gear only, right after Routes (`itBridgeBoxHtml`): "Use jump bridges on the map" (`bridgesOn`, off
+  by default) and a pasted list (`bridges`, `IT_BRIDGE_MAX`), both in `dscanIntel`. His list is alliance data: never in a check, a mockup or the
+  repo. `itBridges()` is the one reader (memo on the text and `it.names`): the pair around a separator (`IT_BRIDGE_SEP`, D7), else exactly two
+  names; ✓ / ⚠ (one per system, over 5 LY: CCP's type 35841) counted / a reverse line a dim repeat (D6) / ✗; `ends` is `sovBridgeEnds()` (053's
+  Jump bridge kind, whatever the switch). `itMapBfs` sets `itm.Dg` (stargates, always) and, while `itBridgeOn()`, `itm.D` / `itm.par` over
+  `itBridgeAdj()` (the one place the map's bridge graph is built; 057 filters it there); `itm.jbKey` is in `itMapKey` and in `itMapMatch`'s key,
+  and a change searches and lays out again in `itMapRefresh`. `itm.D` (bridges counted): the reach, reports and labels, Jumps from you, Within
+  N, the tooltip's "N jumps" (`itMapJbTipHtml`), the search box. `itm.Dg` and `itJumps` (stargates): Near You, alerts, the Feed and its kill
+  range (the tooltip's kill-range line too), the alert glow and the Near You fade, Paths to you (D9), Threat Vector's route (by stargate until
+  057; the tooltip says "route by stargate" and `itRpTipHtml` compares with `itm.Dg`, D11). Bridges drawn as green curves (`--it-bridge`,
+  `itMapArc`) while counted; a route step that isn't a gate is its bridge's curve (D13). The Intel example: off. `intel_bridges_check.py`.
 - **The Wormholes tab** (v2026.11.14.1, build queue 048, part 1 of the Project doc roadmap/wormhole-mapping-plan.md; mockup `Claude outputs/
   wormholes_tab_mockup.html` stays with the plan in Project docs until its last part): `#tabBtnWh` right after Intel (`TAB_PANELS`), "BETA" (the
   page's `.it-gtag`) until the owner says it's done; its name is `CARD_NAMES.whmap`. The chain is `tvWhChain` `{v: 1, sys, links, pos}` (D32: its own
@@ -663,7 +677,7 @@ still gets its own targeted check and mutants.
 **How the numbers are worked out, for people:** `METHODOLOGY.md` (was the "How effective HP and DPS are
 calculated" note on the page, removed in v2026.10.14.51); each card's short version is its ⓘ panel (`CARD_INFO`).
 Change both when a calculation's assumptions change. Since build queue 036 (v2026.11.11.3) the panels are short (`check_subtext.py`:
-85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"; 620 since 052, "raise it"), the detail is in METHODOLOGY.md (its Intel, Who's in the
+85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"; 620 since 052, "raise it"; 670 since 041, "Raise to 670 (Recommended)"), the detail is in METHODOLOGY.md (its Intel, Who's in the
 system and Sides sections too), and nothing on the page links to it (build queue 037 took 036's footer link out, the owner: "i dont want that link displayed"). A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
 panel never inherits a heading's case or spacing (`.info-body`; `info_panels_check.py`).
 
