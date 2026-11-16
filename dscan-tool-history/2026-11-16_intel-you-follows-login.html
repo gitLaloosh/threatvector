@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-16 — Intel's You follows your EVE login</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel's You follows your EVE login while Use my game location is on</h1>
+<p><span class="tag">Intel</span><span class="tag">SSO</span> 2026-11-16 &middot; <code>v2026.11.16.2</code> &middot; build queue 054 &middot; plan
+<code>roadmap/intel-you-follows-login-plan.md</code> (no mockup, the owner's choice)</p>
+
+<h2>Why</h2>
+<p>The owner, 2026-11-12: "currently if i log into the tool and turn on "use my game location", should we disable the radio buttons in intel
+settings for who to track? i noticed some weird behavior with this the other day". Three things were wrong: picking another character than the
+login quietly stopped the game location (only an amber line said so); changing the pick kept the last game answer, so switching back could reuse
+an old system for a moment; and a logged-in character with no Local log in the folder couldn't be picked, so the game location never applied to it.
+His decisions: "when logged in and use my location is turned on, use the same style and message as in the eve tab ... only see radio buttons when
+you're not logged in w/ use my location enabled", "only the light and status line", and the "Game location" line goes. At the build review he took
+all four of the build session's proposals: one <code>itMeSync()</code>, the "No Local log" line only once the folder is read, the EVE wording of the
+"system isn't known yet" warning for a character with no Local log, and "the status line" in the info text.</p>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Who You is:</b> while the switch is on and you're logged in (or the login ended and its pilot is kept), You is the login's character
+(<code>itFollowLogin</code>, <code>itMeResolve</code>): its Local log when the folder has one, else a stand-in whose system comes from EVE alone.
+The radio pick is never changed; it's back on Log out or with the switch off. Your own channel logs are preferred for that character.</li>
+<li><b>One place decides it:</b> <code>itMeSync()</code>, from <code>renderSidePanel</code> (every login change ends there, a reload's restored
+login and a copied tab's drop too) and the end of <code>itScan</code> (a Local log appearing). A change resets the game's last answer, the alert
+memory and the next scan once; no change, nothing. The radio's own handler goes through it too, so changing the pick now drops the old game
+answer as well.</li>
+<li><b>Intel settings &rarr; You:</b> while following, no radios: the EVE tab's own row (lamp, Use my game location, its &#9432;, the status line,
+no switch), the location's messages with Log in again, and, for a character with no Local log, "No Local log for &lt;name&gt;: your system comes
+from EVE only" once the folder has been read. The login ended: the row stays, "Paused: log in again". The "Game location: &hellip; &middot; Set on
+your profile's EVE tab" line and the "Your EVE login is X, not Y" warning are gone (Intel and the EVE tab).</li>
+<li><b>A You with no Local log:</b> "Your system isn't known yet (it comes from EVE once it answers)", in Intel's warning and the map's empty
+line; the Local log's wording otherwise.</li>
+<li><b>Login ended:</b> <code>ssoLost</code> marks the login lost before ending it, so You never flips to the pick and back in between.</li>
+<li><b>Stored data:</b> none changes (<code>it.set.me</code> and <code>it.set.gameLoc</code> keep their form in <code>dscanIntel</code>).</li>
+<li><b>Info text:</b> <code>intel#game</code> (the status line shows both; Intel follows the logged-in character); METHODOLOGY.md's Intel
+section.</li>
+</ul>
+
+<h2>Checks</h2>
+<p><code>tools/page_checks/sso_game_check.py</code>: another character picked, then logged in (no radios, the row with no switch, You the login, the
+pick kept, an old game answer dropped, the requests for the login), the login ended (the row, "Paused: log in again", no requests), Log out (the
+radios and the old pick back at once), a made-up character with no Local log (its line, not before the folder is read; the EVE wording; then the
+game's system), the switch off (the radios back), SSO-08 and SSO-07 under Intel's row, 390 px; 6 mutants.
+<code>sso_online_check.py</code>: with the switch on, the logged-off line follows the login.</p>
+</body></html>

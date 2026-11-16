@@ -499,7 +499,9 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   system names its upgrades with their levels. A browser whose storage is full keeps the lists for the visit and says so
   (INTEL-11).
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location
-  on, whichever is newer. Jumps are gate jumps from EVE's published stargate data (no jump bridges or wormholes); the
+  on, whichever is newer. While that switch is on and you're logged in, You is the logged-in character (its system from
+  EVE alone when the folder has no Local log for it); the character picked in Intel settings is You again after Log out
+  or with the switch off. Jumps are gate jumps from EVE's published stargate data (no jump bridges or wormholes); the
   table is checked against each new EVE build every day.
 - **Buttons:** a pilot's name opens them in the Pilot Analyzer, in their ship when the line says it. Press a system,
   corporation, alliance or ship to show only it in the Feed; the chips under the filters say what's on (× removes one;

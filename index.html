@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-dxAfS4SdOkkRAWPqJ0zsKslVnm1tbOQ4jev6JhY9sBc='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MuQd3Z4Xy+L8a3zaZynixX5bRK6MEiv56oEtvCJOiJM='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3177,9 +3177,9 @@
   .pp-go{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:10px;}
   .pp-go.sso-box{display:block;}
   /* the states' colours on the panel's words and LEDs */
-  .pp [data-l="lit"]{color:var(--text);} .pp .pp-led[data-l="lit"], .pp-chip[data-l="lit"]{color:var(--cyan);}
-  .pp [data-l="good"]{color:var(--st-online);} .pp [data-l="warn"]{color:var(--amber);}
-  .pp [data-l="dim"]{color:var(--text-dim);} .pp [data-l="off"]{color:var(--text-dim);}
+  .pp [data-l="lit"], .it-gl [data-l="lit"]{color:var(--text);} .pp .pp-led[data-l="lit"], .it-gl .pp-led[data-l="lit"], .pp-chip[data-l="lit"]{color:var(--cyan);}
+  .pp [data-l="good"], .it-gl [data-l="good"]{color:var(--st-online);} .pp [data-l="warn"], .it-gl [data-l="warn"]{color:var(--amber);}
+  .pp [data-l="dim"], .it-gl [data-l="dim"]{color:var(--text-dim);} .pp [data-l="off"], .it-gl [data-l="off"]{color:var(--text-dim);}   /* 054: .it-gl, the same row in Intel's You */
   .pp-led[data-l="off"], .pp-led[data-l="dim"]{background:transparent; box-shadow:inset 0 0 0 1px var(--pf-led-off);}
   .pp-tw[data-l="lit"]{color:var(--text-dim);}
   button.x-close{display:inline-flex; align-items:center; justify-content:center; flex:none; width:32px; height:32px; min-height:0; padding:0; margin:-6px -8px 0 auto; border:1px solid transparent; border-radius:4px; background:transparent; color:var(--text-dim); font:400 20px/1 var(--sans); cursor:pointer;}
@@ -3211,7 +3211,8 @@
   .sso-in .sso-who b{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--heading);}
   .sso-perms{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:6px; font-size:12px; color:var(--text-dim);}   /* v2026.11.08.4 (028) */
   .sso-perms a{margin-left:4px;}
-  .it-gl{margin-top:8px;} .it-gl-sub{display:flex; align-items:center; gap:6px; margin-top:2px;}
+  .it-gl{margin-top:8px;} .it-gl:empty{display:none;}
+  .it-gl .pp-feat{padding:2px 0 0; border-top:0;}   /* 054: the EVE tab's row for Use my game location, in You */
   @media (max-width:599px){ .it-gl button[data-it-act]{min-height:44px;} }
   /* v2026.11.09.1 (029): Show when I'm online in EVE, under the login in the Pilot section; Intel's logged-off line */
   .sso-on-st{margin-top:6px; font-size:12px; color:var(--text-dim);}
@@ -3351,7 +3352,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3740,8 +3741,8 @@ const CARD_INFO = {
   "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit."
  ],
  "intel#game": [
-  "Use my game location asks EVE which system your character is in, every few seconds while Intel runs, so jumps count from where you are before your Local log says so. Whichever is newer wins; when they differ, the line under the box shows both, in amber.",
-  "[What it needs] Your EVE login in the tab running Intel, as the character you picked as You, and EVE's OK to read your location (asked at login, or with Continue to EVE if you turn it on later).",
+  "Use my game location asks EVE which system your character is in, every few seconds while Intel runs, so jumps count from where you are before your Local log says so. Whichever is newer wins; when they differ, the status line shows both, in amber.",
+  "[What it needs] Your EVE login in the tab running Intel and EVE's OK to read your location (asked at login, or with Continue to EVE if you turn it on later). While it's on, Intel follows the logged-in character: Intel settings' You shows its status instead of the list.",
   "[How often, and what's kept] No sooner than EVE says its answer is fresh (about 5 seconds), and slower when EVE says the app's share is running low. Kept in this tab's memory only. Turning it off or logging out stops the checks; the switch stays on for your next login."
  ],
  "onscan": [
@@ -24537,6 +24538,7 @@ function sideStandHtml(r){
 }
 function sidePaneHtml(){ const r = side.rec; return sideWhoHtml(r) + sideWhereHtml(r) + sideStandHtml(r); }
 function renderSidePanel(){
+  pfTry(() => itMeSync(), false);   // 054: every login change ends here (the owner: "Yes, one itMeSync()"); runs before Intel's part of the script has
   renderProfile(); renderEveTab();   // 032: the header's lamps and the EVE tab follow the login and the features (written only when they change)
   const p = sidePanelEl();
   if(!p || !profileIsOpen()) return;
@@ -24570,7 +24572,6 @@ function eveFeatLine(k, f, m){
     return v === null ? {t: 'Not checked yet', s: 'lit'} : {t: `${v ? 'Online in EVE' : 'Logged off in EVE'} · checked `, at: ssoOnClock(ssoOn.st.at), span: 'data-sso-onat', s: v ? 'good' : 'lit'};
   }
   if(k === 'loc'){
-    if(it.me && Number(it.me.id) !== sso.who.id) return {t: `Your EVE login is ${sso.who.name}, not ${it.me.name}: log in as ${it.me.name}, or pick ${sso.who.name} as You.`, s: 'warn'};
     if(!it.on && it.other) return {t: 'Intel is on in another tab', s: 'lit'};
     if(itGl.sys && it.on){   // 028's line: the game's system, and how it stands against the Local log (newer wins, amber when they differ)
       const g = itSysName(itGl.sys), logId = itLogSys();
@@ -24593,11 +24594,20 @@ function eveFeatMsgHtml(k){
   const msg = k === 'online' ? ssoOn.msg : k === 'loc' ? itGl.msg : k === 'wp' ? itRp.msg : sideEve.msg;
   return msg ? `<div class="status side-msg${itOnHtml(msg.err, 'err')}">${escapeHtml(msg.text)}${eveAgainHtml(msg.again)}</div>` : '';
 }
-function eveFeatHtml(k, m){
-  const f = m.F[k], L = eveFeatLine(k, f, m), npc = m.eve && k === 'stand' && f.npc;
-  return `<div class="pp-feat" data-feat="${escapeHtml(k)}"><span class="pp-led" data-l="${escapeHtml(L.s)}" aria-hidden="true"></span><div class="pp-ft"><label class="pp-fn" for="ppSw-${escapeHtml(k)}">${escapeHtml(SSO_FEAT_NAME[k])}</label>${eveFeatInfoHtml(k)}
-    <div class="pp-fs" data-l="${escapeHtml(L.s)}">${eveLineHtml(L)}</div>${eveFeatMsgHtml(k)}</div>
-    <input type="checkbox" class="mys-sw" role="switch" id="ppSw-${escapeHtml(k)}" data-sso="${escapeHtml(k)}"${itOnHtml(f.on && !npc, 'checked')}${itOnHtml(!ssoClientId() || npc, 'disabled')}></div>`;
+// o.intel (build queue 054, D2): the same row in Intel settings' You, the lamp and the status line only: no switch (the owner: "let's keep
+// the setting controls inside of the eve settings panel"), its name not a label, no data-feat, and the message drawn by Intel (itGlMsgHtml,
+// whose Log in again works there); o.more: lines under the status line (D6)
+function eveFeatHtml(k, m, o){
+  const f = m.F[k], L = eveFeatLine(k, f, m), npc = m.eve && k === 'stand' && f.npc, iv = !!(o && o.intel);
+  return `<div class="pp-feat"${eveFeatAttrHtml(k, iv)}><span class="pp-led" data-l="${escapeHtml(L.s)}" aria-hidden="true"></span><div class="pp-ft">${eveFeatNameHtml(k, iv)}${eveFeatInfoHtml(k)}
+    <div class="pp-fs" data-l="${escapeHtml(L.s)}">${eveLineHtml(L)}</div>${eveFeatMoreHtml(k, o)}</div>
+    ${eveFeatSwHtml(k, f, npc, iv)}</div>`;
+}
+function eveFeatAttrHtml(k, iv){ return iv ? ' data-it-glrow' : ` data-feat="${escapeHtml(k)}"`; }
+function eveFeatNameHtml(k, iv){ return iv ? `<span class="pp-fn">${escapeHtml(SSO_FEAT_NAME[k])}</span>` : `<label class="pp-fn" for="ppSw-${escapeHtml(k)}">${escapeHtml(SSO_FEAT_NAME[k])}</label>`; }
+function eveFeatMoreHtml(k, o){ return o && o.intel ? o.more || '' : eveFeatMsgHtml(k); }   // o.more: built by its caller (itGlNoLogHtml)
+function eveFeatSwHtml(k, f, npc, iv){
+  return iv ? '' : `<input type="checkbox" class="mys-sw" role="switch" id="ppSw-${escapeHtml(k)}" data-sso="${escapeHtml(k)}"${itOnHtml(f.on && !npc, 'checked')}${itOnHtml(!ssoClientId() || npc, 'disabled')}>`;
 }
 function eveFeatsHtml(m){ return ['online', 'loc', 'stand', 'wp'].map(k => eveFeatHtml(k, m)).join(''); }
 function eveGoHtml(m){
@@ -24838,8 +24848,8 @@ function ssoWait(ms, why){   // after a failure: 30 s, 60 s, 120 s, then every 5
   return codedError('SSO-03', sso.renewErr);
 }
 function ssoLost(text){   // EVE ended the login: the keys go; the pilot stays
-  ssoEnd();
-  sso.lost = true;   // 032: the EVE lamp amber and the profile's banner until a new login or Log out
+  sso.lost = true;   // 032: the EVE lamp amber and the profile's banner until a new login or Log out (054: before ssoEnd, so Intel's You,
+  ssoEnd();          // which follows the login's pilot while it's lost (D5), never flips to the saved pick and back in between)
   sso.note = {text: withCode(text || 'EVE ended this login (its renewal was refused). Log in again to go on.', 'SSO-06'), err: true};
   renderSidePanel();
   return codedError('SSO-06', text || 'EVE ended this login (its renewal was refused). Log in again to go on.');
@@ -27222,14 +27232,14 @@ async function itScan(){
   if(!it.set.me && it.chars.size === 1){ it.set.me = [...it.chars.keys()][0]; itWriteSet(); }
   // the files to watch: for each chosen channel, the log written to last (its last-modified time), not the one that started last;
   // yours when it was written within IT_LOG_MINE_MS of that; the one watched now when the other is only IT_LOG_SAME_MS newer
-  const want = new Map();
+  const want = new Map(), meId = itMeId();
   for(const ch of it.set.channels){
     const L = byChan.get(ch) || [];
     for(const f of L){ try{ f.mod = (await f.handle.getFile()).lastModified || 0; }catch(e){ f.mod = 0; } }
     L.sort((a, b) => b.mod - a.mod || b.start - a.start);
     if(!L.length) continue;
     const top = L[0].mod, cur = it.files.get(ch), here = cur && L.find(f => f.name === cur.name);
-    const mine = L.find(f => f.charId === it.set.me && f.mod >= top - IT_LOG_MINE_MS);
+    const mine = L.find(f => f.charId === meId && f.mod >= top - IT_LOG_MINE_MS);   // 054: the login's character while You follows it
     want.set(ch, mine || (here && here.mod >= top - IT_LOG_SAME_MS ? here : L[0]));
   }
   for(const [ch, f] of want){
@@ -27243,7 +27253,7 @@ async function itScan(){
       : {chan: ch, name: f.name, handle: f.handle, pos: 0, rest: '', odd: null, fresh: true});
   }
   for(const ch of [...it.files.keys()]) if(!want.has(ch)) it.files.delete(ch);
-  it.me = it.set.me ? it.chars.get(it.set.me) || null : null;
+  itMeSync(true);   // 054: who You is (the login's character while Use my game location is on); a change resets once
   if(it.me && it.me.sys) whSeen(it.me.sys, it.me.logAt || it.me.sysT || 0, false);   // 048: where the log says you are now
   it.read = true; it.perm = 'granted';   // v2026.11.08.2 (025): the folder was actually read (step 3's "nothing found" needs this)
 }
@@ -27290,6 +27300,9 @@ async function itLookAgain(){
 }
 function itPermLostText(){ return withCode(`The page can't read “${it.dirName}” any more: the browser took back the permission. Press Allow reading (in Chrome's box, Allow on every visit keeps it).`, 'INTEL-02'); }
 function itMySys(){ const w = whIntelSys(); return w !== undefined ? w : itGlSys() || itLogSys(); }   // 048 (D14): in a hole, the k-space system you came in through
+// 054 (the owner at the review: "Yes, that wording"): a You with no Local log hears its system from EVE, not from a log
+function itNoSysWarnHtml(){ return it.on && it.me && !itMySys() ? `<div class="it-sub it-warn">${escapeHtml(itNoSysText())}, so no jumps and no alerts until then.</div>` : ''; }
+function itNoSysText(){ return it.me && it.me.noLog ? 'Your system isn’t known yet (it comes from EVE once it answers)' : 'Your system isn’t known yet (it’s read from your Local log when you jump)'; }
 function itLogSys(){ const s = it.me && it.me.sys; return s && it.names ? it.names.byLower.get(s.toLowerCase()) || null : null; }
 
 // ---- each tick: new lines -> reports ----
@@ -27304,7 +27317,7 @@ async function itTick(){
     if(Date.now() - it.lastScan > IT_RESCAN_MS){ it.lastScan = Date.now(); await itScan(); }
     if(gen !== it.gen) return;
     // your system: the new end of your Local log
-    if(it.me){
+    if(it.me && it.me.st){   // 054: a stand-in (no Local log) has nothing to read; its system comes from EVE
       try{
         for(const l of await itReadFile(it.me.st, false)){
           const m = /Channel changed to Local\s*:\s*(.+?)\s*$/.exec(l.msg);
@@ -28311,9 +28324,39 @@ const itGl = {next: 0, busy: false, sys: 0, at: 0, stop: '', msg: null};
 let itLoadedRes = () => {};
 const itLoadedP = new Promise((r) => { itLoadedRes = r; });
 function itGlReset(){ itGl.next = 0; itGl.sys = 0; itGl.at = 0; itGl.stop = ''; }
+// ---- build queue 054 (Project doc roadmap/intel-you-follows-login-plan.md): Intel's You follows the EVE login while Use my game
+// location is on (the owner: "only see radio buttons when you're not logged in w/ use my location enabled"). Logged in, or the login ended
+// with its pilot kept (sso.lost, D5): the login's character, its Local log when the folder has one, else a stand-in whose system comes from
+// EVE alone (D6). Otherwise the radio pick it.set.me, which this never changes (it's back on Log out or with the switch off). Memory only.
+function itFollowLogin(){ return !!(it.set && it.set.gameLoc && (sso.who || (sso.lost && side.rec && side.rec.pilot))); }
+function itLoginChar(){ return sso.who || (side.rec && side.rec.pilot) || null; }
+function itMeId(){ return itFollowLogin() ? Number(itLoginChar().id) : it.set.me; }   // whose own channel logs itScan prefers
+function itMeResolve(){
+  if(!itFollowLogin()) return it.set.me ? it.chars.get(it.set.me) || null : null;
+  const w = itLoginChar(), id = Number(w.id), c = it.chars.get(id);
+  if(c) return c;
+  if(it.me && it.me.noLog && Number(it.me.id) === id) return it.me;   // the same stand-in keeps what it learnt (sysAt)
+  return {id, name: String(w.name || `character ${id}`), sys: '', noLog: true};   // no st, no file: nothing to read (itTick)
+}
+// One place decides who You is (the owner at the build review: "Yes, one itMeSync()"): from renderSidePanel, where every login change
+// and both of the switch's paths end (a reload's restored login and a copied tab's drop too), and from the end of itScan (a Local log
+// appearing). A change of You resets what belonged to the old one, once: the game's last answer (itGl), the alert memory and, outside a
+// scan, the next scan; then one redraw. No change: nothing (LESSON #120). Never inside the Intel example's sandbox (its own You).
+let itMeK = '';
+function itMeSync(scan){
+  if(itWhAside) return false;
+  const me = itMeResolve(), k = me ? `${Number(me.id)}${me.noLog ? '~' : ''}` : '';
+  it.me = me;
+  if(k === itMeK) return false;
+  itMeK = k;
+  if(!scan) it.lastScan = 0;
+  it.alerted = new Map(); itGlReset();
+  if(!scan) itRender();
+  return true;
+}
 function itGlWho(){ return !!(it.set.gameLoc && sso.who && it.me && Number(it.me.id) === sso.who.id); }
 function itGlSys(){ return it.on && itGl.sys && itGlWho() && itGl.at > (it.me.logAt || 0) ? itGl.sys : null; }
-function itGlKey(){ return [it.set.gameLoc, itGl.sys, itGl.stop, itGl.msg ? itGl.msg.text : '', sso.who ? sso.who.id : 0, ssoHeld(SSO_LOC), it.me ? it.me.id : 0, itLogSys()].join(','); }
+function itGlKey(){ return [it.set.gameLoc, itGl.sys, itGl.stop, itGl.msg ? itGl.msg.text : '', sso.who ? sso.who.id : 0, ssoHeld(SSO_LOC), it.me ? it.me.id : 0, itLogSys(), it.me && it.me.noLog ? 1 : 0, itFollowLogin() ? 1 : 0, sso.lost ? 1 : 0, it.read ? 1 : 0].join(','); }   // 054: who You is, and the D6 line
 function itGlOff(text){ it.set.gameLoc = false; itWriteSet(); itGlReset(); itGl.msg = {text, err: true}; itRender(true); }
 function itGlAsk(){ return it.on ? itGlWho() : whLocOn(); }   // 048 (D19): Intel's tick, or the Wormholes tab in front with Intel off
 async function itGameLoc(){
@@ -28363,15 +28406,14 @@ function itGlTimePaint(){   // only the "checked" time moves; written into its o
 }
 function itGlAgainHtml(again){ return again ? ' <button type="button" data-it-act="gl-again">Log in again</button>' : ''; }
 function itGlMsgHtml(){ return itGl.msg ? `<div class="pr-msg${itOnHtml(itGl.msg.err, 'err')}">${escapeHtml(itGl.msg.text)}${itGlAgainHtml(itGl.msg.again)}</div>` : ''; }
-// v2026.11.10.1 (032): the switch moved to the profile's EVE tab; Intel's settings keep one line with a way there, and the warning that
-// belongs beside "You" (another character logged in than the one picked)
-function itGlWarnHtml(){
-  if(!(it.set.gameLoc && sso.who && it.me && Number(it.me.id) !== sso.who.id)) return '';
-  return `<div class="c it-warn">${escapeHtml(`Your EVE login is ${sso.who.name}, not ${it.me.name}: log in as ${it.me.name}, or pick ${sso.who.name} as You.`)}</div>`;
-}
+// v2026.11.10.1 (032): the switch is on the profile's EVE tab. Build queue 054: while You follows the login, the EVE tab's row for it (D1,
+// D2), its messages under it (D7) and, once the folder has been read, the stand-in's line (D6; the owner at the review: "Only once the
+// folder is read"); otherwise only a message (SSO-07 after the switch went off). The "Game location: … · Set on your profile's EVE tab"
+// line and the "Your EVE login is X, not Y" warning are gone (D3; nothing can make the login another character than You any more).
+function itGlNoLogHtml(){ return it.me && it.me.noLog && it.read ? `<div class="pp-fs" data-l="dim" data-it-nolog>${escapeHtml(`No Local log for ${it.me.name}: your system comes from EVE only`)}</div>` : ''; }
 function itGlHtml(){
-  const g = itGlSys(), on = !!it.set.gameLoc;
-  return `<div class="it-gl-sub">${ctxHtml(`Game location: ${on ? (g ? `${itSysName(g)}, from EVE` : 'on') : 'off'}`)}<button type="button" class="sa-link" data-it-act="gl-open">Set on your profile's EVE tab</button>${infoBtnHtml('intel#game')}</div>${itGlWarnHtml()}${itGlMsgHtml()}`;
+  if(!itFollowLogin()) return itGlMsgHtml();
+  return `${eveFeatHtml('loc', pfModel(), {intel: true, more: itGlNoLogHtml()})}${itGlMsgHtml()}`;
 }
 // The switch, on the profile's EVE tab (032): the pick, kept in this browser. Logged out it waits for the login; logged in without the
 // permission it waits for Continue to EVE (itGameLoc asks nothing until the token has it); with it, on.
@@ -29099,6 +29141,7 @@ function itChansHtml(chans){
   if(chans.length) return chans.map(c => `<label><input type="checkbox" data-it-chan="${escapeHtml(c)}"${itOnHtml(it.set.channels.includes(c), 'checked')}> ${escapeHtml(c)}</label>`).join('');
   return itWaiting() ? '' : `<div class="c">${escapeHtml(it.dir && it.read ? 'No channel logs from the last 2 days.' : 'Found in the folder.')}</div>`;
 }
+function itYouListHtml(chars){ return itFollowLogin() ? '' : itCharsHtml(chars); }   // 054 (D1): no radios while You follows the login
 function itCharsHtml(chars){
   if(chars.length) return chars.map(c => `<label><input type="radio" name="itMe" data-it-me="${Number(c.id)}"${itOnHtml(c.id === it.set.me, 'checked')}> ${escapeHtml(c.name)} <span class="it-dim">${escapeHtml(c.sys || '')}</span></label>`).join('');
   return `<div class="c">${escapeHtml(itYouEmptyText())}</div>`;
@@ -29123,7 +29166,7 @@ function itSettingsHtml(numbered){
   return `<div class="it-setup">
     <div class="it-box">${n(1, 'Chat logs folder')}<div class="v">${it.dir ? escapeHtml(it.dirName) : 'not chosen'}</div>${itFolderStateHtml()}</div>
     <div class="it-box${itWaitHtml('cls')}">${n(2, 'Intel channels')}${itWaitHtml('note')}${itChansHtml(chans)}</div>
-    <div class="it-box">${n(3, 'You')}${itCharsHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
+    <div class="it-box">${n(3, 'You')}${itYouListHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
     <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
     ${itRpBoxHtml(numbered)}
     ${numbered ? '' : itAliasBoxHtml()}
@@ -29442,7 +29485,7 @@ function itRender(force){   // force: a press that changes what is open (the gea
   } else {
     // v.98 (the owner: "the feed keeps growing ... drop entries older than 15 minutes"): the Feed keeps the same time as Near You
     body = `${it.on ? `<div class="it-sub" data-it-status></div>` : `<div class="it-sub">Stopped. The switch beside the gear starts it again.</div>`}
-      ${it.on && it.me && !itMySys() ? `<div class="it-sub it-warn">Your system isn’t known yet (it’s read from your Local log when you jump), so no jumps and no alerts until then.</div>` : ''}
+      ${itNoSysWarnHtml()}
       <div class="it-top${itOnHtml(it.set.nearShown, 'ny-open')}">
         <div class="it-mapcol"><div class="it-h"><h3>${escapeHtml(cardName('itmap'))}</h3><span class="ctx" data-it-mapctx>${escapeHtml(itMapCtx())}</span></div><div class="it-mapwrap"><div id="itMapSlot"></div>
         <div class="it-nearcol" id="itNearCol"><div class="it-h"><h3>${escapeHtml(cardName('itnear'))}</h3><span class="ctx" data-it-nearctx title="${escapeHtml(itMySys() ? `Systems within ${itNearReach()} jumps (under the gear); farther reports are in the ${cardName('itfeed')}` : '')}">${escapeHtml(itNearCtx())}</span></div><div id="itNearList">${itNearListHtml()}</div><div class="it-more" hidden></div></div></div></div>
@@ -29840,7 +29883,7 @@ function itMapRefresh(force){
   if(!itMapVisible()){ itm.stale = true; return; }
   const T = itMapTable(), msg = itm.el.querySelector('.it-map-msg'), my = itMySys(), g = itGraphGet();
   const home = my && T ? g.at.get(my) : undefined;
-  const why = !T ? 'The map table is missing from this page.' : !my ? 'Your system isn’t known yet (it’s read from your Local log when you jump).' : home === undefined ? 'Your system has no stargates (a wormhole), so there is no map.' : '';
+  const why = !T ? 'The map table is missing from this page.' : !my ? `${itNoSysText()}.` : home === undefined ? 'Your system has no stargates (a wormhole), so there is no map.' : '';
   msg.hidden = !why; msg.textContent = why; itm.cv.hidden = !!why;
   itm.el.querySelector('[data-im-z="me"]').hidden = !!why;   // nothing to center on
   itMapLegend();
@@ -32320,7 +32363,7 @@ function rsBind(root){
       const ul = t.parentNode && t.parentNode.querySelector('ul'); if(ul) ul.innerHTML = itAliasRowsHtml();
       return;
     }
-    if(t.dataset.itMe !== undefined){ it.set.me = Number(t.dataset.itMe); itWriteSet(); it.me = it.chars.get(it.set.me) || null; it.lastScan = 0; it.alerted = new Map(); itRender(); return; }
+    if(t.dataset.itMe !== undefined){ it.set.me = Number(t.dataset.itMe); itWriteSet(); itMeSync(); return; }   // 054: a change resets once, the game's last answer too
     if(t.dataset.itF){   // v.99: the Feed's filters, kept in this browser
       it.set.feed[t.dataset.itF] = t.dataset.itF === 'dist' ? Number(t.value) : t.value;
       itWriteSet(); itRenderLists(); return;
@@ -32412,7 +32455,6 @@ function rsBind(root){
     const a = e.target.closest('[data-it-act]');
     if(!a) return;
     if(a.dataset.itAct === 'gl-again'){ ssoStart(ssoWant(), 'eve'); return; }   // 028: to EVE's page (032: for every feature on)
-    if(a.dataset.itAct === 'gl-open'){ openProfile('eve'); return; }   // 032: the switch is on the profile's EVE tab
     if(a.dataset.itAct === 'on-stop'){ itToggle(false); return; }   // 029: logged off in EVE; Intel never stops by itself
     if(a.dataset.itAct === 'wake'){ itAudioWake(); if(it.note === IT_WAKE_NOTE){ it.note = ''; itRender(true); } return; }   // the press itself wakes the audio
     if(a.dataset.itAct === 'gear'){ it.pop = !it.pop; itRender(true); if(!it.pop) itGearFocus(); return; }   // v2026.11.01.3: closed: the focus back on the gear
@@ -32440,6 +32482,7 @@ function rsBind(root){
       // v2026.11.08.2 (025): remember what the browser says; "prompt" shows Allow reading in step 1 (the page can't ask without a click)
       try{ if(await itPermRead() === 'granted') await itScan(); }catch(e){ it.perm = 'prompt'; }
     }
+    itMeSync(true);   // 054: a login restored before Intel's settings were read
     it.loaded = true; itRender(); itLoadedRes();
   });
   itRender();

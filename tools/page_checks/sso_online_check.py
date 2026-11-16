@@ -15,7 +15,8 @@ made-up Chatlogs folder, quiet R2Z2), plus a stand-in for ESI's /characters/<id>
     long under a quarter of the group's tokens; a 429 waits its Retry-After; a 401: SSO-08 with Log in again, no second request; a 403:
     SSO-07, off; off: nothing on the portrait, no request; a login without the permission: nothing shown, Continue to EVE; Log out: off, nothing on the portrait;
   * Intel running as You and logged off: "Your character is logged off in EVE." with Stop Intel, above the amber wake line; Intel keeps
-    running; Stop Intel stops it; the checks ride Intel's tick (no timer of its own); another character as You: no line;
+    running; Stop Intel stops it; the checks ride Intel's tick (no timer of its own); another character as You: no line (054: unless Use my
+    game location is on, when You follows the login and the line shows for it);
   * two tabs logged in as the same character: one asks, the other shows what it heard; a tab opened later hears it at once; a hidden tab
     without Intel lets go and asks nothing, the other takes over; the tab running Intel takes it over; a tab leaving for EVE's page lets
     go first; a tab waiting 3 minutes without an answer takes over;
@@ -190,6 +191,10 @@ with sync_playwright() as p:
     check(not s['it'] and 'logged off in EVE' not in s['notes'] and s['timer'], f'Stop Intel stops it; the line goes; the check back on its own timer ({s["timer"]})')
     gear(pg); pg.check(f'[data-it-me="{ALT}"]'); pg.wait_for_timeout(100); intel_on(pg); pg.wait_for_timeout(500)
     check('logged off in EVE' not in sto(pg)['notes'], 'another character as You: no line')
+    pg.evaluate("() => itGlToggle({checked: true})"); pg.wait_for_timeout(300); s = sto(pg)   # 054: with Use my game location on, You follows the login
+    check(pg.evaluate("() => it.me && Number(it.me.id)") == MAIN and 'Your character is logged off in EVE.' in s['notes'], f"054: the switch on, another character picked: You follows the login, so the line shows for it ({s['notes'][:60]!r})")
+    pg.evaluate("() => itGlToggle({checked: false})"); pg.wait_for_timeout(300)
+    check('logged off in EVE' not in sto(pg)['notes'] and pg.evaluate("() => it.me && Number(it.me.id)") == ALT, '054: the switch off: the pick is You again, no line')
     pg.click('#intelSwLabel'); pg.wait_for_timeout(300)
     # 390 px: Stop Intel's height
     gear(pg); pg.check(f'[data-it-me="{MAIN}"]'); pg.evaluate("() => { it.pop = false; itRender(true); }"); pg.set_viewport_size({'width': 390, 'height': 900}); intel_on(pg); pg.wait_for_timeout(500)
