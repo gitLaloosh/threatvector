@@ -1,6 +1,6 @@
 # Intel settings: "You" follows your EVE login while Use my game location is on
 
-**Status:** planned 2026-11-15 by a research session against `main` 491ecad (v2026.11.15.2). **Queued as 054** 2026-11-15 ([stated] "ok queue it"; `claude/build-queue/054-intel-you-follows-login.md`). Build **after 052** ([stated] "after 052"). No mockup (owner's choice: [stated] "no mockup"). Sources: none (no outside facts). **In build** since 2026-11-16 on branch `054-intel-you-follows-login` (from `main` 51207b6).
+**Status:** planned 2026-11-15 by a research session against `main` 491ecad (v2026.11.15.2). **Queued as 054** 2026-11-15 ([stated] "ok queue it"; `claude/build-queue/054-intel-you-follows-login.md`). Build **after 052** ([stated] "after 052"). No mockup (owner's choice: [stated] "no mockup"). Sources: none (no outside facts). **Built** 2026-11-16 as v2026.11.16.2 on branch `054-intel-you-follows-login` (from `main` 51207b6); see "Built" at the end.
 
 Backlog: "Intel settings: "You" follows your EVE login while Use my game location is on" (dscan-backlog-5, 2026-11-12).
 
@@ -129,6 +129,28 @@ Four gaps, put to the owner with these proposals; he took all four (2026-11-16, 
 Hand test setup (use these, not section 8's): `git status`, `git fetch origin`, `git switch 054-intel-you-follows-login`, `git pull`, `python -m http.server 8000` (Windows: `py -m http.server 8000`), open `http://localhost:8000/`; Ctrl+C stops it; afterwards `git switch main`, `git pull`.
 
 Hand test step 3, as the owner can run it ([stated] 2026-11-16: "i do not have a character without a local log."): copy his `Chatlogs` folder (e.g. `Documents\Chatlogs-054-test`); in the copy only, delete the `Local_*.txt` files ending in the test character's id; Intel ⚙ → Chat logs folder → Change… to the copy; log in with EVE as that character, Use my game location on, Intel on. Pass: the row with "No Local log for <name>…", and the status line and map take the system he's in in game (undock or jump to see it move). Then Change… back to the real folder and delete the copy. The copied channel logs don't grow, which doesn't matter here; the automated check covers the same case with a made-up character.
+
+## Built (v2026.11.16.2, 2026-11-16)
+
+As planned with the four answers in section 10. Where the build differs from sections 3–7:
+- **One `itMeSync(scan)`** (gap 1) instead of the hook list in 3.1: from `renderSidePanel` (through `pfTry`, since it runs before Intel's part
+  of the script exists), the end of `itScan` and the end of Intel's start-up load (a login restored before Intel's settings were read). A
+  change (by id, and the stand-in flag) resets `itGl`, `it.alerted` and, outside a scan, `it.lastScan`, then one `itRender()`; a scan's call
+  leaves the redraw to its caller. The radio handler goes through it too, so a new pick also drops the old game answer (problem 2).
+- **`ssoLost` sets `sso.lost` before `ssoEnd()`**: otherwise any redraw in between saw "not following" and flipped You to the pick and back,
+  resetting the alert memory twice.
+- **The stand-in** is kept while its id stays the login's (so `sysAt` survives a redraw); `itTick` reads a Local log only when `it.me.st` exists.
+- **Gap 3's wording** also goes into the map's empty line ("Your system isn't known yet (it comes from EVE once it answers).") for a stand-in.
+- **The row:** `eveFeatHtml(k, m, {intel: true, more})` with small builders (`eveFeatAttrHtml`, `eveFeatNameHtml`, `eveFeatMoreHtml`,
+  `eveFeatSwHtml`) so `check_html_sinks` passes (its baseline shrank 1507 → 1506); the name is a span (no label for a switch that isn't there),
+  `data-it-glrow` instead of `data-feat`, the message from `itGlMsgHtml` (its Log in again works inside Intel). The state colours of `.pp`
+  also apply under `.it-gl`. `itYouListHtml`, `itNoSysText`, `itNoSysWarnHtml`, `itGlNoLogHtml` are new.
+- **Removed:** `itGlWarnHtml`, `.it-gl-sub`, the `gl-open` action, `eveFeatLine('loc')`'s "Your EVE login is X, not Y" branch.
+- **Info text:** `intel#game` (gap 4 and section 6); METHODOLOGY.md's Intel section got one sentence. `CARD_INFO.intel` reads true as is.
+- **Checks:** `sso_game_check.py`'s `follow_case` (ALT picked then login, the old answer dropped, the requests, `ssoLost`, Log out, a third made-up
+  character with no Local log, the folder not read, the EVE wording, the switch off) and 6 mutants; D7 and 390 px cases; `gl_on` now goes through
+  `itGlToggle`; it gets 15 minutes in `run_checks.py`'s SLOW. `sso_online_check.py`: the switch on makes the logged-off line follow the login.
+  `intel_logs_check.py`: its mutant quotes `itScan`'s new line (`meId`).
 
 ## Sources
 
