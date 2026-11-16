@@ -22,9 +22,18 @@ intel_check.py's stand-ins (its made-up Chatlogs folder, ESI and system names, t
   * a browser without the folder picker: the amber note above the steps (Chrome or Edge), the example still shown; Brave (a stand-in
     navigator.brave): the Brave line with brave://flags/#file-system-access-api as text (no link, no button), and INTEL-01 on the
     button press says the same; the picker there too (the flag on): no note.
-v2026.11.07.6 fails (no example, and the switch turns on with no channel).
+  * build queue 055 (Project doc roadmap/intel-example-controls-plan.md; the owner: "should accurately reflect changes made to the functioning
+    map"), at 1440, 760, 390 and 320 px: the drift guard (every control the live map's markup shows at rest, itMapMarkupHtml, and the rows
+    under its box have a twin in the example's map); still copies (no id, no data-im/it/rs hook, nothing focusable, one #itRpSug at most,
+    Security pressed); the picture as tall as the live map (itMapH) with you in the part its Near You list doesn't cover and past the filter
+    column; the rail under the zoom row and clear of the search box, Near You level with the rail (wide), the column shut behind its button
+    (phone); Near You's rows with height on a phone; marker 3 at the picture's bottom-left, clear of the search box and the column; no
+    sideways scroll; with another stack saved (Region, Only Kills), the example's legend, column and picture still today's defaults and the
+    store untouched (the 055 review's bug);
+  * mutants, each must fail (see MUTANTS).
+v2026.11.07.6 fails (no example, and the switch turns on with no channel). v2026.11.16.3 fails 055's cases (no controls in the example).
 """
-import sys, os, re, json, time
+import sys, os, re, json, time, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, '..'))
 _src = open(os.path.join(HERE, 'intel_check.py'), encoding='utf-8').read()
 _src = _src[:_src.index('with sync_playwright() as p:')]
@@ -46,7 +55,8 @@ MARKS = """() => { const f = document.querySelector('#intelPanel .itx'); if(!f) 
     const inF = r.left >= F.left - 1 && r.right <= F.right + 1 && r.top >= F.top - 1 && r.bottom <= F.bottom + 1;
     // build queue 052: marker 3 on the map picture on a phone too (it was by Near You's heading while the phone's example had no map)
     const t = T[n]; if(!t) return [n, 'no target']; const b = t.getBoundingClientRect();
-    const ok = n === 5 ? Math.abs(cx - (b.right + 16)) <= 4 && Math.abs(cy - (b.top + 7)) <= 4 : Math.abs(cx - b.left - (n === 3 ? 14 : 0)) <= 4 && cy >= b.top - 2 && cy <= b.bottom + 2;
+    // build queue 055 (D1): marker 3 at the picture's bottom-left corner (the search box has its top left)
+    const ok = n === 5 ? Math.abs(cx - (b.right + 16)) <= 4 && Math.abs(cy - (b.top + 7)) <= 4 : n === 3 ? Math.abs(cx - b.left - 14) <= 4 && Math.abs(cy - (b.bottom - 14)) <= 4 : Math.abs(cx - b.left) <= 4 && cy >= b.top - 2 && cy <= b.bottom + 2;
     return [n, inF && ok]; }); }"""
 INFO = """() => { const f = document.querySelector('#intelPanel .itx'); if(!f) return null; const p = f.parentElement;
   const setup = document.querySelector('#intelPanel .it-setup'), log = [...document.querySelectorAll('#intelPanel .it-sub')].find(x => /Log Chat to File/.test(x.textContent));
@@ -60,6 +70,96 @@ INFO = """() => { const f = document.querySelector('#intelPanel .itx'); if(!f) r
 NOTES = ['1A report from your intel channel: read as your scouts type it: who, what they fly, where.', '2How far, in jumps: Near You lists everything within reach, nearest first.',
          '3The map: reports and kills around you; hover one for its route to you.', '4Inside your alert range: a sound and a desktop notice if you turn them on, and an amber mark on your profile, from any tab.',
          '5Kills nearby: from zKillboard as they happen; press one to see the attacking fleet and its fits.']
+
+# ---- build queue 055: the live map's controls in the example ----
+PAGE = open(HTML, encoding='utf-8').read()
+CTL = r"""() => { const f = document.querySelector('#intelPanel .itx'); if(!f) return null;
+  const col = f.querySelector('.it-mapcol'), box = f.querySelector('.itx-map'), img = box.querySelector('img'), R = (e) => e ? e.getBoundingClientRect() : null;
+  const shown = (e) => { const r = R(e); return !!r && r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden'; };
+  // the drift guard: the live map's markup as made (nothing drawn yet): the box's children shown at rest, and the rows under the box
+  const d = document.createElement('div'); d.innerHTML = itMapMarkupHtml();
+  const rest = (e) => !e.matches('canvas, [hidden], [aria-hidden="true"]'), cls = (e) => e.classList[0];
+  const want = [...[...d.querySelector('.it-map-box').children].filter(rest).map(cls), ...[...d.children].filter(e => !e.matches('.it-map-box')).map(cls)];
+  const miss = want.filter(c => !(c === 'it-map-leg' || c === 'it-map-row' ? col.querySelector(':scope > .' + c) : box.querySelector(':scope > .' + c)));
+  const ctl = [...box.querySelectorAll(':scope > :not(img)'), ...col.querySelectorAll(':scope > .it-map-row')];
+  const hooks = ctl.flatMap(e => [e, ...e.querySelectorAll('*')]).flatMap(e => [...e.attributes].map(a => a.name)).filter(n => /^data-(im|it|rs)(-|$)/.test(n));
+  const foc = ctl.flatMap(e => [...e.querySelectorAll('button, input, select, textarea, a[href]')]).filter(e => e.tabIndex >= 0).length;
+  const pressed = [...box.querySelectorAll('.it-map-fbtns button[aria-pressed="true"]')].map(b => b.getAttribute('aria-label'));
+  const zoom = box.querySelector(':scope > .it-map-zoom'), rail = box.querySelector(':scope > .it-map-rail'), srch = box.querySelector(':scope > .it-rp-search');
+  const ny = f.querySelector('.it-nearcol'), nr = R(ny), ir = R(img), zr = R(zoom), rr = R(rail), sr = R(srch);
+  const m3 = R(f.querySelector('[data-itx-mk="3"]')), over = (e) => { const r = R(e); return !!r && r.width > 0 && shown(e) && m3.left < r.right && m3.right > r.left && m3.top < r.bottom && m3.bottom > r.top; };
+  const fbr = R(box.querySelector('.it-map-fbtns')), phone = itExPhone(), you = itEx.mapYou || [-1, -1], fit = !!itEx.mapFit, reps = (itEx.mapRep || []).map(q => q[0]);
+  const near = f.querySelector('.itx-near'), row1 = near && near.querySelector('.it-nb');
+  const leg = col.querySelector(':scope > .it-map-leg'), rsv = col.querySelector('.it-map-row input');
+  return {want, miss, ids: [...f.querySelectorAll('[id]')].map(e => e.id), hooks, foc, sug: document.querySelectorAll('#itRpSug').length, pressed,
+    h: Math.round(img.naturalHeight / (window.devicePixelRatio || 1)), w: Math.round(ir.width), H: itMapH(Math.round(ir.width), phone), phone,
+    you, fit, reps, nyL: phone ? null : Math.round(nr.left - ir.left), fbR: fbr && fbr.width > 0 ? Math.round(fbr.right - ir.left) : 0,
+    railUnderZoom: !!(rr && zr) && rr.top >= zr.bottom - 1, railClear: !!(rr && sr) && (rr.top >= sr.bottom - 1 || rr.bottom <= sr.top + 1 || rr.left >= sr.right - 1), nyLevel: phone || !rr ? null : Math.round(nr.top - rr.top),
+    colShown: shown(box.querySelector('.it-map-fbtns')), curShown: shown(box.querySelector('.it-map-fcur')),
+    nearH: near ? Math.round(R(near).height) : 0, row1: row1 ? Math.round(R(row1).height) : 0,
+    m3: [Math.round(m3.left + m3.width / 2 - ir.left), Math.round(ir.bottom - (m3.top + m3.height / 2))], m3over: [over(srch), over(box.querySelector('.it-map-fbtns')), over(box.querySelector('.it-map-fcur'))],
+    leg: leg ? leg.innerText.split('\n')[0] : '', only: !!(leg && leg.querySelector('.it-map-only')), reach: rsv ? rsv.value : null, sw: document.documentElement.scrollWidth}; }"""
+
+def controls(b, html, widths=(1440, 760, 390, 320), stack=True):
+    out, errs = [], []
+    def page(w, init=''):
+        ctx = b.new_context(bypass_csp=True, viewport={'width': w, 'height': 1000}); ctx.on('page', lambda pg: pg.on('pageerror', lambda e: errs.append(str(e)[:200])))
+        if init: ctx.add_init_script(init)
+        ctx.add_init_script(FS); route(ctx)
+        pg = ctx.new_page(); pg.goto('file://' + html)
+        pg.evaluate("(s) => { localStorage.clear(); localStorage.setItem('dscanSide', JSON.stringify(s)); }", SIDE); pg.reload(); pg.wait_for_timeout(500)
+        pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(1500)
+        return ctx, pg
+    for w in widths:
+        ctx, pg = page(w); r = pg.evaluate(CTL)
+        if r is None: out.append(f'{w}: no example'); ctx.close(); continue
+        t = f'{w} px:'
+        if r['miss'] or len(r['want']) < 6: out.append(f'{t} the drift guard: the live map shows {r["want"]} at rest; the example lacks {r["miss"]}')
+        if r['ids'] or r['hooks'] or r['foc'] or r['sug'] > 1: out.append(f'{t} not still copies: ids {r["ids"][:4]}, hooks {r["hooks"][:4]}, {r["foc"]} focusable, {r["sug"]} #itRpSug')
+        if r['pressed'] != ['Security status']: out.append(f'{t} pressed {r["pressed"]} (want Security only, today\'s defaults)')
+        if r['reach'] != '10': out.append(f'{t} the "Map: within" copy shows {r["reach"]!r} (want the example\'s 10)')
+        if r['h'] != r['H']: out.append(f'{t} the picture {r["h"]} px tall for {r["w"]} (the live map: {r["H"]})')
+        x, y = r['you']
+        if r['phone']:
+            if not (0 < x < r['w'] and 0 < y < r['h']): out.append(f'{t} you at {r["you"]}, off the picture')
+            if r['colShown'] or not r['curShown']: out.append(f'{t} the filter column not shut behind its button {r["colShown"], r["curShown"]}')
+            if r['nearH'] < 100 or r['row1'] < 20: out.append(f'{t} Near You\'s rows have no height (list {r["nearH"]}, first row {r["row1"]})')
+        else:
+            if not (r['fbR'] < x < r['nyL'] and 0 < y < r['h']): out.append(f'{t} you at {r["you"]}, not between the filter column ({r["fbR"]}) and Near You ({r["nyL"]})')
+            if not r['fit'] and abs(x - (r['nyL'] - 4) / 2) > 2: out.append(f'{t} you at x {x}, not centred in the part Near You doesn\'t cover (0 to {r["nyL"] - 4})')
+            if not all(r['fbR'] < q < r['nyL'] for q in r['reps']): out.append(f'{t} a report under the filter column or Near You: x {r["reps"]} (free {r["fbR"]} to {r["nyL"]})')
+            if r['nyLevel'] is None or abs(r['nyLevel']) > 1: out.append(f'{t} Near You {r["nyLevel"]} px off the rail\'s level')
+            if not r['colShown'] or r['curShown']: out.append(f'{t} the filter column not open {r["colShown"], r["curShown"]}')
+        if not r['railUnderZoom'] or not r['railClear']: out.append(f'{t} the rail under the zoom row {r["railUnderZoom"]}, clear of the search box {r["railClear"]}')
+        if abs(r['m3'][0] - 14) > 4 or abs(r['m3'][1] - 14) > 4 or any(r['m3over']): out.append(f'{t} marker 3 at {r["m3"]} from the bottom-left (want 14, 14), over the search / column / button {r["m3over"]}')
+        if r['sw'] > w: out.append(f'{t} sideways scroll ({r["sw"]})')
+        ctx.close()
+    if stack:   # the 055 review's bug: another stack saved; the example still today's defaults, the store untouched
+        st = json.dumps({'v': 1, 'colour': 'region', 'view': 'map', 'only': {'secr': False, 'near': False, 'reports': False, 'kills': True, 'wh': False, 'sov': False},
+                         'secr': {'lo': -5, 'hi': -3}, 'near': {'n': 5}, 'sovLv': [], 'seen': {'secr': False, 'near': False}})
+        ctx, pg = page(1440, "try{ if(location.protocol === 'file:') localStorage.setItem('tvMapStack', %s); }catch(e){}" % json.dumps(st))
+        r = pg.evaluate(CTL)
+        pic = pg.evaluate("() => { itMapSt(); itEx.map = null; const a = itExMapPic(800); const keep = itm.st; itm.st = itMapStackBlank(); itEx.map = null; const p = itExMapPic(800); itm.st = keep;"
+                          " return [a === p, keep.colour, localStorage.getItem('tvMapStack')]; }")
+        if r is None or not r['leg'].startswith('Security') or r['only'] or r['pressed'] != ['Security status']:
+            out.append(f'another stack saved (Region, Only Kills): the example\'s legend {r and r["leg"]!r}, its Only line {r and r["only"]}, pressed {r and r["pressed"]} (want Security, none, Security)')
+        if not pic[0] or pic[1] != 'region': out.append(f'another stack saved: the example\'s picture differs from today\'s defaults {pic[0]} (the live stack {pic[1]})')
+        if json.loads(pic[2] or '{}') != json.loads(st): out.append(f'the store changed: {pic[2]}')
+        ctx.close()
+    return out, errs
+
+# each mutant's line is one line with no leading space: the served copy (tools/publish.py) drops comments and indentation
+MUTANTS = [
+    ('the search left out of the example (the drift guard)', "d.innerHTML = itMapZoomHtml() + itRpSearchHtml() + itMapFbarHtml();", "d.innerHTML = itMapZoomHtml() + itMapFbarHtml();", (1440,)),
+    ('the slider row left out (the drift guard)', "<div class=\"it-map-leg\">${itExLegendHtml()}</div>${itExRowHtml()}</div></div>`", "<div class=\"it-map-leg\">${itExLegendHtml()}</div></div></div>`", (1440,)),
+    ('the copies not made still', "function itExStill(html){", "function itExStill(html){ return String(html);", (1440,)),
+    ('the picture at its old height', "dpr = window.devicePixelRatio || 1, h = itMapH(w, phone);", "dpr = window.devicePixelRatio || 1, h = Math.round(Math.max(380, Math.min(560, w * 0.72)));", (1440,)),
+    ('centred on the whole width (Near You ignored)', "return {free: b >= 96 ? [0, b] : [0, w], fb: box};", "return {free: [0, w], fb: box};", (1440, 760)),
+    ('the old rail place', ".it-top.itx-top .itx-map{position:relative;}\n", ".it-top.itx-top .itx-map{position:relative;} .it-top.itx-top .itx-map .it-map-rail{top:8px;}\n", (1440,)),
+    ('the phone Near You list with no height (D3)', ".it-top.itx-top .it-nearcol > .itx-near{flex:none; overflow:visible;}", ".it-top.itx-top .it-nearcol > .itx-near{overflow:visible;}", (390,)),
+    ('marker 3 at the top-left (on the search box)', "at(3, img, 14, img ? img.getBoundingClientRect().height - 14 : 0);", "at(3, img, 14, 14);", (1440,)),
+    ('the user\'s stack in the example (the 055 review)', "itm.st = itMapStackBlank(); itm.mt = null;", "itm.mt = null;", ()),
+]
 
 with sync_playwright() as p:
     b = p.chromium.launch(); errs = []
@@ -197,6 +297,19 @@ with sync_playwright() as p:
     n3 = pg.evaluate(NOTE)
     check(n3[0] is None and n3[1], f'Brave with the flag on (the picker there): no note, the example shown {n3}')
     ctx.close()
+    # ---- build queue 055 ----
+    o5, e5 = controls(b, HTML)
+    for o in o5: check(False, o)
+    check(not o5, 'build queue 055: the live map\'s controls in the example (drift guard, still copies, height, centring, places, phone list, marker 3, no sideways scroll, the user\'s stack never shown) at 1440, 760, 390 and 320 px')
+    errs += e5
+    for name, old, new, ws in MUTANTS:
+        if PAGE.count(old) != 1: check(False, f'mutant "{name}": its line isn\'t in the page once'); continue
+        with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8', dir=os.path.dirname(HTML)) as f:
+            f.write(PAGE.replace(old, new)); mp = f.name
+        try:
+            mo, me = controls(b, mp, ws, stack=not ws)
+            check(bool(mo) or bool(me), f'mutant "{name}" fails ({(mo or me or ["nothing"])[0][:110]})')
+        finally: os.unlink(mp)
     b.close()
 check(not errs, f'no page errors {errs[:3]}')
 print(f"FAILURES: {NS['fails']}")

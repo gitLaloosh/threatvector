@@ -338,6 +338,13 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   one stops Intel (the owner, at the review). v2026.11.07.8 (the owner: "disable the on/off switch until a folder is chosen and at least one
   channel is checked"): `#intelSw` is disabled (`itSwLocked`, dimmed, no amber breathing) with a hover saying what's missing (`itSwTitle`);
   `itSwSync` keeps the box in step with `it.on` after a press. `intel_example_check.py`.
+  Build queue 055 (v2026.11.16.4; roadmap/intel-example-controls-plan.md, mockup `Claude outputs/intel_example_controls_mockup.html`; the owner:
+  "should accurately reflect changes made to the functioning map"): the example's map carries still copies (`itExStill`: no id, no `data-im`/
+  `data-it`/`data-rs` hook, nothing focusable) of every control the live map shows at rest, made by the live map's own builders (`itMapZoomHtml`,
+  `itRpSearchHtml`, `itMapFbarHtml` marked by `itMapFbarMark`, `itMapRailHtml`, `itMapRowHtml`), so a new map control reaches the example by itself;
+  `intel_example_check` fails if the live map's markup (`itMapMarkupHtml`) shows one at rest that the example lacks. The picture is the live map's
+  height (`itMapH`), centred on you in the part its Near You list doesn't cover (`itExMeasure`; `itm.exFree` / `itm.exFb` read by `itMapFree` and
+  `itMapDraw` only while it is drawn), marker 3 at its bottom-left. `itExSandbox` sets the map's stack aside for everything the example draws.
 - **The chat-logs folder after a reload** (v2026.11.08.2, build queue 025; Project doc roadmap/intel-folder-permission-plan.md): Chrome
   asks again for a folder kept from an earlier visit, and asking needs a click, so the page keeps what the browser says (`it.perm`: none /
   prompt / granted / denied, `itPermRead`) and never asks on its own. `prompt`: step 1 "Needs your OK this visit" with **Allow reading**

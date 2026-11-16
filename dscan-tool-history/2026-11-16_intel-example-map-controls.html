@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-16 — Intel example: the live map's controls</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel example: the live map's controls, size and centring</h1>
+<p><span class="tag">Page</span> 2026-11-16 &middot; <code>v2026.11.16.4</code> &middot; build queue 055 &middot; plan <code>roadmap/intel-example-controls-plan.md</code>, mockup <code>Claude outputs/intel_example_controls_mockup.html</code></p>
+<h2>Why</h2>
+<ul>
+<li>The owner: "intel tab's example content doesn't include the filters on the left side of the map or the system search. should accurately reflect changes made to the functioning map." The example (build queue 017, moved to the new layout in 052) drew the map as a picture with only Near You's button and the legend; 047's search box and 052's zoom row and filter column were made inside <code>itMapMake</code> as one string the example never used, and nothing checked that the two matched.</li>
+</ul>
+<h2>What changed</h2>
+<ul>
+<li>The example's map shows still copies of everything the live map shows at rest: the zoom row, the system search, the filter column (Security on; 058's three groups and 053's Sov upgrades come with it; on a phone folded behind its one button), Near You's button, the legend and the "Map: within" row with the example's reach. Each comes from the live map's own builder: <code>itMapZoomHtml</code> and <code>itMapRowHtml</code> (taken out of <code>itMapMake</code>), <code>itRpSearchHtml</code>, <code>itMapFbarHtml</code>, <code>itMapRailHtml</code>. The column is marked by <code>itMapFbarMark</code>, the live map's own painter, now usable on any column. <code>itExStill</code> takes out ids and the live code's hooks and makes nothing focusable (the example's body is inert as well).</li>
+<li>The picture is as tall as the live map (<code>itMapH</code>, shared with <code>itMapRefresh</code>; the example's own 380-560 px formula and <code>IT_MAP_MIN_H</code> are gone) and centred on you in the part its Near You list doesn't cover, with names kept clear of its filter column. <code>itExMeasure</code> measures the example's own controls the way the live map measures its own; <code>itMapFree</code> and <code>itMapDraw</code> read them (<code>itm.exFree</code>, <code>itm.exFb</code>) only while the picture is drawn. The filter column's rows come from one rule, <code>itMapFlRows</code>, for both.</li>
+<li>The rail and Near You take the live places (the rail under the zoom row, Near You level with it); marker 3 moves to the picture's bottom-left corner, as the search box now has its top left. The notes are unchanged (the owner: "no for now" to a sixth marker).</li>
+<li>Fixed, found while planning: on a phone the example's Near You list had no height, so its rows didn't show and markers 2, 4 and 5 floated over the legend.</li>
+<li>Fixed, found at the build review (the owner: "yes"): the example's legend read the user's own map filters (058 set today's defaults only for the picture). With Region and Only Kills saved, the legend said "Region" and "Only 0 match · kills in Intel" over a picture coloured by Security. <code>itExSandbox</code> now sets the map's stack and match set aside for everything the example draws.</li>
+<li>Drawing the example's picture no longer touches the live map's match chip or wormhole pulses (they are set aside while it draws).</li>
+<li>No stored data changes. Info text: checked; none.</li>
+</ul>
+<h2>Checks</h2>
+<ul>
+<li><code>intel_example_check.py</code> gains build queue 055's cases at 1440, 760, 390 and 320 px. The drift guard: every control the live map's markup (<code>itMapMarkupHtml</code>) shows at rest, and the rows under its box, must have a twin in the example. Also still copies, the picture's height and centring, the reports clear of the column and Near You, places, Near You's rows on a phone, marker 3, no sideways scroll, and another stack saved never showing. Nine mutants, each must fail. Marker 3's target in its marker test moves to the bottom-left.</li>
+<li><code>intel_map_stack_check.py</code>: its "the example writing the user's stack" mutant moves to the sandbox's set-aside.</li>
+</ul>
+</body></html>

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-nB70DyYsGj9vehf6+wVz68YJ3xPw+PovlY2jps4dFRY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-YALfCIES3m2yDI6fAT1dSNKyIaqmOkkaJd5FhXoRudU='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2505,9 +2505,12 @@
   .itx .it-top .it-nearcol{contain:none; min-height:0;}
   /* build queue 052: the example's Near You open beside its still map button at the picture's top right (under the markers); on a phone
      under the picture */
-  .it-top.itx-top .itx-map{position:relative;} .it-top.itx-top .itx-map .it-map-rail{top:8px;}
-  .it-top.itx-top .it-nearcol{z-index:2; top:8px; bottom:8px; height:auto;} .it-top.itx-top .it-nearcol > .itx-near{flex:1 1 0; min-height:0; overflow:hidden;}
-  @media (max-width: 599px){ .it-top.itx-top .it-nearcol{position:static; width:auto; height:auto; margin-top:10px;} .it-top.itx-top .it-nearcol > .itx-near{overflow:visible;} }
+  /* build queue 055: the example's map carries still copies of the live map's controls (zoom row, search, filter column, rail), so its rail
+     and Near You take the live places (the rail under the zoom row, Near You level with it) */
+  .it-top.itx-top .itx-map{position:relative;}
+  .it-top.itx-top .it-nearcol{z-index:2; bottom:8px; height:auto;} .it-top.itx-top .it-nearcol > .itx-near{flex:1 1 0; min-height:0; overflow:hidden;}
+  /* 055 (D3): on a phone the list sits under the picture in a column of auto height, so it takes its rows' height (flex:1 1 0 left it none) */
+  @media (max-width: 599px){ .it-top.itx-top .it-nearcol{position:static; width:auto; height:auto; margin-top:10px;} .it-top.itx-top .it-nearcol > .itx-near{flex:none; overflow:visible;} }
   .itx-map img{display:block; width:100%; height:auto;}
   .itx-mk{position:absolute; z-index:3; width:20px; height:20px; margin:-10px 0 0 -10px; border-radius:50%; background:var(--cyan); color:#0b0f13; font:700 11.5px/20px var(--sans); text-align:center; box-shadow:0 0 0 2px var(--panel); pointer-events:none;}
   .itx-mk[hidden]{display:none;}
@@ -3363,7 +3366,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.3</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.4</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -29017,7 +29020,6 @@ function itRenderLists(){
 }
 // v2026.11.07.1 (build queue 010): Near You's list scrolls inside its box; since build queue 052 that box is the panel inside the map at
 // every width (as tall as the map less the rail's top and 8 px), so the list is always capped
-const IT_MAP_MIN_H = 380;   // the Intel example's map picture (052: the live map's height is in itMapRefresh)
 function itNearCapped(){ return true; }
 // "+N more systems below" (the owner: "keep it"): the rows whose top is below the list's bottom; after a draw and on the list's own
 // scroll (one frame), never on a timer (LESSON #120); the line is in the built markup, filled here (the built-text compare stays exact)
@@ -29307,6 +29309,11 @@ function itExSandbox(fn){
   const whSt = itWhSt, whAside = itWhAside;   // build queue 040: the example never reads or writes the user's wormholes (LESSON #162)
   itWhSt = itWhBlank(); itWhAside = true;
   const rpAside = itRpAside; itRpAside = true;   // 047: its map keeps the shortest stargate routes (the build review)
+  // build queue 055 (the owner at its review: "yes"): the map's filters are today's defaults (058's itMapStackBlank: Security, soft, no Only
+  // filter) for everything the example draws, its legend and its copy of the filter column as well as its picture, never the user's own
+  // stack (tvMapStack); the match set it keys is set aside with it
+  const stHas = Object.prototype.hasOwnProperty.call(itm, 'st'), st0 = itm.st, mt0 = itm.mt;
+  itm.st = itMapStackBlank(); itm.mt = null;
   const X = IT_EXAMPLE, now = Date.now(), byLower = new Map(), byId = new Map(), T = itMapTable(), g = itGraphGet();
   try{
     for(const [id, n] of Object.entries(X.sys)){ byLower.set(n.toLowerCase(), Number(id)); byId.set(Number(id), n); }
@@ -29345,6 +29352,7 @@ function itExSandbox(fn){
     for(const k of keys){ if(has[k]) it[k] = save[k]; else delete it[k]; }
     side.rec = rec; itEntryId = eid; itAnCan = can; itFrozenNow = fz; itm.pinned = pins; [itm.hover, itm.rowHover] = hov; itExOrg = null;
     itWhSt = whSt; itWhAside = whAside; itRpAside = rpAside;
+    if(stHas) itm.st = st0; else delete itm.st; itm.mt = mt0;
   }
 }
 // The example's frame (cached: the rows don't change, and their ages were worked out once when drawn); its map picture and markers
@@ -29359,9 +29367,10 @@ function itExampleHtml(){
       // build queue 052 (plan 4.9): the map picture full width, Near You's list open beside a still copy of its map button at the picture's top
       // right (pressed, with its badge), the Feed below; on a phone the picture too, the list under it
       return `<div class="it-top ny-open itx-top"><div class="it-mapcol"><div class="it-h"><h3>${escapeHtml(cardName('itmap'))}</h3><span class="ctx">around you, ${Number(IT_EXAMPLE.mapReach)} jumps</span></div>`
-        + `<div class="it-mapwrap"><div class="it-map-box itx-map"><img alt="The example's map: reports and kills around 1DQ1-A">${itExRailHtml()}</div>`
+        // build queue 055: still copies of every control the live map shows at rest, from the live map's own builders (itExCtlHtml)
+        + `<div class="it-mapwrap"><div class="it-map-box itx-map"><img alt="The example's map: reports and kills around 1DQ1-A">${itExCtlHtml()}${itExRailHtml()}</div>`
         + `<div class="it-nearcol"><div class="it-h"><h3>${escapeHtml(cardName('itnear'))}</h3><span class="ctx">last ${Number(IT_EXAMPLE.forget)} min, within ${Number(IT_EXAMPLE.nearRange)} jumps</span></div><div class="itx-near">${itExNearHtml()}</div></div></div>`
-        + `<div class="it-map-leg">${itExLegendHtml()}</div></div></div>`
+        + `<div class="it-map-leg">${itExLegendHtml()}</div>${itExRowHtml()}</div></div>`
         + `<div class="it-feedcol"><div class="it-h"><h3>${escapeHtml(cardName('itfeed'))}</h3><span class="ctx">first 5 rows</span></div><div class="itx-feed">${itExFeedHtml()}</div></div>`;
     }).replace(/ data-it-(sys|cap)="/g, ' data-itx-$1="');   // the card's own fetchers and fitters look for these: the example's are its own
   }
@@ -29375,34 +29384,62 @@ function itExLegendHtml(){   // the map's own legend, drawn by itMapLegend into 
   try{ itm.el = box; itMapLegend(); return box.firstChild.innerHTML; }finally{ itm.el = el0; }
 }
 function itExNearHtml(){ return itNearList().map(itNearRowHtml).join(''); }   // inside itExSandbox only
-function itExRailHtml(){   // 052: a still copy of Near You's map button, pressed, with its badge (inside itExSandbox only)
+function itExRailHtml(){   // 052: a still copy of Near You's map button, pressed, with its badge (inside itExSandbox only; 055: from itMapRailHtml)
   const nh = itExNearHtml(), n = (nh.match(/class="it-nb dd/g) || []).length, al = /class="it-nb dd[^"]*\balert\b/.test(nh);
-  return `<div class="it-map-rail" aria-hidden="true"><button type="button" tabindex="-1" aria-pressed="true">${IT_FEED_ICON}<span class="it-ny-badge${itOnHtml(al, 'al')}">${escapeHtml(n ? String(n) : '')}</span></button></div>`;
+  const d = document.createElement('div'); d.innerHTML = itMapRailHtml();
+  const b = d.querySelector('button'), bd = b.querySelector('.it-ny-badge');
+  b.setAttribute('aria-pressed', 'true'); bd.textContent = n ? String(n) : ''; bd.classList.toggle('al', al);
+  return itExStill(d.innerHTML);
+}
+// build queue 055 (Project doc roadmap/intel-example-controls-plan.md; the owner: "should accurately reflect changes made to the functioning
+// map"): the zoom row, the system search and the filter column as the live map shows them at rest, from the live map's own builders, marked
+// by the live map's painter with the example's stack (inside itExSandbox: today's defaults, Security on), then made still (itExStill)
+function itExCtlHtml(){
+  const d = document.createElement('div'); d.innerHTML = itMapZoomHtml() + itRpSearchHtml() + itMapFbarHtml();
+  itMapFbarMark(d.querySelector('.it-map-fb'), itMapSt());
+  return itExStill(d.innerHTML);
+}
+function itExRowHtml(){   // the row under the legend: "Map: within" at the example's reach, read only, and the help line
+  const d = document.createElement('div'); d.innerHTML = itMapRowHtml();
+  d.querySelector('.it-map-rs').innerHTML = rsHtml('mapReach');
+  const inp = d.querySelector('input'); if(inp){ inp.setAttribute('value', String(Number(IT_EXAMPLE.mapReach))); inp.setAttribute('readonly', ''); }
+  return itExStill(d.innerHTML);
+}
+// a still copy: no ids (no #itRpSug twin), no hooks the live code looks for (data-im-*, data-it-*, data-rs*: no rsPaint, itMapFbarPaint or
+// itNearBtnPaint reaching in), nothing focusable (the example's body is inert as well)
+function itExStill(html){
+  return String(html).replace(/\s(?:id|aria-controls|aria-activedescendant|aria-haspopup)="[^"]*"/g, '')
+    .replace(/\sdata-(?:im|it|rs)(?=[-=\s>])(?:-[a-z]+)*(?:="[^"]*")?/g, '').replace(/<(button|input)\b(?![^>]*\btabindex=)/g, '<$1 tabindex="-1"');
 }
 function itExFeedHtml(){ return itFeedShown().slice(0, 5).map(itFeedRowHtml).join(''); }
 function itExCloseHtml(){ return itEx.view && !itExAuto() ? '<button type="button" class="x-close" data-it-act="exclose" aria-label="Close the example" title="Close the example">×</button>' : ''; }
 function itExMarksHtml(){ return [1, 2, 3, 4, 5].map(n => `<span class="itx-mk" data-itx-mk="${Number(n)}" hidden aria-hidden="true">${Number(n)}</span>`).join(''); }
 function itExNotesHtml(){ return IT_EX_NOTES.map(([b, t], i) => `<li><span class="n">${Number(i + 1)}</span><span><b>${escapeHtml(b)}:</b> ${escapeHtml(t.replace('{near}', cardName('itnear')))}</span></li>`).join(''); }
 // The map, drawn once into a picture by the map's own code on a canvas of its own (itm's state set aside and put back), at the width of
-// its column; again only when that width changes
-function itExMapPic(w){
-  const key = `${w}|${itFontEpoch}`;
+// its column; again only when that width (or the part its controls leave free) changes. Build queue 055: as tall as the live map
+// (itMapH), centred on you in the part the example's Near You list doesn't cover (free, as itMapFree measures it live), names kept clear of
+// the example's filter column (fb, the box itMapDraw measures live); the live map's own overlays (the match chip, the wormhole pulses) untouched
+function itExMapPic(w, free = [0, w], fb = null){
+  const phone = itExPhone(), key = `${w}|${phone}|${free.join(',')}|${fb ? fb.join(',') : ''}|${itFontEpoch}`;
   if(itEx.map && itEx.mapKey === key) return itEx.map;
   let url = null;
   itExSandbox(() => {
     const keep = {...itm}, T = itMapTable(), g = itGraphGet(), home = T ? g.at.get(IT_EXAMPLE.home) : undefined;
     if(home === undefined) return;
-    const cv = document.createElement('canvas'), you = document.createElement('span'), dpr = window.devicePixelRatio || 1, h = Math.round(Math.max(IT_MAP_MIN_H, Math.min(560, w * 0.72)));
+    const cv = document.createElement('canvas'), you = document.createElement('span'), dpr = window.devicePixelRatio || 1, h = itMapH(w, phone);
     you.innerHTML = '<svg></svg>';
     try{
-      Object.assign(itm, {cv, you, W: w, H: h, reach: IT_EXAMPLE.mapReach, home, hover: -1, rowHover: -1, pinned: new Set(), st: itMapStackBlank()});   // 058: today's defaults (Security, soft, no Only filter), never saved
+      Object.assign(itm, {cv, you, W: w, H: h, reach: IT_EXAMPLE.mapReach, home, hover: -1, rowHover: -1, pinned: new Set(), exFree: free.slice(), exFb: fb ? fb.slice() : null, fbBox: fb ? fb.slice() : null, whp: null, mtb: null});   // 058: the stack is today's defaults (itExSandbox)
       cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
       itMapBfs(home); itMapLayout(); itm.rep = itMapReports();
-      // 039: the map opens on you, zoomed in; the example shows every report it has, so it opens on the whole reach when one would be out of view
-      const v = itm.view, out = [...itm.rep.keys()].some(i => { const x = itm.P[2 * i] * v.k + v.tx, y = itm.P[2 * i + 1] * v.k + v.ty; return x < 40 || x > w - 40 || y < 30 || y > h - 30; });
+      // 039: the map opens on you, zoomed in; the example shows every report it has, so it opens on the whole reach when one would be out of
+      // view (055: out of the free part, or under the filter column)
+      const L = Math.max(free[0], fb ? fb[2] : 0), v = itm.view, out = [...itm.rep.keys()].some(i => { const x = itm.P[2 * i] * v.k + v.tx, y = itm.P[2 * i + 1] * v.k + v.ty; return x < L + 30 || x > free[1] - 40 || y < 40 || y > h - 30; });
       if(out) itMapFitView();
       itMapDraw();
       url = cv.toDataURL('image/png');
+      const at = (i) => [Math.round(itm.P[2 * i] * itm.view.k + itm.view.tx), Math.round(itm.P[2 * i + 1] * itm.view.k + itm.view.ty)];
+      itEx.mapYou = at(home); itEx.mapRep = [...itm.rep.keys()].map(at); itEx.mapFit = out;   // where you and the reports are on it (intel_example_check)
     }finally{ for(const k of Object.keys(itm)) if(!(k in keep)) delete itm[k]; Object.assign(itm, keep); }
   });
   itEx.map = url; itEx.mapKey = key;
@@ -29427,11 +29464,33 @@ function itExFill(f){
   const img = f.querySelector('.itx-map img'), col = f.querySelector('.itx-map');
   const place = () => itExPlace(f);
   if(img && col){   // 052: a phone draws the map picture too
-    const w = Math.round(col.clientWidth), url = w > 0 ? itExMapPic(w) : null;
-    if(url && img.getAttribute('src') !== url){ img.addEventListener('load', place, {once: true}); img.src = url; }
+    const w = Math.round(col.clientWidth);
+    if(w > 0){
+      const h = itMapH(w, phone), m = itExMeasure(f, col, w, h);
+      if(img.style.height !== `${h}px`) img.style.height = `${h}px`;   // 055: the live map's height before the picture loads (no jump)
+      const url = itExMapPic(w, m.free, m.fb);
+      if(url && img.getAttribute('src') !== url){ img.addEventListener('load', place, {once: true}); img.src = url; }
+    }
   }
   itExWidths(f);
   if(!img || img.complete) place();
+}
+// 055: the example's own controls, measured as the live map measures its own: the filter column's rows for a map this tall (itMapFlRows),
+// its box with any panel button showing beside it (itMapDraw's fbBox), and the part Near You's list doesn't cover (itMapFree; a phone
+// has its list under the map, so the whole width)
+function itExMeasure(f, col, w, h){
+  const phone = itExPhone(), fb = col.querySelector('.it-map-fb'), bs = fb && fb.querySelector('.it-map-fbtns');
+  if(bs){ const rows = String(itMapFlRows(h, fb.offsetTop, phone, bs.children.length)); if(bs.style.getPropertyValue('--it-flr') !== rows) bs.style.setProperty('--it-flr', rows); }
+  const bx = col.getBoundingClientRect(), rr = [...col.querySelectorAll('.it-map-fbtns, .it-map-fcur')].map(e => e.getBoundingClientRect()).filter(q => q.width > 0)[0];
+  let box = null;
+  if(rr){
+    box = [rr.left - bx.left - 4, rr.top - bx.top - 4, rr.right - bx.left + 4, rr.bottom - bx.top + 4];
+    for(const pb of col.querySelectorAll('.it-map-fbtns button.it-map-pb')){ const lr = pb.getBoundingClientRect(); if(lr.width > 0 && getComputedStyle(pb).visibility !== 'hidden') box[2] = Math.max(box[2], lr.right - bx.left + 4); }
+    box = box.map(Math.round);
+  }
+  let b = w; const ny = !phone && f.querySelector('.itx-top .it-nearcol');
+  if(ny && ny.offsetParent){ const r = ny.getBoundingClientRect(); if(r.width > 0) b = Math.min(b, Math.round(r.left - bx.left - 4)); }
+  return {free: b >= 96 ? [0, b] : [0, w], fb: box};
 }
 function itExWidths(f){   // the system and jump columns as wide as the example's own widest (the card's itSysWidths measures the real lists)
   const w = (sel) => Math.ceil(Math.max(0, ...[...f.querySelectorAll(sel)].map(x => x.scrollWidth)));
@@ -29447,7 +29506,7 @@ function itExPlace(f){
   const alerts = f.querySelectorAll('.itx-near .it-nb.alert');
   at(1, f.querySelector('.itx-feed .it-fd.rep'), 0, 14);
   at(2, f.querySelector('.itx-near .it-nb'), 0, 14);
-  at(3, f.querySelector('.itx-map img[src]'), 14, 14);   // 052: on the map picture on a phone too
+  { const img = f.querySelector('.itx-map img[src]'); at(3, img, 14, img ? img.getBoundingClientRect().height - 14 : 0); }   // 055 (D1): the picture's bottom-left corner (the search box has its top left)
   at(4, alerts[1] || alerts[0], 0, 14);
   const kl = f.querySelector('.itx-near .it-kl');
   if(kl) at(5, kl, kl.getBoundingClientRect().width + 16, 7); else at(5, null);   // the mockup's place: just past the badge's right end
@@ -29815,7 +29874,7 @@ function itMapCtlPlace(){
   const phone = itMapPhone(), pn = itMapPanel(), wl = !!pn, key = [box.clientWidth, itm.H, phone, itNearShown(), itMapStKey(), fb.classList.contains('open'), pn ? pn.k : ''].join('|');   // 058: the stack
   if(key === itm.ctlKey) return; itm.ctlKey = key;
   if(box.classList.contains('pop') !== wl) box.classList.toggle('pop', wl);
-  const one = phone ? 46 : 34, rows = String(Math.min(bs.children.length, Math.max(3, Math.floor((itm.H - 8 - fb.offsetTop - 8) / one))));
+  const rows = String(itMapFlRows(itm.H, fb.offsetTop, phone, bs.children.length));   // 055: shared with the Intel example
   if(bs.style.getPropertyValue('--it-flr') !== rows) bs.style.setProperty('--it-flr', rows);
   if(wl && itNearShown() && !itMapRoomForBoth(pn.min)) itNearToggle(false);   // the window got narrower with both open: the panel stays, Near You shuts
   const bx = box.getBoundingClientRect(), rail = box.querySelector('.it-map-rail'), ny = itNearShown() && document.getElementById('itNearCol');
@@ -29845,7 +29904,8 @@ function itMapCtlPlace(){
 // panel covers (Near You's list on the right, a filter's panel on the left); the whole width when that part is narrower than 96 px (a phone with Near You open)
 function itMapFree(){
   const W = itm.W; let a = 0, b = W;
-  if(!itm.box || !itm.cv || itm.cv.parentNode !== itm.box || !itm.box.isConnected) return [0, W];   // the Intel example's picture: the whole width
+  if(itm.exFree) return itm.exFree.slice();   // 055: the Intel example's picture: the part its own Near You list doesn't cover (itExMapPic)
+  if(!itm.box || !itm.cv || itm.cv.parentNode !== itm.box || !itm.box.isConnected) return [0, W];
   const bx = itm.box.getBoundingClientRect(), ny = itNearShown() && document.getElementById('itNearCol');
   if(ny && ny.offsetParent){ const r = ny.getBoundingClientRect(); if(r.width > 0) b = Math.min(b, r.left - bx.left - 4); }
   const pn = itMapPanel(); if(pn){ const r = pn.el.getBoundingClientRect(); if(r.width > 0) a = Math.max(a, r.right - bx.left + 4); }   // 053: whichever filter panel is open
@@ -29856,14 +29916,18 @@ function itMapIconHtml(k){ return (IT_MAP_FILTERS.find(f => f.k === k) || IT_MAP
 // 058: pressed: the colour that is on, Paths to you while it shows, each Only filter that is on. The name line names the colour (or the view);
 // the phone's folded button shows the colour's icon and a neutral count of the Only filters that are on (rule A: never amber)
 function itMapFnameHtml(f){ return f ? `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(f.note)}</span>` : '<b>No colour</b> <span>press Security, Jumps or Region to colour the systems again</span>'; }
-function itMapFbarPaint(changed){
-  const fb = itm.el && itm.el.querySelector('.it-map-fb'); if(!fb) return;
-  const s = itMapSt(), paths = itMapPaths(), k0 = paths ? 'paths' : s.colour, f = IT_MAP_FILTERS.find(x => x.k === k0), n = itMapOnlyCount();
+// 055: marks a filter column (the live map's, or the Intel example's copy before it is made still) from a stack: one painter for both
+function itMapFbarMark(fb, s){
+  const paths = s.view === 'paths', k0 = paths ? 'paths' : s.colour, f = IT_MAP_FILTERS.find(x => x.k === k0), n = IT_MAP_ONLY.filter(k => s.only[k]).length;
   const fn = fb.querySelector('.it-map-fn'), fh = itMapFnameHtml(f);
   if(fn.innerHTML !== fh) fn.innerHTML = itMapFnameHtml(f);
   for(const b of fb.querySelectorAll('[data-im-f]')){ const k = b.dataset.imF, on = k === 'paths' ? paths : IT_MAP_COLOURS.includes(k) ? k === s.colour && !paths : !!s.only[k]; if(b.getAttribute('aria-pressed') !== String(on)) b.setAttribute('aria-pressed', String(on)); }
   const cur = fb.querySelector('.it-map-fcur'), nm = f ? f.name : 'no colour', lab = `Map filters: ${nm}${n ? `, ${n} Only filter${n > 1 ? 's' : ''} on` : ''}`;
   cur.innerHTML = itMapIconHtml(f ? f.k : 'sec') + (n ? `<span class="it-map-fbd" aria-hidden="true">${Number(n)}</span>` : ''); cur.title = lab; cur.setAttribute('aria-label', lab);
+}
+function itMapFbarPaint(changed){
+  const fb = itm.el && itm.el.querySelector('.it-map-fb'); if(!fb) return;
+  itMapFbarMark(fb, itMapSt());
   if(changed){ fb.classList.add('named'); clearTimeout(itm.fnT); itm.fnT = setTimeout(() => fb.classList.remove('named'), IT_MAP_NAME_MS); }
   itMapCtlPlace();   // 052: the name line beside the filter that is on
 }
@@ -29963,13 +30027,25 @@ function itMpChanged(){
   if(itm.P && itm.home >= 0){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); }
   itMpPaint();
 }
+// build queue 055: the map's controls each from one builder, used by the live map and by the Intel example's still copies (itExCtlHtml),
+// so the two can't drift (intel_example_check's drift guard)
+function itMapZoomHtml(){ return `<div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button></div>`; }
+function itMapRowHtml(){ return '<div class="it-map-row"><span class="it-map-rs"></span><span class="it-map-help wide">drag to move · wheel to zoom</span><span class="it-map-help phone">two fingers move and zoom the map; one finger scrolls the page</span></div>'; }
+// 055: the live map's height (052: full width and taller), and the filter column's rows for a map that tall (a second column when it's too
+// short), for the live map and the example's picture alike
+function itMapH(w, phone){ return Math.round(phone ? Math.min(600, Math.max(440, w * 1.45)) : Math.min(720, Math.max(520, w * 0.5))); }
+function itMapFlRows(H, top, phone, n){ return Math.min(n, Math.max(3, Math.floor((H - 8 - top - 8) / (phone ? 46 : 34)))); }
+// 055: the map's markup as it is made, before anything is drawn (intel_example_check's drift guard reads the controls shown at rest from it)
+function itMapMarkupHtml(){
+  return `<div class="it-map-box">${itMapZoomHtml()}` + itMapRailHtml()
+    + itRpSearchHtml() + `<button type="button" class="it-map-clr" hidden>Hide all routes</button><canvas role="img" aria-label="Map of the systems around you, with the reported pilots and their routes to you"></canvas><canvas class="it-map-fx" aria-hidden="true"></canvas><div class="it-map-whp" aria-hidden="true"></div><button type="button" class="it-map-mt" data-it-mt hidden></button>`
+    + `<button type="button" class="it-map-you" hidden title="You're off the map here: press to center on your system" aria-label="Center on your system"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>You</button><div class="it-map-tip" hidden></div><div class="it-map-hint" aria-hidden="true">Use two fingers to move the map</div><div class="it-map-msg" hidden></div>${itMapFbarHtml()}</div>`
+    + `<div class="it-map-leg"></div>${itMapRowHtml()}`;
+}
 function itMapMake(){
   if(itm.el) return itm.el;
   const el = document.createElement('div'); el.className = 'it-map';
-  el.innerHTML = `<div class="it-map-box"><div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button></div>` + itMapRailHtml()
-    + itRpSearchHtml() + `<button type="button" class="it-map-clr" hidden>Hide all routes</button><canvas role="img" aria-label="Map of the systems around you, with the reported pilots and their routes to you"></canvas><canvas class="it-map-fx" aria-hidden="true"></canvas><div class="it-map-whp" aria-hidden="true"></div><button type="button" class="it-map-mt" data-it-mt hidden></button>`
-    + `<button type="button" class="it-map-you" hidden title="You're off the map here: press to center on your system" aria-label="Center on your system"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>You</button><div class="it-map-tip" hidden></div><div class="it-map-hint" aria-hidden="true">Use two fingers to move the map</div><div class="it-map-msg" hidden></div>${itMapFbarHtml()}</div>`
-    + `<div class="it-map-leg"></div><div class="it-map-row"><span class="it-map-rs"></span><span class="it-map-help wide">drag to move · wheel to zoom</span><span class="it-map-help phone">two fingers move and zoom the map; one finger scrolls the page</span></div>`;
+  el.innerHTML = itMapMarkupHtml();
   itm.el = el; itm.box = el.querySelector('.it-map-box'); itm.cv = el.querySelector('canvas'); itm.tip = el.querySelector('.it-map-tip'); itm.hint = el.querySelector('.it-map-hint');
   itm.fx = el.querySelector('canvas.it-map-fx'); itm.you = el.querySelector('.it-map-you');
   itm.whp = el.querySelector('.it-map-whp'); itm.mtb = el.querySelector('.it-map-mt'); itm.mtb.addEventListener('click', itMapMtNext);   // 045, 058: the match chip
@@ -30002,7 +30078,7 @@ function itMapRefresh(force){
   const mc = document.querySelector('[data-it-mapctx]'); if(mc) mc.textContent = itMapCtx();
   if(why){ itm.home = -1; itm.you.hidden = true; itPtHide(); itMapWhPulse([]); if(itm.mtb) itm.mtb.hidden = true; return; }
   const phone = typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches;
-  const w = itm.box.clientWidth, h = Math.round(phone ? Math.min(600, Math.max(440, w * 1.45)) : Math.min(720, Math.max(520, w * 0.5)));   // 052: full width and taller
+  const w = itm.box.clientWidth, h = itMapH(w, phone);   // 052: full width and taller (055: shared with the Intel example)
   { const top = itm.box.closest('.it-top'), mh = `${h + 2}px`; if(top && top.style.getPropertyValue('--it-mh') !== mh){ top.style.setProperty('--it-mh', mh); itNearMoreSoon(); } }   // the panel's height moved: "+N more" again   // Near You's panel ends 8 px above the map's foot
   const reach = itMapReach();
   let laid = false;
@@ -30159,7 +30235,7 @@ function itMapFitView(){
   const P = itm.P, pad = 30; let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
   for(const i of itm.vis){ x0 = Math.min(x0, P[2 * i]); x1 = Math.max(x1, P[2 * i]); y0 = Math.min(y0, P[2 * i + 1]); y1 = Math.max(y1, P[2 * i + 1]); }
   // 052: the 40 px kept for the filter bar at the foot went with the bar; the part no panel covers, past the filter column on the left
-  const [fa, fbx] = itMapFree(), cl = itm.fbBox && itm.cv.parentNode === itm.box ? Math.max(fa, itm.fbBox[2]) : fa, wf = Math.max(80, fbx - cl);
+  const [fa, fbx] = itMapFree(), cl = itm.fbBox && (itm.exFb || itm.cv.parentNode === itm.box) ? Math.max(fa, itm.fbBox[2]) : fa, wf = Math.max(80, fbx - cl);   // 055: the example's column too
   const k = Math.min(itm.kMax, Math.max(itm.kMin, Math.min((wf - 2 * pad) / Math.max(1e-6, x1 - x0), (itm.H - 2 * pad) / Math.max(1e-6, y1 - y0))));
   itm.view = {k, tx: (cl + fbx) / 2 - (x0 + x1) / 2 * k, ty: itm.H / 2 - (y0 + y1) / 2 * k};
 }
@@ -30401,7 +30477,7 @@ function itMapDraw(){
   if(focus >= 0){ c.strokeStyle = C.cyan; c.lineWidth = 1.5; c.beginPath(); c.arc(X(focus), Y(focus), big ? r + 12 : 21, 0, 6.283); c.stroke(); }
   // v2026.11.04.1: your system, drawn last so nothing covers it: its dot (zoomed in, its circle), and a white pin standing on it
   { const i = itm.home; if(!big){ c.fillStyle = itMapFcol(i); c.beginPath(); c.arc(X(i), Y(i), 6, 0, 6.283); c.fill(); } itMapPinDraw(c, X(i), Y(i) - (big ? r : 6)); }
-  itm.fbBox = null;   // the filter bar's place in the box: no name goes under it
+  itm.fbBox = itm.exFb ? itm.exFb.slice() : null;   // the filter bar's place in the box: no name goes under it (055: the Intel example's, measured on its copy)
   { const fb = itm.box && itm.cv.parentNode === itm.box && itm.box.querySelector('.it-map-fbtns, .it-map-fcur');
     if(fb){ const bx = itm.box.getBoundingClientRect(), rr = [...itm.box.querySelectorAll('.it-map-fbtns, .it-map-fcur')].map(e => e.getBoundingClientRect()).filter(q => q.width > 0)[0];
       if(rr) itm.fbBox = [rr.left - bx.left - 4, rr.top - bx.top - 4, rr.right - bx.left + 4, rr.bottom - bx.top + 4];
