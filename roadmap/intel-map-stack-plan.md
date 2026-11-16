@@ -193,8 +193,9 @@ Served 590,418 bytes on 51207b6 (ceiling 800,000). Estimate: a few KB of code an
 - **intel_kills_check** was named in the review as a reader of the map filter: it isn't (it presses the Feed's `data-it-f`), so it is
   unchanged.
 - **Checks:** `tools/page_checks/intel_map_stack_check.py` (new; 15 parts at 1440 and 390 px, a canvas `arc` record of each draw instead of
-  pixel samples, 13 mutants) and seven of section 8's nine checks updated (`intel_map_check`, `tag_only_check` and `wormhole_share_check` pass unchanged) (`intel_map_look_check` now expects soft colour and one Only filter at a
-  time; `wormhole_filter_check` the match chip in place of the wormholes chip).
+  pixel samples, 13 mutants). Six of section 8's nine checks were updated (`intel_map_look_check` now expects soft colour and one Only filter at a
+  time; `wormhole_filter_check` the match chip in place of the wormholes chip); `intel_map_check`, `tag_only_check` and `wormhole_share_check`
+  pass unchanged.
 
 ## Sources
 
