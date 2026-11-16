@@ -75,10 +75,10 @@ with sync_playwright() as p:
     L.sort((a, b) => b.mod - a.mod || b.start - a.start);
     if(!L.length) continue;
     const top = L[0].mod, cur = it.files.get(ch), here = cur && L.find(f => f.name === cur.name);
-    const mine = L.find(f => f.charId === it.set.me && f.mod >= top - IT_LOG_MINE_MS);
+    const mine = L.find(f => f.charId === meId && f.mod >= top - IT_LOG_MINE_MS);   // 054: the login's character while You follows it
     want.set(ch, mine || (here && here.mod >= top - IT_LOG_SAME_MS ? here : L[0]));""",
                 """    const L = (byChan.get(ch) || []).sort((a, b) => b.start - a.start);
-    const mine = L.find(f => f.charId === it.set.me);
+    const mine = L.find(f => f.charId === meId);
     const f = mine && mine.start >= (L[0] ? L[0].start - 3600000 : 0) ? mine : L[0];
     if(f) want.set(ch, f);""")
     NO_SKIP = ("        if(a) lines = lines.filter(l => l.t > a.t || (l.t === a.t && !a.keys.includes(itLineKey(l))));\n", "\n")
