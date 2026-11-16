@@ -394,7 +394,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   pressing the one that is on turns colour off (every system plain grey, no number). The colour is soft: mixed toward the
   map's background, zoomed in a dark disc tinted with it. Only, any number, every one that is on must match and any pick
   inside one counts: Security range (two ends, 0.1 steps, either order, comparing the number the map shows), Within N jumps
-  (1 to 30, by stargate), Intel reports, Kills from Intel, Wormholes and Sov upgrades (below). While one is on, the systems
+  (1 to 30, counted as Jumps from you counts: by stargate, plus your jump bridges while they're on), Intel reports, Kills from Intel, Wormholes and Sov upgrades (below). While one is on, the systems
   that match are bright anywhere on the map, a little bigger and in full colour, the rest dim, and no system fades with
   distance; hostile and neutral rings, the alert range's glow and your pin never fade; the legend's second line says what
   is on and how many match, and "N match ›" at the bottom left moves the view to each, nearest first. View: Paths to you
@@ -412,6 +412,22 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   Systems past Near You's range are faded, past the map's reach fainter still; past the Feed's range a system's kills
   aren't read. A route is the shortest one by stargates (one for each system,
   always the same); jump bridges, cynos, filaments and wormholes aren't in CCP's data.
+- **Jump bridges** (build queue 041): Intel settings → Jump bridges, under Routes. Paste your alliance's bridges, one per line: EVE's
+  structure name ("A » B - name"), "A → B", "A <-> B", two names with a comma, a tab or a space, or another tool's export with a
+  structure id first (the id is passed over); on a line with an arrow the bridge is the last system before it and the first after it,
+  so a copied row with more columns still reads. Each line is checked as you type: ✓ counted (with the distance in light-years), ⚠
+  counted with why (the same system on two lines: an Ansiblex is one per system; more than 5 LY apart: an Ansiblex reaches 5, from
+  CCP's data, type 35841's jump range), dim when it's the same bridge as an earlier line either way round (counted once), ✗ not
+  counted (three systems with no arrow, one system, the same system twice, a system without stargates). Kept in this browser only
+  (localStorage `dscanIntel`: `bridges`, `bridgesOn`), never sent. With Use jump bridges on the map on (off unless you turn it on),
+  the map's own counts add your bridges, both ways: which reports and names show ("Map: within"), Jumps from you's colours and
+  numbers, Within N jumps, the tooltip's "N jumps" (with "1 of the 3 jumps by jump bridge · by stargate only 10 jumps") and the
+  search box's numbers; the bridges are drawn as green curves, as in the game. Everything that is about other players stays by
+  stargate, since they can't use your bridges: Near You, its alerts, the Feed and its kill range, the alert range's glow and the
+  fade past Near You's range on the map, and Paths to you. Threat Vector's route stays by stargate too (its tooltip line says
+  "route by stargate" and compares it with the stargate count); build queue 057 adds bridges to it by Ansiblex zone. The map can't
+  know a bridge's access list or fuel, so a counted bridge is one you said you have. Sov upgrades' Jump bridge kind is every system
+  in this list, with the switch on or off.
 - **Paths to you** (build queue 043): the bar's filter just before Wormholes. In place of the galaxy it draws the stargate routes
   to you from every system with hostiles, neutrals or kills inside your alert range (not Near You's range), as a tree: your
   system at the top, one row per jump. Every shortest route counts, so a system reached two equally short ways has both
@@ -425,7 +441,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   only when what it shows changes.
 - **Routes and setting your destination** (build queue 047): the map's drawn route and its tooltip's route list follow Threat
   Vector's route, from Intel settings → Routes; every jump count (Near You, alerts, the Feed, Jumps from you, Paths to you, the
-  tooltip's "N jumps") stays the shortest by stargate. The route passes the fewest flagged systems it can, however long the detour,
+  tooltip's "N jumps") stays the shortest by stargate (the map's own counts add your jump bridges while they're on: Jump bridges, above). The route passes the fewest flagged systems it can, however long the detour,
   then costs what EVE's own route would (CCP's route guide, developers.eveonline.com/docs/guides/route-calculation/: Prefer shorter 1
   a jump; Prefer safer and Prefer less secure with p = exp(0.15 × the security penalty): into null sec 2p, into low sec p or 0.90,
   into high sec 0.90 or p), then has the fewest jumps. Null, low and high come from CCP's unrounded security (0.0 or below, below
@@ -512,7 +528,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location
   on, whichever is newer. While that switch is on and you're logged in, You is the logged-in character (its system from
   EVE alone when the folder has no Local log for it); the character picked in Intel settings is You again after Log out
-  or with the switch off. Jumps are gate jumps from EVE's published stargate data (no jump bridges or wormholes); the
+  or with the switch off. Jumps are gate jumps from EVE's published stargate data (no wormholes; your jump bridges only on the map, while they're on); the
   table is checked against each new EVE build every day.
 - **Buttons:** a pilot's name opens them in the Pilot Analyzer, in their ship when the line says it. Press a system,
   corporation, alliance or ship to show only it in the Feed; the chips under the filters say what's on (× removes one;
