@@ -190,6 +190,9 @@ Served 590,418 bytes on 51207b6 (ceiling 800,000). Estimate: a few KB of code an
 - **Hand test fix (the owner, 2026-11-16, a screenshot of the Security range panel):** the From / To numbers were cut off ("0.:", "-0"): the
   shared stepper's box is 3.2ch, wide enough for jumps only. The panel's steppers are 5.2ch (`.it-mpp .rs-v`); `intel_map_stack_check` now
   measures each number at its widest ("-1.0") against its box at 1440 and 390 px, with a mutant.
+- **Hand test, security against the game:** the map's tenth matches the game for the 19 fixed systems (0.4) but not on the x.x5 edge: 5 of
+  6 edge systems checked are off by 0.1 (Sources). No rule on the stored hundredths fits both Helgatild (0.15, game 0.2) and Juddi (0.65, game
+  0.6), so 058 adds none; the data fix (the generator stores the shown tenth from CCP's unrounded value) is the backlog item.
 - **The chip** reads "N match ›", then "k of N ›" while stepping; any filter press starts the count again (`itm.mtStep = -1`).
 - **Sov's legend and hover:** 053's own legend line (`sovLegHtml`) went; the Only line names the picks and levels. The Sov hover line shows only
   while Sov is on.
@@ -204,5 +207,5 @@ Served 590,418 bytes on 51207b6 (ceiling 800,000). Estimate: a few KB of code an
 
 | Fact | Source | Checked | Status |
 |---|---|---|---|
-| The game shows a negative security rounded the way `itMapSecText` does (e.g. −0.55 as −0.5, −0.25 as −0.2), so "the number the map shows" is the number the game shows | not found | 2026-11-16 | UNVERIFIED: compare a few systems in game with the map at the range's ends (hand test step 3) |
+| The game shows a negative security rounded the way `itMapSecText` does (e.g. −0.55 as −0.5, −0.25 as −0.2), so "the number the map shows" is the number the game shows | the owner's in-game screenshots at the hand test (game vs map): XQS-GZ −0.6 vs −0.5, 0LY-W1 −0.6 vs −0.5, B-E3KQ −0.3 vs −0.2, W2T-TR −0.1 vs 0.0, Helgatild 0.2 vs 0.2, Juddi 0.6 vs 0.7 | 2026-11-16 | verified false: off by 0.1 on 5 of 6 edge systems, both signs, no rounding of the stored hundredths fits; the generator must store the shown tenth (backlog) |
 | 19 systems stored as 0.45 are below 0.45 in CCP's unrounded value (low-sec in the game) | `tools/check_sec_shown.py` run on the page's `INTEL_MAP` (`sec` against `band`, both from `tools/jump_table_update.py`, CCP's SDE) | 2026-11-16 | verified |
