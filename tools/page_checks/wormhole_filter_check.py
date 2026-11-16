@@ -293,9 +293,9 @@ def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'stand', 'key', 't
 MUTANTS = [
     ('the filter not dimming', "  if(itm.filter === 'wh') return !(itm.wh && itm.wh.kept.has(i));   // build queue 040", "  if(itm.filter === 'wh') return false;", ('filter',)),
     ('a removal not setting gone', "if(w){ st.gone[id] = Math.max(w.t, st.gone[id] || 0); delete st.rep[id];", "if(w){ delete st.rep[id];", ('list',)),
-    ('kept ones faint past the reach', "whF && itm.wh.kept.has(i) ? 1 : !on(i)", "!on(i)", ('filter',)),
+    ('kept ones faint past the reach', "(whF && itm.wh.kept.has(i)) || (itm.sov", "(false) || (itm.sov", ('filter',)),   # 053: the Sov filter shares the line
     ('the example reading the store', "  itWhSt = itWhBlank(); itWhAside = true;", "", ('example',)),
-    ('the map\'s key without the wormholes', "|${itMapWhKey(itMapWh())}|rp:", "|rp:", ('key',)),   # 047: Threat Vector's route's key follows it
+    ('the map\'s key without the wormholes', "|${itMapWhKey(itMapWh())}|sov:", "|sov:", ('key',)),   # 047, 053: Threat Vector's route's and the sov lists' keys follow it
     ('hand-added ones shown as live reports', "if(w.src === 'intel' && w.t >= fresh", "if(w.t >= fresh", ('list',)),
     ('045: reports faded on every filter', "      const fade = whF && !itm.wh.kept.has(i);", "      const fade = !itm.wh.kept.has(i);", ('stand',)),
     ('045: wormhole labels forced over others', "(live && !whS) || i === focus); if(whS", "true); if(whS", ('stand',)),

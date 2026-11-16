@@ -290,7 +290,7 @@ MUTANTS = [
     ('theirs kept over yours', "if(imp && c.line.k === 'you' && !c.line.via){", "if(false){"),
     ('the cap dropping a line that decides a detail', "kept = [...sorted.filter(r => d.backing.has(r)), ...sorted.filter(r => !d.backing.has(r))].slice(0, IT_WH_RAW_MAX)", "kept = sorted.slice(0, IT_WH_RAW_MAX)"),
     ('the reporter written into the export', "return {t: r.t, k: hand ? 'hand' : 'intel', raw:", "return {t: r.t, who: r.who, k: hand ? 'hand' : 'intel', raw:"),
-    ('a card redraw losing the open list\'s scroll (047)', "  if(whTop && itWhListShown()) itWhL.el.scrollTop = whTop;\n", ""),
+    ('a card redraw losing the open list\'s scroll (047)', "  if(whTop && pn0 && pn0.el.isConnected) pn0.el.scrollTop = whTop;\n", ""),   # 053: whichever filter panel is open
     ('no fix: the page creeping with each redraw (047, the hand test)', [("  itKeepPlace(y0, a0);   // last", "  0;   // last"), ("  itAnchorOff();\n  el.innerHTML = html;", "  el.innerHTML = html;")]),
     ('the place put back before the card is filled in (047, the second look)', [("  itKeepPlace(y0, a0);   // last", "  0;   // last"), ("  itExMount(el);   // v2026.11.07.7\n", "  itKeepPlace(y0, a0);\n  itExMount(el);   // v2026.11.07.7\n")]),
     ('an older line bringing back a removed ID', "      if(itWhSigGone(w.goneSig, n.sig, r.t)) continue;   // removed by you after this line\n", ""),

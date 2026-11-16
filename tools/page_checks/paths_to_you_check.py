@@ -8,7 +8,7 @@ status number" and "add badges for gate camps, ess and kills"; the button before
 the top line the count only, the map's drag help kept under the box, the count a 3 px tag (the tag rule). Uses intel_check.py's made-up
 folder, mocks and names; the systems around 1DQ1-A have no loops, so you jump (a Local line) to a made-up area with one, its systems
 named PTnn-Z here; every pilot and line is made up. The expected tree is worked out here from the jump table on its own. Checks:
-  * the bar: seven filters, Paths to you last (052), the list button right after Wormholes; the name line;
+  * the bar: eight filters, Paths to you last (052), Sov upgrades before it (053), the list button right after Wormholes; the name line;
   * the tree: exactly your system, the sources (a hostile or neutral report, or kills, within the alert range; a clear and a report past
     the alert range left out) and the systems on their shortest routes; exactly the gates on those routes; a system with two shortest
     routes has both gates;
@@ -26,7 +26,7 @@ named PTnn-Z here; every pilot and line is made up. The expected tree is worked 
   * the Intel example's picture drawn while it's on leaves it on;
   * the timings at the largest alert range (10, every system within it reported; LESSON #160): a build and a write, a build with
     nothing new (printed for the history doc; a write under 200 ms);
-  * 390 px: the opened filter row of seven 44 px buttons inside the map box, Wormholes and its list button side by side; the tree's
+  * 390 px: the opened filter row of eight 44 px buttons inside the map box, Wormholes and its list button side by side; the tree's
     buttons 44 px; fitted no smaller than 0.75; no sideways scroll;
   * mutants, each must fail: one route per system; Near You's range for the alert range; the security number back; Wormholes no longer
     last; the tree written on every draw; the example's picture hiding it; the grey gate tag shown;
@@ -137,7 +137,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
         out.append('no Paths to you filter on the page'); ctx.close(); return out, errs
     if 'bar' in parts:
         o = pg.evaluate("() => [[...document.querySelectorAll('.it-map-fbtns [data-im-f]')].map(b => b.dataset.imF), (() => { const w = document.querySelector('[data-im-f=wh]'); return !!w.nextElementSibling && w.nextElementSibling.matches('[data-it-whl]'); })()]")
-        if o != [['sec', 'jumps', 'region', 'reports', 'kills', 'wh', 'paths'], True]: out.append(f'the bar: {o} (want Paths to you last since 052, the list button right after Wormholes)')
+        if o != [['sec', 'jumps', 'region', 'reports', 'kills', 'wh', 'sov', 'paths'], True]: out.append(f'the bar: {o} (want Paths to you last since 052, Sov upgrades before it since 053, the list button right after Wormholes)')
     pg.click('[data-im-f="paths"]'); pg.wait_for_timeout(300)
     T = pg.evaluate(TREE)
     got_n = {x['id'] for x in T['nodes']}; got_e = {tuple(e) for e in T['edges']}
@@ -248,7 +248,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
           const w = itm.box.querySelector('[data-im-f=wh]').getBoundingClientRect(), l = itm.box.querySelector('[data-it-whl]').getBoundingClientRect();
           return [bs.length, bs.every(q => Math.round(q.width) === 44 && Math.round(q.height) === 44), bs.every(q => q.left >= box.left - 0.5 && q.right <= box.right + 0.5 && q.top >= box.top - 0.5 && q.bottom <= box.bottom + 0.5),
             Math.abs(w.top - l.top) < 1 && l.left > w.left && l.left - w.right < 8]; }""")
-        if P != [8, True, True, True]: out.append(f'390 px: the opened row {P} (want 7 filters + the list button, 44 px, inside the box, Wormholes beside its list button)')
+        if P != [9, True, True, True]: out.append(f'390 px: the opened row {P} (want 8 filters + the list button, 44 px, inside the box, Wormholes beside its list button)')
         pg.tap('#intelPanel [data-im-f="paths"]'); pg.wait_for_timeout(300)
         Q = pg.evaluate("() => [[...document.querySelectorAll('.pt-z button')].every(b => Math.round(b.getBoundingClientRect().height) === 44), itPt.v.k >= 0.75, !itPt.ov.hidden, document.scrollingElement.scrollWidth <= innerWidth + 1]")
         if Q != [True, True, True, True]: out.append(f'390 px: the tree {Q} (want 44 px buttons, fitted at 0.75 or more, shown, no sideways scroll)')
