@@ -9,7 +9,7 @@ and quiet R2Z2; the folder, its files and the folder's permission are kept in se
 own IndexedDB store is a stand-in, as in intel_folder_check.py). Made-up characters and tokens only. Checks:
   * a new user: sound and desktop notification unchecked, and Intel's switch asks the browser for no notification permission; a saved
     sound and notification stay on;
-  * the switch on the profile's EVE tab (032; Intel's settings keep a line and a way there): unchecked, "Not asked for", its info panel
+  * the switch on the profile's EVE tab (032; 054: Intel's settings no longer have a "Game location" line): unchecked, "Not asked for", its info panel
     with the shared close button; ticked without a login it's kept ("EVE will ask for this when you log in"), no trip; the login then asks
     EVE for the location scope only (never a ship scope);
   * back from EVE: the scope as an array and as a string turns the switch on; without it, SSO-07 and the switch off; the profile:
@@ -24,7 +24,12 @@ own IndexedDB store is a stand-in, as in intel_folder_check.py). Made-up charact
   * renewal: under a minute left renews first (grant_type refresh_token, the refresh token and the Client ID, no secret); two calls at
     once renew once; a new refresh token is stored before the next request; invalid_grant: SSO-06, the login ends, Log in again; a 429
     waits its Retry-After; an HTML 500: 30 s;
-  * the login's character not You: one amber line, no request; Intel off, or the tab without the lock: no request; no /ship/ or /online/;
+  * 054, You follows the login while the switch is on (Project doc roadmap/intel-you-follows-login-plan.md): another character picked,
+    then logged in: no radios in You, the EVE tab's row there (lamp, name, status line, no switch), You is the login, the pick kept, an
+    old game answer dropped, the requests go for the login; the login ended: the row stays, "Paused: log in again", no requests; Log out:
+    the radios and the old pick back at once; a login with no Local log: "No Local log for <name>…" (only once the folder is read), the
+    warning says the system comes from EVE, then the game's system is used; the switch off: the radios back; six mutants each fail it;
+  * Intel off, or the tab without the lock: no request; no /ship/ or /online/;
   * a duplicated tab (the same tvSsoTab answered on the channel) drops its login; the original keeps it;
   * 037, back from EVE while logged in with the online check asking meanwhile (the stand-in holds the code's answer): the old login
     isn't renewed, the new login stands, nothing revoked; a renewal checked after a newer login replaced it is dropped, nothing
@@ -37,7 +42,7 @@ own IndexedDB store is a stand-in, as in intel_folder_check.py). Made-up charact
     gone after a click; the other tab: "Intel is paused while the other tab logs in with EVE.", then "Intel is on in another tab.";
   * Intel stopped reading (the folder throws NotAllowedError): one sound with sound on, none with sound off, none on the next ticks, none
     on a stop by hand; the sound isn't Near You's or In system's;
-  * 390 px: Continue to EVE 44 px tall, no sideways scroll; no page errors.
+  * 390 px: Continue to EVE 44 px tall, Intel's Log in again under You 44 px tall, no sideways scroll; no page errors.
 """
 import sys, os, re, json, time, base64, hashlib, urllib.parse
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -170,7 +175,10 @@ ST = """() => { const q = (s) => document.querySelector(s), cb = q('#ppSw-loc');
     status: t(q('#intelPanel [data-it-status]')), my: itMySys(), who: sso.who, scp: sso.scp, err: it.err, sound: it.set.sound, notify: it.set.notify,
     ss: Object.fromEntries(Object.keys(sessionStorage).filter(k => !k.startsWith('__t_')).map(k => [k, sessionStorage.getItem(k)])),
     side: t(q('#profilePanel')), btn: !!q('#eveTab button.sso-btn'), checking: /Checking your login with EVE/.test(t(q('#profilePanel'))), other: it.other, lamp: (q('#profileEve') || {dataset: {}}).dataset.l,
-    sw: document.documentElement.scrollWidth, vw: innerWidth}; }"""
+    sw: document.documentElement.scrollWidth, vw: innerWidth,
+    ibox: t(q('#intelPanel [data-it-glbox]')), radios: document.querySelectorAll('#intelPanel [data-it-me]').length, row: !!q('#intelPanel [data-it-glrow]'),
+    rowsw: document.querySelectorAll('#intelPanel [data-it-glbox] input').length, me: it.me ? Number(it.me.id) : 0, setme: it.set.me, glsys: itGl.sys,
+    nolog: t(q('#intelPanel [data-it-nolog]')), warn: t(q('#intelPanel .it-sub.it-warn')), checked: (q('#intelPanel [data-it-me]:checked') || {dataset: {}}).dataset.itMe}; }"""
 
 from playwright.sync_api import sync_playwright
 with sync_playwright() as p:
@@ -198,12 +206,12 @@ with sync_playwright() as p:
         if not pg.is_checked('[data-it-chan="region.intel"]'): pg.check('[data-it-chan="region.intel"]')
         if not pg.is_checked(f'[data-it-me="{MAIN}"]'): pg.evaluate('closeProfile(false)'); pg.check(f'[data-it-me="{MAIN}"]')
         pg.wait_for_timeout(200); return pg
-    def login(pg, scp=(LOC,), exp_s=1200, tab='madeUpTabId0028', tok='madeUpAccessToken'):   # a login as if back from EVE (the flow itself is tested below)
-        pg.evaluate("([id, scp, exp, tab, rt, tok]) => { sso.who = {id, name: 'Your Main'}; sso.access = tok; sso.exp = Date.now() + exp * 1000; sso.scp = scp;"
-                    " ssoSet(SSO_REFRESH, rt); ssoSet(SSO_WHO, JSON.stringify(sso.who)); ssoSet(SSO_TAB, tab); renderSidePanel(); itRender(true); }", [MAIN, list(scp), exp_s, tab, REFRESH, tok])
+    def login(pg, scp=(LOC,), exp_s=1200, tab='madeUpTabId0028', tok='madeUpAccessToken', who=(MAIN, 'Your Main')):   # a login as if back from EVE (the flow itself is tested below)
+        pg.evaluate("([id, nm, scp, exp, tab, rt, tok]) => { sso.who = {id, name: nm}; sso.access = tok; sso.exp = Date.now() + exp * 1000; sso.scp = scp;"
+                    " ssoSet(SSO_REFRESH, rt); ssoSet(SSO_WHO, JSON.stringify(sso.who)); ssoSet(SSO_TAB, tab); renderSidePanel(); itRender(true); }", [who[0], who[1], list(scp), exp_s, tab, REFRESH, tok])
     def on(pg):
         pg.evaluate('closeProfile(false)'); pg.click('#intelSwLabel'); pg.wait_for_function("it.on", timeout=8000); pg.wait_for_timeout(300)
-    def gl_on(pg): pg.evaluate("() => { it.set.gameLoc = true; itWriteSet(); itGlReset(); itRender(true); }")
+    def gl_on(pg): pg.evaluate("() => itGlToggle({checked: true})")   # the switch's own path (054: it ends in renderSidePanel, where You is decided)
     st = lambda pg: pg.evaluate(ST)
     def prof(pg): pg.evaluate("() => openProfile('eve')"); pg.wait_for_timeout(150)   # 032: the login and the switch are on the profile's EVE tab
     def gear(pg): pg.evaluate("() => { switchTab('intel'); it.pop = true; itRender(true); openProfile('eve'); }"); pg.wait_for_timeout(120)
@@ -218,14 +226,14 @@ with sync_playwright() as p:
     pg.evaluate('closeProfile(false)'); pg.click('#intelSwLabel'); pg.wait_for_timeout(300)
     # ---- box 3 ----
     gear(pg); s = st(pg)
-    check(s['cb'] is False and 'Use my game location' in s['box'] and 'Not asked for' in s['box'] and 'Game location: off' in s['box'] and "Set on your profile's EVE tab" in s['box'],
-          f"the EVE tab: Use my game location, unchecked, \"Not asked for\"; Intel's settings: its line and the way there ({s['box'][-120:]!r})")
+    check(s['cb'] is False and 'Use my game location' in s['box'] and 'Not asked for' in s['box'] and 'Game location:' not in s['box'] and "Set on your profile's EVE tab" not in s['box'] and s['radios'] and not s['row'],
+          f"the EVE tab: Use my game location, unchecked, \"Not asked for\"; Intel's You: the radios, no \"Game location\" line (054, D3) ({s['box'][-120:]!r})")
     pg.click('#eveTab [data-feat="loc"] summary.info-btn'); pg.wait_for_timeout(200)
     ip = pg.evaluate("() => { const d = [...document.querySelectorAll('[role=dialog]')].find(x => x.offsetParent && /How Use my game location works/.test(x.textContent)); return d ? !!d.querySelector('button.x-close') : null; }")
     check(ip is True, f'its info panel: "How Use my game location works", the shared close button ({ip})')
     pg.keyboard.press('Escape'); pg.wait_for_timeout(100); gear(pg)
     pg.click('#ppSw-loc'); pg.wait_for_timeout(200); s = st(pg)
-    check(s['cb'] is True and s['gl'] and not s['ask'] and 'EVE will ask for this when you log in' in s['box'] and 'Game location: on' in s['box'] and s['lamp'] == 'off',
+    check(s['cb'] is True and s['gl'] and not s['ask'] and 'EVE will ask for this when you log in' in s['box'] and 'Game location:' not in s['box'] and s['radios'] and not s['row'] and s['lamp'] == 'off',
           f"ticked without a login: kept, EVE will ask for it at the login, no trip (choose before you go) ({s['box'][:110]!r})")
     pg.click('#ppSw-loc'); pg.wait_for_timeout(150); s = st(pg)
     check(not s['gl'] and 'Not asked for' in s['box'], 'unticked: off again')
@@ -368,9 +376,11 @@ with sync_playwright() as p:
     # 401: SSO-08, never again
     pg.evaluate("() => { itGl.next = 0; }"); L['mode'] = '401'; n0 = len(LREQ); pg.wait_for_timeout(8000); gear(pg); s = st(pg)
     check(len(LREQ) == n0 + 1 and '(SSO-08)' in s['box'] and 'Log in again' in s['box'], f"a 401: SSO-08 with Log in again, and no second request ({len(LREQ) - n0} requests)")
+    check(s['row'] and '(SSO-08)' in s['ibox'] and pg.evaluate("() => !!document.querySelector('#intelPanel [data-it-glbox] [data-it-act=\"gl-again\"]')"), f"054 (D7): SSO-08 and Log in again under Intel's row too ({s['ibox'][-80:]!r})")
     # 403: SSO-07, the switch off
     pg.evaluate("() => { itGlReset(); itGl.msg = null; }"); L['mode'] = '403'; n0 = len(LREQ); pg.wait_for_timeout(5000); gear(pg); s = st(pg)
     check(len(LREQ) == n0 + 1 and not s['gl'] and '(SSO-07)' in s['box'], f"a 403: SSO-07, the switch off ({len(LREQ) - n0} requests, gameLoc {s['gl']})")
+    check('(SSO-07)' in s['ibox'] and s['radios'] and not s['row'], f"054: the switch off: Intel's You shows the radios again, SSO-07 under them ({s['ibox'][-80:]!r})")
     L['mode'] = 'ok'
     # ---- renewal ----
     gl_on(pg); pg.evaluate("() => { sso.exp = Date.now() + 30000; itGl.next = 0; }"); reset(); n0 = len(LREQ); pg.wait_for_timeout(3000)
@@ -392,11 +402,64 @@ with sync_playwright() as p:
           f"invalid_grant: SSO-06, the login ends, Log in again; nothing asked of ESI ({s['box'][-100:]!r})")
     pg.evaluate('closeProfile(false)'); pg.click('#intelSwLabel'); pg.wait_for_timeout(300); pg.close(); c.close()
 
-    # ---- who isn't You; the tab without the lock; a duplicated tab ----
-    c = ctx_new(); A = page(c); lreset(); login(A); gl_on(A)
-    A.evaluate('closeProfile(false)'); A.check(f'[data-it-me="{ALT}"]'); A.wait_for_timeout(100); on(A); A.wait_for_timeout(3000); gear(A); s = st(A)
-    check(not LREQ and 'Your EVE login is Your Main, not Your Alt' in s['box'], f"the login's character isn't You: an amber line, no request ({len(LREQ)}; {s['box'][-90:]!r})")
-    A.evaluate('closeProfile(false)'); A.click('#intelSwLabel'); A.wait_for_timeout(200); gear(A); A.evaluate('closeProfile(false)'); A.check(f'[data-it-me="{MAIN}"]'); A.evaluate("() => { it.pop = false; itRender(true); }"); on(A)
+    # ---- 054: You follows the login while Use my game location is on ----
+    THIRD = 95000003   # made-up, with no Local log in the folder
+    def follow_case(html=None):
+        out = []
+        def need(ok, msg):
+            if not ok: out.append(msg)
+        lreset(); c = ctx_new(html=html); A = page(c)
+        A.evaluate('closeProfile(false)'); A.check(f'[data-it-me="{ALT}"]'); A.wait_for_timeout(100); gl_on(A); gear(A); s = st(A)
+        need(s['radios'] and not s['row'] and s['me'] == ALT, f"logged out, the switch on: the radios, You the pick ({s['radios']}, {s['me']})")
+        A.evaluate("(x) => { itGl.sys = x; itGl.at = Date.now(); }", SYSID['T5ZI-S'])   # an old game answer (problem 2)
+        login(A); A.wait_for_timeout(100); gear(A); s = st(A)
+        need(s['me'] == MAIN and s['setme'] == ALT, f"logged in: You is the login, the pick kept (me {s['me']}, pick {s['setme']})")
+        need(s['radios'] == 0 and s['row'] and s['rowsw'] == 0 and 'Use my game location' in s['ibox'], f"logged in: no radios; the EVE tab's row, no switch ({s['radios']}, {s['row']}, {s['rowsw']}; {s['ibox'][:80]!r})")
+        need('Game location:' not in s['ibox'] and 'Your EVE login is' not in s['box'], f"no \"Game location\" line, no \"not You\" warning ({s['box'][-100:]!r})")
+        need(s['glsys'] == 0, f"a change of You drops the old game answer (itGl.sys {s['glsys']})")
+        on(A); A.wait_for_timeout(3000); gear(A); s = st(A)
+        need(LREQ and {x['id'] for x in LREQ} == {MAIN} and 'Your Main in 8WA-Z6' in s['status'], f"Intel follows the login: requests for it, its system ({len(LREQ)}; {s['status'][:40]!r})")
+        A.evaluate("() => { ssoLost(); }"); n0 = len(LREQ); A.wait_for_timeout(3000); gear(A); s = st(A)
+        need(s['row'] and 'Paused: log in again' in s['ibox'] and s['me'] == MAIN and s['radios'] == 0 and len(LREQ) == n0, f"the login ended: the row stays, \"Paused: log in again\", no requests ({len(LREQ) - n0}; {s['ibox'][:80]!r})")
+        login(A); A.evaluate('closeProfile(false)'); A.click('#intelSwLabel'); A.wait_for_timeout(300)
+        prof(A); A.click('#eveTab [data-sso="logout"]'); A.wait_for_timeout(150); s = st(A)
+        need(s['me'] == ALT and s['radios'] and s['checked'] == str(ALT) and not s['row'], f"Log out: the radios and the old pick back at once (me {s['me']}, checked {s['checked']})")
+        login(A, who=(THIRD, 'Your Third')); gear(A); s = st(A)
+        need(s['me'] == THIRD and s['row'] and s['radios'] == 0 and s['nolog'] == 'No Local log for Your Third: your system comes from EVE only', f"a login with no Local log: the stand-in, its line ({s['me']}; {s['nolog']!r})")
+        A.evaluate("() => { it.read = false; itRender(true); }"); nl = st(A)['nolog']; A.evaluate("() => { it.read = true; itRender(true); }")
+        need(nl == '', f"the folder not read yet: no \"No Local log\" line (owner at the review) ({nl!r})")
+        L['mode'] = '429'; L['ra'] = 3; n0 = len(LREQ); on(A); A.wait_for_timeout(1200); s = st(A)
+        need('it comes from EVE once it answers' in s['warn'], f"before EVE answers: the warning says it comes from EVE ({s['warn'][:90]!r})")
+        L['mode'] = 'ok'
+        try: A.wait_for_function(f"itMySys() === {SYSID['8WA-Z6']}", timeout=12000)
+        except Exception: pass
+        s = st(A)
+        need(s['my'] == SYSID['8WA-Z6'] and 'Your Third in 8WA-Z6' in s['status'] and THIRD in {x['id'] for x in LREQ[n0:]}, f"the stand-in takes the game's system ({s['my']}; {s['status'][:40]!r})")
+        A.evaluate('closeProfile(false)'); A.click('#intelSwLabel'); A.wait_for_timeout(300); prof(A); A.click('#ppSw-loc'); A.wait_for_timeout(200); gear(A); s = st(A)
+        need(not s['gl'] and s['radios'] and not s['row'] and s['me'] == ALT, f"the switch off: the radios back, You the pick ({s['me']})")
+        A.close(); c.close()
+        return out
+    r = follow_case()
+    for m in r: check(False, '054: ' + m)
+    check(not r, f'054: You follows the login while the switch is on (every step above; {len(r)} wrong)')
+    FOLLOW_MUTANTS = [
+        ('the radios still drawn while following', "${itFollowLogin() ? '' : itCharsHtml(chars)}", "${itCharsHtml(chars)}"),
+        ('You from the pick while following', "  if(!itFollowLogin()) return it.set.me ?", "  if(true) return it.set.me ?"),
+        ('no itGlReset on a change of You', "  it.alerted = new Map(); itGlReset();\n  if(!scan) itRender();", "  it.alerted = new Map();\n  if(!scan) itRender();"),
+        ('no itMeSync from renderSidePanel', "  pfTry(() => itMeSync(), false);", "  0;"),
+        ('the No Local log line before the folder is read', "it.me && it.me.noLog && it.read ?", "it.me && it.me.noLog ?"),
+        ('the Local log wording for a stand-in', "it.me && it.me.noLog ? 'Your system isn’t known yet (it comes from EVE once it answers)'", "false ? 'Your system isn’t known yet (it comes from EVE once it answers)'"),
+    ]
+    e0 = len(errs)
+    for name_, a, bb in FOLLOW_MUTANTS:
+        if PAGE.count(a) != 1: check(False, f'054 mutant "{name_}": its text is in the page ({PAGE.count(a)})'); continue
+        try: r = follow_case(PAGE.replace(a, bb, 1))
+        except Exception as e: r = [f'error {str(e)[:60]}']
+        check(bool(r), f'054 mutant "{name_}" fails the case ({r[:1]})')
+    del errs[e0:]   # a mutant's page errors aren't the page's
+
+    # ---- the tab without the lock; a duplicated tab ----
+    c = ctx_new(); A = page(c); lreset(); login(A); gl_on(A); on(A)
     B = page(c, first=False); login(B, tab='madeUpTabId0029', tok='madeUpAccessTokenB'); B.evaluate("() => { it.set.gameLoc = true; itGlReset(); }"); B.wait_for_timeout(3000)
     toks = {x['h'].get('authorization') for x in LREQ}
     check(LREQ and st(B)['other'] and not st(B)['on'] and 'Bearer madeUpAccessTokenB' not in toks, f'the tab without the lock: no request from it ({len(LREQ)} requests, all from the running tab: {sorted(toks)})')
@@ -508,6 +571,9 @@ with sync_playwright() as p:
     c = ctx_new(390); pg = page(c); login(pg, scp=()); gl_on(pg); prof(pg)
     hh = pg.evaluate("() => document.querySelector('#eveTab [data-sso=\"eve-go\"]').getBoundingClientRect().height"); s = st(pg)
     check(hh >= 44 and s['sw'] <= s['vw'], f'390 px: Continue to EVE {hh:.0f} px tall, no sideways scroll')
+    pg.evaluate("() => { itGl.msg = {text: 'made-up (SSO-08)', err: true, again: true}; }"); gear(pg); pg.evaluate('closeProfile(false)'); pg.wait_for_timeout(150)
+    hi = pg.evaluate("() => { const x = document.querySelector('#intelPanel [data-it-glbox] [data-it-act=\"gl-again\"]'); return x ? x.getBoundingClientRect().height : 0; }"); s = st(pg)
+    check(s['row'] and hi >= 44 and s['sw'] <= s['vw'], f"054, 390 px: Intel's row, its Log in again {hi:.0f} px tall, no sideways scroll ({s['sw']} / {s['vw']})")
     c.close()
     check(not BAD, f'no /ship/ or /online/ request anywhere ({BAD[:2]})')
     check(not errs, f'no page errors {errs[:3]}')

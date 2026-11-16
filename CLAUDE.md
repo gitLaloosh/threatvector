@@ -170,8 +170,16 @@ trip comes back without it or ESI answers 403 (the owner, 032). So:
 - **Never a live login in a check:** `tools/page_checks/sso_check.py` serves the page at both origins and answers for CCP with keys
   made per run; made-up tokens in the `madeUp…` form. The only live login is the owner's hand test on the dev app.
 - **Phase 2, Use my game location** (v2026.11.08.4, build queue 028; Project doc roadmap/sso-phase2-plan.md; LESSON #150): a switch on
-  the profile's EVE tab (`#ppSw-loc`, `it.set.gameLoc` in `dscanIntel`; Intel's box 3, `itGlHtml`, says whether it's on and opens the
-  EVE tab). Without the permission it waits (above);
+  the profile's EVE tab (`#ppSw-loc`, `it.set.gameLoc` in `dscanIntel`). Without the permission it waits (above);
+  - **You follows the login** (v2026.11.16.2, build queue 054; roadmap/intel-you-follows-login-plan.md; the owner: "only see radio buttons
+    when you're not logged in w/ use my location enabled"): while the switch is on and you're logged in (or the login ended with its pilot
+    kept, `sso.lost`), Intel's You is the login's character (`itFollowLogin`, `itMeResolve`): its Local log, else a stand-in `{id, name,
+    noLog}` whose system comes from EVE alone; the radio pick `it.set.me` is never changed (back on Log out or the switch off). One
+    `itMeSync()` decides it, from `renderSidePanel` (every login change and both switch paths end there) and the end of `itScan`; a change
+    resets the game's last answer (`itGlReset`), the alert memory and the next scan once, else nothing; never inside the Intel example's
+    sandbox (`itWhAside`). Intel's box 3 then shows the EVE tab's row (`eveFeatHtml(k, m, {intel: true})`: lamp, name, ⓘ, status line, no
+    switch), `itGl.msg` with Log in again, and "No Local log for <name>…" only once the folder is read (`it.read`); otherwise the radios.
+    No "Game location" line and no "your login isn't You" warning any more. `sso_game_check.py`.
   `ssoStart(want, from)` asks for `esi-location.read_location.v1` plus what the tab holds and what's on (`ssoWant`; EVE gives a later
   login only what it asks for, the owner's hand test 2026-11-08, so every trip asks for all of `ssoWant()`, and the EVE tab says how many),
   never a ship scope (the owner: no feature may suggest the page knows the fit you fly unless it reads ship and fit from the game). The
