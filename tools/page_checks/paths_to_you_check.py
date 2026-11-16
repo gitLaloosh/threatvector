@@ -259,7 +259,7 @@ MUTANTS = [
     ('the search box on Paths to you (048, the owner)', ", .it-map.pt-on .it-rp-search{display:none !important;}", "{display:none !important;}", ('chrome',)),
     ('one route per system', "      for(const y of T.adj[x]) if(on(y) && D[y] === D[x] - 1){ const k = x + '>' + y; (edges.get(k) || edges.set(k, {x, y, from: new Set()}).get(k)).from.add(h); }",
      "      { const y = T.adj[x].find(y => on(y) && D[y] === D[x] - 1); if(y !== undefined){ const k = x + '>' + y; (edges.get(k) || edges.set(k, {x, y, from: new Set()}).get(k)).from.add(h); } }", ('tree',)),
-    ('Near You\'s range for the alert range', "  const D = itm.D, R = it.set.range, out = [];", "  const D = itm.D, R = itNearReach(), out = [];", ('tree',)),
+    ('Near You\'s range for the alert range', "  const D = itm.Dg || itm.D, R = it.set.range, out = [];", "  const D = itm.Dg || itm.D, R = itNearReach(), out = [];", ('tree',)),   # 041: by stargate (itm.Dg)
     ('the security number back', '<span class="it-sn s${Number(itMapSecClass(n.i))}">${escapeHtml(name)}</span>', '<span class="it-sn s${Number(itMapSecClass(n.i))}">${escapeHtml(name)} ${escapeHtml(itMapSecText(n.i))}</span>', ('look',)),
     ('Paths to you no longer last (052)', "  return IT_MAP_FILTERS.map((f, k) => (k && f.g", "  return [...IT_MAP_FILTERS.filter(f => f.k !== 'wh'), IT_MAP_FILTERS.find(f => f.k === 'wh')].map((f, k) => (k && f.g", ('bar',)),
     ('the tree written on every draw', "    if(text === itPt.html) return;   // written only when what it shows changed\n", "", ('redraw',)),
