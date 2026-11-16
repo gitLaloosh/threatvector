@@ -333,7 +333,8 @@ MUTANTS = [
     ('the 0.45 line ignored', "return t >= 5 && T.band && T.band[i] === 1 ? 4 : t;", "return t;", ('sec',)),
     ('a number in the circles with no colour', "const col = itMapSt().colour; if(col) c.fillText(", "const col = itMapSt().colour || 'sec'; if(col) c.fillText(", ('colour',)),
     ('the panel\'s numbers cut off (the hand test)', ".it-mpp .rs-v{width:5.2ch;}", ".it-mpp .rs-v{}", ('panel',)),
-    ('the example writing the user\'s stack', "st: itMapStackBlank()});", "st: itMapSt()}); itMapSt().colour = 'region'; itMapStackSave();", ('example',)),
+    # 055: the example's stack is set aside for everything it draws, in itExSandbox (it was set only for the picture, in itExMapPic)
+    ('the example writing the user\'s stack', "itm.st = itMapStackBlank(); itm.mt = null;", "itMapSt().colour = 'region'; itMapStackSave(); itm.mt = null;", ('example',)),
 ]
 
 with sync_playwright() as p:
