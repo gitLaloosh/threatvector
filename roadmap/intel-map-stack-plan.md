@@ -185,13 +185,15 @@ Served 590,418 bytes on 51207b6 (ceiling 800,000). Estimate: a few KB of code an
 - **Security range compares `itMapSecT`**, the corrected shown value, so "High" never matches those 19.
 - **Labels** follow the mockup, not 4.4's last bullet: report labels stay while Only filters are on (Q7, rings never fade); only the
   wormhole-only labels need a match (or the focus).
+- **A matching hole's label isn't forced** over another label (045's rule, kept: a live hole's label is forced only while it isn't bold);
+  `wormhole_filter_check`'s crowded case caught the build forcing it.
 - **The chip** reads "N match ›", then "k of N ›" while stepping; any filter press starts the count again (`itm.mtStep = -1`).
 - **Sov's legend and hover:** 053's own legend line (`sovLegHtml`) went; the Only line names the picks and levels. The Sov hover line shows only
   while Sov is on.
 - **intel_kills_check** was named in the review as a reader of the map filter: it isn't (it presses the Feed's `data-it-f`), so it is
   unchanged.
 - **Checks:** `tools/page_checks/intel_map_stack_check.py` (new; 15 parts at 1440 and 390 px, a canvas `arc` record of each draw instead of
-  pixel samples, 13 mutants) and the nine checks of section 8 updated (`intel_map_look_check` now expects soft colour and one Only filter at a
+  pixel samples, 13 mutants) and seven of section 8's nine checks updated (`intel_map_check`, `tag_only_check` and `wormhole_share_check` pass unchanged) (`intel_map_look_check` now expects soft colour and one Only filter at a
   time; `wormhole_filter_check` the match chip in place of the wormholes chip).
 
 ## Sources
