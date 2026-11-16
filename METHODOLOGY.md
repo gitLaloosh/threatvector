@@ -424,10 +424,25 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   numbers, Within N jumps, the tooltip's "N jumps" (with "1 of the 3 jumps by jump bridge · by stargate only 10 jumps") and the
   search box's numbers; the bridges are drawn as green curves, as in the game. Everything that is about other players stays by
   stargate, since they can't use your bridges: Near You, its alerts, the Feed and its kill range, the alert range's glow and the
-  fade past Near You's range on the map, and Paths to you. Threat Vector's route stays by stargate too (its tooltip line says
-  "route by stargate" and compares it with the stargate count); build queue 057 adds bridges to it by Ansiblex zone. The map can't
-  know a bridge's access list or fuel, so a counted bridge is one you said you have. Sov upgrades' Jump bridge kind is every system
-  in this list, with the switch on or off.
+  fade past Near You's range on the map, and Paths to you. The map can't know a bridge's access list or fuel, so a counted bridge is
+  one you said you have. Sov upgrades' Jump bridge kind is every system in this list, with the switch on or off. The bridges are
+  drawn at 70% of the game's green since build queue 057 (the owner: "the bridges really drown out some of the other content").
+- **Jump bridges by Ansiblex zone** (build queue 057): CCP's rules since 2026-09-22 (patch notes 24.01): a jump through an Ansiblex
+  costs capacitor by the light-years from where it **arrives** to the owning alliance's capital: zone 1 up to 5 LY free, zone 2 to
+  10 LY ×2, zone 3 to 15 ×6, zone 4 to 20 ×9, zone 5 past 20 ×15; only pilots of the alliance holding sov over the starting system
+  may use it; an alliance that lost its capital pays zone 5 on every jump until a new one is set. So each direction of a bridge has
+  its own zone. With Use jump bridges on the map on, while Intel runs, the page reads ESI's `/sovereignty/systems` (who holds each
+  system and which is each alliance's capital; public, kept in memory only, at most once per ESI's Expires, about 5 minutes). Your
+  alliance is the EVE login's while it is Your pilot; logged out, each bridge's holder when both its ends agree. A bridge is usable
+  when your alliance holds both ends; otherwise its row and its hover say why, and it is left out of Threat Vector's route and of the
+  map's counts (drawn dashed and fainter). A direction's zone is the distance from its arrival to the capital, rounded up to 0.01 LY
+  as the hover shows it (5.00 zone 1, 5.01 zone 2). Intel settings → Routes ticks the zones a bridge jump may arrive in (zone 1 only
+  unless you tick more; localStorage `tvRouteJb`): Threat Vector's route takes a direction only when its arrival's zone is ticked,
+  as one jump costing what a gate jump into that system costs. Usable bridges count on the map whatever their zones. Its tooltip
+  lists each bridge step and its zone, the menu says "N by jump bridge", and the "(shortest N)" it compares with is over the same
+  stargates and directions. Sending Threat Vector's route to EVE still sends every system as a waypoint: across a bridge the game
+  routes between the two itself, so its own "Include Jump Bridges in Route" setting decides. Without the sovereignty data (ESI
+  down, ROUTE-02) routes use stargates only and the map counts every bridge on your list.
 - **Paths to you** (build queue 043): the bar's filter just before Wormholes. In place of the galaxy it draws the stargate routes
   to you from every system with hostiles, neutrals or kills inside your alert range (not Near You's range), as a tree: your
   system at the top, one row per jump. Every shortest route counts, so a system reached two equally short ways has both

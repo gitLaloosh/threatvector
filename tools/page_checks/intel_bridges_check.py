@@ -130,7 +130,7 @@ def cases(b, html, parts=('list', 'counts', 'ui', 'phone')):
             st_off = pg.evaluate(STATE, [FAR, NEARBY])
             if not st_off['same'] or st_off['D'] != D0[FAR]: out.append(f'off: {st_off} (want itm.D the stargate count {D0[FAR]})')
             dr_off = pg.evaluate(DRAW)
-            if any(c == '#00f000' for c in dr_off['qc']): out.append('off: a green curve drawn')
+            if any(c == '#00a800' for c in dr_off['qc']): out.append('off: a green curve drawn')
             r = pg.evaluate(SET, [COUNT_TEXT, True])
             if not r[0] or r[1] != 2: out.append(f'on: {r} (want two bridges counted)')
             st = pg.evaluate(STATE, [FAR, NEARBY])
@@ -143,7 +143,7 @@ def cases(b, html, parts=('list', 'counts', 'ui', 'phone')):
             if feed_on != feed_off: out.append('on: the Feed\'s rows changed')
             if not any(r_[0] == nm(FAR) and r_[1] == f'{D0[FAR]}j' for r_ in near_on): out.append(f'Near You: no row for the bridged system at {D0[FAR]} jumps {near_on}')
             dr = pg.evaluate(DRAW)
-            if not any(c == '#00f000' for c in dr['qc']): out.append('on: no green curve drawn')
+            if not any(c == '#00a800' for c in dr['qc']): out.append('on: no green curve drawn')
             q = pg.evaluate("(i) => [itm.Q[2 * i], itm.Q[2 * i + 1], itm.W, itm.H]", st['i'])
             if not (0 <= q[0] <= q[2] and 0 <= q[1] <= q[3]): out.append(f'on: the bridged system is off the map after a fit {q}')
             elif any(abs(x - q[0]) < 1 and abs(y - q[1]) < 1 for x, y in dr['glow']): out.append('on: the alert glow on the bridged system (2 by bridge, 12 by stargate)')
@@ -168,7 +168,7 @@ def cases(b, html, parts=('list', 'counts', 'ui', 'phone')):
             if not r[13]: out.append('on again: Within 3 jumps lost the bridged system')
             # D13: a route step that isn't a gate is drawn as its bridge's curve (the Intel example's / not-yet-worked-out fallback, itm.par)
             r = pg.evaluate("""([i, id]) => { const a = itRpAside; itRpAside = true; itm.pinned.add(id); window.__rec = {glow: [], qc: []}; itMapDraw(); const q = window.__rec.qc; window.__rec = null;
-              itm.pinned.delete(id); itRpAside = a; itMapDraw(); return q.filter(c => c !== '#00f000').length; }""", [st['i'], FAR])
+              itm.pinned.delete(id); itRpAside = a; itMapDraw(); return q.filter(c => c !== '#00a800').length; }""", [st['i'], FAR])
             if r < 1: out.append('on: a route over a bridge drew its bridge step as a straight line (D13)')
             # the Intel example draws with the setting off and leaves the live search alone
             r = pg.evaluate("() => { const D = itm.D, k = itm.jbKey; itEx.map = null; const u = itExMapPic(800); return [!!u, itm.D === D, itm.jbKey === k, it.set.bridgesOn]; }")
@@ -207,17 +207,17 @@ MUTANTS = [
     ('Paths to you on the bridges\' count', "  const D = itm.Dg || itm.D, R = it.set.range, out = [];", "  const D = itm.D, R = it.set.range, out = [];", ('counts',)),
     ('the alert glow on the bridges\' count', "if(Dg[i] >= 0 && Dg[i] <= it.set.range && seen(i)){", "if(D[i] <= it.set.range && seen(i)){", ('counts',)),
     ('the kill-range line on the bridges\' count', "  const dg = itm.Dg ? itm.Dg[i] : d;", "  const dg = d;", ('counts',)),
-    ('Threat Vector\'s route compared with the bridges\' count', "sd = jb ? itm.Dg[i] : d;", "sd = d;", ('counts',)),
+    ('Threat Vector\'s route compared with the bridges\' count', "jb ? itm.Dg[i] : d;", "jb ? d : d;", ('counts',)),   # 057: the stargate route's comparison
     ('a reverse line shown as ✗', "return rows.push({n, ln, st: 'dup', a, b,", "return rows.push({n, ln, st: 'bad', a, b,", ('list',)),
     ('a separator line refused for a third name', "ids = [L[L.length - 1], R[0]].filter(x => x !== undefined); }",
      "const u = [...new Set([...L, ...R])]; if(u.length > 2) return rows.push({n, ln, st: 'bad', msg: 'more than two systems'}); ids = u; }", ('list',)),
     ('sovBridgeEnds empty with the switch off', "function sovBridgeEnds(){ return itBridges().ends; }", "function sovBridgeEnds(){ return itBridgeOn() ? itBridges().ends : []; }", ('list',)),
     ('Within N not told the count changed', "${itMapStKey()}|${itm.home}|${itm.jbKey || ''}|", "${itMapStKey()}|${itm.home}|", ('counts',)),
     ('the map not searched again on a change', "const jbMoved = !moved && itBridgeKey() !== itm.jbKey;", "const jbMoved = false;", ('ui',)),
-    ('no curves', "  if(itm.jbKey){\n    c.strokeStyle = itMapCol('--it-bridge'", "  if(false){\n    c.strokeStyle = itMapCol('--it-bridge'", ('counts',)),
+    ('no curves', "  if(itm.jbKey){\n    const Zb = itJbZones()", "  if(false){\n    const Zb = itJbZones()", ('counts',)),   # 057: the curves' loop
     ('a bridge step drawn straight (D13)', "if(T.adj[a].includes(b)) { c.moveTo", "if(true) { c.moveTo", ('counts',)),
     ('the setting not kept', "      if(r.bridgesOn === true) d.bridgesOn = true;", "", ('ui',)),
-    ('the switch\'s row short on a phone', "@media (max-width:599px){ .it-jb .jb-on{min-height:44px;} }", "", ('phone',)),
+    ('the switch\'s row short on a phone', ".it-jb .jb-on{min-height:44px;} .it-rp-jbz", ".it-rp-jbz", ('phone',)),   # 057: the zones' rows share the rule
 ]
 
 with sync_playwright() as p:
