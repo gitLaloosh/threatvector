@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-wKOqFK3A6fXoRSrA3zJIzRUndUrduC+apOefhmw4pVg='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-fhXOJyrN49LUTIaQ8ybdj4BXvT3uVtYbAzolgO0x9NI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -33938,7 +33938,7 @@ function whPanels(){
   if(btn.getAttribute('aria-pressed') !== String(on)) btn.setAttribute('aria-pressed', String(on));
   if(!on) return;   // 056: System's body is written only while it shows (LESSON #120); opening clears S.pn, so it is written then
   const b = pnl.querySelector('[data-pnb="sum"]'), html = n === null ? '' : whSumHtml(n);
-  if(S.pn.sum !== html && !(b.contains(document.activeElement) && document.activeElement.matches('input, textarea, select'))){ S.pn.sum = html; b.innerHTML = html; }   // never under a field being typed in
+  if(S.pn.sum !== html && !(b.contains(document.activeElement) && document.activeElement.matches('input, textarea, select'))){ S.pn.sum = html; b.innerHTML = n === null ? '' : whSumHtml(n); }   // never under a field being typed in (a builder, for check_html_sinks)
 }
 // ---- + Add (D20: the list's Add form, linked to where you are, the system in focus, or nothing) and "Add a system here" (D31)
 function whPop(k){
