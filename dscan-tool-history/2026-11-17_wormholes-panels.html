@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-17 — The Wormholes tab's panels behind icons</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The Wormholes tab's System panel behind a map control, as on Intel's map</h1>
+<p><span class="tag">Page</span> 2026-11-17 &middot; <code>v2026.11.17.1</code> &middot; build queue 056 &middot; plan <code>roadmap/wormholes-panels-plan.md</code>, mockup <code>Claude outputs/wormholes_panels_mockup.html</code> (scripts <code>roadmap/wormholes-panels-mockup/</code>)</p>
+<h2>Why</h2>
+<ul>
+<li>The owner: "add a backlog item to be delivered with the next build that updates the wormholes tab to reflect the design choices made for the intel tab's new map with the panels on the side with icons that expand rather than always showing fully expanded panels."</li>
+<li>His answers at the planning: "Top left, where panels are now", "Only working panels", "Yes, a click opens it", "As you left it", "Sheet beside the rail", the ringed planet ("A"), and no close button ("nevermind, i see you just click on the icon again"). At the build review: "A" (no button until the map has a system).</li>
+</ul>
+<h2>What changed</h2>
+<ul>
+<li><b>The rail</b> (<code>whRailHtml</code>): one map control, <code>.it-map-rail.wh-rail</code> at the map's top left, under the "you're in" line (top 46; below 900 px top 90; a phone top 60 under the button row, 44 px). It reuses Intel's rail look (rule A); <code>.wh-box .wh-rail</code> positions it and wins over Intel's phone <code>top:112px</code>. Its icon is the ringed planet (<code>WH_SYS_ICON</code>, our own drawing); its title names the system in focus and says press to show or hide. Hidden while the map is empty (the owner: "A").</li>
+<li><b>The System panel</b> (<code>section.wh-pnl#whPnSum</code>): in the site panel style (rule B: <code>--panel</code>, a <code>--line</code> border, 6 px corners, the panel shadow, a 14 px "System" heading), right of the rail (left 44, 340 wide, to 8 px above the foot); System's body (<code>whSumHtml</code>) inside, unchanged. A view, not a dialog: no close button, no Escape; only its button shuts it. A phone: a sheet right of the rail (left 60, right 8), the overview and the "you're in" line hidden while it's open.</li>
+<li><b>What goes:</b> the stacked sections (<code>.wh-panels</code>, <code>.wh-pn</code>, <code>.wh-pnh</code>, <code>.wh-pnc</code>), the three "comes later" sections and <code>WH_LATER</code>, <code>WH_PANELS</code>, the phone's tab bar along the foot, and <code>M.phoneInit</code>. With the foot free, a phone's overview goes back to the bottom right and the "you're in" line to the bottom left; the toast and "N selected" sit right of the rail.</li>
+<li><b>Remembered</b> (<code>tvWhPanels</code> <code>{v: 1, open: 'sum' | ''}</code>, <code>whPnRead</code> / <code>whPnSet</code>): shut the first time, then as you left it at every width; anything it can't read is shut. A new key: the older page never reads it, and <code>tvWhChain</code> / <code>tvWhMarks</code> keep their form.</li>
+<li><b>A click on a system opens System</b>: only the map's own click (the canvas's pointerup), not a drag, Shift, Select mode, the system menu, + Add, Add a system here or the panel's own connection names. Opening or shutting moves nothing; ⤢ then fits in the part the panel doesn't cover.</li>
+<li><b><code>whFree</code></b>: the left edge 4 px right of the open panel; the whole map when that leaves under 96 px (a phone's sheet), as Intel's <code>itMapFree</code>.</li>
+<li><b>Drawing cost</b> (LESSON #120): System's body is written only while the panel shows (opening clears <code>S.pn</code>, so it is written then); the button's title and pressed state only when they change; placement is CSS only.</li>
+<li><b>Info text</b>: <code>whmap</code> "[Focus and adding]" says the System panel's button is at the top left and shows or hides it (206 → 208 of 210 words).</li>
+</ul>
+<h2>Where the build differs from the plan</h2>
+<ul>
+<li>The rail's button is hidden while the map is empty (the plan didn't say; the owner at the build review: "A").</li>
+<li>A click in Select mode focuses the system without opening System (the plan's "not in Select mode"; the mockup opened it there).</li>
+<li><code>WH_PANELS</code> went (the plan left it to the build): the next part adds its button to <code>whRailHtml</code>.</li>
+<li><code>wormhole_menu_check.py</code>'s press-and-hold case now puts the finger on the menu's Home item before testing LESSON #167: with the phone's tab bar gone the system sat lower, the finger landed between two items, and the mutant (a release that presses the menu) passed. It now fails if no item is under the finger.</li>
+<li>The mockup was rebuilt from its scripts on main 42b016f (it needs a page from before 056); its 68 checks pass there.</li>
+</ul>
+<h2>Checks</h2>
+<ul>
+<li><code>tools/page_checks/wormhole_layout_check.py</code> (new): a made-up chain at 1440, 760 and 390 px: an empty map shows no button; shut by default; the button's place, size and look; pressed, the panel's place and style, the controls still clickable, Esc not shutting it, ⤢ fitting beside it; remembered; the overview's place; the body not written while shut; what does and doesn't open it; a bad or other-version <code>tvWhPanels</code> shut. Eight mutants, each fails.</li>
+<li><code>wormhole_tab_check.py</code> opens System by its rail button and checks there is one button and no stacked section; <code>wormhole_menu_check.py</code> starts with System open on the wide map.</li>
+<li><code>check_ui_rules.py</code>: (7) covers <code>.wh-rail</code>, (8) <code>.wh-pnl</code>; an amber rail and a <code>--panel-2</code> panel were each caught (run by hand on copies).</li>
+</ul>
+</body>
+</html>

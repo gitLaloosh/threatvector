@@ -144,7 +144,7 @@ for m_ in CHEV_BTN.finditer(src):
 if n_chev < 6: problems.append(f'only {n_chev} list expanders found (Intel rows x2, dossier rows, Show N more hulls x2, fleet headings): update rule 6')
 
 # 7. rule A (052): map controls are neutral (never amber, except the alert-range count badge)
-MAPCTL = re.compile(r'\.it-map-zoom|\.it-map-rail|\.it-map-pb|\.it-map-fbtns|\.it-map-fcur|\.it-map-clr|\.pt-z\b')
+MAPCTL = re.compile(r'\.it-map-zoom|\.it-map-rail|\.wh-rail|\.it-map-pb|\.it-map-fbtns|\.it-map-fcur|\.it-map-clr|\.pt-z\b')   # 056: .wh-rail
 n_ctl = 0
 for sel, body, ln in rules:
     for part in sel.split(','):
@@ -155,7 +155,7 @@ if n_ctl < 8: problems.append(f'only {n_ctl} map-control rules found: update rul
 rail = [b for s_, b, _ in rules if s_.strip() == '.it-map-rail button']
 if not rail or 'rgba(18,23,28,.9)' not in rail[0] or 'var(--line)' not in rail[0]: problems.append('.it-map-rail button: not in the zoom buttons\' fill and edge (rule A)')
 # 8. rule B (052): panels over the map
-for want, fill in (('.it-whp', 'var(--panel)'), ('.it-top .it-nearcol', 'var(--panel)'), ('.it-nearcol .it-nb', 'var(--panel-2)')):
+for want, fill in (('.it-whp', 'var(--panel)'), ('.it-top .it-nearcol', 'var(--panel)'), ('.it-nearcol .it-nb', 'var(--panel-2)'), ('.wh-pnl', 'var(--panel)')):   # 056: the Wormholes tab's System panel
     hit = [b for s_, b, _ in rules if want in [x.strip() for x in s_.split(',')] and prop(b, 'background') == fill]
     if not hit: problems.append(f'{want}: no rule with the {fill} fill (rule B: panels over the map)')
     elif fill == 'var(--panel)' and 'var(--line)' not in (prop(hit[0], 'border') or ''): problems.append(f'{want}: no --line border (rule B)')

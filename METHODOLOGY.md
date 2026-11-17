@@ -573,3 +573,5 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
 - **The system menu** (v2026.11.15.2, build queue 051): a status (Home, Friendly, Looking for, Warning, Target, Dangerous) drawn as the box's
   border, a tag of up to 8 characters, and Lock: a locked system keeps its place (a drag, alone or in a group, and Rearrange leave it) and can't be
   removed until it's unlocked; its connections can still be deleted. Kept in this browser only (tvWhMarks), beside the chain.
+- **The System panel** (v2026.11.17.1, build queue 056): behind its button at the map's top left; a click on a system opens it. Open or shut as
+  you left it, in this browser only (tvWhPanels).

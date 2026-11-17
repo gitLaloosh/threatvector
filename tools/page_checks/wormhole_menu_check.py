@@ -40,7 +40,7 @@ def start(b, html, w, errs, h=1000, touch=False, chain=None):
     ctx.add_init_script(FS); route(ctx)
     pg = ctx.new_page(); pg.goto('file://' + html)
     pg.evaluate("([s, c]) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({channels: ['region.intel'], me: 95000001, range: 3, sound: false, notify: false}));"
-                " localStorage.removeItem('tvWhMarks'); if(c) localStorage.setItem('tvWhChain', JSON.stringify(c)); else localStorage.removeItem('tvWhChain'); localStorage.setItem('tvWormholes', JSON.stringify({v: 1, keepH: 24, gone: {}, rep: {}})); }", [SIDE, chain])
+                " localStorage.removeItem('tvWhMarks'); if(c) localStorage.setItem('tvWhChain', JSON.stringify(c)); else localStorage.removeItem('tvWhChain'); localStorage.setItem('tvWormholes', JSON.stringify({v: 1, keepH: 24, gone: {}, rep: {}})); if(!c) localStorage.setItem('tvWhPanels', JSON.stringify({v: 1, open: 'sum'})); }", [SIDE, chain])   # 056: System open, so its body is drawn (not the phone's chain: the sheet would cover the map)
     pg.reload(); pg.wait_for_timeout(400)
     return ctx, pg
 
@@ -59,6 +59,14 @@ PIX = """([x, y, w]) => { const cv = whCv(), r = cv.getBoundingClientRect(), d =
   for(let dx = -2; dx <= 3; dx++){ const g = cx.getImageData(Math.round((x - r.x) * d) + dx, Math.round((y - r.y) * d), 1, 1).data, v = [g[0], g[1], g[2], g[3]], dd = Math.abs(v[0] - w[0]) + Math.abs(v[1] - w[1]) + Math.abs(v[2] - w[2]); if(dd < bd){ bd = dd; best = v; } }
   return best; }"""
 MK = "() => JSON.parse(localStorage.getItem('tvWhMarks') || 'null')"
+# 056: the press-and-hold case needs a menu item under the finger once the menu opens (else the release presses nothing and LESSON #167 isn't
+# tested). The menu opens at the press, pushed in from the map's edges: opened at the bottom right it sits where any press near there puts it, so
+# the finger goes on its Home item and the system is moved under it.
+LP_AT = """(id) => { const S = whS, M = S.M, cv = whCv(), r = cv.getBoundingClientRect(), bx = S.el.querySelector('.wh-box');
+  whMenuOpen(id, bx.clientWidth, bx.clientHeight); const h = S.el.querySelector('.wh-smenu [data-wh-m="st:home"]').getBoundingClientRect(); whMenuClose(false);
+  const x = h.left + h.width / 2 - r.x, y = h.top + h.height / 2 - r.y, p = M.P.get(id);
+  M.cam = {x: p.x + WH_NW / 2 - x / M.cam.s, y: p.y + WH_NH / 2 - y / M.cam.s, s: M.cam.s}; whDraw();
+  return {x: r.x + x, y: r.y + y, on: document.elementFromPoint(r.x + x, r.y + y) === cv && whHit(whToWorld(x, y)) === id}; }"""
 MENU = "() => { const m = document.querySelector('.wh-smenu'); return m && !m.hidden; }"
 
 def near(c, want, tol=40): return c[3] > 200 and all(abs(a - b) <= tol for a, b in zip(c[:3], want))
@@ -228,9 +236,13 @@ def cases(b, html, parts=('empty', 'menu', 'lock', 'copy', 'store', 'phone')):
                 if not full: e390 = hb[0]
                 elif abs(hb[0] - e390) > 1: out.append(f'390: the empty and the full map differ in height: {e390} vs {hb[0]}')
             if full:
-                a = pg.evaluate(AT, j0); cam0 = pg.evaluate("[whS.M.cam.x, whS.M.cam.y, whS.M.cam.s]"); p0 = pg.evaluate("(id) => { const p = whS.M.P.get(id); return [p.x, p.y]; }", j0)
+                a = pg.evaluate(LP_AT, j0)
+                if not a['on']: out.append(f'390: the system isn\'t under the finger for the press and hold: {a}')
+                cam0 = pg.evaluate("[whS.M.cam.x, whS.M.cam.y, whS.M.cam.s]"); p0 = pg.evaluate("(id) => { const p = whS.M.P.get(id); return [p.x, p.y]; }", j0)
                 cdp = ctx.new_cdp_session(pg)
                 cdp.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': a['x'], 'y': a['y']}]}); pg.wait_for_timeout(750)
+                if not pg.evaluate("([x, y]) => { const e = document.elementFromPoint(x, y); return !!(e && e.closest('.wh-smenu [data-wh-m=\"st:home\"]')); }", [a['x'], a['y']]):
+                    out.append('390: no menu item under the finger once the menu opens: LESSON #167 can\'t be tested (056)')
                 cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []}); pg.wait_for_timeout(200)
                 m = pg.evaluate("""() => { const m = document.querySelector('.wh-smenu'), r = m.getBoundingClientRect(), bx = document.querySelector('.wh-box').getBoundingClientRect();
                   return {on: !m.hidden, rows: [...m.querySelectorAll('button.wh-mi')].every(b => b.getBoundingClientRect().height >= 44),

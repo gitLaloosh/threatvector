@@ -261,7 +261,7 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   on a phone; never amber, except a count badge that means your alert range (`.it-ny-badge.al`). `check_ui_rules.py` (7).
 - **Panels over the map** (rule B, 052; the owner: "Site panel style"): `--panel`, a 1 px `--line` border, 6 px corners, shadow
   `0 8px 24px rgba(0,0,0,.5)`, padding 10-12 px, a 14 px bold `--heading` heading; rows or cards inside `--panel-2`. The Wormholes list,
-  Near You's panel (and Sov upgrades, 053). `check_ui_rules.py` (8).
+  Near You's panel (and Sov upgrades, 053; the Wormholes tab's System panel, 056). `check_ui_rules.py` (8).
 - **Checkbox and radio** (rule C, 052; the owner: "can we treat radio buttons and checkboxes like text inputs with regard to colors?", then
   "cyan tick, dark box"): one global rule (switches `.mys-sw`, `.dmg-sw`, `[role=switch]` excepted): `appearance:none`, 16 px, `--bg`
   fill, `--field-border`, 3 px corners (the radio round); hover `--field-border-hover`; keyboard focus a cyan border and `--accent-ring`;
@@ -565,8 +565,17 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   in front with Intel off (`itGlAsk` / `whLocOn`, D19). In a hole Intel counts from your chain's k-space entrance (`whIntelSys` in `itMySys`, D14;
   never inside the Intel example). `INTEL_WH` (its own block after the INTEL TABLES, written only by `tools/jump_table_update.py` from CCP's SDE:
   names, class from the system / constellation / region, effect from mapSecondarySuns): `whTable`. The map (`whPaint` compares a key, LESSON #120;
-  `whDraw` on interactions), its corner buttons the Intel map's (D33), the System panel (`whSumHtml`; Signatures, Routes and Local say they come
-  later), + Add (`itWhTyOrCls`, `itWhOptHtml`), "Add a system here" on right-click. Phones: the More menu (`tm*`, D21). `wormhole_tab_check.py`.
+  `whDraw` on interactions), its corner buttons the Intel map's (D33), the System panel (`whSumHtml`), + Add (`itWhTyOrCls`, `itWhOptHtml`), "Add a system here" on right-click.
+  Phones: the More menu (`tm*`, D21). `wormhole_tab_check.py`.
+  Build queue 056 (v2026.11.17.1; roadmap/wormholes-panels-plan.md, mockup `Claude outputs/wormholes_panels_mockup.html`; the owner: "Top left, where
+  panels are now", "Only working panels", "Yes, a click opens it", "As you left it", "Sheet beside the rail"): the panels sit behind map controls in a
+  rail at the map's top left (`whRailHtml`: `.it-map-rail.wh-rail`, rule A by reuse; under the "you're in" line; hidden while the map is empty, the
+  owner: "A"), one per working panel (System now, the ringed planet `WH_SYS_ICON`; Signatures, Routes and Local add theirs in their parts, one open
+  at a time). System is `section.wh-pnl#whPnSum` (rule B) right of the rail; a phone: a sheet beside it, the overview and the "you're in" line hidden
+  while it's open. A view, not a dialog: no close button, no Escape, only its button shuts it. Kept in `tvWhPanels` `{v: 1, open}` (`whPnRead` /
+  `whPnSet`; shut the first time and on anything unreadable). Only the map's own click on a system opens it (not a drag, Shift, Select mode, the menu,
+  + Add); opening moves nothing; `whFree` starts right of it (the whole map under 96 px). Its body is written only while it shows (LESSON #120).
+  `wormhole_layout_check.py`.
   Build queue 051 (part 2, v2026.11.15.2; D25, D26, D34): the system menu (`whMenuOpen`, `.wh-smenu`, role menu, no close button) on a right-click
   or a 0.55 s press and hold on a system (empty space keeps "Add a system here", `.wh-hmenu`): a status as the box's border (`WH_ST`, tokens
   `--wh-st-*`, named in the menu, the System panel's tag and the box's hover `whHoverTxt`), a tag (`WH_TAG_MAX` 8; on the map in the page's tag

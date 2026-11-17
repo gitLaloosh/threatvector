@@ -13,7 +13,8 @@ Made-up Intel (intel_check.py's folder and stand-ins), CCP's wormhole system nam
   * EVE location (a stand-in answer through itGameLoc): a docked answer adds no connection, an undocked one does; read with Intel off while the
     tab is in front, not while it isn't;
   * the System panel: CCP's class, a k-space name in its security colour, statics chips coloured by where they lead (C5 amber, HS green, K162
-    grey), edits saved and kept after a reload; tvWormholes untouched; Signatures, Routes and Local say they come later;
+    grey), edits saved and kept after a reload; tvWormholes untouched; opened by its one rail button (build queue 056: no stacked sections, no
+    buttons for Signatures, Routes and Local until their parts are built; the layout is wormhole_layout_check.py);
   * + Add refuses an unknown name and adds a J-system linked to the focus with its signature ID; "Add a system here" on empty space puts it there;
   * dragging saves a position, Rearrange drops them; Shift-drag selects a group that moves together; the overview moves the view;
   * a phone: the More menu (one row; System, Pilot and Fit in it; a pick switches; Esc closes), no sideways scroll; mutants; no page errors.
@@ -112,6 +113,10 @@ def cases(b, html, parts=('table', 'path', 'loc', 'panel', 'add', 'map', 'phone'
         if a0 != 0 or a1 < 1: out.append(f'D19: EVE location read only while the tab is in front with Intel off: {a0} on another tab, {a1} on Wormholes')
     pg.click('#tabBtnWh'); pg.wait_for_timeout(300)
     if 'panel' in parts:
+        rp = pg.evaluate("() => [[...document.querySelectorAll('.wh-rail button')].map(b => b.dataset.whRp), document.querySelectorAll('.wh-pn, .wh-pnh, .wh-panels').length]")
+        if rp != [['sum'], 0]: out.append(f'056: one rail button, System, and no stacked sections: {rp}')
+        pg.click('.wh-rail [data-wh-rp="sum"]'); pg.wait_for_timeout(150)   # 056: Playwright fills only visible fields
+        if not pg.evaluate("!!document.getElementById('whPnSum').offsetParent"): out.append('056: the rail button opens System')
         j0 = pg.evaluate("(n) => whIdOf(n)", J[0]); pg.evaluate("(id) => whSelect(id)", j0); pg.wait_for_timeout(150)
         cls = pg.evaluate("(id) => [document.querySelector('[data-pnb=\"sum\"] [data-f=\"cls\"]').value, whClsData(id)]", j0)
         if cls[0] != cls[1]: out.append(f'the class from CCP\'s data: {cls}')
@@ -119,8 +124,6 @@ def cases(b, html, parts=('table', 'path', 'loc', 'panel', 'add', 'map', 'phone'
         chips = pg.evaluate("[...document.querySelectorAll('[data-pnb=\"sum\"] .wh-sc')].map(c => c.className)")
         if chips != ['wh-sc d-mid', 'wh-sc it-sn s6', 'wh-sc d-x']: out.append(f'statics chips by where they lead (C5, HS, the exit): {chips}')
         pg.fill('[data-pnb="sum"] [data-f="notes"]', 'made-up note'); pg.press('[data-pnb="sum"] [data-f="notes"]', 'Tab'); pg.wait_for_timeout(150)
-        later = pg.evaluate("[...document.querySelectorAll('.wh-pn:not([data-pn=\"sum\"]) .wh-pnb')].map(b => b.textContent)")
-        if later != ['Comes in a later part of the beta.'] * 3: out.append(f'Signatures, Routes and Local: {later}')
         k1 = pg.evaluate("whIdOf('1DQ1-A')"); pg.evaluate("(id) => whSelect(id)", k1); pg.wait_for_timeout(150)
         if not pg.evaluate("!!document.querySelector('[data-pnb=\"sum\"] .wh-shn .it-sn.s0')"): out.append('a nullsec k-space name in its security colour (it-sn s0)')
         pg.reload(); pg.wait_for_timeout(500); pg.click('#tabBtnWh'); pg.wait_for_timeout(300)

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-yOYiwK58/0HHNrLX3SXij4NGNtive+IFUuanUDPf97Q='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-fhXOJyrN49LUTIaQ8ybdj4BXvT3uVtYbAzolgO0x9NI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3283,7 +3283,7 @@
   .wh-ctl .wh-zoom [aria-pressed="true"], .wh-ctl button.it-map-clr[aria-expanded="true"]{border-color:var(--cyan); color:var(--cyan); background:var(--tag-on);}
   .wh-ctl button.it-gear{width:30px; height:30px; background:color-mix(in srgb, var(--panel) 90%, transparent);} .wh-ctl summary.info-btn{background:color-mix(in srgb, var(--panel) 90%, transparent);}
   .wh-ctl .info-body{max-height:calc(var(--whH, 480px) - 60px); text-align:left;} .wh-infoleg{margin-top:10px; padding-top:8px; border-top:1px solid var(--line);} .wh-infoleg .wh-leg{margin:4px 0 0; line-height:1.9;}
-  .wh-gsel{position:absolute; top:46px; left:8px; z-index:3; padding:4px 8px; border-radius:4px; font:12px var(--sans); color:var(--cyan); background:color-mix(in srgb, var(--cyan) 14%, var(--bg));} .wh-gsel[hidden]{display:none;}
+  .wh-gsel{position:absolute; top:46px; left:44px; z-index:3; padding:4px 8px; border-radius:4px; font:12px var(--sans); color:var(--cyan); background:color-mix(in srgb, var(--cyan) 14%, var(--bg));} .wh-gsel[hidden]{display:none;}
   .wh-mini{position:absolute; right:10px; bottom:10px; border:1px solid var(--line); border-radius:3px; background:var(--panel); cursor:pointer; touch-action:none; box-shadow:0 2px 8px rgba(0,0,0,.4);} .wh-mini[hidden]{display:none;}
   .wh-empty{position:relative; box-sizing:border-box; min-height:var(--whH, 300px); display:flex; align-items:center; justify-content:center; padding:32px 16px; color:var(--text-dim); font:13px var(--sans); text-align:center;} .wh-empty[hidden]{display:none;}
   .wh-leg, .wh-note{font:12px var(--sans); color:var(--text-dim);}
@@ -3310,15 +3310,14 @@
   .wh-ty{display:flex; flex-direction:column; gap:2px;} .wh-ty input{width:100%; box-sizing:border-box;} .wh-ty output{font:12px var(--sans); color:var(--it-wh); min-height:15px;}
   .wh-dr{display:inline-flex; gap:8px; align-items:center; font:600 13px var(--sans); color:var(--it-wh-drifter);} .wh-dr input{width:auto; min-height:0; margin:0;}
   .wh-pop .wh-addf button[type="submit"]{grid-column:1/-1; min-height:36px; font-weight:700;}
-  /* the panels: the system in focus (a column on the map's left; a phone: tabs along the bottom that open upwards) */
-  .wh-panels{position:absolute; top:46px; left:8px; bottom:8px; width:340px; z-index:2; display:flex; flex-direction:column; gap:6px; overflow:auto; pointer-events:none; scrollbar-width:thin;}
-  .wh-panels[hidden]{display:none;}
-  .wh-pn{pointer-events:auto; border:1px solid var(--line); border-radius:8px; background:color-mix(in srgb, var(--panel-2) 95%, transparent); box-shadow:0 4px 16px rgba(0,0,0,.35); flex:0 0 auto;}
-  .wh-pnh{width:100%; display:flex; align-items:center; gap:8px; min-height:36px; padding:0 12px; border:0; border-radius:8px; background:transparent; color:var(--heading); font:700 12px var(--sans); text-transform:uppercase; letter-spacing:.6px; text-align:left; cursor:pointer;}
-  .wh-pnh::after{content:'▾'; margin-left:auto; color:var(--text-dim);} .wh-pnh[aria-expanded="false"]::after{transform:rotate(-90deg);}
-  .wh-pnc{font:600 12px var(--mono, monospace); color:var(--cyan); text-transform:none; letter-spacing:0;} .wh-pnc:empty{display:none;}
-  .wh-pnb{padding:2px 12px 12px; display:flex; flex-direction:column; gap:8px; font:13px var(--sans); color:var(--text);} .wh-pnb[hidden]{display:none;}
-  .wh-pn:not([data-pn="sum"]) .wh-pnb{font:12px var(--sans); color:var(--text-dim);}
+  /* 056: the panels behind a rail of map controls at the map's top left (Intel's model, 052: rule A by reuse of .it-map-rail, rule B); System for now,
+     Signatures, Routes and Local add their buttons in their parts (the owner: "Top left, where panels are now", "Only working panels") */
+  .wh-box .wh-rail{top:46px; left:8px; right:auto;} .wh-box .wh-rail[hidden]{display:none;}
+  .wh-pnl{position:absolute; z-index:4; top:46px; left:44px; bottom:8px; width:340px; box-sizing:border-box; display:flex; flex-direction:column; gap:8px; overflow:auto;
+    padding:10px 12px 12px; background:var(--panel); border:1px solid var(--line); border-radius:6px; box-shadow:0 8px 24px rgba(0,0,0,.5); scrollbar-width:thin;}   /* rule B */
+  .wh-pnl[hidden]{display:none;} .wh-pnl h3{margin:0; flex:none; font:700 14px var(--sans); color:var(--heading);}
+  .wh-pnb{display:flex; flex-direction:column; gap:8px; font:13px var(--sans); color:var(--text);}
+  .wh-box:has(.wh-pnl:not([hidden])) .wh-gsel{left:392px;}   /* N selected: right of the rail, and of the panel while it shows */
   .wh-sh{display:flex; flex-wrap:wrap; align-items:center; gap:6px;} .wh-shn{font:700 16px var(--sans); color:var(--heading);} .wh-sh .it-gtag{margin-left:0;}
   .wh-kv{display:grid; grid-template-columns:max-content minmax(0, 1fr); gap:2px 8px; font:12px var(--sans);} .wh-kv > span{color:var(--text-dim);} .wh-kv > b{font-weight:600; color:var(--text);}
   .wh-sub{font:700 11px var(--sans); text-transform:uppercase; letter-spacing:.5px; color:var(--text-dim); margin-top:2px;}
@@ -3340,19 +3339,16 @@
   .wh-mtag{display:flex; gap:4px; padding:2px 2px 6px; margin-bottom:4px; border-bottom:1px solid var(--line);} .wh-mtag input{flex:1 1 auto; min-width:0;} .wh-mtag button.wh-mi{width:auto; flex:none; font-size:12px;}
   .wh-smenu input.wh-mcopy{width:100%; box-sizing:border-box;}
   .wh-here{display:flex; gap:4px; padding:2px 2px 4px;} .wh-here input{flex:1 1 auto; min-width:0;} .wh-here button{font-size:12px; padding:2px 10px;} .wh-hn{padding:2px 4px; line-height:1.4;}
-  @media (max-width:899px){ .wh-topl{right:8px; top:52px;} .wh-panels{top:90px;} }
+  @media (max-width:899px){ .wh-topl{right:8px; top:52px;} .wh-box .wh-rail, .wh-pnl, .wh-gsel{top:90px;} }
   @media (max-width:599px){
-    .wh-panel{padding:4px;} .wh-topl{top:auto; bottom:52px; right:8px; justify-content:flex-start;} .wh-topl .wh-ctx{font-size:11px;} .wh-gsel{top:60px;}
+    .wh-panel{padding:4px;} .wh-topl{top:auto; bottom:8px; right:150px; justify-content:flex-start;} .wh-topl .wh-ctx{font-size:11px;}
+    .wh-box .wh-rail{top:60px; left:8px;} .wh-pnl{top:60px; left:60px; right:8px; bottom:8px; width:auto; padding:8px 10px 10px;}   /* 056: the sheet beside the rail (the owner: "Sheet beside the rail") */
+    .wh-box:has(.wh-pnl:not([hidden])) .wh-mini, .wh-box:has(.wh-pnl:not([hidden])) .wh-topl{display:none;}
     .wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px;} .wh-ctl .wh-zoom [data-wh-z="in"], .wh-ctl .wh-zoom [data-wh-z="out"]{display:none;}   /* a phone zooms by pinching, as the Intel map */
     .wh-ctl button.wh-tb{width:44px; height:44px; min-height:44px; padding:0; justify-content:center;} .wh-ctl button.wh-tb span{display:none;} .wh-ctl button.it-gear, .wh-ctl summary.info-btn{width:44px; height:44px;}
     .wh-pop{top:auto; bottom:0; right:0; left:0; width:auto; max-height:72%; border-radius:12px 12px 0 0;}
-    .wh-panels{top:auto; left:0; right:0; bottom:0; width:auto; max-height:62%; flex-flow:row wrap; align-content:flex-end; gap:0; overflow:visible;
-      background:var(--panel-2); border-top:1px solid var(--line); border-radius:12px 12px 0 0; box-shadow:0 -8px 24px rgba(0,0,0,.45); pointer-events:auto;}
-    .wh-pn{display:contents;} .wh-pnh{order:2; flex:1 1 25%; width:25%; justify-content:center; min-height:44px; border-radius:0; font-size:11px; letter-spacing:.3px; padding:0 2px; gap:4px;}
-    .wh-pnh::after{display:none;} .wh-pnh[aria-expanded="true"]{color:var(--cyan); box-shadow:inset 0 2px 0 var(--cyan);} .wh-pnh .wh-pnc{display:none;}
-    .wh-pnb{order:1; flex:1 1 100%; max-height:calc(var(--whH, 480px) * .62 - 46px); box-sizing:border-box; overflow:auto; padding:12px 14px; border-bottom:1px solid var(--line);}
-    .wh-mini{bottom:auto; top:60px;} .wh-menu{width:min(260px, calc(100% - 16px));} .wh-smenu button.wh-mi, .wh-smenu .wh-mtag input{min-height:44px;}
-    .wh-msg{bottom:auto; top:60px; left:8px; transform:none; max-width:calc(100% - 120px);} .wh-box:has(.wh-pnb:not([hidden])) .wh-topl{display:none;}
+    .wh-menu{width:min(260px, calc(100% - 16px));} .wh-smenu button.wh-mi, .wh-smenu .wh-mtag input{min-height:44px;}
+    .wh-msg, .wh-gsel, .wh-box:has(.wh-pnl:not([hidden])) .wh-gsel{bottom:auto; top:60px; left:60px; transform:none; max-width:calc(100% - 128px);}
     .wh-cn button, .wh-acts button{min-height:44px;} button.wh-n{min-height:44px;} .wh-here button, .wh-pop .wh-addf button[type="submit"]{min-height:44px;}
     /* D21: the More menu */
     body.tm-on .tabs{position:relative;} body.tm-on .tabs .tm-hide{display:none !important;}
@@ -3376,7 +3372,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.6</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.17.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3797,7 +3793,7 @@ const CARD_INFO = {
  "whmap": [
   "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. A change of system that lands you docked (a jump clone, a pod death) adds no connection.",
   "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move together. The overview in the corner shows where everything is; press it to go there. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
-  "[Focus and adding] Click a system to see it in the System panel: class, effect, statics, notes and its connections. Right-click it (press and hold on a phone) for its menu: a status (the border's colour), a tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one right there.",
+  "[Focus and adding] Click a system for the System panel (its button, top left, shows or hides it): class, effect, statics, notes, connections. Right-click it (press and hold on a phone) for its menu: a status (the border's colour), a tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one there.",
   "[Kept] In this browser only, until you remove it: nothing expires. Lock a system (your home, say) so it can't be moved or removed by accident. While you're in a wormhole, Intel counts jumps from where you came into the chain."
  ]
 };
@@ -33484,8 +33480,9 @@ const WH_CLS_KEY = {1: 'c1', 2: 'c2', 3: 'c3', 4: 'c4', 5: 'c5', 6: 'c6', s: 'c1
 const WH_CLS_OPT = [['c1', 'C1'], ['c2', 'C2'], ['c3', 'C3'], ['c4', 'C4'], ['c5', 'C5'], ['c6', 'C6'], ['c13', 'C13 shattered'], ['th', 'Thera'], ['dr', 'Drifter']];
 const WH_BAND = {c1: 'lo', c2: 'lo', c3: 'lo', c4: 'mid', c5: 'mid', c6: 'hi', c13: 'sp', th: 'sp', dr: 'sp', po: 'sp'};   // the class bands (D5, D7)
 const WH_EFF = {b: 'Black Hole', c: 'Cataclysmic Variable', m: 'Magnetar', p: 'Pulsar', r: 'Red Giant', w: 'Wolf-Rayet'};
-const WH_PANELS = [['sum', 'System'], ['sigs', 'Signatures'], ['route', 'Routes'], ['local', 'Local']];
-const WH_LATER = 'Comes in a later part of the beta.';
+// 056: the System panel's map control, the ringed planet (the owner: "A"; our own drawing) and which panel is open, kept as you left it ("As you left it")
+const WH_SYS_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="4.4"/><path d="M3.1 11.6C1.2 13.2.9 14.5 1.7 15c1.6 1 6.4-1 10.3-4.4 3.9-3.4 5.6-6.9 4-7.7-.7-.4-2 0-3.5 1"/></svg>';
+const WH_PN_KEY = 'tvWhPanels';   // {v: 1, open: 'sum' | ''}: shut the first time and on anything it can't read; the older page never reads it
 // 051 (part 2, D25 / D26 / D34): the system menu. A status shown as the box's border colour, a tag, Lock (the owner: "LOCK is all we need ...
 // just need the lock to prevent accidental deletions of home systems for example"), Copy the name, Remove. Kept under their own key, tvWhMarks
 // {v: 1, sys: {id: {st, tag, lock, at: [x, y]}}}: part 1's whRead rebuilds each system from the fields it knows, so a part-1 page in another tab,
@@ -33670,7 +33667,7 @@ function whLegendHtml(){
 }
 function whOptsHtml(arr, v){ return arr.map(([k, l]) => `<option value="${escapeHtml(k)}"${escapeHtml(String(k) === String(v) ? ' selected' : '')}>${escapeHtml(l)}</option>`).join(''); }
 function whShellHtml(){
-  return `<div class="wh-box" tabindex="-1"><canvas role="img" aria-label="Your wormhole chain; the panels show the system in focus"></canvas>`
+  return `<div class="wh-box" tabindex="-1"><canvas role="img" aria-label="Your wormhole chain; the System panel shows the system in focus"></canvas>`
     + `<div class="wh-topl"><span class="wh-ctx"></span></div>`
     + `<div class="wh-ctl"><div class="it-map-zoom wh-zoom"><button type="button" data-wh-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-wh-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-wh-z="fit" title="Fit the whole chain in view" aria-label="Fit the chain">⤢</button><button type="button" data-wh-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button><button type="button" data-wh-z="sel" aria-pressed="false" title="Select a group: drag on empty space (or hold Shift)" aria-label="Select a group">${WH_SEL_SVG}</button></div>`
     + `<button type="button" class="it-map-clr wh-tb" data-wh-pop="add" aria-expanded="false" title="Add a system or a connection by hand" aria-label="Add a system">${WH_ADD_SVG}<span>Add</span></button>`
@@ -33683,20 +33680,29 @@ function whShellHtml(){
     + `${whAddSelHtml('life')}${whAddSelHtml('mass')}${whAddSelHtml('size')}<label class="wh-dr"><input type="checkbox" name="dr"> Drifter</label><button type="submit">Add</button></form></div>`
     + `<div class="wh-pop" data-pop="set" role="dialog" aria-label="Wormholes settings" hidden><div class="wh-poph">Wormholes settings<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
     + `<div class="wh-sub">Map</div><button type="button" data-wh-z="arr">Rearrange as a tree</button><div class="wh-note">Puts every system back in the tree layout, dropping where you moved them; locked systems stay where they are.</div></div>`
-    + `<div class="wh-panels">${whPanelsHtml()}</div>`
+    + whRailHtml()
     + `<div class="wh-msg" role="status"></div><div class="wh-menu wh-hmenu" role="dialog" aria-label="Add a system here" hidden></div><div class="wh-menu wh-smenu" role="menu" hidden></div>`
     + `<div class="wh-gsel" hidden></div><canvas class="wh-mini" hidden role="img" aria-label="Overview of the whole chain; press or drag to move the view there"></canvas>`
     + `<div class="wh-empty" hidden>Nothing mapped yet. Jump into a wormhole and each system you enter is added here, with the connection you came through. Or add one with + Add.</div></div>`;
 }
 function whAddSelHtml(k){ return `<select name="${escapeHtml(k)}" aria-label="${escapeHtml(k[0].toUpperCase() + k.slice(1) + ' (optional)')}">${itWhOptHtml(k)}</select>`; }
-function whPanelsHtml(){ return WH_PANELS.map(([k, t]) => `<section class="wh-pn" data-pn="${escapeHtml(k)}"><button type="button" class="wh-pnh" data-wh-pn="${escapeHtml(k)}" aria-expanded="${escapeHtml(String(k === 'sum'))}">${escapeHtml(t)}<span class="wh-pnc"></span></button><div class="wh-pnb" data-pnb="${escapeHtml(k)}"${escapeHtml(k === 'sum' ? '' : ' hidden')}>${escapeHtml(k === 'sum' ? '' : WH_LATER)}</div></section>`).join(''); }
+function whRailHtml(){   // 056: one map control per working panel at the map's top left (hidden until the map has a system, the owner: "A"), its panel beside it: a view, not a dialog
+  return `<div class="it-map-rail wh-rail" role="toolbar" aria-label="Map panels" hidden><button type="button" data-wh-rp="sum" aria-controls="whPnSum" aria-pressed="false" title="System (press to show the panel)" aria-label="System (press to show the panel)">${WH_SYS_ICON}</button></div>`
+    + `<section class="wh-pnl" id="whPnSum" aria-label="System" hidden><h3>System</h3><div class="wh-pnb" data-pnb="sum"></div></section>`;
+}
+function whPnRead(){ try{ const o = JSON.parse(localStorage.getItem(WH_PN_KEY) || 'null'); return o && o.v === 1 && o.open === 'sum' ? 'sum' : ''; }catch(e){ return ''; } }
+function whPnSet(open, quiet){   // the rail's button, and a click on a system (quiet: whSelect draws next)
+  const S = whS; S.open = open; try{ localStorage.setItem(WH_PN_KEY, JSON.stringify({v: 1, open})); }catch(e){ }
+  if(!quiet){ S.pn = {}; whPanels(); }   // the view stays where it is (as Near You); ⤢ then fits in the uncovered part
+}
 const WH_SEL_SVG = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.5 2"/></svg>';
 const WH_ADD_SVG = '<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="3.5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12.5 1v5M10 3.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
 function whMake(){
   const S = whState(); if(S.el) return S.el;
   const host = document.getElementById('whPanel'); if(!host) return null;
   const el = S.el = document.createElement('div'); el.className = 'wh'; el.innerHTML = whShellHtml(); host.appendChild(el);
-  S.M = {cam: null, P: new Map(), group: new Set(), drag: null, band: null, ptrs: new Map(), pinch: null, selMode: false, phone: false, mini: null, miniDrag: false, lp: 0, viewFor: null, phoneInit: false};
+  S.M = {cam: null, P: new Map(), group: new Set(), drag: null, band: null, ptrs: new Map(), pinch: null, selMode: false, phone: false, mini: null, miniDrag: false, lp: 0, viewFor: null};
+  S.open = whPnRead();
   whWire(el);
   return el;
 }
@@ -33744,8 +33750,8 @@ function whView(){ const cv = whCv(); return {w: cv.clientWidth, h: cv.clientHei
 function whToWorld(sx, sy){ const M = whS.M; return {x: M.cam.x + sx / M.cam.s, y: M.cam.y + sy / M.cam.s}; }
 function whHit(w){ let hit = null; for(const [n, p] of whS.M.P) if(w.x >= p.x && w.x <= p.x + WH_NW && w.y >= p.y && w.y <= p.y + WH_NH) hit = n; return hit; }
 function whFree(){   // the part of the map no panel or control covers: Fit and "bring you into view" aim there
-  const v = whView(), box = whS.el.querySelector('.wh-box').getBoundingClientRect(), pn = whS.el.querySelector('.wh-panels'), r = {l: 0, t: 48, r: v.w, b: v.h};
-  if(pn && !pn.hidden){ const q = pn.getBoundingClientRect(); if(q.width && q.width < v.w * 0.6) r.l = q.right - box.left + 4; else if(q.height) r.b = Math.max(r.t + 120, q.top - box.top); }
+  const v = whView(), box = whS.el.querySelector('.wh-box').getBoundingClientRect(), pn = whS.el.querySelector('#whPnSum'), r = {l: 0, t: 48, r: v.w, b: v.h};
+  if(pn && !pn.hidden){ const q = pn.getBoundingClientRect(), l = q.right - box.left + 4; if(q.width && v.w - l >= 96) r.l = l; }   // 056: right of the open panel; a phone's sheet leaves too little: the whole map (as itMapFree)
   return {...r, w: r.r - r.l, h: r.b - r.t};
 }
 function whZoom(f, sx, sy){
@@ -33772,7 +33778,7 @@ function whPaint(force){
   if(!it.names){ itLoadNames().then(() => whPaint(true)).catch(() => {}); }
   const box = S.el.querySelector('.wh-box'), cv = box.querySelector('canvas'), n = Object.keys(S.st.sys).length, M = S.M;
   const ctx = box.querySelector('.wh-ctx'), ch = whCtxHtml(); if(S.ctx !== ch){ S.ctx = ch; ctx.innerHTML = whCtxHtml(); }   // written only when it changed
-  box.querySelector('.wh-empty').hidden = n > 0; cv.hidden = !n; box.querySelector('.wh-panels').hidden = !n;
+  box.querySelector('.wh-empty').hidden = n > 0; cv.hidden = !n;
   whPanels();
   // D22: the map is the tab, as tall from where it starts to the bottom of the screen; worked out before the empty map returns, so the empty map is
   // as tall as the full one and the first system resizes nothing (051, the owner: "the map should push the bottom of the page to the bottom of the
@@ -33783,7 +33789,6 @@ function whPaint(force){
   const key = JSON.stringify([S.st.sys, S.st.links, S.st.pos, S.mk, S.last, whFocus(), box.clientWidth, phone, innerHeight, top, !!it.names]);
   if(!force && key === S.drawKey) return;
   S.drawKey = key; M.phone = phone;
-  if(phone && !M.phoneInit){ M.phoneInit = true; box.querySelectorAll('.wh-pnb').forEach(x => { x.hidden = true; }); box.querySelectorAll('[data-wh-pn]').forEach(x => x.setAttribute('aria-expanded', 'false')); }   // a phone starts with the map clear
   const bw = box.clientWidth, dpr = window.devicePixelRatio || 1;
   if(cv.width !== Math.round(bw * dpr) || cv.height !== Math.round(H * dpr)){ cv.width = Math.round(bw * dpr); cv.height = Math.round(H * dpr); cv.style.width = bw + 'px'; cv.style.height = H + 'px'; }
   M.P = whPlaces(phone);
@@ -33925,9 +33930,15 @@ function whConnHtml(n, l){
 function whInfoOptHtml(k, v){ return `<option value="">${escapeHtml({life: 'Life', mass: 'Mass', size: 'Size'}[k])}</option>` + Object.entries(IT_WH_INFO_TXT[k]).map(([x, [a, b]]) => `<option value="${escapeHtml(x)}" title="${escapeHtml(b)}"${escapeHtml(x === v ? ' selected' : '')}>${escapeHtml(a)}</option>`).join(''); }
 function whPanels(){
   const S = whS, n = whFocus(); if(!S.el) return;
-  const b = S.el.querySelector('[data-pnb="sum"]'), html = n === null ? '' : whSumHtml(n);
-  if(S.pn.sum !== html && !(b.contains(document.activeElement) && document.activeElement.matches('input, textarea, select'))){ S.pn.sum = html; b.innerHTML = n === null ? '' : whSumHtml(n); }   // never under a field being typed in
-  const h = S.el.querySelector('[data-wh-pn="sum"] .wh-pnc'), t = n === null ? '' : whName(n); if(h.textContent !== t) h.textContent = t;
+  const has = Object.keys(S.st.sys).length > 0, on = has && S.open === 'sum', rail = S.el.querySelector('.wh-rail'), pnl = S.el.querySelector('#whPnSum'), btn = rail.querySelector('[data-wh-rp="sum"]');
+  if(rail.hidden === has) rail.hidden = !has;   // 056: no button until the map has a system (the owner: "A")
+  if(pnl.hidden === on) pnl.hidden = !on;
+  const t = `System${n === null ? '' : ': ' + whName(n)} (press to ${on ? 'hide' : 'show'} the panel)`;   // written only when it changes
+  if(btn.title !== t){ btn.title = t; btn.setAttribute('aria-label', t); }
+  if(btn.getAttribute('aria-pressed') !== String(on)) btn.setAttribute('aria-pressed', String(on));
+  if(!on) return;   // 056: System's body is written only while it shows (LESSON #120); opening clears S.pn, so it is written then
+  const b = pnl.querySelector('[data-pnb="sum"]'), html = n === null ? '' : whSumHtml(n);
+  if(S.pn.sum !== html && !(b.contains(document.activeElement) && document.activeElement.matches('input, textarea, select'))){ S.pn.sum = html; b.innerHTML = n === null ? '' : whSumHtml(n); }   // never under a field being typed in (a builder, for check_html_sinks)
 }
 // ---- + Add (D20: the list's Add form, linked to where you are, the system in focus, or nothing) and "Add a system here" (D31)
 function whPop(k){
@@ -34076,9 +34087,7 @@ function whWire(el){
   el.addEventListener('click', (ev) => {
     const b = ev.target.closest('button'); if(!b){ if(!ev.target.closest('.wh-menu')) whHereClose(); return; }
     const d = b.dataset;
-    if(d.whPn){ const body = [...el.querySelectorAll('[data-pnb]')].find(x => x.dataset.pnb === d.whPn), on = body.hidden;
-      if(whS.M.phone){ el.querySelectorAll('.wh-pnb').forEach(x => { x.hidden = true; }); el.querySelectorAll('[data-wh-pn]').forEach(x => x.setAttribute('aria-expanded', 'false')); }
-      body.hidden = !on; b.setAttribute('aria-expanded', String(on)); return; }
+    if(d.whRp){ whPnSet(whS.open === d.whRp ? '' : d.whRp); return; }   // 056: the button shows or hides its panel; nothing else shuts it
     if(d.whM){ whMenuAct(d.whM); return; }
     if(d.whPop){ whPop(d.whPop); return; }
     if('whPopx' in d){ whPopClose(); return; }
@@ -34163,7 +34172,7 @@ function whWireMap(el){
     if(d.kind === 'move'){
       if(d.moved){ for(const n of d.from.keys()){ const p = M.P.get(n); whS.st.pos[n] = [Math.round(p.x), Math.round(p.y)]; } whSave(); whS.drawKey = ''; if(d.locked) whMsg(WH_LOCKED(whName(d.hit))); }   // this browser only
       else if(d.shift){ if(M.group.has(d.hit)) M.group.delete(d.hit); else M.group.add(d.hit); whDraw(); }
-      else whSelect(d.hit);
+      else{ if(!M.selMode && whS.open !== 'sum') whPnSet('sum', true); whSelect(d.hit); }   // 056: a click on a system opens System (the owner: "Yes, a click opens it"); a drag, Shift or the menu doesn't
     }
     if(d.kind === 'band'){
       const b = M.band, a = whToWorld(Math.min(b.x0, b.x1), Math.min(b.y0, b.y1)), z = whToWorld(Math.max(b.x0, b.x1), Math.max(b.y0, b.y1)); M.band = null;
