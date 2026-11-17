@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-9M02sR/hNa/w7+7YvzVOTWSi6MWJj2BRphu+b6qIaqI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-yOYiwK58/0HHNrLX3SXij4NGNtive+IFUuanUDPf97Q='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2824,7 +2824,7 @@
   .it-sov-sec{margin:6px 0 4px; font:700 11px var(--sans); color:var(--text-dim); text-transform:uppercase; letter-spacing:.5px;}
   .it-sov-gs{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); column-gap:18px;}
   .it-sov-g{display:flex; flex-direction:column; gap:2px; margin:0 0 6px;} .it-sov-g > b{font:600 12px var(--sans); color:var(--heading);}
-  .it-sov-k{display:flex; align-items:center; gap:6px; min-height:24px; color:var(--text); cursor:pointer;} .it-sov-n{margin-left:auto; font:600 11px var(--mono, monospace); color:var(--text-dim);} .it-sov-lv{color:var(--text-dim); font-size:11px;}
+  .it-sov-k{display:flex; align-items:center; gap:6px; min-height:24px; color:var(--text); cursor:pointer;} .it-sov-n{margin-left:auto; font:600 11px var(--mono, monospace); color:var(--text-dim);} .it-sov-from, .it-sov-lv{color:var(--text-dim); font-size:11px;}
   button.it-sov-lx{margin-top:8px;} .it-sov-lists{margin-top:4px;} .it-sov-lists[hidden]{display:none;}
   .it-sov-l{display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:6px 0; border-top:1px solid var(--line);} .it-sov-ln{flex:1 1 200px; min-width:0;} .it-sov-ln span{color:var(--text-dim);} .it-sov-l button{min-height:28px; padding:2px 10px;}
   .it-sov-un > span{flex:1 1 200px; color:var(--text-dim);}
@@ -32294,7 +32294,7 @@ function sovPaint(force){
   p.querySelector('.it-sov-warn').textContent = sovP.unsaved ? withCode('Not saved: this browser’s storage is full. Your sov lists work until you close the page; remove something kept in this browser, then change a list to save them.', 'INTEL-11') : '';
   p.querySelector('.it-whp-msg').textContent = sovP.msg;
   { const x = p.querySelector('.it-sov-picks'), h = sovPicksHtml(); if(sovP.html.picks !== h){ sovP.html.picks = h; x.innerHTML = sovPicksHtml(); } }   // built again for the write (the sinks lint: innerHTML takes a builder)
-  { const x = p.querySelector('.it-sov-lv'), h = sovLvHtml(); if(sovP.html.lv !== h){ sovP.html.lv = h; x.innerHTML = sovLvHtml(); } }   // 058
+  { const x = p.querySelector('div.it-sov-lv'), h = sovLvHtml(); if(sovP.html.lv !== h){ sovP.html.lv = h; x.innerHTML = sovLvHtml(); } }   // 058
   const lx = p.querySelector('[data-sov-tog="lists"]'); lx.querySelector('span').textContent = `Lists (${n})`; lx.setAttribute('aria-expanded', String(sovP.lists));
   p.querySelector('#itSovLists').hidden = !sovP.lists;
   { const x = p.querySelector('.it-sov-rows'), h = sovRowsHtml(); if(sovP.html.rows !== h && (force || !x.contains(document.activeElement))){ sovP.html.rows = h; x.innerHTML = sovRowsHtml(); } }   // never under a focused button but on our own change
@@ -32324,7 +32324,9 @@ function sovOrder(k){ for(const [, ks] of SOV_GROUPS){ const i = ks.indexOf(k); 
 function sovGroupsHtml(gs, ks, ix, p){ return gs.map(g => sovGroupHtml(g, ks.filter(k => sovGroupOf(k) === g).sort((a, b) => sovOrder(a) - sovOrder(b)), ix, p)).join(''); }
 function sovGroupHtml(g, mine, ix, p){ return mine.length ? `<div class="it-sov-g"><b>${escapeHtml(g)}</b>${sovKindsHtml(mine, ix, p)}</div>` : ''; }
 function sovKindsHtml(mine, ix, p){ return mine.map(k => sovKindHtml(k, ix, p)).join(''); }
-function sovFromHtml(br){ return br ? ' <span class="it-sov-lv">from Jump bridges</span>' : ''; }
+// 057 (the owner's hand test): its own class; it shared .it-sov-lv with 058's Level box, so with a bridge list the Level row was written into
+// the Jump bridge row (sovPaint writes the first .it-sov-lv it finds)
+function sovFromHtml(br){ return br ? ' <span class="it-sov-from">from Jump bridges</span>' : ''; }
 function sovKindHtml(k, ix, p){
   const lv = ix.lv.get(k), c = ix.cnt.get(k), br = ix.from.get(k) === 'bridges';
   const t = (SOV_SHOW[k] ? `${k}. ` : '') + (lv ? `Levels: ${[...lv].sort((a, b) => b[0] - a[0]).map(([v, m]) => `${v} in ${m} system${m === 1 ? '' : 's'}`).join(', ')}; hover a system on the map for its level` : `${c} system${c === 1 ? '' : 's'}`) + (br ? '; from your Jump bridges list' : '');

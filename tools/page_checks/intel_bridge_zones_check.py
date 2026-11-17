@@ -252,6 +252,11 @@ def cases(b, html, parts=('zones', 'map', 'read', 'ui', 'phone')):
         if z['st'] != 'ok' or set(dz) != {5} or z['out'] or 'has no capital' not in z['status']: out.append(f'no capital: zones {dz}, used {z["out"]}, {z["status"]!r} (want every jump zone 5, none used)')
         SOV['answer'] = answer(pk)
         pg.evaluate(SOVSET); pg.evaluate("() => itMapRefresh()"); pg.wait_for_timeout(600)
+    if 'map' in parts:
+        # the owner's hand test: with a bridge list, Sov upgrades' Level row was written into the Jump bridge row (a class used twice)
+        r = pg.evaluate("""() => { sovOpen(true); sovPaint(true); const p = document.querySelector('.it-sovp');
+          const r = p ? [p.querySelectorAll('.it-sov-k .it-sov-lvr').length, p.querySelectorAll('div.it-sov-lv > .it-sov-lvr').length, p.querySelectorAll('.it-sov-from').length] : null; sovOpen(false, false); return r; }""")
+        if r != [0, 1, 1]: out.append(f'Sov upgrades with a bridge list: Level rows in a kind\'s row / in the Level box / "from Jump bridges" labels {r} (want 0, 1, 1)')
     if 'ui' in parts:
         pg.click('[data-it-act="gear"]'); pg.wait_for_timeout(300)
         r = pg.evaluate("""() => { const b = document.querySelector('[data-it-rp-box]'); if(!b) return null; const z = [...b.querySelectorAll('[data-it-rp-jbz]')];
@@ -310,6 +315,7 @@ MUTANTS = [
     ('the zone rows short on a phone', " .it-rp-box .it-rp-jbz label{min-height:44px;}", "", ('phone',)),
     ('a route\'s bridge step drawn the way it is crossed', "else itBridgeArc(c, a, b, X, Y); }", "else itMapArc(c, X(a), Y(a), X(b), Y(b)); }", ('map',)),
     ('Within N\'s hover says stargate jumps with bridges on', ": f.k === 'near' ? 'only: systems this many jumps from you or fewer, jump bridges you can use counted' : f.note; }", ": f.note; }", ('map',)),
+    ('the Level row written into the Jump bridge row', "{ const x = p.querySelector('div.it-sov-lv'), h = sovLvHtml();", "{ const x = p.querySelector('.it-sov-k .it-sov-from') || p.querySelector('div.it-sov-lv'), h = sovLvHtml();", ('map',)),
     ('the bridges at full brightness', ":root{--it-bridge:#00a800;}", ":root{--it-bridge:#00f000;}", ('map',)),
 ]
 
