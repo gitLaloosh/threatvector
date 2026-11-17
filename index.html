@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gEviobGD5VB5K3EFJzbGfQoNl++YDSqEwqtHssZc2II='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-c5wDrHc7X1C30IukcDp9VIIinXqA9273riJVRAMJAjI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -26993,6 +26993,13 @@ function itBridges(){
 function itBridgeOn(){ return !!(it.set && it.set.bridgesOn) && itBridges().edges.length > 0; }   // the map counts bridges
 function itBridgeKey(){ if(!itBridgeOn()) return ''; const u = itJbZones().ukey; return itBridges().key + (u ? `|x:${u}` : ''); }   // what the map's search counted (itm.jbKey); 057: and the bridges left out
 function itBridgeIs(a, b){ return itBridges().pairs.has(Math.min(a, b) * 65536 + Math.max(a, b)); }
+// 057 (the owner's hand test: "light blue line does not follow the jump bridge"): a curve bows to the left of the way it is drawn, so a route
+// step over a bridge is drawn from the end the bridge's own curve starts at, whichever way the route crosses it
+function itBridgeArc(c, a, b, X, Y){
+  const B = itBridges(); if(!B.first) B.first = new Map(B.edges.map(([p, q]) => [Math.min(p, q) * 65536 + Math.max(p, q), p]));
+  const [p, q] = B.first.get(Math.min(a, b) * 65536 + Math.max(a, b)) === b ? [b, a] : [a, b];
+  itMapArc(c, X(p), Y(p), X(q), Y(q));
+}
 // the map's graph with the bridges: the stargates plus each bridge both ways, every list in index order (one route per system, as T.adj).
 // The one place the map's bridge graph is built. Build queue 057 (change 11, the owner: "let's go with your recommendation"): with EVE's
 // sovereignty held, a bridge you can't use at all (an end another alliance's or no one's; logged out, two alliances') is left out; before
@@ -30780,7 +30787,7 @@ function itMapDraw(){
     c.strokeStyle = rp && rp.side !== 'clear' ? C[rp.side] : C.cyan;
     c.lineWidth = (rp && rp.n ? Math.min(7, 1.5 + Math.log2(rp.n + 1)) : 2) + (lit ? 1.5 : 0);
     c.setLineDash(itm.pinned.has(gr.ids[i]) ? [] : [6, 4]); c.lineCap = 'round';
-    c.beginPath(); for(const [a, b] of route){ if(T.adj[a].includes(b)) { c.moveTo(X(a), Y(a)); c.lineTo(X(b), Y(b)); } else itMapArc(c, X(a), Y(a), X(b), Y(b)); } c.stroke();   // 041 (D13): a step that isn't a gate is its bridge's curve
+    c.beginPath(); for(const [a, b] of route){ if(T.adj[a].includes(b)) { c.moveTo(X(a), Y(a)); c.lineTo(X(b), Y(b)); } else itBridgeArc(c, a, b, X, Y); } c.stroke();   // 041 (D13): a step that isn't a gate is its bridge's curve (057: the same curve, whichever way it is crossed)
   }
   c.setLineDash([]); c.globalAlpha = 1;
   // the systems: zoomed out a dot each, one path per colour and fade; zoomed in (a gate 34 px or longer) the game's circles with the

@@ -169,6 +169,15 @@ def cases(b, html, parts=('zones', 'map', 'read', 'ui', 'phone')):
         green = [x for x in rec if x[0] == '#00a800']
         if len(green) < 5 or sum(1 for x in green if x[1]) != 2: out.append(f'the curves: {green} (want 5 in #00a800, 2 of them dashed: D5)')
         if pg.evaluate("() => getComputedStyle(document.documentElement).getPropertyValue('--it-bridge').trim()") != '#00a800': out.append('--it-bridge isn\'t #00a800 (the owner: 70% of #00f000)')
+        # the owner's hand test: "light blue line does not follow the jump bridge". The route to b1's far end crosses b1 against its listed
+        # direction (the list says near » far; the route is drawn from the far end): its bridge step must be the bridge's own curve
+        cv = pg.evaluate("""(id) => { const C = CanvasRenderingContext2D.prototype, qc = C.quadraticCurveTo, out = []; itRp.key = ''; itRpUpdate(); itm.pinned.add(id);
+          C.quadraticCurveTo = function(cx, cy, x, y){ if(this.canvas === itm.cv) out.push([String(this.strokeStyle).toLowerCase(), cx, cy]); return qc.apply(this, arguments); };
+          try{ itMapDraw(); } finally { C.quadraticCurveTo = qc; itm.pinned.delete(id); itMapDraw(); } return out; }""", bs[0][1])
+        greens = [(x, y) for c, x, y in cv if c == '#00a800']
+        others = [(x, y) for c, x, y in cv if c != '#00a800']
+        if not others: out.append('the route over b1 drew no bridge step as a curve')
+        elif not any(abs(x - gx) < 0.5 and abs(y - gy) < 0.5 for x, y in others for gx, gy in greens): out.append(f'the route\'s bridge step bows away from the bridge\'s curve (route {others[:1]}, bridges {greens[:2]})')
     if 'zones' in parts:
         # the route: to b1's far end by the free bridge; b2 only toward its home end
         r1 = pg.evaluate(ROUTE, [idx[0][1], 0])
@@ -296,6 +305,7 @@ MUTANTS = [
     ('left-out bridges drawn solid', "c.setLineDash(bad ? (big ? [5, 4] : [3, 3]) : []);", "c.setLineDash([]);", ('map',)),
     ('no hover on a bridge line', "bj = i < 0 ? itMapPickBridge(x, y, false) : -1;", "bj = -1;", ('map',)),
     ('the zone rows short on a phone', " .it-rp-box .it-rp-jbz label{min-height:44px;}", "", ('phone',)),
+    ('a route\'s bridge step drawn the way it is crossed', "else itBridgeArc(c, a, b, X, Y); }", "else itMapArc(c, X(a), Y(a), X(b), Y(b)); }", ('map',)),
     ('the bridges at full brightness', ":root{--it-bridge:#00a800;}", ":root{--it-bridge:#00f000;}", ('map',)),
 ]
 
