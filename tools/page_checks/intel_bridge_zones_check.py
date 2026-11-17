@@ -162,6 +162,9 @@ def cases(b, html, parts=('zones', 'map', 'read', 'ui', 'phone')):
         for k in (3, 4):
             if d_after[k] <= bs[k][4] + 1: out.append(f'with the answer: b{k + 1} (left out) still counted on the map: D {d_after[k]} (want more than {bs[k][4] + 1})')
         if not re.search(r'\|x:', pg.evaluate("() => itm.jbKey || ''")): out.append('itm.jbKey lacks the bridges left out (the map not told to search again)')
+        # the owner's hand test: Within N's hover said "stargate jumps" while the bridges counted
+        t = pg.evaluate("() => (itm.el.querySelector('[data-im-f=\"near\"]') || {}).title || ''")
+        if 'jump bridges you can use counted' not in t: out.append(f'Within N\'s hover with bridges on: {t!r} (want "jump bridges you can use counted")')
         e = pg.evaluate("() => sovBridgeEnds().length")
         if e != 10: out.append(f'sovBridgeEnds: {e} (want 10: every counted bridge, whatever its use)')
         rec = pg.evaluate("""() => { const C = CanvasRenderingContext2D.prototype, qc = C.quadraticCurveTo, out = []; C.quadraticCurveTo = function(){ if(this.canvas === itm.cv) out.push([String(this.strokeStyle).toLowerCase(), this.getLineDash().length]); return qc.apply(this, arguments); };
@@ -306,6 +309,7 @@ MUTANTS = [
     ('no hover on a bridge line', "bj = i < 0 ? itMapPickBridge(x, y, false) : -1;", "bj = -1;", ('map',)),
     ('the zone rows short on a phone', " .it-rp-box .it-rp-jbz label{min-height:44px;}", "", ('phone',)),
     ('a route\'s bridge step drawn the way it is crossed', "else itBridgeArc(c, a, b, X, Y); }", "else itMapArc(c, X(a), Y(a), X(b), Y(b)); }", ('map',)),
+    ('Within N\'s hover says stargate jumps with bridges on', ": f.k === 'near' ? 'only: systems this many jumps from you or fewer, jump bridges you can use counted' : f.note; }", ": f.note; }", ('map',)),
     ('the bridges at full brightness', ":root{--it-bridge:#00a800;}", ":root{--it-bridge:#00f000;}", ('map',)),
 ]
 

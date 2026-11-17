@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-c5wDrHc7X1C30IukcDp9VIIinXqA9273riJVRAMJAjI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-9M02sR/hNa/w7+7YvzVOTWSi6MWJj2BRphu+b6qIaqI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -30255,7 +30255,8 @@ function itMapIconHtml(k){ return (IT_MAP_FILTERS.find(f => f.k === k) || IT_MAP
 // 058: pressed: the colour that is on, Paths to you while it shows, each Only filter that is on. The name line names the colour (or the view);
 // the phone's folded button shows the colour's icon and a neutral count of the Only filters that are on (rule A: never amber)
 // build queue 041: a filter's note; Jumps from you says so while your jump bridges are counted
-function itMapFNote(f){ return f.k === 'jumps' && itBridgeOn() ? 'colour: jumps from your system, your jump bridges counted; zoomed in, the number' : f.note; }
+// 057 (the owner's hand test): Within N's hover said "stargate jumps" while your bridges counted (041 told only Jumps)
+function itMapFNote(f){ if(!itBridgeOn()) return f.note; return f.k === 'jumps' ? 'colour: jumps from your system, your jump bridges counted; zoomed in, the number' : f.k === 'near' ? 'only: systems this many jumps from you or fewer, jump bridges you can use counted' : f.note; }
 function itMapFnameHtml(f){ return f ? `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(itMapFNote(f))}</span>` : '<b>No colour</b> <span>press Security, Jumps or Region to colour the systems again</span>'; }
 // 055: marks a filter column (the live map's, or the Intel example's copy before it is made still) from a stack: one painter for both
 function itMapFbarMark(fb, s){
@@ -30431,7 +30432,7 @@ function itMapRefresh(force){
   const beacon = moved && (!itm.beaconDone || (jumped && it.me && it.me.sysAt && Date.now() - it.me.sysAt < 5000));
   const jbMoved = !moved && itBridgeKey() !== itm.jbKey;   // 041: the setting or the list changed: searched again and laid out again, as a reach change
   if(moved || jbMoved){ itMapBfs(home); if(moved) itm.pinned.clear(); }
-  if(jbMoved){ const jf = itm.el.querySelector('[data-im-f="jumps"]'), f = IT_MAP_FILTERS.find(x => x.k === 'jumps'); if(jf && f) jf.title = `${f.name}: ${itMapFNote(f)}`; }
+  if(jbMoved) for(const k of ['jumps', 'near']){ const jf = itm.el.querySelector('[data-im-f="' + k + '"]'), f = IT_MAP_FILTERS.find(x => x.k === k); if(jf && f) jf.title = `${f.name}: ${itMapFNote(f)}`; }   // 057: Within N too
   if(moved || jbMoved || reach !== itm.reach || w !== itm.W || h !== itm.H){
     itm.home = home; itm.reach = reach; itm.W = w; itm.H = h;
     const dpr = window.devicePixelRatio || 1; itm.cv.width = Math.round(w * dpr); itm.cv.height = Math.round(h * dpr); itm.cv.style.height = h + 'px';
