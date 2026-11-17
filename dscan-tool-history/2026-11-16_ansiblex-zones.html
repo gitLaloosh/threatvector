@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-16 — Threat Vector's route by Ansiblex zone</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Threat Vector's route uses your jump bridges, by Ansiblex zone; bridges you can't use leave the map's counts; the bridges at 70%</h1>
+<p><span class="tag">Page</span> 2026-11-16 &middot; <code>v2026.11.16.6</code> &middot; build queue 057 &middot; plan <code>roadmap/ansiblex-zones-plan.md</code> (research <code>roadmap/ansiblex-zones-research.md</code>), mockup <code>Claude outputs/ansiblex_zones_mockup.html</code> (scripts <code>roadmap/ansiblex-zones-mockup/</code>)</p>
+<h2>Why</h2>
+<ul>
+<li>The owner: "find out if we can use the recently implemented jump ansiblex changes to eve (specifically, how they work differently based on their range from the capital system) in order to generate routes that avoid using jump bridges outside of zone 1 if we're not jumping back into zone 1." His answers: "Threat Vector's route only", "A setting with a checkbox for each zone with only zone 1 turned on by default.", "Both: login, then sov", "Leave out + warn on row", "At 5.00 LY", zones on the rows, the map's bridge hover and the route's steps, the checkboxes in Routes. At 041's re-plan: "Switch governs both; gates until 057". For the map's counts: "let's go with your recommendation" (bridges you can't use at all leave them).</li>
+<li>At the build: "would it be possible to slightly decrease the brightness of the jump bridges during the build? with the changes we made to the other colors on the map (softer colors), the bridges really drown out some of the other content on the map. maybe make them 70% of their current brightness."</li>
+<li>CCP (patch notes 24.01, 2026-09-22.1): a jump costs capacitor by the light-years from where it arrives to the owning alliance's capital, in five zones; only the alliance holding sov over the starting system may use it; with no capital (2026-10-13.1) every jump counts as zone 5.</li>
+</ul>
+<h2>What changed</h2>
+<ul>
+<li><b>EVE's sovereignty</b> (<code>itSovRead</code>): <code>GET https://esi.evetech.net/sovereignty/systems?compatibility_date=2026-05-19</code> through <code>esiFetch</code> (a new kind, Sovereignty, in the lookup budgets), only while Intel runs with "Use jump bridges on the map" on and a bridge listed, at most once per ESI's Expires, kept in memory only. A failed read: ROUTE-02 (new), then 60 s, 120 s, every 5 minutes, only while something needs it; routes use stargates and the map counts every bridge meanwhile.</li>
+<li><b>Who can use a bridge</b> (<code>itJbYou</code>, <code>itJbZones</code>): your alliance is the EVE login's while it is Your pilot (the same test as EVE standings); logged out, each bridge's holder when both ends agree. A bridge with an end another alliance's or no one's (logged out: two alliances') is ⚠ on its row and its hover, left out of routes and of the map's counts (<code>itBridgeAdj</code>; its pairs are in <code>itm.jbKey</code>, so the map searches again when the answer arrives), and drawn dashed and fainter.</li>
+<li><b>Zones</b>: each direction's zone is its arrival's distance to that alliance's capital, rounded up to 0.01 LY as the hover shows it (5.00 zone 1, 5.01 zone 2); no capital: zone 5.</li>
+<li><b>Intel settings → Routes</b>: "jump bridges: use jumps arriving in" with five zones (zone 1 only by default; a new key <code>tvRouteJb</code> <code>{v: 1, zones}</code>) and one status line (the capital, how many bridges are usable, or why there are no zones).</li>
+<li><b>Threat Vector's route</b> (<code>itRpUpdate</code>): the used directions join the search, one-way, each a jump costing as a gate jump into its arrival; flags still come first. While it can take bridges its hover says "route:" (041's "route by stargate:" otherwise), "(shortest N)" is over the same graph, each bridge step has a line ("⇢ jump bridge A → B · arriving in zone 1 · free"), the menu says "N jumps · 1 by jump bridge", and a sent route with bridges adds that EVE uses them only with Include Jump Bridges in Route on.</li>
+<li><b>The map</b>: a hover (a press on a phone) on a bridge line with no system under it shows the bridge, its length, both directions' zones, the capital and how routes use it; the line under the pointer is drawn thicker. 041's rows show the two directions with their zones while the switch is on (dimmed when routes don't use them), and one "Zones: …" line while they aren't known.</li>
+<li><b>A route's bridge step follows the bridge</b> (the owner's hand test: "light blue line does not follow the jump bridge"): a curve bows to the left of the way it is drawn, and 041 drew a route's bridge step the way the route crossed it, so a bridge crossed against its listed direction bowed the other way. <code>itBridgeArc</code> draws it from the end the bridge's own curve starts at. 041 shipped with this; routes rarely crossed bridges before 057.</li>
+<li><b>Within N jumps' hover</b> said "stargate jumps from you" while your bridges counted (041 updated only Jumps' hover; seen in the owner's hand test): it now says "jump bridges you can use counted" while they do, and both hovers follow a change of what is counted.</li>
+<li><b>Sov upgrades' Level row</b> (the owner's hand test, and his "add the fix to #63"): 053's "from Jump bridges" label and 058's Level box shared the class <code>it-sov-lv</code>, and the panel writes the Level row into the first one it finds; once 041 filled the Jump bridge kind from your list, that was the label, so the Level row landed inside the Jump bridge row. The label is <code>it-sov-from</code> now (same look), and the panel looks for <code>div.it-sov-lv</code>.</li>
+<li><b>A filter's settings button on hover</b> (the owner, during the hand test: "hovering a filter should show it's settings button while hovered", then "hover should show settings button even when off or on. it doesn't need to stick when on, just show it on hover and they can press it"): the button beside Wormholes, Sov upgrades, Security range and Within N shows while you hover the filter, on or off, or it has keyboard focus, and while its panel is open; a filter being on no longer keeps it up. This replaces 058's "never on hover while off". On a phone (no hover) it still shows beside a filter that is on. CLAUDE.md and METHODOLOGY.md say so; four checks follow the new rule.</li>
+<li><b>The bridges' colour</b>: <code>--it-bridge</code> #00f000 → #00a800 (70%), the curves and the hover's bridge line.</li>
+</ul>
+<h2>Where the build differs from the plan</h2>
+<ul>
+<li>The rows say nothing per bridge while the zones aren't known (Intel off, reading, ROUTE-02): one "Zones: …" line at the end of the list instead (the plan had "sovereignty not read" on every row). With Intel off the status is "Zones are worked out while Intel runs".</li>
+<li>⚠ reasons say "left out of routes and the map's counts" (change 11 made "left out of routes" only half the story).</li>
+<li>Logged out, a holder with no capital is named in the status line too.</li>
+<li>The zone rows are 44 px on a phone (the plan said the avoid rows' height; those are 36).</li>
+<li>The mockup is the approved one, built again from its scripts on 51207b6 (the owner: "Commit as approved (Recommended)"), not rebuilt on main.</li>
+<li><code>check_request_gates.py</code> accepts one ESI address outside <code>${ESI}</code>, <code>IT_SOV_URL</code>, written once on ESI's host.</li>
+</ul>
+<h2>Checks</h2>
+<ul>
+<li><code>tools/page_checks/intel_bridge_zones_check.py</code> (new): five made-up bridges picked from the map's own systems by gate jumps and light-years, a made-up sov answer through <code>intel_check.py</code>'s new stand-in (refused unless a check sets one); zones by arrival (expected values worked out in the check), who can use a bridge logged in and out, the route, the map's counts before and after the answer, the read and its back-off, <code>tvRouteJb</code>, the Routes box, the hover, the dashed curves, the colour, 1440 and 390 px; 22 mutants.</li>
+<li>041's <code>intel_bridges_check.py</code>: its colour and three mutant lines follow the new code; its ESI stand-in now refuses the sovereignty read, so every bridge counts there as before.</li>
+<li>The owner's hand test, step 1: "zone filters work" (the 5.00 LY edge itself not seen at the edge, so still unconfirmed).</li>
+<li>The owner's hand test, step 5: "step 5 passes" (logged out, your own bridges stay usable).</li>
+<li>The owner's hand test, step 6: "6 passes" (a made-up line between two systems another alliance holds, read against EVE's live sovereignty).</li>
+<li>The owner's hand test, step 4: "takes it when include jump bridges is on. uses gates when it's off in-game": the autopilot follows the game's own setting between two waypoints a bridge apart, as the note after sending says.</li>
+<li>Sources checked at the build review: ESI's route live, one GET from another origin in the owner's built-in browser (200, CORS, <code>solar_systems[].claim.alliance.is_capital_system</code>, Expires, group <code>sovereignty</code> 600/15m); CCP's patch notes re-read.</li>
+</ul>
+</body>
+</html>

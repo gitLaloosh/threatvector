@@ -80,8 +80,16 @@ D0 = bfs(SYSID['1DQ1-A'])
 ONE_WORD = {'Marrek': 96000001, 'Ketter': 96000002, 'Inside': 96000003, 'ESS': 96000004, '1red': 96000005, 'Recently': 96000006, 'As': 96000007}   # v.104: so are "1red" and "Recently"   # v.99: real characters have such names; a place word must never reach them
 NAMES_CALLS, STATUS = [], {'v': str(J['build']), 'names_fail': False}
 IDS_ASKED = set()   # v.102: every name sent to /universe/ids/
+# build queue 057: ESI's /sovereignty/systems, refused unless a check sets SOV['answer'] (made-up holders and capitals only); every ask noted
+SOV = {'answer': None, 'asked': [], 'status': 200, 'expires': 300}
 def esi(route):
     url, body = route.request.url, route.request.post_data or ''
+    if '/sovereignty/systems' in url:
+        SOV['asked'].append(url)
+        if SOV['answer'] is None: return route.fulfill(status=404, content_type='application/json', body='{"error":"not found"}')
+        if SOV['status'] != 200: return route.fulfill(status=SOV['status'], content_type='application/json', body='{"error":"down"}')
+        exp = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(time.time() + SOV['expires']))
+        return route.fulfill(status=200, content_type='application/json', headers={'expires': exp, 'cache-control': 'public, max-age=300'}, body=json.dumps(SOV['answer']))
     if '/universe/names/' in url:
         q = json.loads(body)
         if q and all(isinstance(i, int) and 30000000 <= i < 31000000 for i in q):

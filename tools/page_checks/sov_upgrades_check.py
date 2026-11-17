@@ -225,7 +225,7 @@ def cases(b, html, parts=('table', 'store', 'filter', 'paste', 'map', 'lists', '
         pg.click('.it-map-fcur'); pg.wait_for_timeout(300)
         P = pg.evaluate("() => { const l = document.querySelector('[data-it-sovl]'), r = l.getBoundingClientRect(); return [getComputedStyle(l).visibility, Math.round(r.width), Math.round(r.height)]; }")
         if P != ['visible', 44, 44]: out.append(f'390 px: the panel button {P} (want visible with Sov upgrades on, 44 px)')
-        pg.click('[data-it-sovl]'); pg.wait_for_timeout(300)
+        pg.hover('.it-map-fbtns [data-im-f="sov"]'); pg.click('[data-it-sovl]'); pg.wait_for_timeout(300)
         S = pg.evaluate("""() => { const p = sovP.el.getBoundingClientRect(), bx = itm.box.getBoundingClientRect(), ks = [...sovP.el.querySelectorAll('.it-sov-k, button')].filter(x => x.offsetParent).map(x => Math.round(x.getBoundingClientRect().height));
           return [sovShown(), itNearShown(), document.querySelector('.it-map-fb').classList.contains('open'), Math.round(p.left - bx.left), Math.round(bx.right - p.right), Math.min(...ks), document.scrollingElement.scrollWidth <= innerWidth + 1]; }""")
         if S[:3] != [True, False, False] or not (8 <= S[3] <= 9 and 8 <= S[4] <= 9) or S[5] < 44 or not S[6]: out.append(f'390 px: the sheet {S} (want open, Near You and the column shut, 8 px each side, 44 px targets, no sideways scroll)')

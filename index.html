@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UzyAhNSw8E7l+6CVxrz71mbeL7hHSrpOdNh+uXVcvsk='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-yOYiwK58/0HHNrLX3SXij4NGNtive+IFUuanUDPf97Q='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2461,7 +2461,7 @@
   }
   /* v2026.10.14.96 Intel (roadmap/intel-plan.md): the Intel card, the header slider, the settings */
   :root{--it-clear:#3fb950;}
-  :root{--it-bridge:#00f000;}   /* build queue 041: jump bridges on the map, the game's own green (measured from the owner's in-game screenshot) */
+  :root{--it-bridge:#00a800;}   /* build queue 041: jump bridges on the map, the game's own green (measured from the owner's in-game screenshot); 057: 70% of it (the owner: "maybe make them 70% of their current brightness") */
   :root{--it-wh:#a98bd8; --it-wh-drifter:#ff5fbf;}   /* build queue 040: wormholes on the map, the badge and the list; 045: Drifter hot pink (044 D15, the owner: "let's do pink and dashed") */
   .it-whtip{color:var(--it-wh); font-weight:600;} .it-whtip.dr{color:var(--it-wh-drifter);}
   /* v.97 (the owner: "i accidently turned intel off thinking the pill was clickable"): the "N near" pill is its own button beside
@@ -2640,7 +2640,11 @@
   .it-jb .jb-on{display:flex; align-items:center; gap:8px; min-height:32px; margin:2px 0 6px;} .it-jb .jb-on .d{color:var(--text-dim);}
   .it-jb li.jb-warn{color:var(--amber);} .it-jb li.jb-dup, .it-jb li.jb-wait{color:var(--text-dim);} .it-jb ul{max-height:240px; overflow:auto;}
   .it-map-tip .jb{color:var(--it-bridge);}   /* build queue 041: the hover's "N of the M jumps by jump bridge" */
-  @media (max-width:599px){ .it-jb .jb-on{min-height:44px;} }
+  /* build queue 057: zones on the bridge hover (zone 1 free in the clear green, a cost amber), the route's bridge steps, the rows' directions */
+  .it-map-tip .z1{color:var(--it-clear);} .it-map-tip .zx{color:var(--amber);} .it-rp-jb{color:var(--it-clear);}
+  .it-jb .jb-zs{display:block; padding-left:1.2em; color:var(--text);} .it-jb .jb-zs .off{color:var(--text-dim);}
+  .it-rp-jbs{margin-top:4px;}
+  @media (max-width:599px){ .it-jb .jb-on{min-height:44px;} .it-rp-box .it-rp-jbz label{min-height:44px;} }
   .it-tw{margin-left:6px; font:600 10.5px var(--sans); color:var(--amber); white-space:nowrap;}
   .it-ess{display:inline-block; margin-left:8px; font:700 10px/16px var(--sans); text-transform:uppercase; letter-spacing:.5px; color:#f08b7e; background:color-mix(in srgb, var(--danger) 22%, transparent); padding:0 6px; border-radius:3px; white-space:nowrap; vertical-align:1px;}   /* v2026.10.31.4: the ESS being robbed */
   /* v.100 (the owner: "a subtle button to expand the text to be at the bottom"): the line as typed, who sent it and the channel */
@@ -2779,16 +2783,17 @@
     .it-map-fb:not(.open) .it-map-fbtns{display:none;} .it-map-fb.open button.it-map-fcur{display:none;}
   }
   /* build queue 040, moved in 052: a filter with a panel (Wormholes' list now, Sov upgrades later) and its panel button share a box
-     (.it-map-fw); the button floats right of the column, level with its filter: shown while the filter is on or its panel is open, never on
-     hover of a filter that is off (058, the owner: "disabling a filter (like security range) should hide the settings button for it"). On a
-     phone only the panel buttons of the filters that are on show, inside the column beside them. The panel: a dialog over the map, placed by
+     (.it-map-fw); the button floats right of the column, level with its filter: shown while the filter is hovered (on or off) or has keyboard
+     focus, and while its panel is open; a filter that is on no longer keeps it up (057, the owner: "hover should show settings button even when
+     off or on. it doesn't need to stick when on, just show it on hover and they can press it"; it replaces 058's "never on hover while off"). On
+     a phone (no hover) only the panel buttons of the filters that are on show, inside the column beside them. The panel: a dialog over the map, placed by
      itMapCtlPlace (right of the panel buttons, level with its filter, clear of Near You). */
   .it-map-fw{position:relative; display:inline-flex; align-items:center;}
   .it-map-fw::before{content:''; position:absolute; left:100%; top:0; bottom:0; width:12px;}
   button.it-map-pb{position:absolute; left:calc(100% + 9px); top:0; width:32px; height:32px; min-height:32px; margin:0; padding:0; display:inline-flex; align-items:center; justify-content:center;
     border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92); color:var(--heading); cursor:pointer; visibility:hidden; opacity:0; transition:opacity .15s, visibility 0s .6s;}
   button.it-map-pb:hover{border-color:color-mix(in srgb, var(--cyan) 55%, transparent);} button.it-map-pb:focus-visible{outline:2px solid var(--cyan); outline-offset:1px;} button.it-map-pb svg{display:block;}
-  .it-map-fw > [aria-pressed="true"] ~ button.it-map-pb, button.it-map-pb[aria-expanded="true"]{visibility:visible; opacity:1; transition-delay:0s;}
+  .it-map-fw:hover > button.it-map-pb, .it-map-fw:has(:focus-visible) > button.it-map-pb, button.it-map-pb[aria-expanded="true"]{visibility:visible; opacity:1; transition-delay:0s;}
   /* 058: the line between the column's groups (colour, only, view); the folded phone button's count of the Only filters that are on (neutral, rule A) */
   .it-map-fbtns .it-map-fsep{display:block; width:24px; height:1px; margin:4px; background:var(--line);}
   button.it-map-fcur{position:relative;}
@@ -2820,7 +2825,7 @@
   .it-sov-sec{margin:6px 0 4px; font:700 11px var(--sans); color:var(--text-dim); text-transform:uppercase; letter-spacing:.5px;}
   .it-sov-gs{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); column-gap:18px;}
   .it-sov-g{display:flex; flex-direction:column; gap:2px; margin:0 0 6px;} .it-sov-g > b{font:600 12px var(--sans); color:var(--heading);}
-  .it-sov-k{display:flex; align-items:center; gap:6px; min-height:24px; color:var(--text); cursor:pointer;} .it-sov-n{margin-left:auto; font:600 11px var(--mono, monospace); color:var(--text-dim);} .it-sov-lv{color:var(--text-dim); font-size:11px;}
+  .it-sov-k{display:flex; align-items:center; gap:6px; min-height:24px; color:var(--text); cursor:pointer;} .it-sov-n{margin-left:auto; font:600 11px var(--mono, monospace); color:var(--text-dim);} .it-sov-from, .it-sov-lv{color:var(--text-dim); font-size:11px;}
   button.it-sov-lx{margin-top:8px;} .it-sov-lists{margin-top:4px;} .it-sov-lists[hidden]{display:none;}
   .it-sov-l{display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:6px 0; border-top:1px solid var(--line);} .it-sov-ln{flex:1 1 200px; min-width:0;} .it-sov-ln span{color:var(--text-dim);} .it-sov-l button{min-height:28px; padding:2px 10px;}
   .it-sov-un > span{flex:1 1 200px; color:var(--text-dim);}
@@ -3371,7 +3376,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.5</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.16.6</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3753,8 +3758,8 @@ const CARD_INFO = {
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
   "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. Filters (left): one colour (press it again for none); Only filters, any number, all must match (their settings beside them); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter on, systems past {card:itnear}'s range are faded.",
-  "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus your jump bridges with Use jump bridges on the map (green curves; the alert glow and Paths to you stay by stargate).",
-  "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list.",
+  "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus jump bridges you can use with Use jump bridges on the map (green curves; the alert glow and Paths to you stay by stargate).",
+  "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list. With Use jump bridges on, routes take only bridge jumps arriving in the ticked zones (zone 1 free by default).",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
   "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI; only wormhole reports and sov lists are kept after you close the page.",
   "[Reloads] Chrome or Edge read the folder once you allow it, and ask again on a later visit unless you picked Allow on every visit."
@@ -4467,6 +4472,15 @@ const ERROR_CODES = {
   "since": "v2026.11.08.4",
   "doc": "2026-11-08_sso-game-location.html"
  },
+ "ROUTE-02": {
+  "title": "EVE's sovereignty couldn't be read",
+  "where": "Intel settings → Routes and the Jump bridges box, with Use jump bridges on the map on (since v2026.11.16.6)",
+  "trigger": "The read of ESI's /sovereignty/systems got no answer, an answer other than 200, or one without its list of systems, and no earlier answer is held. Routes use stargates only until it can be read; it is asked again after 60 s, 120 s, then every 5 minutes, only while something needs it.",
+  "check": "Look at the header's lookup budgets for ESI errors or a pause; EVE's daily downtime (11:00 UTC) stops it too. Nothing is wrong with your bridge list.",
+  "why": "A bridge's zones come from who holds its systems and where that alliance's capital is: without them the page can't tell a free jump from a costly one, so it doesn't guess.",
+  "since": "v2026.11.16.6",
+  "doc": "2026-11-16_ansiblex-zones.html"
+ },
  "ROUTE-01": {
   "title": "EVE didn't take the destination",
   "where": "The Intel map, after Send destination to EVE (since v2026.11.13.3)",
@@ -4743,7 +4757,7 @@ function zkbRetryStep(now){   // one step of every Retry countdown; true while o
 // the panel is open, never in a hidden tab; the zKillboard count ages out on one timeout set for the next expiry (bgAgeArm).
 // ESI is counted by kind of lookup, not by feature (the owner 2026-11-04, "let's go with your recommendation"): the calls sit in
 // helpers that every feature and Intel's background lookups share, so only the kind is known where the request is made.
-const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location', online: 'Your online status', contacts: 'Your standings', waypoints: 'Your destination'};   // waypoints: build queue 047
+const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location', online: 'Your online status', contacts: 'Your standings', waypoints: 'Your destination', sov: 'Sovereignty'};   // waypoints: build queue 047   // sov: build queue 057 (your jump bridges' zones)
 const ESI_USE_KEY = 'dscanEsiUse', ESI_USE_MIN = 15, ESI_ERR_LIMIT = 100, ESI_ERR_WARN = 50, ESI_GROUP_WARN = 0.2;
 const ZKB_WHO_KEY = 'dscanZkbWho', ZKB_WARN_AT = 80;   // amber from 80 of 100 (the planner's default, kept by the owner 2026-11-04)
 let bgEsiPend = null, bgEsiFlushT = 0, bgOpen = false, bgTimer = 0, bgAgeT = 0, bgRaf = 0, bgLastSegs = '', bgLastBody = '', bgR2Times = [];
@@ -26978,27 +26992,39 @@ function itBridges(){
   return itBridgeMemo;
 }
 function itBridgeOn(){ return !!(it.set && it.set.bridgesOn) && itBridges().edges.length > 0; }   // the map counts bridges
-function itBridgeKey(){ return itBridgeOn() ? itBridges().key : ''; }   // what the map's search counted (itm.jbKey)
+function itBridgeKey(){ if(!itBridgeOn()) return ''; const u = itJbZones().ukey; return itBridges().key + (u ? `|x:${u}` : ''); }   // what the map's search counted (itm.jbKey); 057: and the bridges left out
 function itBridgeIs(a, b){ return itBridges().pairs.has(Math.min(a, b) * 65536 + Math.max(a, b)); }
+// 057 (the owner's hand test: "light blue line does not follow the jump bridge"): a curve bows to the left of the way it is drawn, so a route
+// step over a bridge is drawn from the end the bridge's own curve starts at, whichever way the route crosses it
+function itBridgeArc(c, a, b, X, Y){
+  const B = itBridges(); if(!B.first) B.first = new Map(B.edges.map(([p, q]) => [Math.min(p, q) * 65536 + Math.max(p, q), p]));
+  const [p, q] = B.first.get(Math.min(a, b) * 65536 + Math.max(a, b)) === b ? [b, a] : [a, b];
+  itMapArc(c, X(p), Y(p), X(q), Y(q));
+}
 // the map's graph with the bridges: the stargates plus each bridge both ways, every list in index order (one route per system, as T.adj).
-// The one place the map's bridge graph is built (057 leaves out the bridges you can't use here)
+// The one place the map's bridge graph is built. Build queue 057 (change 11, the owner: "let's go with your recommendation"): with EVE's
+// sovereignty held, a bridge you can't use at all (an end another alliance's or no one's; logged out, two alliances') is left out; before
+// the answer every bridge counts (D8), then the map searches again once (its pairs are in itm.jbKey). Zones play no part here.
 function itBridgeAdj(){
-  const B = itBridges(); if(B.adj) return B.adj;
-  const T = itMapTable(); B.adj = T.adj.map(a => a.slice());
-  for(const [a, b] of B.edges){ B.adj[a].push(b); B.adj[b].push(a); }
+  const B = itBridges(), Z = itJbZones(); if(B.adj && B.adjU === Z.ukey) return B.adj;
+  const T = itMapTable(); B.adj = T.adj.map(a => a.slice()); B.adjU = Z.ukey;
+  for(const [a, b] of B.edges){ if(Z.bad.has(itJbPair(a, b))) continue; B.adj[a].push(b); B.adj[b].push(a); }
   for(const a of B.adj) a.sort((p, q) => p - q);
   return B.adj;
 }
 // the rows under the box, the count beside the switch; the names are loaded first (as Sov's paste)
+// 057 (D7): while the switch is on, each counted row's two directions with their zones, or why routes leave it out; one line at the end while
+// the zones aren't known (Intel off, reading, or EVE's sovereignty couldn't be read). Switch off: 041's own rows.
 function itBridgeRowsHtml(){
-  const B = itBridges(), nm = (id) => itSysName(id);
+  const B = itBridges(), nm = (id) => itSysName(id), Z = it.set && it.set.bridgesOn ? itJbZones() : null;
   if(!B.N && B.rows.length) return '<li class="jb-wait">Checked once the system names are loaded…</li>';
   return B.rows.map(r => {
     if(r.st === 'bad') return `<li class="bad">✗ ${escapeHtml(r.ln)}: ${escapeHtml(r.msg)}</li>`;
     if(r.st === 'dup') return `<li class="jb-dup">${escapeHtml(`${nm(r.a)} ⇄ ${nm(r.b)} · ${r.msg}`)}</li>`;
-    const t = `${r.st === 'warn' ? '⚠' : '✓'} ${nm(r.a)} ⇄ ${nm(r.b)}${r.ly !== null ? ` · ${itMapLyText(r.ly)} LY` : ''}${r.msg ? `: ${r.msg}` : ''}`;
-    return `<li class="${escapeHtml(r.st === 'warn' ? 'jb-warn' : 'ok')}">${escapeHtml(t)}</li>`;
-  }).join('');
+    const z = Z && Z.rows.get(r.n), msg = [r.msg, z && z.why ? itJbWhyText(z.why) : ''].filter(Boolean).join('; '), warn = r.st === 'warn' || !!(z && z.why);
+    const t = `${warn ? '⚠' : '✓'} ${nm(r.a)} ⇄ ${nm(r.b)}${r.ly !== null ? ` · ${itMapLyText(r.ly)} LY` : ''}${msg ? `: ${msg}` : ''}`;
+    return `<li class="${escapeHtml(warn ? 'jb-warn' : 'ok')}">${escapeHtml(t)}${itJbRowZonesHtml(z)}</li>`;
+  }).join('') + (Z && B.edges.length && Z.st !== 'ok' ? `<li class="jb-wait">${escapeHtml(`Zones: ${itRpJbStatus()}`)}</li>` : '');
 }
 function itBridgeCountText(){ const n = itBridges().edges.length; return `(${n} bridge${n === 1 ? '' : 's'})`; }
 let itBridgeNamesBusy = false;
@@ -27012,15 +27038,220 @@ function itBridgeBoxHtml(numbered){
   itBridgeNamesLoad();
   return `<div class="it-box it-alias it-jb" data-it-jb-box><div class="k">Jump bridges</div>`
     + `<label class="jb-on"><input type="checkbox" data-it-jbon${itOnHtml(!!it.set.bridgesOn, 'checked')}> Use jump bridges on the map <span class="d" data-it-jb-n>${escapeHtml(itBridgeCountText())}</span></label>`
-    + '<div class="c">One per line: <code>1DQ1-A » 8QT-H4</code>, <code>A → B</code> or two names; the rest of the line is ignored. Kept in this browser only.</div>'
+    + '<div class="c">One per line: <code>1DQ1-A » 8QT-H4</code>, <code>A → B</code> or two names; the rest of the line is ignored. Kept in this browser only. A jump costs by the zone it arrives in, from your alliance\'s capital.</div>'
     + `<textarea data-it-jb rows="4" maxlength="${IT_BRIDGE_MAX}" spellcheck="false" aria-label="Your jump bridges, one per line: two system names" placeholder="1DQ1-A » 8QT-H4">${escapeHtml(it.set.bridges || '')}</textarea><ul>${itBridgeRowsHtml()}</ul></div>`;
 }
 // only the rows and the count are written again, so the text box keeps its caret and focus
 function itBridgePaint(){
+  itSovNeed();   // 057: the switch turned on, or the list typed while Intel runs: EVE's sovereignty if it isn't held yet
+  itRpJbPaint();   // 057: the Routes box's zone status line
   const box = document.querySelector('[data-it-jb-box]'); if(!box) return;
   const ul = box.querySelector('ul'), n = box.querySelector('[data-it-jb-n]');
   if(ul) ul.innerHTML = itBridgeRowsHtml();
   if(n) n.textContent = itBridgeCountText();
+}
+// ==== BUILD QUEUE 057: THREAT VECTOR'S ROUTE BY ANSIBLEX ZONE (Project doc roadmap/ansiblex-zones-plan.md, mockup Claude outputs/
+// ansiblex_zones_mockup.html; the owner: "generate routes that avoid using jump bridges outside of zone 1 if we're not jumping back into
+// zone 1", "A setting with a checkbox for each zone with only zone 1 turned on by default.", "Threat Vector's route only", "Both: login,
+// then sov", "Leave out + warn on row", "At 5.00 LY"; for the map's counts "let's go with your recommendation") ====
+// CCP (patch notes 2026-09-22.1): a jump's capacitor cost is set by the light-years from where it ARRIVES to the owning alliance's capital,
+// in five zones (0-5 LY free, then x2, x6, x9, x15); only the alliance holding sov over the starting system may use it; with no capital
+// (2026-10-13.1) every jump counts as zone 5. So each direction of a bridge has its own zone: the zone of its arrival system.
+//  * EVE's sovereignty (itSovRead): GET /sovereignty/systems with the compatibility date as a query parameter (D1: a plain GET, no
+//    preflight; the route isn't under /latest and needs a date of 2026-05-19 or later), through esiFetch (kind 'sov'), kept in memory only
+//    (D2), read only while Intel runs with "Use jump bridges on the map" on and a bridge listed, at most once per ESI's Expires, never on a
+//    timer of its own (LESSON #120): a failed read waits 60 s, 120 s, then 5 minutes, and is asked again only when something needs it.
+//  * Your alliance (itJbYou): the EVE login's while it is Your pilot (sideEveWanted's test; D3: another login counts as logged out); logged
+//    out, each bridge's own holder when both ends agree.
+//  * A bridge is usable when both ends are held by that alliance; otherwise it is left out of routes AND of the map's counts (itBridgeAdj,
+//    change 11), with why on its row and its hover. Usable bridges count on the map whatever their zones (the owner: "route only").
+//  * Threat Vector's route (itRpUpdate) takes a direction only when its arrival's zone is ticked in Routes (tvRouteJb, a new key: D4).
+const IT_SOV_URL = 'https://esi.evetech.net/sovereignty/systems?compatibility_date=2026-05-19';   // checked live 2026-11-16 (the build review)
+const IT_JB_ZONES = [{n: 1, x: 0, ly: '0–5 LY'}, {n: 2, x: 2, ly: '5.1–10 LY'}, {n: 3, x: 6, ly: '10.1–15 LY'}, {n: 4, x: 9, ly: '15.1–20 LY'}, {n: 5, x: 15, ly: '20.1 LY and on'}];
+const IT_RP_JB_KEY = 'tvRouteJb', IT_SOV_RETRY_MS = [60000, 120000, 300000], IT_SOV_MIN_MS = 60000;
+const itSov = {sys: null, caps: null, at: 0, exp: 0, busy: false, fails: 0, next: 0, err: ''};
+let itJbMemo = null, itRpJbZones = null;
+// the zone of a distance to the capital, rounded up to 0.01 as the hover shows it (the owner: "At 5.00 LY": 5.00 zone 1, 5.01 zone 2)
+function itJbZoneOf(ly){ const v = Number(itMapLyText(ly)); return v <= 5 ? 1 : v <= 10 ? 2 : v <= 15 ? 3 : v <= 20 ? 4 : 5; }
+function itJbZoneText(z){ const Z = IT_JB_ZONES[z - 1]; return `zone ${z} · ${Z.x ? `×${Z.x}` : 'free'}`; }
+// the zones ticked in Routes: {v: 1, zones: [1]}; missing or not a list: zone 1 only; an empty list is kept (every zone unticked)
+function itRpJbRead(){
+  let o = null;
+  try{ o = typeof localStorage === 'undefined' ? null : JSON.parse(localStorage.getItem(IT_RP_JB_KEY) || 'null'); }catch(e){ o = null; }
+  if(!o || typeof o !== 'object' || !Array.isArray(o.zones)) return [1];
+  return [...new Set(o.zones.filter(n => Number.isInteger(n) && n >= 1 && n <= 5))].sort((a, b) => a - b);
+}
+function itRpJbSet(){ if(!itRpJbZones) itRpJbZones = itRpJbRead(); return itRpJbZones; }
+function itRpJbSave(){ try{ localStorage.setItem(IT_RP_JB_KEY, JSON.stringify({v: 1, zones: itRpJbSet()})); }catch(e){ /* this visit only */ } }
+// the read is wanted: Intel runs, the switch is on and the list has a bridge; never inside the Intel example's sandbox
+function itSovWanted(){
+  try{ if(itRpAside) return false; }catch(e){ return false; }   // before the route planner's part of the script has run
+  return !!(it.on && it.set && it.set.bridgesOn) && itBridges().edges.length > 0;
+}
+function itSovNeed(){
+  if(itSov.busy || !itSovWanted()) return;
+  const now = Date.now();
+  if((itSov.sys && now < itSov.exp) || now < itSov.next) return;
+  itSovRead();
+}
+async function itSovRead(){
+  itSov.busy = true; itJbChanged();
+  let ok = false;
+  try{
+    const r = await esiFetch(IT_SOV_URL, undefined, 'sov');
+    if(r.ok){
+      const j = await r.json(), list = j && Array.isArray(j.solar_systems) ? j.solar_systems : null;
+      if(list){
+        const sys = new Map(), caps = new Map();
+        for(const s of list){
+          const a = s && s.claim && s.claim.alliance, id = s && s.solar_system_id;
+          if(!Number.isInteger(id) || !a || !Number.isInteger(a.alliance_id)) continue;   // a faction's or unclaimed: no alliance holds it
+          sys.set(id, a.alliance_id);
+          if(a.is_capital_system === true) caps.set(a.alliance_id, id);
+        }
+        const now = Date.now(), ex = Date.parse(r.headers.get('expires') || '');
+        Object.assign(itSov, {sys, caps, at: now, exp: Math.max(now + IT_SOV_MIN_MS, Number.isFinite(ex) ? ex : now + 300000), fails: 0, next: 0, err: ''});
+        ok = true;
+      } else itSov.err = 'its answer had no systems';
+    } else itSov.err = `ESI answered ${r.status}`;
+  }catch(e){ itSov.err = "ESI couldn't be reached"; }
+  if(!ok){ itSov.next = Date.now() + IT_SOV_RETRY_MS[Math.min(itSov.fails, IT_SOV_RETRY_MS.length - 1)]; itSov.fails++; }   // a copy held is used meanwhile
+  itSov.busy = false; itJbChanged();
+}
+// something the zones read changed: the rows, the Routes box's line and the map (which searches again only when what it counts changed)
+function itJbChanged(){ itBridgePaint(); if(typeof itm !== 'undefined' && itm.el) itMapRefresh(); }
+// Your alliance: the login's while it is Your pilot (sideEveWanted's test, D3), else none (each bridge's holder decides)
+function itJbYou(){
+  const r = side.rec, w = sso.who;
+  if(w && r && r.pilot && r.pilot.id === w.id) return {login: true, al: r.alliance ? r.alliance.id : null, name: r.alliance ? r.alliance.name || '' : ''};
+  return {login: false, al: null, name: ''};
+}
+function itJbPair(a, b){ return Math.min(a, b) * 65536 + Math.max(a, b); }
+// an alliance's name from the org cache, asked for once if it isn't there (the rows and the hover are written again when it comes)
+function itJbAlName(id){
+  if(!id) return '';
+  const v = orgCache.get(`alliance:${id}`);
+  if(v && typeof v.then !== 'function') return v.name || '';
+  if(!v) getOrg('alliance', id).then(() => itBridgePaint()).catch(() => {});
+  return '';
+}
+// each counted bridge's use: rows by line (why it can't be used, or its owner, capital and both directions with their zones), the used
+// directions (out: map index -> arrivals, one-way), the left-out pairs (bad) and their key (ukey, in itm.jbKey: change 11)
+function itJbZones(){
+  const B = itBridges(), on = !!(it.set && it.set.bridgesOn), you = itJbYou(), zs = itRpJbSet();
+  let run = false; try{ run = !!it.on; }catch(e){ run = false; }
+  const st = !on ? 'off' : !B.edges.length ? 'none' : itSov.sys ? 'ok' : itSov.busy ? 'read' : !run ? 'idle' : itSov.err ? 'fail' : 'read';
+  const key = `${st}|${itSov.at}|${you.login ? `L${you.al || 0}` : 'out'}|${zs.join('')}`;
+  if(itJbMemo && itJbMemo.B === B && itJbMemo.key === key) return itJbMemo;
+  const Z = {B, key, st, you, zones: zs, rows: new Map(), out: new Map(), dz: new Map(), bad: new Set(), used: [], usable: 0, total: B.edges.length, owners: new Set()};
+  if(st === 'ok'){
+    const g = itGraphGet();
+    for(const r of B.rows){
+      if(r.st !== 'ok' && r.st !== 'warn') continue;
+      const ia = g.at.get(r.a), ib = g.at.get(r.b), ha = itSov.sys.get(r.a), hb = itSov.sys.get(r.b);
+      let own = null, why = null;
+      if(you.login){
+        if(!you.al) why = {k: 'noal'};
+        else for(const [id, h] of [[r.a, ha], [r.b, hb]]) if(h !== you.al){ why = h ? {k: 'other', sys: id, al: h} : {k: 'none', sys: id}; break; }
+        if(!why) own = you.al;
+      } else if(!ha || !hb) why = {k: 'none', sys: ha ? r.b : r.a};
+      else if(ha !== hb) why = {k: 'two'};
+      else own = ha;
+      if(why){ Z.rows.set(r.n, {why}); Z.bad.add(itJbPair(ia, ib)); continue; }
+      const cap = itSov.caps.get(own) || 0, ic = cap ? g.at.get(cap) : undefined;
+      const dirs = [[ia, ib, r.b], [ib, ia, r.a]].map(([x, y, to]) => { const ly = ic !== undefined ? itMapLy(y, ic) : null, z = ly === null ? 5 : itJbZoneOf(ly); return {from: x, to: y, toId: to, z, ly, use: zs.includes(z)}; });
+      Z.rows.set(r.n, {own, cap, dirs}); Z.usable++; Z.owners.add(own);
+      for(const d of dirs){
+        Z.dz.set(`${d.from}>${d.to}`, d.z);
+        if(!d.use) continue;
+        const o = Z.out.get(d.from); if(o) o.push(d.to); else Z.out.set(d.from, [d.to]);
+        Z.used.push(`${d.from}>${d.to}`);
+      }
+    }
+    for(const o of Z.out.values()) o.sort((p, q) => p - q);
+  }
+  Z.ukey = [...Z.bad].sort((p, q) => p - q).join(',');
+  itJbMemo = Z; return Z;
+}
+// why a bridge is left out, as its row and hover say it
+function itJbWhyText(w){
+  if(w.k === 'noal') return "your pilot isn't in an alliance (bridges are alliance-only): left out of routes and the map's counts";
+  if(w.k === 'two') return "its two ends are held by different alliances: left out of routes and the map's counts";
+  if(w.k === 'none') return `${itSysName(w.sys)} isn't held by any alliance: left out of routes and the map's counts`;
+  return `${itSysName(w.sys)} is held by ${itJbAlName(w.al) || 'another alliance'}, not your alliance: left out of routes and the map's counts`;
+}
+// the Routes box's status line under the zones (one short line per state; the ⓘ panel says the rest)
+function itRpJbStatus(){
+  const Z = itJbZones(), none = Z.zones.length ? '' : ' No zone is ticked: routes use stargates only.';
+  if(Z.st === 'off') return 'Use jump bridges on the map is off (in the Jump bridges box): routes use stargates only.';
+  if(Z.st === 'none') return 'Add your bridges in the Jump bridges box to use them in routes.';
+  if(Z.st === 'idle') return 'Zones are worked out while Intel runs: routes use stargates until then.';
+  if(Z.st === 'read') return "Reading EVE's sovereignty…";
+  if(Z.st === 'fail') return withCode("Zones need EVE's sovereignty data, which couldn't be read: routes use stargates only for now.", 'ROUTE-02');
+  const n = `${Z.usable} of ${Z.total} bridge${Z.total === 1 ? '' : 's'} usable.${none}`;
+  if(Z.you.login && !Z.you.al) return `Your pilot isn't in an alliance: bridges are alliance-only.${none}`;
+  if(!Z.you.login){
+    const nc = [...Z.owners].filter(o => !itSov.caps.get(o));   // a holder with no capital: CCP counts its jumps as zone 5
+    const ncs = !nc.length ? '' : nc.length === 1 ? ` ${itJbAlName(nc[0]) || 'Its alliance'} has no capital right now: CCP counts every jump as zone 5 until a new one is set.` : ` ${nc.length} of these alliances have no capital right now: CCP counts their jumps as zone 5.`;
+    return `Logged out: each bridge is taken as yours, measured from the capital of the alliance that holds it.${ncs} ${n}`;
+  }
+  const cap = itSov.caps.get(Z.you.al), al = Z.you.name || itJbAlName(Z.you.al) || 'Your alliance';
+  if(!cap) return `${al} has no capital right now: CCP counts every jump as zone 5 until a new one is set. ${n}`;
+  return `Measured from your alliance's capital, ${itSysName(cap)} (${al}). A jump's zone is where it arrives. ${n}`;
+}
+function itRpJbPaint(){ const el = typeof document !== 'undefined' && document.querySelector('[data-it-rp-jbs]'); if(el){ const t = itRpJbStatus(); if(el.textContent !== t) el.textContent = t; } }
+function itRpJbBoxHtml(){
+  const zs = itRpJbSet();
+  return `<div class="it-rp-avk">jump bridges: use jumps arriving in</div><div class="it-rp-jbz">${itRpJbZonesHtml(zs)}</div><div class="c it-rp-jbs" data-it-rp-jbs>${escapeHtml(itRpJbStatus())}</div>`;
+}
+function itRpJbZonesHtml(zs){ return IT_JB_ZONES.map(Z => itRpJbZoneHtml(Z, zs)).join(''); }
+function itRpJbZoneHtml(Z, zs){ return `<label><input type="checkbox" data-it-rp-jbz="${Number(Z.n)}"${itOnHtml(zs.includes(Z.n), 'checked')}> ${escapeHtml(`zone ${Z.n} ${Z.x ? `×${Z.x}` : 'free'} · ${Z.ly}`)}</label>`; }
+// a row's zones (041's list rows, while the switch is on): the two directions, a direction routes don't use dimmed
+function itJbRowZonesHtml(z){ return z && z.dirs ? `<span class="jb-zs">${itJbDirsHtml(z.dirs)}</span>` : ''; }
+function itJbDirsHtml(dirs){ return dirs.map(itJbDirHtml).join(' '); }
+function itJbDirHtml(d){ return `<span class="${escapeHtml(d.use ? 'on' : 'off')}">${escapeHtml(`→ ${itSysName(d.toId)} ${itJbZoneText(d.z)}`)}</span>`; }
+// the steps of a path (map indexes) that aren't a stargate, with the zone they arrive in
+function itRpJbSteps(path){
+  if(!path) return [];
+  const T = itMapTable(), Z = itJbZones(), out = [];
+  for(let k = 0; k + 1 < path.length; k++){ const x = path[k], y = path[k + 1]; if(!T.adj[x].includes(y)) out.push({x, y, z: Z.dz.get(`${x}>${y}`) || 0}); }
+  return out;
+}
+function itRpJbStepsHtml(path){
+  const ids = itGraphGet().ids;
+  return itRpJbSteps(path).map(s => `<br><span class="it-rp-jb">${escapeHtml(`⇢ jump bridge ${itSysName(ids[s.x])} → ${itSysName(ids[s.y])}${s.z ? ` · arriving in ${itJbZoneText(s.z)}` : ''}`)}</span>`).join('');
+}
+// the map's hover on a bridge line (the owner's "Map bridge hover"): the nearest bridge curve within 7 px (12 on touch), when no system
+// is under the pointer; the curve as itMapArc draws it, 24 steps along it
+function itMapPickBridge(x, y, touch){
+  if(!itm.jbKey || !itm.Q) return -1;
+  const r = touch ? 12 : 7, E = itBridges().edges, Q = itm.Q;
+  let best = -1, bd = r * r;
+  E.forEach(([a, b], k) => {
+    const x1 = Q[2 * a], y1 = Q[2 * a + 1], x2 = Q[2 * b], y2 = Q[2 * b + 1], dx = x2 - x1, dy = y2 - y1, cx = (x1 + x2) / 2 - dy * 0.22, cy = (y1 + y2) / 2 + dx * 0.22;
+    for(let s = 0; s <= 24; s++){ const t = s / 24, u = 1 - t, px = u * u * x1 + 2 * u * t * cx + t * t * x2, py = u * u * y1 + 2 * u * t * cy + t * t * y2, d = (px - x) ** 2 + (py - y) ** 2; if(d < bd){ bd = d; best = k; } }
+  });
+  return best;
+}
+function itMapJbLineTipHtml(k){
+  const B = itBridges(), e = B.edges[k]; if(!e) return '';
+  const g = itGraphGet(), [a, b] = e, pk = itJbPair(a, b), row = B.rows.find(r => (r.st === 'ok' || r.st === 'warn') && itJbPair(g.at.get(r.a), g.at.get(r.b)) === pk);
+  const Z = itJbZones(), z = row ? Z.rows.get(row.n) : null;
+  let h = `<b>${escapeHtml(`Jump bridge ${itSysName(g.ids[a])} ⇄ ${itSysName(g.ids[b])}`)}</b> <span class="d">· ${escapeHtml(itMapLyText(itMapLy(a, b)))} LY</span>`;
+  if(z && z.why) return h + `<br><span class="it-rp-w">⚠ ${escapeHtml(itJbWhyText(z.why))}</span>`;
+  if(!z || !z.dirs) return h + `<br><span class="d">${escapeHtml(itRpJbStatus())}</span>`;
+  for(const d of z.dirs) h += `<br>${escapeHtml(`→ ${itSysName(d.toId)}:`)} <span class="${escapeHtml(d.z === 1 ? 'z1' : 'zx')}">${escapeHtml(itJbZoneText(d.z))}</span>`;
+  const al = itJbAlName(z.own) || (Z.you.login && Z.you.name) || 'its alliance';
+  h += `<br><span class="d">${escapeHtml(z.cap ? `from ${al}'s capital, ${itSysName(z.cap)}` : `${al} has no capital: every jump counts as zone 5`)}</span>`;
+  const u = z.dirs.filter(d => d.use);
+  h += `<br><span class="d">${escapeHtml(u.length === 2 ? 'Routes use it both ways' : u.length ? `Routes use it toward ${itSysName(u[0].toId)} only` : "Routes don't use it (its zones aren't ticked in Routes)")}</span>`;
+  return h;
+}
+function itMapJbTip(k, x, y){
+  const tip = itm.tip; if(k < 0){ tip.hidden = true; return; }
+  tip.innerHTML = itMapJbLineTipHtml(k); tip.hidden = false; tip.classList.remove('it-rp-act');
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  tip.style.left = Math.max(4, Math.min(itm.W - tw - 6, x + 14)) + 'px'; tip.style.top = (y + th + 18 > itm.H ? Math.max(4, y - th - 12) : y + 14) + 'px';
 }
 // v2026.10.31.5 (the owner: "people will often use shorthand to communicate which gate enemies are on ... usually consists of three
 // characters, one of which may be a "-" ... used in conjunction with "gate""): the word before gate / gt / gat names one of the
@@ -29886,7 +30117,7 @@ function itMapSecT(i){
 }
 function itMapSecClass(i){ return Math.max(0, itMapSecT(i)); }
 function itMapTier(n){ return n <= 1 ? 'solo' : n <= 10 ? 'small' : 'fleet'; }
-const itm = {el: null, home: -1, reach: 0, W: 0, H: 0, P: null, Q: null, vis: [], D: null, G: 1, kMin: 1, kMax: 12, st: null, par: null, view: {k: 1, tx: 0, ty: 0}, hover: -1, rowHover: -1,
+const itm = {el: null, home: -1, reach: 0, W: 0, H: 0, P: null, Q: null, vis: [], D: null, G: 1, kMin: 1, kMax: 12, st: null, par: null, view: {k: 1, tx: 0, ty: 0}, hover: -1, hoverJb: -1, rowHover: -1,
   pinned: new Set(), key: '', draws: 0, layouts: 0, layoutMs: 0, drag: null, pinch: null, justDragged: false, rep: new Map(), stale: false,
   beacon: 0, beacons: 0, beaconDone: false};
 // what the map shows for each system with a report or a kill in the time set, within the map's reach (Near You's rule for friendlies)
@@ -30025,7 +30256,8 @@ function itMapIconHtml(k){ return (IT_MAP_FILTERS.find(f => f.k === k) || IT_MAP
 // 058: pressed: the colour that is on, Paths to you while it shows, each Only filter that is on. The name line names the colour (or the view);
 // the phone's folded button shows the colour's icon and a neutral count of the Only filters that are on (rule A: never amber)
 // build queue 041: a filter's note; Jumps from you says so while your jump bridges are counted
-function itMapFNote(f){ return f.k === 'jumps' && itBridgeOn() ? 'colour: jumps from your system, your jump bridges counted; zoomed in, the number' : f.note; }
+// 057 (the owner's hand test): Within N's hover said "stargate jumps" while your bridges counted (041 told only Jumps)
+function itMapFNote(f){ if(!itBridgeOn()) return f.note; return f.k === 'jumps' ? 'colour: jumps from your system, your jump bridges counted; zoomed in, the number' : f.k === 'near' ? 'only: systems this many jumps from you or fewer, jump bridges you can use counted' : f.note; }
 function itMapFnameHtml(f){ return f ? `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(itMapFNote(f))}</span>` : '<b>No colour</b> <span>press Security, Jumps or Region to colour the systems again</span>'; }
 // 055: marks a filter column (the live map's, or the Intel example's copy before it is made still) from a stack: one painter for both
 function itMapFbarMark(fb, s){
@@ -30188,6 +30420,7 @@ function itMapRefresh(force){
   itMapLegend();
   const mc = document.querySelector('[data-it-mapctx]'); if(mc) mc.textContent = itMapCtx();
   if(why){ itm.home = -1; itm.you.hidden = true; itPtHide(); itMapWhPulse([]); if(itm.mtb) itm.mtb.hidden = true; return; }
+  itSovNeed();   // build queue 057: EVE's sovereignty, while Intel runs with your bridges on, once per its Expires
   const phone = typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches;
   const w = itm.box.clientWidth, h = itMapH(w, phone);   // 052: full width and taller (055: shared with the Intel example)
   { const top = itm.box.closest('.it-top'), mh = `${h + 2}px`; if(top && top.style.getPropertyValue('--it-mh') !== mh){ top.style.setProperty('--it-mh', mh); itNearMoreSoon(); } }   // the panel's height moved: "+N more" again   // Near You's panel ends 8 px above the map's foot
@@ -30200,7 +30433,7 @@ function itMapRefresh(force){
   const beacon = moved && (!itm.beaconDone || (jumped && it.me && it.me.sysAt && Date.now() - it.me.sysAt < 5000));
   const jbMoved = !moved && itBridgeKey() !== itm.jbKey;   // 041: the setting or the list changed: searched again and laid out again, as a reach change
   if(moved || jbMoved){ itMapBfs(home); if(moved) itm.pinned.clear(); }
-  if(jbMoved){ const jf = itm.el.querySelector('[data-im-f="jumps"]'), f = IT_MAP_FILTERS.find(x => x.k === 'jumps'); if(jf && f) jf.title = `${f.name}: ${itMapFNote(f)}`; }
+  if(jbMoved) for(const k of ['jumps', 'near']){ const jf = itm.el.querySelector('[data-im-f="' + k + '"]'), f = IT_MAP_FILTERS.find(x => x.k === k); if(jf && f) jf.title = `${f.name}: ${itMapFNote(f)}`; }   // 057: Within N too
   if(moved || jbMoved || reach !== itm.reach || w !== itm.W || h !== itm.H){
     itm.home = home; itm.reach = reach; itm.W = w; itm.H = h;
     const dpr = window.devicePixelRatio || 1; itm.cv.width = Math.round(w * dpr); itm.cv.height = Math.round(h * dpr); itm.cv.style.height = h + 'px';
@@ -30530,13 +30763,18 @@ function itMapDraw(){
   c.setLineDash([]); c.globalAlpha = 1;
   // build queue 041: your jump bridges, while the setting is on: solid curves in the game's green (the owner's in-game screenshot), under the
   // systems and the routes, faint past the reach; curved like the game's, so one never reads as a gate
+  // 057: a bridge left out (D5: another alliance's, no one's; logged out, two alliances') dashed and fainter; the one under the pointer thicker.
+  // The owner at the build: "maybe make them 70% of their current brightness" (--it-bridge #00f000 -> #00a800)
   if(itm.jbKey){
-    c.strokeStyle = itMapCol('--it-bridge', '#00f000'); c.lineWidth = big ? 1.75 : 1.25;
-    for(const [a, b] of itBridges().edges){
-      if((X(a) < 0 && X(b) < 0) || (X(a) > W && X(b) > W) || (Y(a) < 0 && Y(b) < 0) || (Y(a) > H && Y(b) > H)) continue;
-      c.globalAlpha = on(a) || on(b) ? 0.85 : 0.35; c.beginPath(); itMapArc(c, X(a), Y(a), X(b), Y(b)); c.stroke();
-    }
-    c.globalAlpha = 1;
+    const Zb = itJbZones(), lw = big ? 1.75 : 1.25;
+    c.strokeStyle = itMapCol('--it-bridge', '#00a800');
+    itBridges().edges.forEach(([a, b], k) => {
+      if((X(a) < 0 && X(b) < 0) || (X(a) > W && X(b) > W) || (Y(a) < 0 && Y(b) < 0) || (Y(a) > H && Y(b) > H)) return;
+      const bad = Zb.bad.has(itJbPair(a, b));
+      c.globalAlpha = (on(a) || on(b) ? 0.85 : 0.35) * (bad ? 0.6 : 1); c.lineWidth = lw + (k === itm.hoverJb ? 1.5 : 0); c.setLineDash(bad ? (big ? [5, 4] : [3, 3]) : []);
+      c.beginPath(); itMapArc(c, X(a), Y(a), X(b), Y(b)); c.stroke();
+    });
+    c.setLineDash([]); c.globalAlpha = 1;
   }
   // routes: none until asked; the hovered system's (the map or a row) dashed, the pressed ones solid, hostile drawn last. Any system with
   // a gate route to you has one (the owner at the build review, "yes": past the reach too)
@@ -30551,7 +30789,7 @@ function itMapDraw(){
     c.strokeStyle = rp && rp.side !== 'clear' ? C[rp.side] : C.cyan;
     c.lineWidth = (rp && rp.n ? Math.min(7, 1.5 + Math.log2(rp.n + 1)) : 2) + (lit ? 1.5 : 0);
     c.setLineDash(itm.pinned.has(gr.ids[i]) ? [] : [6, 4]); c.lineCap = 'round';
-    c.beginPath(); for(const [a, b] of route){ if(T.adj[a].includes(b)) { c.moveTo(X(a), Y(a)); c.lineTo(X(b), Y(b)); } else itMapArc(c, X(a), Y(a), X(b), Y(b)); } c.stroke();   // 041 (D13): a step that isn't a gate is its bridge's curve
+    c.beginPath(); for(const [a, b] of route){ if(T.adj[a].includes(b)) { c.moveTo(X(a), Y(a)); c.lineTo(X(b), Y(b)); } else itBridgeArc(c, a, b, X, Y); } c.stroke();   // 041 (D13): a step that isn't a gate is its bridge's curve (057: the same curve, whichever way it is crossed)
   }
   c.setLineDash([]); c.globalAlpha = 1;
   // the systems: zoomed out a dot each, one path per colour and fade; zoomed in (a gate 34 px or longer) the game's circles with the
@@ -30996,7 +31234,7 @@ function itMapTip(i, x, y){
   if(dg > itKillRange()) h += `<br><span class="d">past the Feed's kill range (${itKillRange()}): its kills aren’t read</span>`;
   if(d > 0){
     const rt = itMapRoute(i).map(([a]) => itSysName(ids[a])).concat(itSysName(ids[itm.home]));
-    h += `<br><span class="d">route${escapeHtml(itm.jbKey ? ' by stargate' : '')}: ${escapeHtml(rt.length > 9 ? [...rt.slice(0, 4), '…', ...rt.slice(-3)].join(' → ') : rt.join(' → '))}</span><br><span class="d">press to ${itm.pinned.has(ids[i]) ? 'hide' : 'keep'} this route</span>`;
+    h += `<br><span class="d">route${escapeHtml(itm.jbKey && !itRpJbOn() ? ' by stargate' : '')}: ${escapeHtml(rt.length > 9 ? [...rt.slice(0, 4), '…', ...rt.slice(-3)].join(' → ') : rt.join(' → '))}</span><br><span class="d">press to ${itm.pinned.has(ids[i]) ? 'hide' : 'keep'} this route</span>`;
   }
   const rp = itRpTipHtml(i); h += rp.h;   // 047: Threat Vector's route, what it couldn't avoid, the right-click hint or (a phone) the buttons
   tip.innerHTML = h; tip.hidden = false; tip.classList.toggle('it-rp-act', rp.act);
@@ -32057,7 +32295,7 @@ function sovPaint(force){
   p.querySelector('.it-sov-warn').textContent = sovP.unsaved ? withCode('Not saved: this browser’s storage is full. Your sov lists work until you close the page; remove something kept in this browser, then change a list to save them.', 'INTEL-11') : '';
   p.querySelector('.it-whp-msg').textContent = sovP.msg;
   { const x = p.querySelector('.it-sov-picks'), h = sovPicksHtml(); if(sovP.html.picks !== h){ sovP.html.picks = h; x.innerHTML = sovPicksHtml(); } }   // built again for the write (the sinks lint: innerHTML takes a builder)
-  { const x = p.querySelector('.it-sov-lv'), h = sovLvHtml(); if(sovP.html.lv !== h){ sovP.html.lv = h; x.innerHTML = sovLvHtml(); } }   // 058
+  { const x = p.querySelector('div.it-sov-lv'), h = sovLvHtml(); if(sovP.html.lv !== h){ sovP.html.lv = h; x.innerHTML = sovLvHtml(); } }   // 058
   const lx = p.querySelector('[data-sov-tog="lists"]'); lx.querySelector('span').textContent = `Lists (${n})`; lx.setAttribute('aria-expanded', String(sovP.lists));
   p.querySelector('#itSovLists').hidden = !sovP.lists;
   { const x = p.querySelector('.it-sov-rows'), h = sovRowsHtml(); if(sovP.html.rows !== h && (force || !x.contains(document.activeElement))){ sovP.html.rows = h; x.innerHTML = sovRowsHtml(); } }   // never under a focused button but on our own change
@@ -32087,7 +32325,9 @@ function sovOrder(k){ for(const [, ks] of SOV_GROUPS){ const i = ks.indexOf(k); 
 function sovGroupsHtml(gs, ks, ix, p){ return gs.map(g => sovGroupHtml(g, ks.filter(k => sovGroupOf(k) === g).sort((a, b) => sovOrder(a) - sovOrder(b)), ix, p)).join(''); }
 function sovGroupHtml(g, mine, ix, p){ return mine.length ? `<div class="it-sov-g"><b>${escapeHtml(g)}</b>${sovKindsHtml(mine, ix, p)}</div>` : ''; }
 function sovKindsHtml(mine, ix, p){ return mine.map(k => sovKindHtml(k, ix, p)).join(''); }
-function sovFromHtml(br){ return br ? ' <span class="it-sov-lv">from Jump bridges</span>' : ''; }
+// 057 (the owner's hand test): its own class; it shared .it-sov-lv with 058's Level box, so with a bridge list the Level row was written into
+// the Jump bridge row (sovPaint writes the first .it-sov-lv it finds)
+function sovFromHtml(br){ return br ? ' <span class="it-sov-from">from Jump bridges</span>' : ''; }
 function sovKindHtml(k, ix, p){
   const lv = ix.lv.get(k), c = ix.cnt.get(k), br = ix.from.get(k) === 'bridges';
   const t = (SOV_SHOW[k] ? `${k}. ` : '') + (lv ? `Levels: ${[...lv].sort((a, b) => b[0] - a[0]).map(([v, m]) => `${v} in ${m} system${m === 1 ? '' : 's'}`).join(', ')}; hover a system on the map for its level` : `${c} system${c === 1 ? '' : 's'}`) + (br ? '; from your Jump bridges list' : '');
@@ -32313,8 +32553,12 @@ function itRpUpdate(){
   if(itRpAside || !itm.P || itm.home < 0) return false;
   const T = itMapTable(); if(!T) return false;
   const s = itRpSet(), flags = itRpFlags(), home = itm.home, pen = s.pref === 'Shorter' ? 0 : s.pen;
-  const key = `${home}|${s.pref}|${pen}|${[...flags].map(([i, w]) => `${i}:${w.join('+')}`).sort().join(',')}`;
+  // build queue 057: with "Use jump bridges on the map" on, the bridge directions arriving in a ticked zone join the search, one-way
+  // (the owner: "Switch governs both"); off, or none used: the stargates alone, as before
+  const Z = itJbZones(), jo = Z.st === 'ok' && Z.out.size ? Z.out : null;
+  const key = `${home}|${s.pref}|${pen}|${[...flags].map(([i, w]) => `${i}:${w.join('+')}`).sort().join(',')}|jb:${jo ? Z.used.join(',') : ''}`;
   if(key === itRp.key && itRp.par && itRp.home === home){ itRp.flags = flags; return false; }
+  const nb = jo ? (x) => { const e = jo.get(x); return e ? T.adj[x].concat(e) : T.adj[x]; } : (x) => T.adj[x];   // a bridge jump costs as a gate jump into its arrival
   const n = T.n, p = Math.exp(0.15 * pen), f = new Int32Array(n).fill(1 << 30), c = new Float64Array(n).fill(Infinity), len = new Int32Array(n).fill(-1), par = new Int32Array(n).fill(-1), done = new Uint8Array(n);
   f[home] = 0; c[home] = 0; len[home] = 0;
   const near = (a, b) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a));
@@ -32326,13 +32570,16 @@ function itRpUpdate(){
     const x = h[0], last = h.pop(); if(h.length){ h[0] = last; down(0); }
     if(done[x]) continue; done[x] = 1;
     const fx = f[x] + (x !== home && flags.has(x) ? 1 : 0);   // a system counts once you go through it: the destination never does
-    for(const y of T.adj[x]){
+    for(const y of nb(x)){
       if(done[y]) continue;
       const cy = c[x] + itRpCost(T, y, s.pref, p), ly = len[x] + 1;
       if(fx < f[y] || (fx === f[y] && (near(cy, c[y]) ? ly < len[y] : cy < c[y]))){ f[y] = fx; c[y] = cy; len[y] = ly; par[y] = x; h.push(y); up(h.length - 1); }
     }
   }
-  Object.assign(itRp, {key, home, par, f, len, flags});
+  // 057: the fewest jumps over the same graph, for the tooltip's "(shortest N)" (041 compared with the stargates alone)
+  let sd = null;
+  if(jo){ sd = new Int16Array(n).fill(-1); sd[home] = 0; const q = [home]; for(let k = 0; k < q.length; k++){ const x = q[k]; for(const y of nb(x)) if(sd[y] < 0){ sd[y] = sd[x] + 1; q.push(y); } } }
+  Object.assign(itRp, {key, home, par, f, len, flags, sd, jb: !!jo});
   return true;
 }
 // the parents the map's routes follow: Threat Vector's route, or the shortest by stargate in the Intel example (and before it is worked out)
@@ -32354,9 +32601,12 @@ function itRpTouch(){ return typeof matchMedia === 'function' && (matchMedia('(h
 function itRpTipHtml(i){
   if(itRpAside || i < 0 || i === itm.home) return {h: '', act: false};
   const ids = itGraphGet().ids, gid = ids[i], d = itm.D[i], path = d > 0 ? itRpPath(i) : null;
-  const jb = !!(itm.jbKey && itm.Dg), sd = jb ? itm.Dg[i] : d;   // 041 (D11): Threat Vector's route is by stargate until 057, so it's compared with the stargate count
+  // 041 (D11): a route by stargate is compared with the stargate count; 057: a route that can take your bridges, with the fewest jumps over
+  // the graph it searched (stargates plus the directions used)
+  const jr = itRpJbOn(), jb = !jr && !!(itm.jbKey && itm.Dg), sd = jr ? itRp.sd[i] : jb ? itm.Dg[i] : d;
   let h = '', act = false;
   if(path && path.length - 1 !== sd) h += `<br><span class="it-rp-n">Threat Vector's route: <b>${Number(path.length - 1)} jumps</b> <span class="d">(shortest${escapeHtml(jb ? ' by stargate' : '')} ${Number(sd)})</span></span>`;
+  if(jr) h += itRpJbStepsHtml(path);   // 057: each bridge step, with the zone it arrives in (the owner's "Route steps")
   const w = itRpWarn(path);
   if(w.length) h += `<br><span class="it-rp-w">${escapeHtml(itRpWarnText(w))}</span>`;
   if(itRpSet().list.includes(gid)) h += '<br><span class="d">on your avoid list</span>';
@@ -32376,8 +32626,10 @@ function itRpBtnsHtml(i, inTip){
 }
 function itRpRoleHtml(inTip){ return inTip ? '' : ' role="menuitem"'; }   // the menu's items; in a phone's tooltip they are plain buttons in a group
 function itRpGroupHtml(inTip, gid){ return inTip ? ` role="group" aria-label="${escapeHtml(itSysName(gid))}"` : ''; }
-function itRpSubHtml(path, w){ return path ? `<small>${escapeHtml(`${path.length - 1} jump${path.length === 2 ? '' : 's'}${w.length ? ` · ⚠ ${w.length} flagged` : ''}`)}</small>` : '';
+function itRpSubHtml(path, w){ const b = itRpJbOn() ? itRpJbSteps(path).length : 0; return path ? `<small>${escapeHtml(`${path.length - 1} jump${path.length === 2 ? '' : 's'}${b ? ` · ${b} by jump bridge` : ''}${w.length ? ` · ⚠ ${w.length} flagged` : ''}`)}</small>` : '';
 }
+// 057: Threat Vector's route can take your bridges now (the switch on, a direction used, worked out for your system)
+function itRpJbOn(){ return !itRpAside && !!(itRp.jb && itRp.sd && itRp.home === itm.home); }
 // ---- the right-click menu (a menu: no close button; Esc, a press outside or a pick close it; the focus back where it came from)
 function itRpMenuOpen(i, x, y, opener){
   itRpMenuClose(false);
@@ -32467,6 +32719,8 @@ async function itRpGo(mode, i){
     itRp.sends++;
     const lines = mode === 'eve' ? [['d', "EVE plans the route with your game's autopilot settings."]]
       : [...(w.length ? [['it-rp-w', itRpWarnText(w)]] : []), ['d', 'Every system is a waypoint: with Disable Autopilot at Each Waypoint on, the autopilot stops at each.'], ['d', IT_RP_GAME_AVOID]];
+    const nj = mode === 'tv' && itRpJbOn() ? itRpJbSteps(path).length : 0;   // 057 (D6): the game routes between two waypoints a bridge apart itself
+    if(nj) lines.push(['d', `Your route takes ${nj} jump bridge${nj === 1 ? '' : 's'}: EVE uses them only with Include Jump Bridges in Route on (EVE's route settings).`]);
     if(onl !== true) lines.push(['d', IT_RP_OFF_NOTE]);   // not known to be in the game (or sent anyway): EVE says OK either way
     itRpNote({head: mode === 'eve' ? `Destination set: ${name}` : `Destination set: ${name}, ${legs.length} jump${legs.length === 1 ? '' : 's'}`, lines, warn: w.length > 0});
     return;
@@ -32549,6 +32803,7 @@ function itRpPick(id){
 // ---- Intel settings → Routes (after "Range and alerts"; not in the Intel example's numbered setup)
 function itRpBoxHtml(numbered){
   if(numbered) return '';   // not in the Intel example's numbered setup
+  itSovNeed();   // 057: the box shows the zones' status: EVE's sovereignty if it is wanted and not held
   const s = itRpSet();
   return `<div class="it-box it-rp-box" data-it-rp-box><div class="k">Routes</div>`
     + `<div class="it-rp-pref" role="radiogroup" aria-label="Route preference">${itRpPrefsHtml(s)}</div>`
@@ -32556,6 +32811,7 @@ function itRpBoxHtml(numbered){
     + `<div class="it-rp-avk">avoid</div>${itRpCkHtml(s, 'camp', 'gate camps')}${itRpCkHtml(s, 'bub', 'bubbles')}${itRpCkHtml(s, 'host', 'systems with reported hostiles, neutrals or ESS')}${itRpCkHtml(s, 'kill', 'systems with kills')}${itRpCkHtml(s, 'mine', 'systems on my avoid list')}`
     + `<ul class="it-rp-list">${itRpListHtml(s)}</ul>`
     + `<form class="it-rp-add" autocomplete="off"><input type="text" name="sys" placeholder="System, e.g. 8BA-RA" aria-label="System to avoid" maxlength="40" spellcheck="false"><button type="submit">Avoid</button></form><div class="it-rp-msg" role="status"></div>`
+    + itRpJbBoxHtml()   // build queue 057: the zones a bridge jump may arrive in, and what they're measured from
     + `<div class="c">For the map's routes and “Send destination to EVE (Threat Vector's route)”. EVE's route uses your game settings; Threat Vector's can't read your game's avoidance list, so add those systems here too.</div></div>`;
 }
 function itRpCkHtml(s, k, t){ return `<label><input type="checkbox" data-it-rp-set="${escapeHtml(k)}"${itOnHtml(s[k], 'checked')}> ${escapeHtml(t)}</label>`; }
@@ -32567,6 +32823,8 @@ function itRpListHtml(s){
 // the card's events (bound once, from the Intel panel's start-up): the Routes box, the map's menu, buttons and note
 function itRpBind(el){
   el.addEventListener('change', (e) => {
+    const zb = e.target.closest && e.target.closest('[data-it-rp-jbz]');   // 057: a zone ticked or unticked (tvRouteJb, never tvRoute)
+    if(zb){ const n = Number(zb.dataset.itRpJbz), zs = new Set(itRpJbSet()); if(zb.checked) zs.add(n); else zs.delete(n); itRpJbZones = [...zs].sort((a, b) => a - b); itRpJbSave(); itRpRefresh(`[data-it-rp-jbz="${Number(n)}"]`); itBridgePaint(); return; }
     const t = e.target.closest && e.target.closest('[data-it-rp-set]'); if(!t) return;
     const s = itRpSet(), k = t.dataset.itRpSet;
     if(k === 'pref'){ if(IT_RP_PREFS.includes(t.value)) s.pref = t.value; }
@@ -32599,7 +32857,7 @@ function itRpBind(el){
   el.addEventListener('keydown', (e) => { itRpMenuKey(e); }, true);   // before the card's own Escape
 }
 // another tab changed the Routes settings: read them again
-if(typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('storage', (e) => { if(e.key === IT_RP_KEY){ itRp.set = null; itRpRefresh(); } });
+if(typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('storage', (e) => { if(e.key === IT_RP_KEY){ itRp.set = null; itRpRefresh(); } else if(e.key === IT_RP_JB_KEY){ itRpJbZones = null; itRpRefresh(); itBridgePaint(); } });   // 057: the zones too
 // a row (Near You or the Feed) for the map: its system id, or null
 function itMapRowSys(row){
   if(row.matches('.it-nb')) return Number(row.dataset.itSys) || null;
@@ -32611,10 +32869,14 @@ function itMapZoom(x, y, f){ const v = itm.view, k = Math.max(itm.kMin, Math.min
   itMapTip(-1); itMapDraw(); }
 function itMapBind(){
   const cv = itm.cv, el = itm.el, local = (e) => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
-  cv.addEventListener('mousemove', (e) => { if(itm.drag && itm.drag.moved) return; const [x, y] = local(e), i = itMapPick(x, y); cv.style.cursor = i >= 0 ? 'pointer' : 'grab'; if(i !== itm.hover){ itm.hover = i; itMapLight(i); itMapDraw(); } itMapTip(i, x, y); });
+  // 057 (the owner's "Map bridge hover"): with no system under the pointer, the bridge line under it (itm.hoverJb), drawn again only when it changes
+  cv.addEventListener('mousemove', (e) => { if(itm.drag && itm.drag.moved) return; const [x, y] = local(e), i = itMapPick(x, y), bj = i < 0 ? itMapPickBridge(x, y, false) : -1; cv.style.cursor = i >= 0 || bj >= 0 ? 'pointer' : 'grab';
+    if(i !== itm.hover || bj !== itm.hoverJb){ itm.hover = i; itm.hoverJb = bj; itMapLight(i); itMapDraw(); } if(bj >= 0) itMapJbTip(bj, x, y); else itMapTip(i, x, y); });
   cv.addEventListener('mouseleave', (e) => { if(e.relatedTarget && itm.tip.contains(e.relatedTarget)) return;   // 047: into the phone tooltip's buttons
-    if(itm.hover !== -1){ itm.hover = -1; itMapLight(-1); itMapDraw(); } itMapTip(-1); });
-  cv.addEventListener('click', (e) => { if(itm.justDragged){ itm.justDragged = false; return; } const [x, y] = local(e), i = itMapPick(x, y); if(i < 0 || itm.D[i] <= 0){ itMapTip(i, x, y); return; } itMapPin(itGraphGet().ids[i]); itMapTip(i, x, y); });
+    if(itm.hover !== -1 || itm.hoverJb >= 0){ itm.hover = -1; itm.hoverJb = -1; itMapLight(-1); itMapDraw(); } itMapTip(-1); });
+  cv.addEventListener('click', (e) => { if(itm.justDragged){ itm.justDragged = false; return; } const [x, y] = local(e), i = itMapPick(x, y);
+    if(i < 0){ const bj = itMapPickBridge(x, y, itRpTouch()); if(bj !== itm.hoverJb){ itm.hoverJb = bj; itMapDraw(); } if(bj >= 0){ itMapJbTip(bj, x, y); return; } }   // 057: a press on a bridge line (a phone)
+    if(i < 0 || itm.D[i] <= 0){ itMapTip(i, x, y); return; } itMapPin(itGraphGet().ids[i]); itMapTip(i, x, y); });
   // 047 (the owner: "right click on a system in the map ... could also give the option to set destination"): its menu; no system under the
   // pointer leaves the browser's own menu
   cv.addEventListener('contextmenu', (e) => { const [x, y] = local(e), i = itMapPick(x, y); if(i < 0) return; e.preventDefault(); itRpMenuOpen(i, x, y); });
