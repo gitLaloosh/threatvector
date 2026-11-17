@@ -250,7 +250,7 @@ The pull request lists every CSS class and function it adds, each with why no ex
 | Each side of a wormhole has its own signature ID, and the far side of a coded hole shows as K162 | none found as a primary source this session (the owner, 2026-11-17: "this is a real issue") | 2026-11-17 | UNVERIFIED: hand test step 6 (read both sides in the game) |
 | `CompressionStream` / `DecompressionStream` accept "deflate-raw" | https://developer.mozilla.org/en-US/docs/Web/API/CompressionStream/CompressionStream (MDN, primary for web standards) | 2026-11-17 | verified |
 | "deflate-raw" from Chrome/Edge 103, Firefox 113, Safari 16.4 | https://raw.githubusercontent.com/mdn/browser-compat-data/main/api/CompressionStream.json (MDN's compatibility data) | 2026-11-17 | verified (data); a live check in Firefox and Safari is hand test step 10 |
-| The page's own floor: Firefox 121+, Safari 16.2+ (so Safari 16.2–16.3 lacks deflate-raw) | the project's browser-support summary (2026-11-05, from caniuse) | 2026-11-17 | verified (project doc) |
+| The page's own floor: Firefox 121+, Safari 16.2+ (so Safari 16.2–16.3 lacks deflate-raw) | the Project doc claude/reference/browser-support.md (the project's own summary, 2026-11-05, from caniuse) | 2026-11-17 | verified (project doc) |
 | The fragment (#…) of an address is not sent to the server in the request | https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment (MDN, primary for web standards: "The fragment is not sent to the server when the URI is requested") | 2026-11-17 | verified |
 
 Project facts (index.html at cb9a995, 046's code, the owner's decisions) are cited by name in the text, as the README says, and aren't rows here.
