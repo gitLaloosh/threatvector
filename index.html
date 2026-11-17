@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-fhXOJyrN49LUTIaQ8ybdj4BXvT3uVtYbAzolgO0x9NI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-zbVinRETbevZHXOfO8G8BUX/oZmyqMQLjEELZLKl6Uc='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2724,6 +2724,8 @@
   .it-rp-sug li{padding:5px 9px; font:400 12px/1.3 var(--sans); cursor:pointer; color:var(--text);} .it-rp-sug li.on, .it-rp-sug li:hover{background:#1d2731;}
   .it-rp-sug li .d, .it-rp-menu .d, .it-rp-note .d, .it-rp-box .d{color:var(--text-dim);}
   .it-map-box button.it-map-clr{top:8px; left:auto; right:148px;}   /* 052: left of the zoom buttons (the filter column is under the search box) */
+  @media (min-width: 600px){ .it-map-box:has(.it-map-zoom [data-im-z="jb"]:not([hidden])) button.it-map-clr{right:182px;} }   /* 059: one more zoom-column button while bridges are on (a phone: Hide all routes sits top left) */
+  .it-map-zoom button[data-im-z="jb"][aria-pressed="true"]{border-color:var(--cyan); color:var(--cyan); background:var(--tag-on);}   /* 059: on (rule A's pressed look, as the Wormholes tab's Select) */
   .it-rp-menu{position:absolute; z-index:6; min-width:230px; max-width:calc(100% - 8px); box-sizing:border-box; padding:6px; border:1px solid #2c3842; border-radius:6px; background:var(--panel-2); box-shadow:0 8px 22px rgba(0,0,0,.55); font:400 12px/1.35 var(--sans); color:var(--text);}
   .it-rp-mh{padding:3px 6px 6px; border-bottom:1px solid var(--line); margin-bottom:4px;} .it-rp-mh b{color:var(--heading);}
   .it-rp-btns{display:flex; flex-direction:column; gap:2px;}
@@ -3298,9 +3300,6 @@
   .wh-ed{display:grid; grid-template-columns:minmax(0, 1fr); gap:8px 12px; padding:10px 0 0; border-top:1px solid var(--line);}
   .wh-ed label{display:flex; flex-direction:column; gap:4px; font:12px var(--sans); color:var(--text-dim); min-width:0;} .wh-ed label > input, .wh-ed label > select, .wh-ed label > textarea{width:100%; box-sizing:border-box; min-width:0;}
   .wh-ed textarea{font-family:var(--sans); height:56px; min-height:0; resize:vertical;} .wh-ed .wide{grid-column:1/-1;}
-  .wh-cns{display:flex; flex-direction:column; gap:6px;} .wh-to{font:12px var(--sans); color:var(--text-dim); white-space:nowrap;}
-  .wh-cn{display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px 8px; align-items:center; padding:6px 0; border-top:1px dashed var(--line);}
-  .wh-cn .wh-to{grid-column:1/-1; display:flex; align-items:center; gap:6px; flex-wrap:wrap;} .wh-cn > *{min-width:0; width:100%; box-sizing:border-box;} .wh-cn > button{width:auto; justify-self:start; min-width:36px;}
   .wh-pop{position:absolute; top:52px; right:8px; z-index:6; width:min(480px, calc(100% - 16px)); max-height:calc(100% - 64px); overflow:auto; box-sizing:border-box; padding:10px 12px 12px; display:flex; flex-direction:column; gap:8px;
     border:1px solid var(--line); border-radius:8px; background:var(--panel-2); box-shadow:0 10px 30px rgba(0,0,0,.55);}
   .wh-pop[hidden]{display:none;} .wh-poph{display:flex; align-items:center; justify-content:space-between; font:700 13px var(--sans); color:var(--heading);}
@@ -3331,13 +3330,43 @@
   .it-gtag.wh-st{color:var(--wh-st, var(--text)); background:color-mix(in srgb, var(--wh-st, var(--text-dim)) 18%, transparent);} .wh-sh .it-gtag.wh-st, .wh-leg .it-gtag.wh-st{margin-left:0;}
   .wh-smenu{max-height:calc(var(--whH, 480px) - 8px); overflow:auto; box-sizing:border-box;}   /* 051: the system menu (D25); a menu, so no close button */
   .wh-smenu .wh-mg{display:grid; grid-template-columns:1fr 1fr; gap:0 2px; padding-bottom:4px; margin-bottom:4px; border-bottom:1px solid var(--line);}
-  .wh-smenu button.wh-mi{display:flex; align-items:center; gap:8px; width:100%; min-height:32px; padding:0 8px; border:0; border-radius:4px; background:transparent; color:var(--text); font:13px var(--sans); text-align:left; cursor:pointer;}
-  .wh-smenu button.wh-mi:hover, .wh-smenu button.wh-mi:focus-visible{background:color-mix(in srgb, var(--cyan) 14%, transparent); color:var(--heading);}
-  .wh-smenu button.wh-mi[aria-checked="true"]{color:var(--heading); font-weight:700;} .wh-smenu button.wh-mdel{color:color-mix(in srgb, var(--danger) 70%, var(--heading));}
+  .wh-menu button.wh-mi{display:flex; align-items:center; gap:8px; width:100%; min-height:32px; padding:0 8px; border:0; border-radius:4px; background:transparent; color:var(--text); font:13px var(--sans); text-align:left; cursor:pointer;}
+  .wh-menu button.wh-mi:hover, .wh-menu button.wh-mi:focus-visible{background:color-mix(in srgb, var(--cyan) 14%, transparent); color:var(--heading);}
+  .wh-smenu button.wh-mi[aria-checked="true"]{color:var(--heading); font-weight:700;} .wh-menu button.wh-mdel{color:color-mix(in srgb, var(--danger) 70%, var(--heading));}
   .wh-smenu button.wh-mi[aria-disabled="true"]{color:var(--text-dim); cursor:not-allowed;} .wh-mnote{font-size:11px; color:var(--text-dim);}
   .wh-sw{width:12px; height:12px; border-radius:3px; border:2px solid var(--wh-st, var(--text-dim)); box-sizing:border-box; flex:0 0 auto;} [aria-checked="true"] > .wh-sw{background:var(--wh-st, transparent);}
   .wh-mtag{display:flex; gap:4px; padding:2px 2px 6px; margin-bottom:4px; border-bottom:1px solid var(--line);} .wh-mtag input{flex:1 1 auto; min-width:0;} .wh-mtag button.wh-mi{width:auto; flex:none; font-size:12px;}
   .wh-smenu input.wh-mcopy{width:100%; box-sizing:border-box;}
+  /* 059 (part 3): the System panel's sections and lists (P1, P7, P21, P22), the question piece (P20), the empty-space menu's Select all / Remove all */
+  .wh-mg1{display:flex; flex-direction:column; gap:2px; padding-bottom:4px; margin-bottom:4px; border-bottom:1px solid var(--line);}
+  .wh-ask{display:flex; flex-wrap:wrap; align-items:center; gap:6px; flex:1 1 100%; font:12px var(--sans); color:var(--amber);} .wh-menu .wh-ask{padding:4px 6px 6px;}
+  .wh-sec, .wh-secbd, .wh-paste, .wh-cnw{display:flex; flex-direction:column; gap:6px;} .wh-sec{padding-top:8px; border-top:1px solid var(--line);}
+  .wh-sech{display:flex; align-items:center; gap:8px;} .wh-sech .wh-secn{flex:1 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  button.it-whp-xb.wh-sect{padding:0; border:0; background:none; min-height:28px; color:var(--heading); font:700 13px var(--sans);}   /* 046's chevron toggle as a heading */
+  .wh-lz{flex:none; display:flex; align-items:center; gap:6px; white-space:nowrap; font:12px var(--sans); color:var(--text); cursor:pointer;}
+  .wh-paste textarea{width:100%; box-sizing:border-box; font:12px/1.4 var(--mono, monospace); resize:vertical;} .wh-sec > button.it-whp-xb, .wh-secbd > button.it-whp-xb, .wh-paste > button.it-whp-xb{align-self:flex-start;}
+  .wh-lb{display:flex; flex-wrap:wrap; align-items:center; gap:4px; min-height:28px; font:12px var(--sans); color:var(--text-dim);} .wh-ln{flex:1 1 auto; white-space:nowrap;} .wh-ln b{color:var(--heading);}
+  button.wh-lib{display:inline-grid; place-items:center; width:28px; min-height:28px; padding:0;} button.wh-lib.dl:not(:disabled){color:var(--danger); border-color:color-mix(in srgb, var(--danger) 60%, transparent);}
+  .wh-lt{display:flex; flex-direction:column; gap:2px;}
+  .wh-lr{display:grid; grid-template-columns:18px 64px minmax(0, 1fr) 38px 44px; gap:6px; align-items:center; padding:3px 6px; font:12px var(--sans); --lc:var(--text-dim);}
+  .wh-lt.cn .wh-lr{grid-template-columns:18px 64px minmax(0, 1fr) 30px 40px 24px;}
+  .wh-lh{color:var(--text-dim); font:600 11px var(--sans); padding-bottom:2px; border-bottom:1px solid var(--line);} .wh-lh input{margin:0;}
+  .wh-lh button{display:flex; align-items:center; gap:3px; padding:0; min-height:24px; border:0; background:none; color:inherit; font:inherit; cursor:pointer; white-space:nowrap;}
+  .wh-lar{color:var(--text-dim);} .wh-lh [aria-sort="ascending"] button, .wh-lh [aria-sort="descending"] button, .wh-lh [aria-sort="ascending"] .wh-lar, .wh-lh [aria-sort="descending"] .wh-lar{color:var(--cyan);}
+  .wh-lr .r{justify-self:end; text-align:right;} .wh-lr .ag{font:11px var(--mono, monospace); color:var(--text-dim); white-space:nowrap;}
+  .wh-lr[data-wh-lr]{background:var(--panel-2); border-radius:3px; cursor:pointer; outline-offset:-1px;} .wh-lr[data-wh-lr]:hover{background:color-mix(in srgb, var(--cyan) 7%, var(--panel-2));}
+  .wh-lr[aria-selected="true"]{background:color-mix(in srgb, var(--cyan) 18%, var(--panel-2)); box-shadow:inset 2px 0 0 var(--cyan);}
+  .wh-lr.b0{--lc:var(--danger);} .wh-lr.b1{--lc:var(--amber);} .wh-lr.b2{--lc:var(--exp);} .wh-lr.b3{--lc:var(--it-clear);}   /* the game's signal colours */
+  .wh-lr.cm0{--lc:var(--text);} .wh-lr.cm1{--lc:var(--amber);} .wh-lr.cm2{--lc:var(--danger);}   /* a connection by mass */
+  .wh-lr .ic{display:grid; place-items:center; color:var(--lc);} .wh-lr .id{font:600 12px var(--mono, monospace); color:var(--lc);} .wh-lr.b0 .r:not(.ag), .wh-lr.b1 .r:not(.ag), .wh-lr.b2 .r:not(.ag), .wh-lr.b3 .r:not(.ag){color:var(--lc); font:11px var(--mono, monospace);}
+  .wh-lr .nm{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text);} .wh-lt.cn .nm{display:flex; align-items:center; gap:4px;} .wh-lnm{min-width:0; overflow:hidden; text-overflow:ellipsis;}
+  .wh-lty{color:var(--text-dim); font:11px var(--mono, monospace);} .wh-lr .id.wh-lnone{color:var(--text-dim);} .wh-llf{font:600 10px var(--sans); color:var(--drain); white-space:nowrap;}
+  .wh-lr.old > :not(.wh-lto){opacity:.5;} .wh-lto{grid-column:3 / -1; display:flex; align-items:center; gap:6px; color:var(--text-dim);}
+  button.wh-lgo{min-height:22px; min-width:24px; padding:0 4px; border:0; background:none; color:var(--cyan); font:13px var(--sans);}
+  .wh-gwait{display:block; width:9px; height:9px; border:1px dotted var(--text-faint); border-radius:2px;}   /* a kind with no shape drawn yet */
+  .wh-le{display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:6px; background:var(--panel-2); border-radius:3px; box-shadow:inset 2px 0 0 var(--cyan); font:12px var(--sans);}
+  .wh-le input, .wh-le select{min-width:0;} input.wh-lei{width:76px; font-family:var(--mono, monospace);} input.wh-lei.sh{width:58px;} input.wh-lem{flex:1 1 140px;}
+  .wh-leb{display:flex; gap:6px; flex:1 1 100%;} .wh-leo{flex:1 1 100%; color:var(--text-dim);}
   .wh-here{display:flex; gap:4px; padding:2px 2px 4px;} .wh-here input{flex:1 1 auto; min-width:0;} .wh-here button{font-size:12px; padding:2px 10px;} .wh-hn{padding:2px 4px; line-height:1.4;}
   @media (max-width:899px){ .wh-topl{right:8px; top:52px;} .wh-box .wh-rail, .wh-pnl, .wh-gsel{top:90px;} }
   @media (max-width:599px){
@@ -3349,7 +3378,11 @@
     .wh-pop{top:auto; bottom:0; right:0; left:0; width:auto; max-height:72%; border-radius:12px 12px 0 0;}
     .wh-menu{width:min(260px, calc(100% - 16px));} .wh-smenu button.wh-mi, .wh-smenu .wh-mtag input{min-height:44px;}
     .wh-msg, .wh-gsel, .wh-box:has(.wh-pnl:not([hidden])) .wh-gsel{bottom:auto; top:60px; left:60px; transform:none; max-width:calc(100% - 128px);}
-    .wh-cn button, .wh-acts button{min-height:44px;} button.wh-n{min-height:44px;} .wh-here button, .wh-pop .wh-addf button[type="submit"]{min-height:44px;}
+    .wh-acts button{min-height:44px;} button.wh-n{min-height:44px;}
+    .wh-menu button.wh-mi, .wh-ask button, .wh-sec button, .wh-cnw button, .wh-lz, button.wh-lib, button.it-whp-xb.wh-sect{min-height:44px;} button.wh-lib{width:44px;}   /* 059 */
+    .wh-lr{grid-template-columns:18px 62px minmax(0, 1fr) 34px 38px; gap:5px;} .wh-lr[data-wh-lr]{min-height:44px; box-sizing:border-box;} .wh-lh button{min-height:44px;} .wh-lh input{width:20px; height:20px;}
+    .wh-lt.cn .wh-lr{grid-template-columns:18px 58px minmax(0, 1fr) 30px 44px;} .wh-lt.cn .ag{display:none;} button.wh-lgo{min-width:44px;}   /* Age in the hover */
+    .wh-le input, .wh-le select{min-height:44px;} .wh-here button, .wh-pop .wh-addf button[type="submit"]{min-height:44px;}
     /* D21: the More menu */
     body.tm-on .tabs{position:relative;} body.tm-on .tabs .tm-hide{display:none !important;}
     body.tm-on .tabs .tab-btn{flex:0 1 auto; white-space:nowrap; min-height:44px; margin-right:12px; padding-left:6px; padding-right:6px;}
@@ -3372,7 +3405,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.17.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.17.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3754,7 +3787,7 @@ const CARD_INFO = {
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
   "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. Filters (left): one colour (press it again for none); Only filters, any number, all must match (their settings beside them); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter on, systems past {card:itnear}'s range are faded.",
-  "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus jump bridges you can use with Use jump bridges on the map (green curves; the alert glow and Paths to you stay by stargate).",
+  "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus jump bridges you can use with Use jump bridges on the map (green curves, the bridge button hides them; the alert glow and Paths to you stay by stargate).",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list. With Use jump bridges on, routes take only bridge jumps arriving in the ticked zones (zone 1 free by default).",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
   "[Privacy and tabs] Nothing from your logs leaves the browser except the words looked up on ESI; only wormhole reports and sov lists are kept after you close the page.",
@@ -3792,9 +3825,12 @@ const CARD_INFO = {
  ],
  "whmap": [
   "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. A change of system that lands you docked (a jump clone, a pod death) adds no connection.",
-  "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move together. The overview in the corner shows where everything is; press it to go there. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
-  "[Focus and adding] Click a system for the System panel (its button, top left, shows or hides it): class, effect, statics, notes, connections. Right-click it (press and hold on a phone) for its menu: a status (the border's colour), a tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one there.",
-  "[Kept] In this browser only, until you remove it: nothing expires. Lock a system (your home, say) so it can't be moved or removed by accident. While you're in a wormhole, Intel counts jumps from where you came into the chain."
+  "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move together; right-click empty space for Select all. The overview in the corner shows where everything is. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
+  "[Focus and adding] Click a system for the System panel (its button, top left): class, effect, statics, notes, connections, signatures. Right-click it (press and hold on a phone) for its menu: status, tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one there.",
+  "[Connections] Each side of a hole has its own signature ID: hover the mark at its end, or see that side's list.",
+  "[Signatures] Paste the Probe Scanner's list (Ctrl+A, Ctrl+C) for the system in focus: signatures and anomalies. Colours follow the game's signal. Select rows (Ctrl-click adds) to copy, edit or delete. With Lazy update on, a paste is the whole list: signatures missing from it go, after you confirm. Undo takes back the last paste.",
+  "[Sharing] Share copies your chain as text or a link: positions and locks stay with you, notes and who's there only if ticked. Import shows what it adds first; the newer edit wins and nothing of yours is removed.",
+  "[Kept] In this browser only, until you remove it: nothing expires. Lock a system (your home, say) so it can't be moved or removed; Remove all leaves locked ones. In a wormhole, Intel counts jumps from where you came into the chain."
  ]
 };
 const CTX_MAX = 40;
@@ -26665,6 +26701,7 @@ function itReadSet(){
       if(typeof r.alias === 'string') d.alias = r.alias.slice(0, IT_ALIAS_MAX);   // v2026.10.31.5: your shorthands
       if(typeof r.bridges === 'string') d.bridges = r.bridges.slice(0, IT_BRIDGE_MAX);   // build queue 041: your jump bridges, one per line
       if(r.bridgesOn === true) d.bridgesOn = true;   // 041: Use jump bridges on the map (missing = off, the owner: "default setting will be off")
+      if(r.jbHide === true) d.jbHide = true;   // 059: the jump bridge lines turned off on the map (missing = on; an older page drops it and the lines show again)
       const f = r.feed && typeof r.feed === 'object' ? r.feed : {};   // v.99: the Feed's filters
       if(IT_FEED_TYPES.some(x => x[0] === f.types)) d.feed.types = f.types;
       if(IT_FEED_DIST.includes(Number(f.dist))) d.feed.dist = Number(f.dist);
@@ -27220,7 +27257,7 @@ function itRpJbStepsHtml(path){
 // the map's hover on a bridge line (the owner's "Map bridge hover"): the nearest bridge curve within 7 px (12 on touch), when no system
 // is under the pointer; the curve as itMapArc draws it, 24 steps along it
 function itMapPickBridge(x, y, touch){
-  if(!itm.jbKey || !itm.Q) return -1;
+  if(!itm.jbKey || !itm.Q || itJbHidden()) return -1;   // 059: no hover on a line that isn't drawn
   const r = touch ? 12 : 7, E = itBridges().edges, Q = itm.Q;
   let best = -1, bd = r * r;
   E.forEach(([a, b], k) => {
@@ -30368,7 +30405,21 @@ function itMpChanged(){
 }
 // build queue 055: the map's controls each from one builder, used by the live map and by the Intel example's still copies (itExCtlHtml),
 // so the two can't drift (intel_example_check's drift guard)
-function itMapZoomHtml(){ return `<div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button></div>`; }
+function itMapZoomHtml(){ return `<div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button><button type="button" data-im-z="jb" aria-pressed="true" aria-label="Jump bridge lines" hidden>${IT_JB_ICON}</button></div>`; }
+// 059 (the owner, 2026-11-17: "add a button to the map that toggles jump bridge visibility (not a filter, just a visibility toggle)", then "Zoom
+// column", "Route step stays, hover off", "Remember; only while on", and "button defaults to on when jump bridges are enabled. no need for the line
+// through it, just shows off state when they're turned off"): after ⌖, only while the map counts bridges (itBridgeOn); on by default (the pressed
+// look), off hides only the green lines: the counts, the Jumps colours, Within N and the routes still use the bridges, a route's bridge step is still
+// drawn, and a bridge's hover is off. Kept in dscanIntel (it.set.jbHide).
+const IT_JB_ICON = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="3" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="13" cy="12" r="1.8" fill="currentColor" stroke="none"/><path d="M3.6 10.6Q8 1.5 12.4 10.6"/></svg>';
+function itJbHidden(){ return !!(it.set && it.set.jbHide) && itBridgeOn(); }
+function itJbBtnPaint(){
+  const b = itm.el && itm.el.querySelector('[data-im-z="jb"]'); if(!b) return;
+  const on = itBridgeOn(), shown = !itJbHidden(), t = shown ? 'Jump bridge lines: on (press to hide them; bridges still count for jumps and routes)' : 'Jump bridge lines: off (press to show them)';
+  if(b.hidden === on) b.hidden = !on;   // written only when it changes (LESSON #120)
+  if(b.getAttribute('aria-pressed') !== String(shown)) b.setAttribute('aria-pressed', String(shown));
+  if(b.title !== t) b.title = t;
+}
 function itMapRowHtml(){ return '<div class="it-map-row"><span class="it-map-rs"></span><span class="it-map-help wide">drag to move · wheel to zoom</span><span class="it-map-help phone">two fingers move and zoom the map; one finger scrolls the page</span></div>'; }
 // 055: the live map's height (052: full width and taller), and the filter column's rows for a map that tall (a second column when it's too
 // short), for the live map and the example's picture alike
@@ -30722,7 +30773,7 @@ function itMapFcol(i){ const c = itMapColRaw(i); return i === itm.home || itMapM
 function itMapDimmed(i){ return i !== itm.home && !!itm.mt && !itm.mt.m[i]; }
 function itMapDraw(){
   if(!itm.P || itm.home < 0) return;
-  itm.draws++;
+  itm.draws++; itJbBtnPaint();
   itm.wh = itMapWh();   // build queue 040: the kept wormholes, and those shown as reports (itMapFcol, itMapDimmed, the labels and the hover read it)
   itm.mt = itMapMatch(itm.wh);   // 058: the systems every Only filter that is on picks out, once a draw (null with none on)
   if(itPtLive()){ itMapWhPulse([]); itMapMtPaint(); itPtPaint(); return; }   // build queue 043: the tree covers the map, so the galaxy under it isn't drawn
@@ -30761,7 +30812,7 @@ function itMapDraw(){
   // systems and the routes, faint past the reach; curved like the game's, so one never reads as a gate
   // 057: a bridge left out (D5: another alliance's, no one's; logged out, two alliances') dashed and fainter; the one under the pointer thicker.
   // The owner at the build: "maybe make them 70% of their current brightness" (--it-bridge #00f000 -> #00a800)
-  if(itm.jbKey){
+  if(itm.jbKey && !itJbHidden()){   // 059: the lines button off hides them (a route's bridge step below is still drawn)
     const Zb = itJbZones(), lw = big ? 1.75 : 1.25;
     c.strokeStyle = itMapCol('--it-bridge', '#00a800');
     itBridges().edges.forEach(([a, b], k) => {
@@ -31672,6 +31723,7 @@ function itWhImportRead(text){
   let o; try{ o = JSON.parse(s); }catch(e){ return {err: 'That isn’t a wormhole export from this tool (it isn’t JSON).'}; }
   if(!o || typeof o !== 'object' || o.tv !== 'wormholes') return {err: 'That isn’t a wormhole export from this tool.'};
   if(o.v !== 1) return {err: 'That export is from a newer version of this tool: reload the page and try again.'};
+  if(o.chain && !(Array.isArray(o.sys) && o.sys.length)) return {err: 'This export holds a wormhole chain: import it on the Wormholes tab (Share).'};   // 059 (P15)
   const g = itGraphGet(), now = Date.now(), okT = (t) => Number.isFinite(t) && t >= now - IT_WH_MAX_H * 3600e3 && t <= now + 3600e3;
   const sk = {unknown: 0, old: 0, bad: 0}, out = [], list = Array.isArray(o.sys) ? o.sys : [];
   sk.bad += Math.max(0, list.length - IT_WH_MAX);
@@ -31820,16 +31872,18 @@ function itWhPreviewHtml(r){
   return `<div class="it-whp-ph">${escapeHtml(head)}</div>${itWhSkipHtml(skip)}${itWhPreviewBtnsHtml(r.out.length > 0)}`;
 }
 function itWhSkipHtml(skip){ return skip.length ? `<div class="it-whp-psk">${escapeHtml('Skipped: ' + skip.join(' · '))}</div>` : ''; }
-function itWhPreviewBtnsHtml(any){ return any ? '<div class="it-whp-brow"><button type="button" data-it-whadd>Add to my list</button><button type="button" data-it-whcancel>Cancel</button></div>' : ''; }
+function itWhPreviewBtnsHtml(any, label){ return any ? `<div class="it-whp-brow"><button type="button" data-it-whadd>${escapeHtml(label || 'Add to my list')}</button><button type="button" data-it-whcancel>Cancel</button></div>` : ''; }
 // ---- the two buttons and their boxes (D1, D2, D8): fixed labels with Intel's chevron (the owner: "sounds good" to a fixed "Export" label), one box
 // open at a time, both inside the list panel; the list's repaint never touches them
 function itWhShareBtnHtml(k, label, box){ return `<button type="button" class="it-whp-xb" data-it-whxb="${escapeHtml(k)}" aria-expanded="false" aria-controls="${escapeHtml(box)}">${IT_CHEV}<span>${escapeHtml(label)}</span></button>`; }
-function itWhShareHtml(){
-  return `<div class="it-whp-share">${itWhShareBtnHtml('exp', 'Export', 'itWhExp')}${itWhShareBtnHtml('imp', 'Import', 'itWhImp')}</div>`
-    + '<div class="it-whp-box" id="itWhExp" hidden><div class="it-whp-bl"></div><textarea readonly rows="6" spellcheck="false" aria-label="Your wormhole list as text"></textarea>'
-    + '<div class="it-whp-brow"><button type="button" data-it-whcopy>Copy</button><span class="it-whp-bs" role="status"></span></div></div>'
-    + '<div class="it-whp-box" id="itWhImp" hidden><div class="it-whp-bl">Paste someone’s wormhole export; you see what it adds before anything changes.</div>'
-    + '<textarea rows="6" spellcheck="false" aria-label="A wormhole export to add to your list" placeholder="{&quot;tv&quot;: &quot;wormholes&quot;, …}"></textarea>'
+// 059 (P14): the Wormholes tab's Share builds the same two boxes ('chain': its own ids and words, and Copy link beside Copy)
+function itWhShareHtml(w){
+  const c = w === 'chain', p = c ? 'whSh' : 'itWh';
+  return `<div class="it-whp-share">${itWhShareBtnHtml('exp', 'Export', p + 'Exp')}${itWhShareBtnHtml('imp', 'Import', p + 'Imp')}</div>`
+    + `<div class="it-whp-box" id="${escapeHtml(p + 'Exp')}" hidden><div class="it-whp-bl"></div><textarea readonly rows="6" spellcheck="false" aria-label="${escapeHtml(c ? 'Your wormhole chain as text' : 'Your wormhole list as text')}"></textarea>`
+    + '<div class="it-whp-brow"><button type="button" data-it-whcopy>Copy</button>' + (c ? '<button type="button" data-it-whlink>Copy link</button>' : '') + '<span class="it-whp-bs" role="status"></span></div></div>'
+    + `<div class="it-whp-box" id="${escapeHtml(p + 'Imp')}" hidden><div class="it-whp-bl">${escapeHtml(c ? 'Paste someone’s chain (or open their link); you see what it adds before anything changes.' : 'Paste someone’s wormhole export; you see what it adds before anything changes.')}</div>`
+    + `<textarea rows="6" spellcheck="false" aria-label="${escapeHtml(c ? 'A wormhole chain to add to your map' : 'A wormhole export to add to your list')}" placeholder="{&quot;tv&quot;: &quot;wormholes&quot;, …}"></textarea>`
     + '<div class="it-whp-brow"><button type="button" data-it-whimp>Import</button><span class="it-whp-bs" role="status"></span></div><div class="it-whp-prev" hidden></div></div>';
 }
 // the system names first: Intel's reader needs them to tell a system from a name (without them every system would read as "<a pilot>")
@@ -32903,6 +32957,7 @@ function itMapBind(){
     if(fb){ itMapFilterSet(fb.dataset.imF); if(itm.el.querySelector('.it-map-fb.open')){ itMapFbarOpen(false); itm.el.querySelector('.it-map-fcur').focus(); } return; }
     if(e.target.closest('.it-map-fcur')){ itMapFbarOpen(!itm.el.querySelector('.it-map-fb.open')); return; }
     const z = e.target.closest('[data-im-z]');
+    if(z && z.dataset.imZ === 'jb'){ it.set.jbHide = !it.set.jbHide; itWriteSet(); itm.hoverJb = -1; itMapTip(-1); itMapDraw(); return; }   // 059: never read as a zoom
     if(z){ if(z.dataset.imZ === 'fit'){ itMapFitView(); itMapTip(-1); itMapDraw(); } else if(z.dataset.imZ === 'me') itMapCenter(); else itMapZoom(itm.W / 2, itm.H / 2, z.dataset.imZ === 'in' ? 1.5 : 1 / 1.5); return; }
     if(e.target.closest('.it-map-you')){ itMapCenter(); return; }
     if(e.target.closest('.it-map-clr')){ itm.pinned.clear(); e.target.closest('.it-map-clr').hidden = true; itRenderLists(); itMapRefresh(true); }
@@ -33558,7 +33613,11 @@ function whRead(){
 }
 function whSave(){ try{ localStorage.setItem(WH_KEY, JSON.stringify(whS.st)); }catch(e){ } }
 function whState(){
-  if(!whS){ whS = {st: whRead(), last: null, lastT: 0, kind: null, sel: null, el: null, drawKey: '', pn: {}, msgT: 0, here: null, timer: 0, M: null, mk: {}, menu: null}; whS.mk = whMkRead(whS.st.sys); }
+  if(!whS){
+    whS = {st: whRead(), last: null, lastT: 0, kind: null, sel: null, el: null, drawKey: '', pn: {}, msgT: 0, here: null, timer: 0, M: null, mk: {}, menu: null};
+    whS.mk = whMkRead(whS.st.sys); whS.sg = whSgRead(whS.st.sys); whS.ends = whEndRead(whS.st); whS.secs = whSecRead();
+    whS.p3 = whP3Blank(null);   // 059: what the System panel's lists hold for the system in focus (selection, edit, a question, the last paste)
+  }
   return whS;
 }
 function whTagClean(v){ return typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, WH_TAG_MAX) : ''; }
@@ -33587,6 +33646,80 @@ function whAt(n){ const m = whMk(n), p = whS.st.pos[n]; return m.lock && m.at ? 
 function whLinkKey(a, b){ return a < b ? `${a}-${b}` : `${b}-${a}`; }
 function whLinkOf(a, b){ return whState().st.links.find(l => whLinkKey(l.a, l.b) === whLinkKey(a, b)); }
 function whLinksOf(id){ return whState().st.links.filter(l => l.a === id || l.b === id); }
+// ---- build queue 059 (part 3; Project doc roadmap/wormholes-part3-plan.md, P1-P22): signatures, per-end IDs, the System panel's sections. Each under
+// its own key, never in tvWhChain (whRead rebuilds systems and links from the fields it knows, so a 056 page or a revert would drop new fields there);
+// an older page never reads these keys, and this page drops what no longer has a system or a link on the map.
+//   tvWhSigs {v: 1, lazy, sort: {k, d}, sys: {id: {t, rows: [{id, sg, grp, nm, pct, f, t}]}}}: every row the Probe Scanner lists (P4, P8)
+//   tvWhEnds {v: 1, links: {"<a>-<b>": {"<sysId>": {sig, type, gone?}}}}: each end's own signature ID (P9; the BUG: one ID per connection)
+//   tvWhSecs {v: 1, sigs, cn: {k, d}}: the Signatures section folded or open, the Connections list's sort (P1, P22)
+const WH_SG_KEY = 'tvWhSigs', WH_END_KEY = 'tvWhEnds', WH_SEC_KEY = 'tvWhSecs', WH_SG_ROWS = 150, WH_SIG_RX = /^[A-Z]{3}-\d{3}$/, WH_SIGP_RX = /^[A-Z]{3}(-\d{0,3})?$/;
+const WH_SG_SORTS = ['id', 'nm', 'pct', 'f'], WH_CN_SORTS = ['id', 'to', 'lf', 'f'];
+function whJson(k){ try{ const o = typeof localStorage === 'undefined' ? null : JSON.parse(localStorage.getItem(k) || 'null'); return o && typeof o === 'object' && o.v === 1 ? o : null; }catch(e){ return null; } }
+function whPut(k, o){ try{ localStorage.setItem(k, JSON.stringify(o)); }catch(e){ } }
+function whTxt(x, n){ return typeof x === 'string' ? x.replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, n) : ''; }
+function whTm(x){ return Number.isFinite(x) && x > 0 && x <= Date.now() + 3600e3 ? x : 0; }
+function whSortRead(o, keys){ return o && keys.includes(o.k) && (o.d === 1 || o.d === -1) ? {k: o.k, d: o.d} : {k: 'f', d: 1}; }   // first time: Age, newest first
+function whSgRowRead(r){
+  if(!r || typeof r !== 'object' || !WH_SIG_RX.test(r.id || '')) return null;
+  const pct = Number(r.pct), t = whTm(r.t);
+  return {id: r.id, sg: whTxt(r.sg, 24), grp: whTxt(r.grp, 24), nm: whTxt(r.nm, 48), pct: Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) : 0, f: whTm(r.f) || t || Date.now(), t: t || Date.now()};
+}
+function whSgRead(sys){
+  const o = whJson(WH_SG_KEY) || {}, out = {v: 1, lazy: o.lazy === true, sort: whSortRead(o.sort, WH_SG_SORTS), sys: {}};
+  for(const [k, s] of Object.entries(o.sys && typeof o.sys === 'object' ? o.sys : {})){
+    if(!sys[k] || !s || !Array.isArray(s.rows)) continue;   // a system no longer on the map: its signatures go too (as whMkRead)
+    const seen = new Set(), rows = s.rows.map(whSgRowRead).filter(r => r && !seen.has(r.id) && seen.add(r.id)).slice(0, WH_SG_ROWS);
+    if(rows.length) out.sys[k] = {t: whTm(s.t) || Math.max(...rows.map(r => r.t)), rows};
+  }
+  return out;
+}
+function whSgSave(){ const S = whS, sys = {}; for(const [k, s] of Object.entries(S.sg.sys)) if(S.st.sys[k] && s.rows.length) sys[k] = s; whPut(WH_SG_KEY, {v: 1, lazy: S.sg.lazy, sort: S.sg.sort, sys}); }
+function whEndRead(st){
+  const o = whJson(WH_END_KEY) || {}, out = {}, keys = new Set(st.links.map(l => whLinkKey(l.a, l.b)));
+  for(const [k, e] of Object.entries(o.links && typeof o.links === 'object' ? o.links : {})){
+    if(!keys.has(k) || !e || typeof e !== 'object') continue;   // a connection an older page deleted: its ends go too
+    const ab = k.split('-'), x = {};
+    for(const n of ab){ const v = e[n]; if(!v || typeof v !== 'object') continue;
+      const sig = WH_SIGP_RX.test(v.sig || '') ? v.sig : '', type = IT_WH_TYPE[v.type] || v.type === 'K162' ? v.type : '', gone = whTm(v.gone);
+      if(sig || type) x[n] = {sig, type, ...(gone ? {gone} : {})}; }
+    if(Object.keys(x).length) out[k] = x;
+  }
+  return out;
+}
+function whEndSave(){ const S = whS, keys = new Set(S.st.links.map(l => whLinkKey(l.a, l.b))), links = {}; for(const [k, e] of Object.entries(S.ends)) if(keys.has(k)) links[k] = e; whPut(WH_END_KEY, {v: 1, links}); }
+function whSecRead(){ const o = whJson(WH_SEC_KEY) || {}; return {sigs: o.sigs !== false, cn: whSortRead(o.cn, WH_CN_SORTS)}; }
+function whSecSave(){ whPut(WH_SEC_KEY, {v: 1, sigs: whS.secs.sigs, cn: whS.secs.cn}); }
+// a side of a connection (P10, P11): this end's own ID, else the link's old single ID as "side not known", else nothing
+function whEnd(l, n){ const e = whS.ends[whLinkKey(l.a, l.b)]; return e && e[n] ? e[n] : null; }
+function whSide(l, n){ const e = whEnd(l, n); return e && e.sig ? {sig: e.sig, type: e.type || '', own: true, gone: e.gone || 0} : l.sig ? {sig: l.sig, type: l.type || '', own: false, gone: 0} : null; }
+function whEndSet(l, n, sig, type){
+  const k = whLinkKey(l.a, l.b), e = whS.ends[k] || (whS.ends[k] = {});
+  if(sig || type) e[n] = {sig, type}; else delete e[n];
+  if(!Object.keys(e).length) delete whS.ends[k];
+}
+function whEndGone(l, n, t){ const e = whEnd(l, n); if(!e || !e.sig) return false; if(t) e.gone = t; else delete e.gone; return true; }
+// P12: the connection a scanned ID in system n is: this end's own ID (whole, or a part only it fits), else the old single ID
+function whLinkBySig(n, id){
+  const ls = whLinksOf(n), fit = (s) => s && (s.sig === id || (s.sig.length < 7 && id.startsWith(s.sig)));
+  for(const own of [true, false]){ const h = ls.filter(l => { const s = whSide(l, n); return s && s.own === own && fit(s); }); if(h.length === 1 || (h.length && h.some(l => whSide(l, n).sig === id))) return h.find(l => whSide(l, n).sig === id) || h[0]; }
+  return null;
+}
+// P4: the Probe Scanner's list as copied (Ctrl+A, Ctrl+C): one row a line, tab-separated, a row only when its first cell is a signature ID; every
+// row kept, anomalies included (the owner: "we want ALL items that show up in the system on a probe scan available for the user"); the signal with
+// '.' or ',' and an optional '%'; the distance ignored. The format is UNVERIFIED (the plan's Sources: secondary only; the owner's hand test).
+function whScanRows(text){
+  const rows = [], seen = new Set(); let bad = 0, over = 0;
+  for(const line of String(text || '').split(/\r?\n/)){
+    if(!line.trim()) continue;
+    const c = line.split('\t').map(x => x.trim()), id = (c[0] || '').toUpperCase();
+    if(!WH_SIG_RX.test(id)){ bad++; continue; }
+    if(seen.has(id)) continue;
+    if(rows.length >= WH_SG_ROWS){ over++; continue; }
+    const p = parseFloat(String(c[4] || '').replace(',', '.').replace('%', ''));
+    seen.add(id); rows.push({id, sg: whTxt(c[1], 24), grp: whTxt(c[2], 24), nm: whTxt(c[3], 48), pct: Number.isFinite(p) ? Math.max(0, Math.min(100, p)) : 0});
+  }
+  return {rows, bad, over};
+}
 function whAddSys(id, t = Date.now()){ const st = whState().st; if(!st.sys[id] && Object.keys(st.sys).length < WH_SYS_MAX) st.sys[id] = {cls: null, statics: '', who: '', notes: '', t, u: t, src: 'you'}; return !!st.sys[id]; }
 function whAddLink(a, b, t = Date.now()){
   const st = whState().st, l = whLinkOf(a, b); if(l){ l.seen = t; return l; }
@@ -33595,7 +33728,17 @@ function whAddLink(a, b, t = Date.now()){
 }
 function whRemoveSys(id){   // false while locked (the owner: "locked systems cannot be deleted until unlocked.")
   const st = whState().st; if(whLocked(id)) return false;
-  delete st.sys[id]; delete st.pos[id]; delete whS.mk[id]; st.links = st.links.filter(l => l.a !== id && l.b !== id); if(whS.sel === id) whS.sel = null; whSave(); whMkSave(); return true;
+  delete st.sys[id]; delete st.pos[id]; delete whS.mk[id]; delete whS.sg.sys[id]; st.links = st.links.filter(l => l.a !== id && l.b !== id); if(whS.sel === id) whS.sel = null;
+  whSave(); whMkSave(); whSgSave(); whEndSave(); return true;   // 059: its signatures and its connections' ends go with it
+}
+// 059 (P13): every system not locked, with its connections, marks, signatures and ends; one save, one repaint, one Intel map refresh
+function whRemoveAll(){
+  const S = whState(), st = S.st, ids = Object.keys(st.sys).map(Number), keep = ids.filter(whLocked), go = ids.filter(n => !whLocked(n));
+  for(const n of go){ delete st.sys[n]; delete st.pos[n]; delete S.mk[n]; delete S.sg.sys[n]; }
+  st.links = st.links.filter(l => st.sys[l.a] && st.sys[l.b]);
+  if(S.sel !== null && !st.sys[S.sel]) S.sel = null; if(S.M) S.M.group.clear();
+  whSave(); whMkSave(); whSgSave(); whEndSave(); S.pn = {}; S.drawKey = ''; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true);
+  whMsg(`Removed ${go.length} system${go.length === 1 ? '' : 's'}${keep.length ? `; ${keep.length} locked kept` : ''}.`);
 }
 function whRemoveAsk(n){
   const nm = whName(n); if(!whRemoveSys(n)){ whMsg(WH_LOCKED(nm)); return false; }
@@ -33662,7 +33805,7 @@ function whCtxHtml(){
 }
 function whStLegHtml(){ return WH_ST.map(([k, l]) => `<span class="it-gtag wh-st st-${escapeHtml(k)}">${escapeHtml(l)}</span>`).join(' '); }
 function whLegendHtml(){
-  return `<div class="wh-leg">Border: the status you set (right-click a system, or press and hold): ${whStLegHtml()}. A lock: it can’t be moved or removed until you unlock it.<br>Dashed white ring: in focus. Cyan ring: you. Right-click empty space (or press and hold) to add a system there.<br>Lines: solid · dashed end of life · amber reduced mass · red critical · thicker for bigger ships.`
+  return `<div class="wh-leg">Border: the status you set (right-click a system, or press and hold): ${whStLegHtml()}. A lock: it can’t be moved or removed until you unlock it.<br>Dashed white ring: in focus. Cyan ring: you. Right-click empty space (or press and hold) to add a system there, select all or remove all.<br>Lines: solid · dashed end of life · amber reduced mass · red critical · thicker for bigger ships. The wormhole mark at an end: that side’s signature ID (hover it, or tap it on a phone).`
     + `<br>Classes and statics lead to: <span class="wh-sc d-lo">C1–3</span> <span class="wh-sc d-mid">C4–5</span> <span class="wh-sc d-hi">C6</span> <span class="wh-sc d-sp">Thera, shattered, Drifter</span> <span class="wh-sc it-sn s6">HS</span> <span class="wh-sc it-sn s3">LS</span> <span class="wh-sc it-sn s0">NS</span>. K-space names carry their security colour.</div>`;
 }
 function whOptsHtml(arr, v){ return arr.map(([k, l]) => `<option value="${escapeHtml(k)}"${escapeHtml(String(k) === String(v) ? ' selected' : '')}>${escapeHtml(l)}</option>`).join(''); }
@@ -33671,15 +33814,18 @@ function whShellHtml(){
     + `<div class="wh-topl"><span class="wh-ctx"></span></div>`
     + `<div class="wh-ctl"><div class="it-map-zoom wh-zoom"><button type="button" data-wh-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-wh-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-wh-z="fit" title="Fit the whole chain in view" aria-label="Fit the chain">⤢</button><button type="button" data-wh-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button><button type="button" data-wh-z="sel" aria-pressed="false" title="Select a group: drag on empty space (or hold Shift)" aria-label="Select a group">${WH_SEL_SVG}</button></div>`
     + `<button type="button" class="it-map-clr wh-tb" data-wh-pop="add" aria-expanded="false" title="Add a system or a connection by hand" aria-label="Add a system">${WH_ADD_SVG}<span>Add</span></button>`
+    + `<button type="button" class="it-map-clr wh-tb" data-wh-pop="share" aria-expanded="false" title="Share your chain, or import someone’s" aria-label="Share">${WH_SHARE_SVG}<span>Share</span></button>`
     + `<button type="button" class="it-gear wh-gear" data-wh-pop="set" aria-expanded="false" aria-label="Wormholes settings" title="Wormholes settings">${IT_GEAR}</button>${infoBtnHtml('whmap')}</div>`
     + `<div class="wh-pop" data-pop="add" role="dialog" aria-label="Add by hand" hidden><div class="wh-poph">Add by hand<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
     + `<form class="wh-addf" autocomplete="off"><input type="text" name="sys" placeholder="System, e.g. J123456, Thera or Amamake" aria-label="System" maxlength="40" spellcheck="false">`
     + `<label class="wh-lnk">Linked to <select name="link" aria-label="Linked to"></select></label>`
-    + `<input type="text" name="sig" placeholder="Sig ID, e.g. RZL-429" aria-label="Signature ID of the connection (optional)" maxlength="7" spellcheck="false" autocapitalize="characters">`
+    + `<input type="text" name="sig" placeholder="Sig ID, e.g. RZL-429" aria-label="Signature ID of the connection, in the linked system (optional)" title="The signature ID in the linked system (where you scanned it)" maxlength="7" spellcheck="false" autocapitalize="characters">`
     + `<span class="wh-ty"><input type="text" name="ty" placeholder="Type or class: Z971, C3, HS" aria-label="Type or class (optional)" maxlength="7" spellcheck="false" autocapitalize="characters"><output name="dest"></output></span>`
     + `${whAddSelHtml('life')}${whAddSelHtml('mass')}${whAddSelHtml('size')}<label class="wh-dr"><input type="checkbox" name="dr"> Drifter</label><button type="submit">Add</button></form></div>`
     + `<div class="wh-pop" data-pop="set" role="dialog" aria-label="Wormholes settings" hidden><div class="wh-poph">Wormholes settings<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
     + `<div class="wh-sub">Map</div><button type="button" data-wh-z="arr">Rearrange as a tree</button><div class="wh-note">Puts every system back in the tree layout, dropping where you moved them; locked systems stay where they are.</div></div>`
+    + `<div class="wh-pop" data-pop="share" role="dialog" aria-label="Share your chain" hidden><div class="wh-poph">Share your chain<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
+    + `<label class="wh-note"><input type="checkbox" data-wh-shinc> Include notes and who’s there</label>${itWhShareHtml('chain')}</div>`
     + whRailHtml()
     + `<div class="wh-msg" role="status"></div><div class="wh-menu wh-hmenu" role="dialog" aria-label="Add a system here" hidden></div><div class="wh-menu wh-smenu" role="menu" hidden></div>`
     + `<div class="wh-gsel" hidden></div><canvas class="wh-mini" hidden role="img" aria-label="Overview of the whole chain; press or drag to move the view there"></canvas>`
@@ -33695,6 +33841,7 @@ function whPnSet(open, quiet){   // the rail's button, and a click on a system (
   const S = whS; S.open = open; try{ localStorage.setItem(WH_PN_KEY, JSON.stringify({v: 1, open})); }catch(e){ }
   if(!quiet){ S.pn = {}; whPanels(); }   // the view stays where it is (as Near You); ⤢ then fits in the uncovered part
 }
+const WH_SHARE_SVG = '<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="3.5" r="2"/><circle cx="12" cy="12.5" r="2"/><path d="M5.8 7l4.4-2.5M5.8 9l4.4 2.5"/></svg>';
 const WH_SEL_SVG = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.5 2"/></svg>';
 const WH_ADD_SVG = '<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="3.5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12.5 1v5M10 3.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
 function whMake(){
@@ -33819,9 +33966,7 @@ function whDraw(){
     c.lineWidth = {small: 1, medium: 2, large: 3, xl: 4}[l.size] || 2; c.setLineDash(l.life === 'eol' || l.life === 'lt1h' ? [6, 4] : []);
     c.beginPath(); c.moveTo(a.x, a.y);
     if(Math.abs(b.y - a.y) > Math.abs(b.x - a.x)) c.bezierCurveTo(a.x, (a.y + b.y) / 2, b.x, (a.y + b.y) / 2, b.x, b.y); else c.bezierCurveTo((a.x + b.x) / 2, a.y, (a.x + b.x) / 2, b.y, b.x, b.y);
-    c.stroke(); c.setLineDash([]);
-    const lab = [l.sig, l.type].filter(Boolean).join(' ');
-    if(lab){ c.fillStyle = C.dim; c.font = `600 10px ${font}`; const tw = c.measureText(lab).width; c.fillText(lab, (a.x + b.x) / 2 - tw / 2, (a.y + b.y) / 2 - 4); }
+    c.stroke(); c.setLineDash([]);   // 059: no text on the lines any more; each end's ID is its mark (whEndMarks)
   }
   for(const [n, p] of M.P){
     const sy = st.sys[n], k = !whIsJ(n), sk = k ? whSecKey(n) : null, kc = sk === null ? C.k : IT_MAP_SEC[sk], cl = whCls(n);
@@ -33851,11 +33996,52 @@ function whDraw(){
     }
   }
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  whEndMarks(c, C, dpr, w, h);
   if(M.band){ const b = M.band, x = Math.min(b.x0, b.x1), y = Math.min(b.y0, b.y1); c.globalAlpha = 0.1; c.fillStyle = C.lo; c.fillRect(x, y, Math.abs(b.x1 - b.x0), Math.abs(b.y1 - b.y0)); c.globalAlpha = 1;
     c.strokeStyle = C.lo; c.lineWidth = 1; c.setLineDash([4, 3]); c.strokeRect(x, y, Math.abs(b.x1 - b.x0), Math.abs(b.y1 - b.y0)); c.setLineDash([]); }
   whMiniDraw(C);
   const g = box.querySelector('.wh-gsel'), gt = `${M.group.size} selected · drag one to move them all · click empty space or Esc to clear`; g.hidden = !M.group.size; if(M.group.size && g.textContent !== gt) g.textContent = gt;
 }
+// 059: each connection's ends on the map (the owner, 2026-11-17: "connections will have two IDs, one in each system as the connection is represented by
+// signature in each system.", "might not be enough room to actually write out the ID on every connection. maybe some kind of connector on each end
+// that shows the signature ID on hover?", "could use a small version of the wormhole icon?"): the list's wormhole shape on a dark disc, in the line's
+// mass colour, just outside the box of each end that has an ID; its ID in the hover (a tap on a phone puts it in the message line). Two systems too
+// close for two marks share one, one line a side; an old single ID ("side not known") is said once. Fixed size on screen; none zoomed far out
+// (where the grid coarsens). M.ends holds what was drawn, for the hover and the tap.
+const WH_END_PX = 14, WH_END_R = 9, WH_END_HIT = 12, WH_END_MIN_S = 0.45;
+var whSwirlPath = null;
+function whSwirl(){ if(!whSwirlPath && typeof Path2D === 'function'){ const p = new Path2D(WH_SWIRL); p.addPath(new Path2D('M9 6A3 3 0 1 1 3 6A3 3 0 1 1 9 6Z')); whSwirlPath = p; } return whSwirlPath; }
+function whCurve(a, b){   // whDraw's own curve: horizontal-first or vertical-first by the longer side
+  const v = Math.abs(b.y - a.y) > Math.abs(b.x - a.x), m = v ? (a.y + b.y) / 2 : (a.x + b.x) / 2, c1 = v ? {x: a.x, y: m} : {x: m, y: a.y}, c2 = v ? {x: b.x, y: m} : {x: m, y: b.y};
+  return (t) => { const u = 1 - t; return {x: u * u * u * a.x + 3 * u * u * t * c1.x + 3 * u * t * t * c2.x + t * t * t * b.x, y: u * u * u * a.y + 3 * u * u * t * c1.y + 3 * u * t * t * c2.y + t * t * t * b.y}; };
+}
+function whEndTxt(l, n, sd){ return `${[sd.sig, sd.type].filter(Boolean).join(' ')} in ${whName(n)}, to ${whName(l.a === n ? l.b : l.a)}${sd.own ? '' : ' (side not known)'}`; }
+function whEndMarks(c, C, dpr, W, H){
+  const S = whS, M = S.M, s = M.cam.s, sw = whSwirl(); M.ends = [];
+  if(!sw || s < WH_END_MIN_S) return;
+  const scr = (q) => ({x: (q.x - M.cam.x) * s, y: (q.y - M.cam.y) * s}), pad = (WH_END_R + 2) / s;
+  for(const l of S.st.links){
+    const pa = M.P.get(l.a), pb = M.P.get(l.b); if(!pa || !pb) continue;
+    const f = whCurve({x: pa.x + WH_NW / 2, y: pa.y + WH_NH / 2}, {x: pb.x + WH_NW / 2, y: pb.y + WH_NH / 2}), key = whLinkKey(l.a, l.b);
+    const out = (p, from) => { for(let i = 1; i <= 100; i++){ const q = f(from ? i / 100 : 1 - i / 100); if(q.x < p.x - pad || q.x > p.x + WH_NW + pad || q.y < p.y - pad || q.y > p.y + WH_NH + pad) return q; } return f(0.5); };
+    let ms = [[l.a, pa, true], [l.b, pb, false]].map(([n, p, from]) => { const sd = whSide(l, n); return sd ? {...scr(out(p, from)), n, sd, key, txt: whEndTxt(l, n, sd)} : null; }).filter(Boolean);
+    if(ms.length === 2 && Math.hypot(ms[0].x - ms[1].x, ms[0].y - ms[1].y) < 2 * WH_END_R + 6){
+      const [A, B] = ms, id = (m) => [m.sd.sig, m.sd.type].filter(Boolean).join(' ');
+      ms = [{x: (A.x + B.x) / 2, y: (A.y + B.y) / 2, n: null, key, txt: !A.sd.own && !B.sd.own ? `${id(A)} (side not known)\n${whName(A.n)} ↔ ${whName(B.n)}` : [A, B].map(m => `${whName(m.n)}: ${id(m)}${m.sd.own ? '' : ' (side not known)'}`).join('\n')}];
+    }
+    const col = l.mass === 'critical' ? C.hi : l.mass === 'reduced' ? C.mid : C.dim;
+    for(const q of ms){
+      if(q.x < -WH_END_R || q.y < -WH_END_R || q.x > W + WH_END_R || q.y > H + WH_END_R) continue;
+      c.setTransform(dpr, 0, 0, dpr, 0, 0);
+      c.globalAlpha = 0.92; c.fillStyle = C.bg; c.beginPath(); c.arc(q.x, q.y, WH_END_R, 0, 6.283); c.fill();
+      c.globalAlpha = 0.6; c.strokeStyle = col; c.lineWidth = 1; c.stroke(); c.globalAlpha = 1;
+      const k = WH_END_PX / 12; c.setTransform(dpr * k, 0, 0, dpr * k, dpr * (q.x - WH_END_PX / 2), dpr * (q.y - WH_END_PX / 2)); c.fillStyle = col; c.fill(sw);
+      M.ends.push({x: q.x, y: q.y, txt: q.txt, key, n: q.n});
+    }
+  }
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function whEndAt(x, y){ let best = null, bd = WH_END_HIT; for(const e of whS.M.ends || []){ const d = Math.hypot(e.x - x, e.y - y); if(d <= bd){ bd = d; best = e; } } return best; }
 // the overview in the corner (D5a, the owner: "can we get a little mini/map at the bottom that shows where content is on the map?"): every system,
 // you, and the part in view as a frame, its bounds taking in both the chain and the view; press or drag on it to move the view there
 function whMiniBounds(){
@@ -33895,17 +34081,18 @@ function whMiniGo(ev){
 }
 // ---- the panels: the system in focus (D23, D24). Part 1 fills System; Signatures, Routes and Local say they come later (the owner at the review)
 function whSumHtml(n){
-  const S = whS, s = S.st.sys[n], k = !whIsJ(n), lk = whLinksOf(n), own = !!s.cls, eff = k ? '' : whEff(n), rep = k ? itWhStore().rep[n] : null;
-  return `<div class="wh-sh"><span class="wh-shn">${whNameHtml(n)}</span>${whYouHtml(n === S.last)}${whTagHtml(n)}${whStHtml(n)}${whTagPillHtml(n)}</div>`
+  const S = whS, s = S.st.sys[n], k = !whIsJ(n), own = !!s.cls, eff = k ? '' : whEff(n), rep = k ? itWhStore().rep[n] : null;
+  whP3(n);
+  return `<div class="wh-sh"><span class="wh-shn">${whNameHtml(n)}</span>${whYouHtml(n === S.last)}${whTagHtml(n)}${whStHtml(n)}${whTagPillHtml(n)}${whSharedHtml(s)}</div>`
     + `<div class="wh-kv"><span>${escapeHtml(k ? 'Region' : 'Constellation / region')}</span><b>${escapeHtml(whPlace(n) || 'not known')}</b></div>`
     + (k ? `<div class="wh-kv"><span>Security</span><b>${escapeHtml(whSecTxt(n))}</b></div>` : `<div class="wh-kv"><span>Effect</span><b>${escapeHtml(eff || 'none')}</b></div>`)
     + `<div class="wh-kv"><span>Kept</span><b>until you remove it</b></div>${whLockKvHtml(n)}`
-    + `<div class="wh-ed" data-wh-ed="${Number(n)}">`
-    + (k ? '' : `<label>Class<select data-f="cls">${whOptsHtml(WH_CLS_OPT, whCls(n))}</select><span class="wh-note">${escapeHtml(own ? 'changed by you' : 'from CCP’s data')}</span></label>`
-      + `<label>Statics<input type="text" data-f="statics" value="${escapeHtml(s.statics)}" placeholder="e.g. D845 U210" maxlength="40" autocomplete="off"><span class="wh-stc" data-wh-stc>${whStcsHtml(s.statics)}</span><span class="wh-note" data-wh-bad hidden>Codes are a letter and three digits, e.g. U210</span></label>`)
-    + `<label>Who’s there<input type="text" data-f="who" value="${escapeHtml(s.who)}" placeholder="corp or alliance ticker" maxlength="40" autocomplete="off"></label>`
-    + `<label class="wide">Notes<textarea data-f="notes" rows="2" maxlength="400">${escapeHtml(s.notes)}</textarea></label>`
-    + `<div class="wide wh-cns"><div class="wh-sub">Connections</div>${whConnsHtml(n, lk)}</div></div>`
+    // 059 (P1): Class and Statics first (the owner: "connections change, class and statics do not."), then Connections and Signatures, used together while scanning
+    + (k ? '' : `<div class="wh-ed" data-wh-ed="${Number(n)}"><label>Class<select data-f="cls">${whOptsHtml(WH_CLS_OPT, whCls(n))}</select><span class="wh-note">${escapeHtml(own ? 'changed by you' : 'from CCP’s data')}</span></label>`
+      + `<label>Statics<input type="text" data-f="statics" value="${escapeHtml(s.statics)}" placeholder="e.g. D845 U210" maxlength="40" autocomplete="off"><span class="wh-stc" data-wh-stc>${whStcsHtml(s.statics)}</span><span class="wh-note" data-wh-bad hidden>Codes are a letter and three digits, e.g. U210</span></label></div>`)
+    + `<div class="wh-cnw"><div class="wh-sub">Connections</div>${whCnListHtml(n)}</div>${whSigSecHtml(n)}`
+    + `<div class="wh-ed" data-wh-ed="${Number(n)}"><label>Who’s there<input type="text" data-f="who" value="${escapeHtml(s.who)}" placeholder="corp or alliance ticker" maxlength="40" autocomplete="off"></label>`
+    + `<label class="wide">Notes<textarea data-f="notes" rows="2" maxlength="400">${escapeHtml(s.notes)}</textarea></label></div>`
     + (rep && ((rep.sigs || []).length || (rep.raws || []).length) ? `<div class="wh-sub">Intel’s wormhole reports here</div><div class="wh-rep">${itWhSigsHtml(rep.sigs, 6)}</div>${itWhRawLinesHtml(rep.raws || [])}` : '')
     + `<div class="wh-acts"><a href="https://evemaps.dotlan.net/system/${escapeHtml(encodeURIComponent(whName(n)))}">${escapeHtml(whName(n))} on DOTLAN ↗</a>${whRmHtml(n)}</div>`
     + '<div class="wh-note">Right-click the system on the map (press and hold on a phone) for its status, tag, lock and more.</div>';
@@ -33914,20 +34101,465 @@ function whStHtml(n){ const k = whMk(n).st; return k ? `<span class="it-gtag wh-
 function whTagPillHtml(n){ const m = whMk(n); return m.tag ? `<span class="it-gtag wh-st${escapeHtml(m.st ? ' st-' + m.st : '')}" title="Tag">${escapeHtml(m.tag)}</span>` : ''; }
 function whLockKvHtml(n){ return whLocked(n) ? '<div class="wh-kv"><span>Locked</span><b>can’t be moved or removed until you unlock it</b></div>' : ''; }
 function whRmHtml(n){
+  if(whP3(n).ask && whP3(n).ask.k === 'del') return whAskHtml(`Remove ${whName(n)} and its connections?`, [['del-yes', 'Remove'], ['del-no', 'Cancel']]);   // P20: asks first
   return whLocked(n) ? `<button type="button" class="wh-rm" data-wh-del="${Number(n)}" aria-disabled="true" title="${escapeHtml(WH_LOCKED(whName(n)))}">Remove from the map <span class="wh-mnote">(unlock first)</span></button>`
     : `<button type="button" class="wh-rm" data-wh-del="${Number(n)}">Remove from the map</button>`;
 }
+function whSharedHtml(s){ return s.src === 'shared' ? '<span class="it-gtag" title="Added from someone’s shared chain">shared</span>' : ''; }   // 059 (P17)
 function whYouHtml(on){ return on ? '<span class="it-here">You</span>' : ''; }
-function whConnsHtml(n, lk){ return lk.length ? lk.map(l => whConnHtml(n, l)).join('') : '<span class="wh-note">No connections.</span>'; }
-function whConnSelHtml(f, kk, o, v){ return `<select data-lf="${escapeHtml(f)}" data-l="${escapeHtml(kk)}" aria-label="${escapeHtml(`${f[0].toUpperCase() + f.slice(1)} of the connection to ${whName(o)}`)}">${whInfoOptHtml(f, v)}</select>`; }
-function whDrHtml(dr){ return dr ? '<span class="it-gtag it-wh dr">Drifter</span>' : ''; }
-function whConnHtml(n, l){
-  const o = l.a === n ? l.b : l.a, kk = whLinkKey(l.a, l.b);
-  return `<div class="wh-cn"><span class="wh-to">↔ <button type="button" class="wh-n sm" data-wh-sel="${Number(o)}">${whNameHtml(o)}</button>${whDrHtml(l.dr)}</span>`
-    + `<input type="text" data-lf="sig" data-l="${escapeHtml(kk)}" value="${escapeHtml(l.sig)}" placeholder="sig ID" maxlength="7" aria-label="${escapeHtml(`Signature ID to ${whName(o)}`)}" autocomplete="off"><input type="text" data-lf="type" data-l="${escapeHtml(kk)}" value="${escapeHtml(l.type)}" placeholder="type" maxlength="4" aria-label="${escapeHtml(`Wormhole type to ${whName(o)}`)}" autocomplete="off">`
-    + `${whConnSelHtml('life', kk, o, l.life)}${whConnSelHtml('mass', kk, o, l.mass)}${whConnSelHtml('size', kk, o, l.size)}<button type="button" data-wh-dl="${escapeHtml(kk)}" aria-label="${escapeHtml(`Delete the connection to ${whName(o)}`)}" title="Delete the connection">×</button></div>`;
+function whInfoOptHtml(k, v, none){ return `<option value="">${escapeHtml(none || {life: 'Life', mass: 'Mass', size: 'Size'}[k])}</option>` + Object.entries(IT_WH_INFO_TXT[k]).map(([x, [a, b]]) => `<option value="${escapeHtml(x)}" title="${escapeHtml(b)}"${escapeHtml(x === v ? ' selected' : '')}>${escapeHtml(a)}</option>`).join(''); }
+// ---- 059: what the panel's lists hold for the system in focus (P6, P7, P20, P22): the selections, an edit in place, a question, the paste box, the
+// last paste's Undo. One step, in memory only, gone when the focus moves to another system (P6: "a reload, or the focus moving")
+function whP3Blank(n){ return {n, sel: {sg: new Set(), cn: new Set()}, edit: {sg: null, cn: null}, ask: null, open: false, text: '', res: null, undo: null, lazyAsk: null}; }
+function whP3(n){ const S = whS; if(S.p3.n !== n) S.p3 = whP3Blank(n); return S.p3; }
+// P20 (the owner: "any deletions should require verification."): one question piece, in place of the control that asked; the last button (Cancel,
+// or Keep them) has the focus
+function whAskBtnsHtml(btns){ return btns.map(([a, l]) => `<button type="button" data-wh-ask="${escapeHtml(a)}">${escapeHtml(l)}</button>`).join(''); }
+function whAskFocus(root){ const bs = root ? root.querySelectorAll('.wh-ask button') : []; if(bs.length) bs[bs.length - 1].focus({preventScroll: true}); }
+function whAskHtml(q, btns, tip){ return `<span class="wh-ask" role="alert" title="${escapeHtml(tip || '')}"><span>${escapeHtml(q)}</span>${whAskBtnsHtml(btns)}</span>`; }
+// P1: one section heading, for Signatures now and Local in part 5: the page's one chevron toggle (046's button.it-whp-xb), a note, a switch
+function whSecHeadHtml(key, title, note, open, sw){
+  return `<div class="wh-sech"><button type="button" class="it-whp-xb wh-sect" data-wh-sec="${escapeHtml(key)}" aria-expanded="${escapeHtml(String(open))}" aria-controls="${escapeHtml('whSec-' + key)}">${IT_CHEV}<span>${escapeHtml(title)}</span></button>`
+    + `<span class="wh-note wh-secn" title="${escapeHtml(note)}">${escapeHtml(note)}</span>`
+    + (sw ? `<label class="wh-lz" title="${escapeHtml(sw.title)}"><input type="checkbox" class="mys-sw" role="switch" data-wh-sw="${escapeHtml(sw.k)}"${escapeHtml(sw.on ? ' checked' : '')}> ${escapeHtml(sw.label)}</label>` : '') + '</div>';
 }
-function whInfoOptHtml(k, v){ return `<option value="">${escapeHtml({life: 'Life', mass: 'Mass', size: 'Size'}[k])}</option>` + Object.entries(IT_WH_INFO_TXT[k]).map(([x, [a, b]]) => `<option value="${escapeHtml(x)}" title="${escapeHtml(b)}"${escapeHtml(x === v ? ' selected' : '')}>${escapeHtml(a)}</option>`).join(''); }
+// ---- the game's Probe Scanner icons, redrawn as shapes (the owner, 2026-11-17: "they reflect the actual in-game icons", "it's fine to re-draw them,
+// just use the same shapes", "that'll allow you to draw them in any color you need"): traced from his screenshots of the game, in currentColor so each
+// takes its row's colour. Structures and other kinds get theirs as he meets them; until then a dim placeholder, never a made-up shape. A result whose
+// type isn't shown yet: the game's cross at 0%, its dot while partly scanned. The wormhole shape is also the map's end mark (WH_SWIRL).
+const WH_SWIRL = 'M5.00 3.50Q6.90 1.70 8.90 0.40Q7.30 2.40 7.50 4.30ZM7.67 3.88Q10.17 4.63 12.30 5.71Q9.77 5.33 8.22 6.45ZM8.67 6.38Q9.27 8.93 9.40 11.31Q8.47 8.93 6.72 8.15ZM7.00 8.50Q5.10 10.30 3.10 11.60Q4.70 9.60 4.50 7.70ZM4.33 8.12Q1.83 7.37 -0.30 6.29Q2.23 6.67 3.78 5.55ZM3.33 5.62Q2.73 3.07 2.60 0.69Q3.53 3.07 5.28 3.85Z';
+const WH_SG_ICON = {
+  'Wormhole': `<svg viewBox="0 0 12 12" width="12" height="12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="3"/><path d="${WH_SWIRL}"/></svg>`,
+  'Data Site': '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" stroke="currentColor"><rect x="1.3" y="1.3" width="9.4" height="9.4" fill="currentColor" fill-opacity=".4" stroke-width="1.1"/><path d="M3.8 3.4V8.6M6 3.4V8.6M8.2 3.4V8.6" stroke-width="1.2"/></svg>',
+  'Relic Site': '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><circle cx="6" cy="4.3" r="2.9" fill="currentColor" fill-opacity=".4" stroke="currentColor" stroke-width="1.1"/><rect x=".6" y="3.3" width="1.7" height="1.9" rx=".4" fill="currentColor"/><rect x="9.7" y="3.3" width="1.7" height="1.9" rx=".4" fill="currentColor"/><path d="M1.6 5.4L3.3 9.5Q3.7 10.5 4.6 10.5H7.4Q8.3 10.5 8.7 9.5L10.4 5.4" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/></svg>',
+  'Gas Site': '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M1.5 1.5H4.6L6 2.4L7.4 1.5H10.5V4.4L8.4 10.5H3.6L1.5 4.4Z" fill="currentColor" fill-opacity=".4" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>',
+  'Combat Site': '<svg viewBox="0 0 12 12" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M6 .9L8.8 3.6H3.2Z"/><path d="M.7 5.3L3.5 4.3L6 5.9L8.5 4.3L11.3 5.3L6 11.1Z"/></svg>',
+  'Ore Site': '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" fill="currentColor" fill-opacity=".4" stroke="currentColor" stroke-width="1.1"><ellipse cx="6" cy="3.4" rx="3.4" ry="2.7"/><ellipse cx="3.3" cy="9.2" rx="2.6" ry="1.6"/><ellipse cx="8.7" cy="9.2" rx="2.6" ry="1.6"/></svg>'};
+const WH_SG_GROUPS = Object.keys(WH_SG_ICON);
+const WH_SG_UNK = '<svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M3.3 3.3L8.7 8.7M8.7 3.3L3.3 8.7"/></svg>';
+const WH_SG_DOT = '<svg viewBox="0 0 12 12" width="12" height="12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="3.9"/></svg>';
+const WH_SG_WAIT = '<span class="wh-gwait" aria-hidden="true"></span>';
+const WH_LI = {copy: '<svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6.4" height="6.4" rx="1"/><path d="M8 4V2.4a.8.8 0 0 0-.8-.8H2.4a.8.8 0 0 0-.8.8v4.8a.8.8 0 0 0 .8.8H4"/></svg>',
+  edit: '<svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 1.8 10.2 3.8 4 10H2V8z"/></svg>',
+  del: '<svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3.2h8M4.6 3.2V2h2.8v1.2M3.2 3.2l.5 7h4.6l.5-7"/></svg>'};
+function whGameIconHtml(grp, pct){ return grp ? (WH_SG_ICON[grp] || WH_SG_WAIT) : pct > 0 ? WH_SG_DOT : WH_SG_UNK; }
+function whBand(p){ return p >= 100 ? 3 : p >= 75 ? 2 : p >= 25 ? 1 : 0; }   // the game's signal colours (the owner: "i can confirm"): red, orange, yellow, green
+const WH_BAND_TXT = ['under 25%', '25–74%', '75–99%', '100%: warpable'];
+function whAge(t){ const x = Math.max(0, Math.round((Date.now() - t) / 1000)); return x < 60 ? `${x} s` : x < 3600 ? `${Math.floor(x / 60)} min` : x < 172800 ? `${Math.floor(x / 3600)} h` : `${Math.floor(x / 86400)} d`; }   // Q14: "6 s / 4 min / 2 h"
+// ---- P21: one list builder for Signatures and Connections (Local and Intel's lists may reuse it later): the bar ("Selected: N of M", the caller's
+// actions, the question), the heading row (select-all box, sort buttons), the rows (selectable like the map, a colour class from the caller), an
+// edit in place. The selection, the edit and the sort are the caller's; this only draws.
+function whListHtml(c){
+  return `<div class="wh-lb"><span class="wh-ln">Selected: <b>${Number(c.sel.size)}</b> of ${Number(c.rows.length)}</span>${whLActsHtml(c)}${whLAskHtml(c)}</div>${whLMultiHtml(c)}`
+    + `<div class="wh-lt ${escapeHtml(c.k)}" role="grid" aria-label="${escapeHtml(c.aria)}" aria-multiselectable="true">${whLHeadHtml(c)}${whLRowsHtml(c)}</div>`;
+}
+function whLActsHtml(c){ return c.acts.map(([a, t]) => `<button type="button" class="wh-lib${escapeHtml(a === 'del' ? ' dl' : '')}" data-wh-la="${escapeHtml(a)}" data-wh-l="${escapeHtml(c.k)}"${escapeHtml(c.sel.size ? '' : ' disabled')} title="${escapeHtml(t)}" aria-label="${escapeHtml(t)}">${whLIconHtml(a)}</button>`).join(''); }
+function whLIconHtml(a){ return WH_LI[a] || ''; }
+function whLAskHtml(c){ const k = c.sel.size, P = whP3(c.n); return P.ask && P.ask.k === c.k ? whAskHtml(`Delete ${k} ${c.k === 'sg' ? 'signature' : 'connection'}${k === 1 ? '' : 's'}?`, [[c.k + '-yes', 'Delete'], [c.k + '-no', 'Cancel']]) : ''; }
+function whLHeadHtml(c){
+  const all = c.sel.size > 0 && c.sel.size === c.rows.length;
+  return `<div class="wh-lr wh-lh" role="row"><span role="columnheader"><input type="checkbox" data-wh-lall="${escapeHtml(c.k)}" aria-label="${escapeHtml('Select all ' + c.label)}"${escapeHtml(all ? ' checked' : '')}></span>${whLThsHtml(c)}</div>`;
+}
+function whLThsHtml(c){
+  return c.cols.map(([key, name, cls]) => { const on = c.sort.k === key, d = on ? (c.sort.d === 1 ? 'ascending' : 'descending') : 'none';
+    return key ? `<span role="columnheader" class="${escapeHtml(cls || '')}" aria-sort="${escapeHtml(d)}"><button type="button" data-wh-ls="${escapeHtml(key)}" data-wh-l="${escapeHtml(c.k)}" title="${escapeHtml('Sort by ' + name.toLowerCase())}">${escapeHtml(name)}<span class="wh-lar" aria-hidden="true">${escapeHtml(on ? (c.sort.d === 1 ? '↑' : '↓') : '↕')}</span></button></span>`
+      : `<span role="columnheader" class="${escapeHtml(cls || '')}" aria-label="${escapeHtml(name)}"></span>`; }).join('');
+}
+function whLRowsHtml(c){
+  const P = whP3(c.n), ed = P.edit[c.k];
+  return c.rows.map(r => ed === r.key && c.sel.size === 1 ? whLEditHtml(c, r)
+    : `<div class="wh-lr ${escapeHtml(r.cls)}" role="row" tabindex="0" aria-selected="${escapeHtml(String(c.sel.has(r.key)))}" data-wh-lr="${escapeHtml(r.key)}" data-wh-l="${escapeHtml(c.k)}" title="${escapeHtml(r.tip)}">${whLCellsHtml(c, r)}</div>`).join('');
+}
+function whLCellsHtml(c, r){ return c.k === 'sg' ? whSgCellsHtml(c, r) : whCnCellsHtml(c, r); }
+function whLEditHtml(c, r){ return c.k === 'sg' ? whSgEditHtml(c, r) : whCnEditHtml(c, r); }
+function whLMultiHtml(c){
+  const P = whP3(c.n), k = c.sel.size; if(P.edit[c.k] !== '*' || k < 2) return '';
+  return c.k === 'sg' ? `<div class="wh-le" role="group" aria-label="${escapeHtml(`Edit ${k} signatures`)}">Type of the ${Number(k)} selected: <select data-wh-le="grp" aria-label="Type">${whSgGrpOptHtml('')}</select>${whLSaveHtml(c)}</div>`
+    : `<div class="wh-le" role="group" aria-label="${escapeHtml(`Edit ${k} connections`)}">For the ${Number(k)} selected: <select data-wh-le="life" aria-label="Life">${whInfoOptHtml('life', '', 'Life: keep')}</select><select data-wh-le="mass" aria-label="Mass">${whInfoOptHtml('mass', '', 'Mass: keep')}</select>${whLSaveHtml(c)}</div>`;
+}
+function whLSaveHtml(c){ return `<span class="wh-leb"><button type="button" data-wh-la="save" data-wh-l="${escapeHtml(c.k)}">Save</button><button type="button" data-wh-la="cancel" data-wh-l="${escapeHtml(c.k)}">Cancel</button></span>`; }
+function whSgGrpOptHtml(v){ return `<option value=""${escapeHtml(v ? '' : ' selected')}>(not known)</option>` + WH_SG_GROUPS.map(g => `<option${escapeHtml(g === v ? ' selected' : '')}>${escapeHtml(g)}</option>`).join(''); }
+// ---- P1-P7: the Signatures section: the paste box, Lazy update, the result line with Undo, the list
+const WH_SG_SORT = {id: (a, b) => a.id.localeCompare(b.id), nm: (a, b) => ((a.grp || '~') + (a.nm || '')).localeCompare((b.grp || '~') + (b.nm || '')) || a.id.localeCompare(b.id),
+  pct: (a, b) => a.pct - b.pct || a.id.localeCompare(b.id), f: (a, b) => b.f - a.f || a.id.localeCompare(b.id)};   // each key's natural order is d 1 (A to Z, low to high, newest first)
+function whSigSecHtml(n){
+  const S = whS, s = S.sg.sys[n], rows = s ? s.rows : [], open = S.secs.sigs, note = rows.length ? `${rows.length} · scanned ${whAge(s.t)} ago` : 'none kept';
+  const sw = {k: 'lazy', label: 'Lazy update', on: S.sg.lazy, title: 'On: a paste is the whole list, and signatures missing from it go (it asks first). Off: a paste only adds and updates.'};
+  return `<div class="wh-sec">${whSecHeadHtml('sigs', 'Signatures', note, open, sw)}` + (open ? `<div class="wh-secbd" id="whSec-sigs">${whPasteHtml(n)}${whLazyAskHtml(n)}${whSgResHtml(n)}${whSgListHtml(n)}</div>` : '') + '</div>';
+}
+function whPasteHtml(n){
+  const S = whS, P = whP3(n), has = !!S.sg.sys[n], me = S.last, show = !has || P.open || (P.res && P.res.err);
+  if(!show) return whPasteTgHtml(false);
+  return '<div class="wh-paste" id="whPaste">' + (has ? whPasteTgHtml(show) : '') + `<textarea rows="4" data-wh-ta spellcheck="false" placeholder="Paste the Probe Scanner list (Ctrl+A, Ctrl+C in the game)" aria-label="${escapeHtml('Probe Scanner list for ' + whName(n))}">${escapeHtml(P.text)}</textarea>`
+    + (me !== null && me !== n ? `<div class="it-whp-bs">${escapeHtml(`Goes to ${whName(n)}; you’re in ${whName(me)}.`)}</div>` : '')   // Q2: "Focused system + warning"
+    + '<div class="it-whp-brow"><button type="button" data-wh-read>Read scan</button></div></div>';
+}
+function whPasteTgHtml(open){ return `<button type="button" class="it-whp-xb" data-wh-paste aria-expanded="${escapeHtml(String(!!open))}" aria-controls="whPaste">${IT_CHEV}<span>Paste a new scan</span></button>`; }
+function whLazyAskHtml(n){ const a = whP3(n).lazyAsk; return a ? whAskHtml(`This scan would remove ${a.ids.length} of ${a.of} signatures.`, [['lazy-rm', 'Remove them'], ['lazy-keep', 'Keep them']], 'Not in this scan: ' + a.ids.join(', ')) : ''; }
+function whSgResHtml(n){
+  const r = whP3(n).res; if(!r) return '';
+  if(r.err) return `<div class="it-whp-bs" role="status">${escapeHtml(r.err)}</div>`;
+  return `<div class="it-whp-brow" role="status"><span class="wh-note" title="${escapeHtml(r.tip || '')}">${escapeHtml(r.txt)}</span>` + (whP3(n).undo ? '<button type="button" data-wh-undo>Undo</button>' : '') + '</div>';
+}
+function whSgListHtml(n){
+  const S = whS, s = S.sg.sys[n]; if(!s) return `<div class="wh-note">${escapeHtml(`No signatures kept for ${whName(n)}.`)}</div>`;
+  const P = whP3(n), so = S.sg.sort, cmp = WH_SG_SORT[so.k], ids = new Set(s.rows.map(x => x.id)), rep = whIsJ(n) ? null : itWhStore().rep[n];
+  for(const id of [...P.sel.sg]) if(!ids.has(id)) P.sel.sg.delete(id);
+  const rows = s.rows.slice().sort((a, b) => so.d * cmp(a, b)).map(x => {
+    const l = whLinkBySig(n, x.id), o = l ? (l.a === n ? l.b : l.a) : null, b = whBand(x.pct), old = x.t < s.t, intel = !!(rep && (rep.sigs || []).some(q => q.sig === x.id || (q.sig.length < 7 && x.id.startsWith(q.sig))));
+    return {key: x.id, x, o, intel, cls: `b${b}${old ? ' old' : ''}`,
+      tip: [x.sg, x.grp || 'Type not known yet', x.nm, `signal ${Math.round(x.pct)}% (${WH_BAND_TXT[b]})`, `first seen ${whAge(x.f)} ago`, `last in a scan ${whAge(x.t)} ago`, old ? 'not in your last scan' : '', intel ? 'in Intel’s reports too' : ''].filter(Boolean).join(' · ')};
+  });
+  return whListHtml({k: 'sg', n, label: 'signatures', aria: `Signatures in ${whName(n)}`, sel: P.sel.sg, sort: so, rows,
+    cols: [['id', 'ID', ''], ['nm', 'Name', ''], ['pct', 'Signal', 'r'], ['f', 'Age', 'r ag']], acts: [['copy', 'Copy selected (the game’s own format)'], ['edit', 'Edit selected'], ['del', 'Delete selected']]});
+}
+function whSgCellsHtml(c, r){
+  const x = r.x;
+  return `<span class="ic" role="gridcell">${whGameIconHtml(x.grp, x.pct)}</span><span class="id" role="gridcell">${escapeHtml(x.id)}</span>`
+    + `<span class="nm" role="gridcell">${escapeHtml(x.nm || x.grp || 'not known')}</span><span class="r" role="gridcell">${escapeHtml(Math.round(x.pct) + '%')}</span><span class="r ag" role="gridcell">${escapeHtml(whAge(x.f))}</span>`
+    + (r.o !== null || r.intel ? `<span class="wh-lto">${whLToHtml(r.o)}` + (r.intel ? '<span class="it-gtag">Intel</span>' : '') + '</span>' : '');
+}
+function whLToHtml(o){ return o === null ? '' : `→ <button type="button" class="wh-n sm" data-wh-sel="${Number(o)}">${whNameHtml(o)}</button>`; }
+function whSgEditHtml(c, r){
+  const x = r.x;
+  return `<div class="wh-le" role="row" aria-label="${escapeHtml('Edit ' + x.id)}"><input type="text" class="wh-lei" data-wh-le="id" value="${escapeHtml(x.id)}" aria-label="Signature ID" maxlength="7" spellcheck="false" autocapitalize="characters">`
+    + `<select data-wh-le="grp" aria-label="Type">${whSgGrpOptHtml(x.grp)}</select><input type="text" class="wh-lem" data-wh-le="nm" value="${escapeHtml(x.nm || '')}" placeholder="Name" aria-label="Name" maxlength="48">${whLSaveHtml(c)}</div>`;
+}
+// ---- P22: Connections in the same list (the owner: "can we treat connections similarly though?"): one row per connection of the system in focus,
+// this side's ID, the other system with this side's type, an EOL mark, colour by mass, "→" to the other system; Edit one or several, Delete; no Copy
+const WH_LF_ORD = {lt1h: 0, eol: 1, lt1d: 2};
+const WH_CN_SORT = {id: (a, b) => ((a.me && a.me.sig) || '~').localeCompare((b.me && b.me.sig) || '~') || a.name.localeCompare(b.name), to: (a, b) => a.name.localeCompare(b.name),
+  lf: (a, b) => (WH_LF_ORD[a.l.life] ?? 3) - (WH_LF_ORD[b.l.life] ?? 3) || a.name.localeCompare(b.name), f: (a, b) => b.l.t - a.l.t || a.name.localeCompare(b.name)};
+function whCnListHtml(n){
+  const S = whS, P = whP3(n), ls = whLinksOf(n); if(!ls.length) return '<div class="wh-note">No connections.</div>';
+  const so = S.secs.cn, keys = new Set(ls.map(l => whLinkKey(l.a, l.b)));
+  for(const k of [...P.sel.cn]) if(!keys.has(k)) P.sel.cn.delete(k);
+  const I = IT_WH_INFO_TXT, rows = ls.map(l => { const o = l.a === n ? l.b : l.a; return {l, o, key: whLinkKey(l.a, l.b), me: whSide(l, n), ot: whSide(l, o), name: whName(o)}; })
+    .sort((a, b) => so.d * WH_CN_SORT[so.k](a, b)).map(r => { const l = r.l, m = l.mass === 'critical' ? 2 : l.mass === 'reduced' ? 1 : 0, gone = !!(r.me && r.me.gone);
+      r.cls = `cm${m}${gone ? ' old' : ''}`;
+      r.tip = [`To ${r.name}`, r.me ? `this side ${[r.me.sig, r.me.type].filter(Boolean).join(' ')}${r.me.own ? '' : ' (side not known)'}` : 'no ID this side', r.ot && r.ot.own ? `other side ${[r.ot.sig, r.ot.type].filter(Boolean).join(' ')}` : '',
+        l.life && I.life[l.life] ? I.life[l.life][1] : '', l.mass && I.mass[l.mass] ? I.mass[l.mass][1] : '', l.size && I.size[l.size] ? I.size[l.size][1] : '', l.dr ? 'Drifter hole' : '', `found ${whAge(l.t)} ago`, gone ? 'its ID wasn’t in your last scan here' : ''].filter(Boolean).join(' · ');
+      return r; });
+  return whListHtml({k: 'cn', n, label: 'connections', aria: `Connections of ${whName(n)}`, sel: P.sel.cn, sort: so, rows,
+    cols: [['id', 'ID', ''], ['to', 'To', ''], ['lf', 'Life', 'r'], ['f', 'Age', 'r ag'], ['', 'Go', '']], acts: [['edit', 'Edit selected'], ['del', 'Delete selected']]});
+}
+function whCnCellsHtml(c, r){
+  const l = r.l, lf = l.life === 'lt1h' ? '<1h' : l.life === 'eol' ? 'EOL' : '';
+  return `<span class="ic" role="gridcell">${whGameIconHtml('Wormhole', 100)}</span><span class="id${escapeHtml(r.me && r.me.sig ? '' : ' wh-lnone')}" role="gridcell">${escapeHtml(r.me && r.me.sig ? r.me.sig : '—')}</span>`
+    + `<span class="nm" role="gridcell"><span class="wh-lnm">${whNameHtml(r.o)}</span>` + (r.me && r.me.type ? `<span class="wh-lty">${escapeHtml(r.me.type)}</span>` : '') + (l.dr ? '<span class="wh-lty">Drifter</span>' : '') + '</span>'
+    + `<span class="r wh-llf" role="gridcell">${escapeHtml(lf)}</span><span class="r ag" role="gridcell">${escapeHtml(whAge(l.t))}</span>`
+    + `<span class="r" role="gridcell"><button type="button" class="wh-lgo" data-wh-sel="${Number(r.o)}" aria-label="${escapeHtml('Go to ' + r.name)}" title="${escapeHtml('Go to ' + r.name)}">→</button></span>`;
+}
+function whCnEditHtml(c, r){
+  const l = r.l, me = r.me && r.me.own ? r.me : null, ot = r.ot && r.ot.own ? r.ot : null;
+  return `<div class="wh-le" role="row" aria-label="${escapeHtml('Edit the connection to ' + r.name)}"><input type="text" class="wh-lei" data-wh-le="sig" value="${escapeHtml(me ? me.sig : '')}" placeholder="Sig ID here" aria-label="${escapeHtml('Signature ID in ' + whName(c.n))}" maxlength="7" spellcheck="false" autocapitalize="characters">`
+    + `<input type="text" class="wh-lei sh" data-wh-le="type" value="${escapeHtml(me ? me.type : '')}" placeholder="Type here" aria-label="${escapeHtml('Wormhole type in ' + whName(c.n))}" maxlength="4" spellcheck="false" autocapitalize="characters">`
+    + `<select data-wh-le="life" aria-label="Life">${whInfoOptHtml('life', l.life)}</select><select data-wh-le="mass" aria-label="Mass">${whInfoOptHtml('mass', l.mass)}</select><select data-wh-le="size" aria-label="Size">${whInfoOptHtml('size', l.size)}</select>`
+    + `<label class="wh-dr"><input type="checkbox" data-wh-le="dr"${escapeHtml(l.dr ? ' checked' : '')}> Drifter</label>`
+    + `<span class="wh-leo">Other side: <button type="button" class="wh-n sm" data-wh-sel="${Number(r.o)}">${whNameHtml(r.o)}</button>${escapeHtml(ot ? ' · ' + [ot.sig, ot.type].filter(Boolean).join(' ') : '')}</span>${whLSaveHtml(c)}</div>`;
+}
+// ---- 059: what the panel's lists do (P5-P7, P20, P22)
+function whLRowKeys(k, n){ return k === 'sg' ? (whS.sg.sys[n] ? whS.sg.sys[n].rows.map(x => x.id) : []) : whLinksOf(n).map(l => whLinkKey(l.a, l.b)); }
+function whLFocusRow(k, key){ const e = [...whS.el.querySelectorAll('#whPnSum [data-wh-lr]')].find(r => r.dataset.whL === k && r.dataset.whLr === key); if(e) e.focus({preventScroll: true}); }
+// P7 (Q17, "Like the map"): a click selects that row alone (a second click on the only selected row clears it); Ctrl-, Cmd- or Shift-click, a tap,
+// Space or Enter add or take one off
+function whLPick(ev, r){
+  const k = r.dataset.whL, key = r.dataset.whLr, P = whP3(whFocus()), sel = P.sel[k];
+  const add = ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.type === 'keydown' || ev.pointerType === 'touch' || ev.pointerType === 'pen';
+  if(add){ if(sel.has(key)) sel.delete(key); else sel.add(key); } else { const only = sel.size === 1 && sel.has(key); sel.clear(); if(!only) sel.add(key); }
+  P.edit[k] = null; if(P.ask && P.ask.k === k) P.ask = null;
+  whPnRedraw(); whLFocusRow(k, key);
+}
+function whLAll(k, on){ const n = whFocus(), P = whP3(n); P.sel[k] = new Set(on ? whLRowKeys(k, n) : []); P.edit[k] = null; whPnRedraw('[data-wh-lall="' + k + '"]'); }
+function whLSort(k, key){
+  if(k === 'sg'){ const o = whS.sg.sort; if(!WH_SG_SORTS.includes(key)) return; whS.sg.sort = {k: key, d: o.k === key ? -o.d : 1}; whSgSave(); }
+  else { const o = whS.secs.cn; if(!WH_CN_SORTS.includes(key)) return; whS.secs.cn = {k: key, d: o.k === key ? -o.d : 1}; whSecSave(); }
+  whPnRedraw(); const b = [...whS.el.querySelectorAll('#whPnSum [data-wh-ls]')].find(x => x.dataset.whL === k && x.dataset.whLs === key); if(b) b.focus({preventScroll: true});
+}
+function whLAct(k, a, btn){
+  const n = whFocus(), P = whP3(n), sel = P.sel[k]; if(n === null) return;
+  if(a === 'edit'){ if(!sel.size) return; P.edit[k] = sel.size === 1 ? [...sel][0] : '*'; P.ask = null; whPnRedraw('[data-wh-le]'); return; }
+  if(a === 'del'){ if(!sel.size) return; P.ask = {k}; P.edit[k] = null; whPnRedraw('[data-wh-ask="' + k + '-no"]'); return; }
+  if(a === 'cancel'){ P.edit[k] = null; whPnRedraw(); return; }
+  if(a === 'copy' && k === 'sg'){   // 5c: the selected rows in the game's own copy format, so they paste into another Signatures box
+    const s = whS.sg.sys[n], rows = s ? s.rows.filter(x => sel.has(x.id)) : [], txt = rows.map(x => [x.id, x.sg || 'Cosmic Signature', x.grp, x.nm, x.pct.toFixed(1) + '%', ''].join('\t')).join('\n');
+    let pr = null; try{ pr = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(txt) : null; }catch(e){ pr = null; }
+    const no = () => whMsg('Couldn’t copy: this browser didn’t allow it.');
+    if(!pr){ no(); return; } pr.then(() => whMsg(`Copied ${rows.length} signature${rows.length === 1 ? '' : 's'} (the game’s own format).`), no); return;
+  }
+  if(a === 'save'){ if(whLSave(k, n, btn.closest('.wh-le'))){ P.edit[k] = null; whPnRedraw(); } }
+}
+function whLSave(k, n, box){
+  const P = whP3(n), sel = P.sel[k], v = (f) => { const x = box && box.querySelector('[data-wh-le="' + f + '"]'); return x ? (x.type === 'checkbox' ? x.checked : String(x.value)) : undefined; };
+  if(!box) return false;
+  if(k === 'sg'){
+    const s = whS.sg.sys[n]; if(!s) return true; const g = WH_SG_GROUPS.includes(v('grp')) ? v('grp') : '';
+    if(P.edit.sg === '*'){ for(const x of s.rows) if(sel.has(x.id)){ if(g !== x.grp) x.nm = ''; x.grp = g; } }
+    else {
+      const x = s.rows.find(r => r.id === P.edit.sg); if(!x) return true;
+      const id = v('id').trim().toUpperCase().replace(/^([A-Z]{3})(\d)/, '$1-$2');
+      if(!WH_SIG_RX.test(id)){ whMsg('A signature ID is three letters and three digits (RZL-429).'); return false; }
+      if(id !== x.id && s.rows.some(r => r.id === id)){ whMsg(`${id} is already in the list.`); return false; }
+      sel.delete(x.id); x.id = id; sel.add(id); x.grp = g; x.nm = whTxt(v('nm'), 48);
+    }
+    whSgSave(); return true;
+  }
+  const ls = whLinksOf(n).filter(l => sel.has(whLinkKey(l.a, l.b))), I = IT_WH_INFO_TXT, ok = (f, x) => I[f][x] ? x : '';
+  if(P.edit.cn === '*'){ for(const l of ls){ if(v('life')) l.life = ok('life', v('life')); if(v('mass')) l.mass = ok('mass', v('mass')); l.u = Date.now(); } }   // Q21: several at once, life and mass ("keep" by default)
+  else {
+    const l = ls.find(x => whLinkKey(x.a, x.b) === P.edit.cn); if(!l) return true;
+    const sig = v('sig').trim().toUpperCase().replace(/^([A-Z]{3})(\d)/, '$1-$2'), ty = v('type').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+    if(sig && !WH_SIGP_RX.test(sig)){ whMsg('A signature ID is three letters and three digits (RZL-429), or its start.'); return false; }
+    if(ty && !(IT_WH_TYPE[ty] || ty === 'K162')){ whMsg(`“${ty}” isn’t a wormhole type the page knows.`); return false; }
+    whEndSet(l, n, sig, ty); l.life = ok('life', v('life')); l.mass = ok('mass', v('mass')); l.size = ok('size', v('size')); if(v('dr')) l.dr = true; else delete l.dr; l.u = Date.now();   // P11: this side's ID; life, mass, size, Drifter belong to the hole
+  }
+  whSave(); whEndSave(); whS.drawKey = ''; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true); return true;
+}
+function whAskAct(a){
+  const S = whS, n = whFocus(), P = n === null ? null : whP3(n);
+  if(a === 'm-yes' || a === 'm-no'){ const m = S.menu; whMenuClose(true); if(a === 'm-yes' && m !== null) whRemoveAsk(m); return; }
+  if(a === 'all-yes' || a === 'all-no'){ whHereClose(); if(a === 'all-yes') whRemoveAll(); return; }
+  if(!P) return;
+  if(a === 'lazy-rm' || a === 'lazy-keep'){ const q = P.lazyAsk; if(q) whScanApply(n, q.text, a === 'lazy-rm' ? 'rm' : 'keep'); whPnRedraw('[data-wh-paste]'); return; }
+  if(a === 'del-yes'){ P.ask = null; whRemoveAsk(n); return; }
+  if(a.endsWith('-no')){ const k = a.slice(0, -3); P.ask = null; whPnRedraw(k === 'del' ? '[data-wh-del]' : '[data-wh-la="del"][data-wh-l="' + k + '"]'); return; }
+  if(a === 'sg-yes'){
+    const s = S.sg.sys[n], gone = [...P.sel.sg]; P.ask = null; P.sel.sg.clear();
+    if(s){ s.rows = s.rows.filter(x => !gone.includes(x.id)); if(!s.rows.length) delete S.sg.sys[n]; whSgSave(); }
+    whMsg(`Deleted ${gone.length} signature${gone.length === 1 ? '' : 's'}: ${gone.join(', ')}.`); whPnRedraw(); return;
+  }
+  if(a === 'cn-yes'){
+    const ks = new Set(P.sel.cn), names = S.st.links.filter(l => ks.has(whLinkKey(l.a, l.b))).map(l => whName(l.a === n ? l.b : l.a));
+    P.ask = null; P.sel.cn.clear(); S.st.links = S.st.links.filter(l => !ks.has(whLinkKey(l.a, l.b))); for(const k of ks) delete S.ends[k];
+    whSave(); whEndSave(); whMsg(`Deleted ${names.length} connection${names.length === 1 ? '' : 's'}: to ${names.join(', ')}.`);
+    S.drawKey = ''; S.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true);
+  }
+}
+function whAllAct(a){
+  const S = whS, m = S.el.querySelector('.wh-hmenu');
+  if(a === 'sel'){ whHereClose(); for(const id of Object.keys(S.st.sys)) S.M.group.add(Number(id)); whDraw(); return; }   // a drag moves them all; locked ones stay put
+  if(a === 'rm'){ m.innerHTML = whHereAskHtml(); whAskFocus(m); }
+}
+// P4-P6: a paste read into the system in focus. Lazy update off: adds and updates, never removes. On: the paste is the whole list, and it asks every
+// time it would remove any (the owner: "let's have the lazy update ask for verification every time."); Keep them applies it without removing.
+function whScanRead(){
+  const n = whFocus(); if(n === null) return; const P = whP3(n), ta = whS.el.querySelector('#whPnSum [data-wh-ta]');
+  if(ta) P.text = ta.value;
+  whScanApply(n, P.text);
+  whPnRedraw(P.lazyAsk ? null : P.res && P.res.err ? '[data-wh-ta]' : '[data-wh-paste]');
+  if(P.lazyAsk) whAskFocus(whS.el.querySelector('#whPnSum'));
+}
+function whScanApply(n, text, force){
+  const S = whS, P = whP3(n), r = whScanRows(text);
+  if(!r.rows.length){ P.res = {err: 'Nothing in that looks like the Probe Scanner’s list. In the game: the Probe Scanner, Ctrl+A, Ctrl+C, then paste here.'}; P.open = true; P.lazyAsk = null; return; }
+  const cur = S.sg.sys[n] ? S.sg.sys[n].rows : [], seen = new Set(r.rows.map(x => x.id)), gone = S.sg.lazy ? cur.filter(x => !seen.has(x.id)).map(x => x.id) : [];
+  if(gone.length && !force){ P.lazyAsk = {text, ids: gone, of: cur.length}; P.res = null; return; }
+  const now = Date.now(), by = new Map(cur.map(x => [x.id, {...x}])), removed = force === 'rm' ? gone : []; let up = 0, add = 0;
+  P.undo = {rows: cur.map(x => ({...x})), t: S.sg.sys[n] ? S.sg.sys[n].t : 0, ends: whLinksOf(n).map(l => [whLinkKey(l.a, l.b), whEnd(l, n) ? {...whEnd(l, n)} : null])};   // P6: one step
+  for(const x of r.rows){
+    const o = by.get(x.id);
+    if(o){ o.pct = x.pct; o.t = now; if(x.sg) o.sg = x.sg; if(x.grp){ o.grp = x.grp; o.nm = x.nm; } up++; }   // an unscanned row never overwrites a known group: the game shows it only from a high enough signal
+    else { by.set(x.id, {...x, f: now, t: now}); add++; }
+  }
+  for(const id of removed){ by.delete(id); const l = whLinkBySig(n, id); if(l) whEndGone(l, n, now); }   // a connection's ID gone from the scan: the row goes, the connection stays, its end marked
+  for(const id of seen){ const l = whLinkBySig(n, id); if(l) whEndGone(l, n, 0); }
+  const rows = [...by.values()].sort((a, b) => b.t - a.t || a.id.localeCompare(b.id)).slice(0, WH_SG_ROWS);
+  if(rows.length) S.sg.sys[n] = {t: now, rows}; else delete S.sg.sys[n];
+  whSgSave(); whEndSave(); S.drawKey = ''; whPaint(true);
+  const an = r.rows.filter(x => /anomal/i.test(x.sg)).length;
+  P.res = {txt: `Updated ${up} · added ${add}${S.sg.lazy ? ` · removed ${removed.length}` : ''}`,
+    tip: [`Read ${r.rows.length}${an ? ` (${an} of them anomal${an === 1 ? 'y' : 'ies'})` : ''}`, r.bad ? `${r.bad} line${r.bad === 1 ? '' : 's'} not read` : '', r.over ? `${r.over} over the ${WH_SG_ROWS} a paste` : '', removed.length ? 'Removed: ' + removed.join(', ') : ''].filter(Boolean).join(' · ')};
+  P.lazyAsk = null; P.open = false; P.text = '';
+}
+function whSgUndo(n){
+  const S = whS, P = whP3(n), u = P.undo; if(!u) return;
+  if(u.rows.length) S.sg.sys[n] = {t: u.t, rows: u.rows}; else delete S.sg.sys[n];
+  for(const [k, e] of u.ends){ const l = S.st.links.find(x => whLinkKey(x.a, x.b) === k); if(!l) continue; const all = S.ends[k] || (S.ends[k] = {}); if(e) all[n] = e; else delete all[n]; if(!Object.keys(all).length) delete S.ends[k]; }
+  whSgSave(); whEndSave(); S.drawKey = ''; whPaint(true);
+  P.undo = null; P.res = {txt: 'Undone: the list is back as it was before the last paste.'};
+}
+// ---- 059 (P14-P18): Share. 046's format with `chain` beside `sys` (v stays 1, so 046's reader never calls it "from a newer version"; it reads only
+// `sys`, empty here, Q5 "Chain only"). Never in it: positions, locks and their places, src, gone marks, your location; who's there and notes only when
+// ticked (the owner, 2026-11-12); status and tag travel (Q6), filling only empty ones on the other side
+function whChainExport(incl){
+  const S = whState(), ids = Object.keys(S.st.sys).map(Number).sort((a, b) => a - b), sigs = {};
+  const sys = ids.map(id => { const s = S.st.sys[id], m = S.mk[id] || {}, o = {id, name: whName(id), statics: s.statics, t: s.t, u: s.u};
+    if(s.cls) o.cls = s.cls; if(m.st) o.st = m.st; if(m.tag) o.tag = m.tag; if(incl){ if(s.who) o.who = s.who; if(s.notes) o.notes = s.notes; } return o; });
+  const links = S.st.links.slice().sort((a, b) => whLinkKey(a.a, a.b).localeCompare(whLinkKey(b.a, b.b))).map(l => {
+    const o = {a: l.a, b: l.b, t: l.t, u: l.u, seen: l.seen, life: l.life, mass: l.mass, size: l.size}, e = S.ends[whLinkKey(l.a, l.b)] || {}, ends = {};
+    if(l.dr) o.dr = true;
+    for(const n of [l.a, l.b]){ const x = e[n]; if(x && (x.sig || x.type)) ends[n] = {sig: x.sig, ...(x.type ? {type: x.type} : {})}; }
+    if(Object.keys(ends).length) o.ends = ends;
+    if(l.sig && !(ends[l.a] && ends[l.a].sig && ends[l.b] && ends[l.b].sig)){ o.sig = l.sig; if(l.type) o.type = l.type; }   // the old single ID only while a side isn't known
+    return o;
+  });
+  for(const id of ids){ const g = S.sg.sys[id]; if(g) sigs[id] = {t: g.t, rows: g.rows.map(r => ({id: r.id, ...(r.sg ? {sg: r.sg} : {}), grp: r.grp, nm: r.nm, pct: r.pct, f: r.f, t: r.t}))}; }
+  return {tv: 'wormholes', v: 1, made: Date.now(), sys: [], chain: {sys, links, sigs}};
+}
+// P16: someone else's text, checked (D13): this tool, v 1, 256 KB at most; every system known with the name this page has for it; class, statics, link
+// fields, status, tag, signature rows and end IDs only from known values; text cut (who 40, notes 400); times not more than an hour ahead; a link only
+// between two systems in the import or on your map; past 1,000 systems or 2,000 links counted as over the limits. Anything dropped is counted.
+function whChainRead(text){
+  const s = String(text || '').trim();
+  if(!s) return {err: 'Paste a wormhole chain first.'};
+  if(s.length > IT_WH_SHARE_MAX) return {err: 'That’s too long to be a wormhole chain (256 KB at most).'};
+  let o; try{ o = JSON.parse(s); }catch(e){ return {err: 'That isn’t a wormhole chain from this tool (it isn’t JSON).'}; }
+  if(!o || typeof o !== 'object' || o.tv !== 'wormholes') return {err: 'That isn’t a wormhole chain from this tool.'};
+  if(o.v !== 1) return {err: 'That export is from a newer version of this tool: reload the page and try again.'};
+  if(!o.chain || typeof o.chain !== 'object') return {err: Array.isArray(o.sys) && o.sys.length ? 'That export holds Intel’s wormhole list: import it in Intel’s Wormholes list.' : 'That export has no wormhole chain in it.'};
+  const C = o.chain, mine = whState().st.sys, now = Date.now(), okT = (t) => Number.isFinite(t) && t > 0 && t <= now + 3600e3, sk = {unknown: 0, over: 0, bad: 0}, sys = new Map(), links = [], sigs = {};
+  const list = Array.isArray(C.sys) ? C.sys : [], txt = (x, n) => typeof x === 'string' ? whTxt(x, n) : '';
+  sk.over += Math.max(0, list.length - WH_SYS_MAX);
+  for(const x of list.slice(0, WH_SYS_MAX)){
+    if(!x || typeof x !== 'object' || !Number.isInteger(x.id) || !whKnown(x.id) || typeof x.name !== 'string' || whName(x.id).toLowerCase() !== x.name.toLowerCase()){ sk.unknown++; continue; }
+    if(sys.has(x.id)) continue;
+    const t = okT(x.t) ? x.t : now;
+    sys.set(x.id, {id: x.id, cls: whIsJ(x.id) && WH_CLS_OPT.some(c => c[0] === x.cls) ? x.cls : null, statics: whStatics(x.statics).ok, who: txt(x.who, 40), notes: txt(x.notes, 400), t, u: okT(x.u) ? x.u : t,
+      st: WH_ST.some(e => e[0] === x.st) ? x.st : '', tag: whTagClean(x.tag)});
+  }
+  const ok = (id) => sys.has(id) || !!mine[id], info = (k, v) => IT_WH_INFO_TXT[k][v] ? v : '', ty = (v) => IT_WH_TYPE[v] || v === 'K162' ? v : '', sg = (v) => WH_SIGP_RX.test(v || '') ? v : '';
+  const ll = Array.isArray(C.links) ? C.links : [], seenL = new Set();
+  sk.over += Math.max(0, ll.length - WH_LINK_MAX);
+  for(const l of ll.slice(0, WH_LINK_MAX)){
+    if(!l || typeof l !== 'object' || !Number.isInteger(l.a) || !Number.isInteger(l.b) || l.a === l.b || !ok(l.a) || !ok(l.b)){ sk.bad++; continue; }
+    const k = whLinkKey(l.a, l.b); if(seenL.has(k)) continue; seenL.add(k);
+    const t = okT(l.t) ? l.t : now, ends = {};
+    for(const n of [l.a, l.b]){ const e = l.ends && typeof l.ends === 'object' ? l.ends[n] : null; if(e && typeof e === 'object' && (sg(e.sig) || ty(e.type))) ends[n] = {sig: sg(e.sig), type: ty(e.type)}; }
+    links.push({a: l.a, b: l.b, t, u: okT(l.u) ? l.u : t, seen: okT(l.seen) ? l.seen : t, life: info('life', l.life), mass: info('mass', l.mass), size: info('size', l.size), dr: l.dr === true, sig: sg(l.sig), type: ty(l.type), ends});
+  }
+  for(const [k, g] of Object.entries(C.sigs && typeof C.sigs === 'object' ? C.sigs : {})){
+    const id = Number(k); if(!ok(id) || !g || !Array.isArray(g.rows)){ sk.bad++; continue; }
+    const seen = new Set(), rows = [];
+    for(const r of g.rows){ const x = whSgRowRead(r); if(!x || !okT(r.t)){ sk.bad++; continue; } if(seen.has(x.id)) continue; seen.add(x.id); if(rows.length >= WH_SG_ROWS){ sk.over++; continue; } rows.push(x); }
+    if(rows.length) sigs[id] = {t: okT(g.t) ? g.t : Math.max(...rows.map(r => r.t)), rows};
+  }
+  if(!sys.size && !links.length && !Object.keys(sigs).length) return sk.unknown || sk.bad || sk.over ? {err: 'Nothing in that chain could be read: its systems aren’t ones this page knows.'} : {err: 'That export has no wormhole chain in it.'};
+  return {sys: [...sys.values()], links, sigs, sk};
+}
+// P17: the merge, worked out against the store as it is (the preview, then again at "Add to my map"). A new system is added (src 'shared'; a system
+// you removed comes back, Q7 "allow it"); yours keeps its fields unless theirs is newer and not empty; status and tag only where yours are empty; a
+// link added if new, its life / mass / size / Drifter only when theirs is newer, each end's ID only where yours is empty or theirs is newer; per
+// signature ID the row last seen later wins, keeping the earlier first-seen. Nothing of yours is removed or moved.
+function whChainMerge(rd, apply){
+  const S = whState(), st = S.st, r = {add: 0, upd: 0, keep: 0, lk: 0, sigs: 0, over: 0};
+  for(const x of rd.sys){
+    const m = st.sys[x.id];
+    if(!m){ if(Object.keys(st.sys).length + (apply ? 0 : r.add) >= WH_SYS_MAX){ r.over++; continue; } r.add++;
+      if(apply){ st.sys[x.id] = {cls: x.cls, statics: x.statics, who: x.who, notes: x.notes, t: x.t, u: x.u, src: 'shared'}; if(x.st || x.tag) S.mk[x.id] = {...(x.st ? {st: x.st} : {}), ...(x.tag ? {tag: x.tag} : {})}; }
+      continue; }
+    let ch = false;
+    if(x.u > m.u) for(const f of ['cls', 'statics', 'who', 'notes']) if(x[f] && x[f] !== m[f]){ ch = true; if(apply) m[f] = x[f]; }
+    const mk = S.mk[x.id] || {};
+    if(x.st && !mk.st){ ch = true; if(apply) (S.mk[x.id] = S.mk[x.id] || {}).st = x.st; }
+    if(x.tag && !mk.tag){ ch = true; if(apply) (S.mk[x.id] = S.mk[x.id] || {}).tag = x.tag; }
+    if(ch){ r.upd++; if(apply && x.u > m.u) m.u = x.u; } else r.keep++;
+  }
+  const has = (id) => !!st.sys[id] || (!apply && rd.sys.some(x => x.id === id));
+  for(const x of rd.links){
+    if(!has(x.a) || !has(x.b)) continue;
+    const k = whLinkKey(x.a, x.b); let l = st.links.find(q => whLinkKey(q.a, q.b) === k), newer = false;
+    if(!l){ if(st.links.length + (apply ? 0 : r.lk) >= WH_LINK_MAX){ r.over++; continue; } r.lk++; if(!apply) continue;
+      l = {a: x.a, b: x.b, t: x.t, u: x.u, seen: x.seen, sig: x.sig, type: x.type, life: x.life, mass: x.mass, size: x.size}; if(x.dr) l.dr = true; st.links.push(l); newer = true; }
+    else if(x.u > l.u){ newer = true; if(apply){ for(const f of ['life', 'mass', 'size']) l[f] = x[f]; if(x.dr) l.dr = true; else delete l.dr; l.u = x.u; } }
+    if(!apply) continue;
+    for(const [n, e] of Object.entries(x.ends)){ const cur = whEnd(l, Number(n)); if(!cur || !cur.sig || newer) whEndSet(l, Number(n), e.sig, e.type); }
+  }
+  for(const [k, g] of Object.entries(rd.sigs)){
+    const id = Number(k); if(!has(id)) continue;
+    const cur = S.sg.sys[id] ? S.sg.sys[id].rows : [], by = new Map(cur.map(x => [x.id, {...x}]));
+    for(const x of g.rows){ const m = by.get(x.id); if(!m || x.t > m.t){ by.set(x.id, {...x, f: Math.min(x.f, m ? m.f : Infinity)}); r.sigs++; } else if(x.f < m.f) m.f = x.f; }
+    if(apply){ const rows = [...by.values()].sort((a, b) => b.t - a.t).slice(0, WH_SG_ROWS); if(rows.length) S.sg.sys[id] = {t: Math.max(g.t, S.sg.sys[id] ? S.sg.sys[id].t : 0), rows}; }
+  }
+  return r;
+}
+function whChainSum(r){ return `Adds ${r.add} system${r.add === 1 ? '' : 's'} and ${r.lk} connection${r.lk === 1 ? '' : 's'} · updates ${r.upd} where theirs is newer · keeps yours for ${r.keep} · ${r.sigs} signature${r.sigs === 1 ? '' : 's'}`; }
+function whChainSkip(rd, r){ const k = rd.sk, o = k.over + (r ? r.over : 0); return [k.unknown && `${k.unknown} not a known system`, k.bad && `${k.bad} not readable`, o && `${o} over the limits`].filter(Boolean); }
+function whChainPreviewHtml(rd, r){ return `<div class="it-whp-ph">${escapeHtml(whChainSum(r))}</div>${itWhSkipHtml(whChainSkip(rd, r))}${itWhPreviewBtnsHtml(r.add + r.upd + r.lk + r.sigs > 0, 'Add to my map')}`; }
+// the popover: the tick off each time it opens (the owner: notes and who's there "yes" to leaving them out unless ticked), both boxes shut; Copy link
+// off in a browser without deflate-raw (Safari before 16.4, the plan's Sources), with the reason in its title
+function whShareOpen(){
+  const p = whS.el.querySelector('.wh-pop[data-pop="share"]'), inc = p.querySelector('[data-wh-shinc]'); inc.checked = false;
+  for(const k of ['exp', 'imp']) whShareBox(k, false);
+  const lb = p.querySelector('[data-it-whlink]'); let ok = false; try{ ok = typeof CompressionStream === 'function' && !!new CompressionStream('deflate-raw'); }catch(e){ ok = false; }
+  lb.disabled = !ok; lb.title = ok ? 'A link that opens this chain in Threat Vector (up to about 30 systems)' : 'This browser can’t make a chain link: copy the text instead.';
+}
+function whSharePop(){ return whS.el.querySelector('.wh-pop[data-pop="share"]'); }
+async function whShareBox(k, open){
+  const p = whSharePop();
+  for(const kk of ['exp', 'imp']){ const b = p.querySelector('[data-it-whxb="' + kk + '"]'), box = p.querySelector(kk === 'exp' ? '#whShExp' : '#whShImp'), on = kk === k && open; b.setAttribute('aria-expanded', String(on)); box.hidden = !on; }
+  if(!open) return;
+  if(k === 'exp') await whShareExp();
+  else { const box = p.querySelector('#whShImp'); box.querySelector('.it-whp-prev').hidden = true; box.querySelector('.it-whp-bs').textContent = ''; box.querySelector('textarea').focus({preventScroll: true}); }
+}
+async function whShareExp(){
+  const p = whSharePop(), box = p.querySelector('#whShExp'); if(box.hidden) return;
+  const ta = box.querySelector('textarea'), bs = box.querySelector('.it-whp-bs'), bl = box.querySelector('.it-whp-bl');
+  bs.textContent = ''; ta.value = ''; bl.textContent = 'Making the export…';
+  if(!(await whNamesFor(Object.keys(whS.st.sys).map(Number), bs))){ bl.textContent = ''; return; }
+  if(box.hidden) return;
+  const o = whChainExport(p.querySelector('[data-wh-shinc]').checked), ns = Object.values(o.chain.sigs).reduce((a, g) => a + g.rows.length, 0);
+  ta.value = JSON.stringify(o);
+  bl.textContent = `${o.chain.sys.length} system${o.chain.sys.length === 1 ? '' : 's'}, ${o.chain.links.length} connection${o.chain.links.length === 1 ? '' : 's'}, ${ns} signature${ns === 1 ? '' : 's'}; positions and locks stay with you.`;
+  ta.focus({preventScroll: true}); ta.select();
+}
+// a k-space system goes by the name the page loads from ESI (itLoadNames); a chain of wormhole systems only needs CCP's table, already in the page
+async function whNamesFor(ids, bs){ return ids.some(id => Number.isInteger(id) && !whIsJ(id)) ? itWhNamesReady(bs) : true; }
+function whB64u(u8){ let s = ''; for(let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function whB64uBytes(t){ const b = atob(t.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((t.length + 3) % 4)), u = new Uint8Array(b.length); for(let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+const WH_LINK_MAX_CH = 1800;   // 003's cap for a share link (the plan's P18); when 003 is built, #wh= uses its helper
+async function whChainLink(text){ const st = new Blob([text]).stream().pipeThrough(new CompressionStream('deflate-raw')); return location.origin + location.pathname + '#wh=' + whB64u(new Uint8Array(await new Response(st).arrayBuffer())); }
+function whShareClick(b){
+  const p = whSharePop(), d = b.dataset;
+  if(d.itWhxb){ const open = b.getAttribute('aria-expanded') !== 'true'; whShareBox(d.itWhxb, open); if(!open) b.focus(); return true; }
+  if(d.itWhcopy !== undefined || d.itWhlink !== undefined){
+    const box = p.querySelector('#whShExp'), ta = box.querySelector('textarea'), bs = box.querySelector('.it-whp-bs'), link = d.itWhlink !== undefined;
+    (async () => {
+      let txt = ta.value; if(!txt) return;
+      if(link){
+        try{ txt = await whChainLink(ta.value); }catch(e){ bs.textContent = 'This browser can’t make a chain link: copy the text instead.'; return; }
+        if(txt.length > WH_LINK_MAX_CH){ bs.textContent = `Too long for a link (${txt.length} characters): copy the text instead.`; return; }
+      }
+      try{ await navigator.clipboard.writeText(txt); bs.textContent = link ? `Link copied (${txt.length} characters).` : 'Copied.'; }
+      catch(err){ if(link){ ta.value = txt; } bs.textContent = 'Press Ctrl+C (⌘C) to copy.'; ta.focus({preventScroll: true}); ta.select(); }
+    })();
+    return true;
+  }
+  if(d.itWhimp !== undefined){ whShareImport(); return true; }
+  if(d.itWhadd !== undefined){
+    const box = p.querySelector('#whShImp'), ta = box.querySelector('textarea'), rd = whChainRead(ta.value), bs = box.querySelector('.it-whp-bs');
+    if(rd.err){ bs.textContent = rd.err; return true; }
+    const r = whChainMerge(rd, true), S = whS;
+    whSave(); whMkSave(); whSgSave(); whEndSave(); S.drawKey = ''; S.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true);
+    ta.value = ''; box.querySelector('.it-whp-prev').hidden = true; whPopClose();
+    whMsg(`Added ${r.add} system${r.add === 1 ? '' : 's'} and ${r.lk} connection${r.lk === 1 ? '' : 's'}; updated ${r.upd}; ${r.sigs} signature${r.sigs === 1 ? '' : 's'}.`);
+    return true;
+  }
+  if(d.itWhcancel !== undefined){ const box = p.querySelector('#whShImp'); box.querySelector('.it-whp-prev').hidden = true; box.querySelector('textarea').focus({preventScroll: true}); return true; }
+  return false;
+}
+async function whShareImport(){
+  const box = whSharePop().querySelector('#whShImp'), ta = box.querySelector('textarea'), pv = box.querySelector('.it-whp-prev'), bs = box.querySelector('.it-whp-bs');
+  let ids = []; try{ const o = JSON.parse(ta.value); ids = ((o && o.chain && o.chain.sys) || []).map(x => x && x.id); }catch(e){ }
+  if(!(await whNamesFor(ids, bs))) return;
+  const rd = whChainRead(ta.value);
+  if(rd.err){ bs.textContent = rd.err; pv.hidden = true; ta.setAttribute('aria-invalid', 'true'); ta.focus(); return; }
+  ta.removeAttribute('aria-invalid'); bs.textContent = '';
+  pv.innerHTML = whChainPreviewHtml(rd, whChainMerge(rd, false)); pv.hidden = false;
+  const add = pv.querySelector('[data-it-whadd]'); (add || ta).focus({preventScroll: true});
+}
+// P18: a #wh= link opens the Wormholes tab with Share's Import filled and its preview shown; nothing is added without the press; the address is
+// cleaned at once (as #fleet=). Read here, not in sharedKillLinkInit, which runs before this part of the script exists.
+async function whLinkOpen(){
+  const m = /(?:^|[#&])wh=([A-Za-z0-9_-]+)/.exec(typeof location === 'undefined' ? '' : location.hash || ''); if(!m) return;
+  try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){ }
+  switchTab('wh'); whMake(); if(!whS.el) return; whPaint(true); whPopClose(); whPop('share'); await whShareBox('imp', true);
+  const box = whSharePop().querySelector('#whShImp'), bs = box.querySelector('.it-whp-bs');
+  if(typeof DecompressionStream !== 'function'){ bs.textContent = 'This browser can’t open a chain link: ask for the text instead.'; return; }
+  let text = '';
+  try{ const st = new Blob([whB64uBytes(m[1])]).stream().pipeThrough(new DecompressionStream('deflate-raw')); text = await new Response(st).text(); }
+  catch(e){ bs.textContent = 'That chain link is broken or cut short: ask for it again, or for the text instead.'; return; }
+  box.querySelector('textarea').value = text; whShareImport();
+}
 function whPanels(){
   const S = whS, n = whFocus(); if(!S.el) return;
   const has = Object.keys(S.st.sys).length > 0, on = has && S.open === 'sum', rail = S.el.querySelector('.wh-rail'), pnl = S.el.querySelector('#whPnSum'), btn = rail.querySelector('[data-wh-rp="sum"]');
@@ -33938,7 +34570,14 @@ function whPanels(){
   if(btn.getAttribute('aria-pressed') !== String(on)) btn.setAttribute('aria-pressed', String(on));
   if(!on) return;   // 056: System's body is written only while it shows (LESSON #120); opening clears S.pn, so it is written then
   const b = pnl.querySelector('[data-pnb="sum"]'), html = n === null ? '' : whSumHtml(n);
-  if(S.pn.sum !== html && !(b.contains(document.activeElement) && document.activeElement.matches('input, textarea, select'))){ S.pn.sum = html; b.innerHTML = n === null ? '' : whSumHtml(n); }   // never under a field being typed in (a builder, for check_html_sinks)
+  if(S.pn.sum !== html && !(b.contains(document.activeElement) && document.activeElement.matches(WH_TYPING))){ S.pn.sum = html; b.innerHTML = n === null ? '' : whSumHtml(n); }   // never under a field being typed in (a builder, for check_html_sinks)
+}
+// 059: a field being typed in holds off the panel's rewrite; a checkbox or switch doesn't (its press must redraw the panel)
+const WH_TYPING = 'input:not([type="checkbox"]):not([type="radio"]), textarea, select';
+// 059: the panel written again now, the focus put back on the control that has the same hook (a rewrite replaces the element)
+function whPnRedraw(sel){
+  const S = whS; S.pn = {}; whPanels();
+  if(sel){ const e = S.el.querySelector('#whPnSum ' + sel); if(e) e.focus({preventScroll: true}); }
 }
 // ---- + Add (D20: the list's Add form, linked to where you are, the system in focus, or nothing) and "Add a system here" (D31)
 function whPop(k){
@@ -33953,6 +34592,7 @@ function whPop(k){
     o.push(['', 'nothing (a loose system)']);
     f.link.innerHTML = whOptsHtml(o, o[0][0]); f.sys.focus();   // (built with escapeHtml)
   }
+  if(k === 'share' && open) whShareOpen();
 }
 function whPopClose(){ const el = whS.el; let was = false; el.querySelectorAll('.wh-pop').forEach(p => { if(!p.hidden) was = true; p.hidden = true; }); el.querySelectorAll('[data-wh-pop]').forEach(x => x.setAttribute('aria-expanded', 'false')); return was; }
 function whNameIn(raw){ const id = whIdOf(raw); return id && whKnown(id) ? id : null; }
@@ -33965,9 +34605,9 @@ function whAddForm(f){
   if(tc.bad){ whMsg(`“${f.ty.value.trim()}” isn’t a type or class the page knows: a type (Z971, K162), a class (C3, C13), or HS, LS, NS, Thera.`); f.ty.setAttribute('aria-invalid', 'true'); f.ty.focus(); return; }
   if(!whAddSys(id)){ whMsg(`Your map holds ${WH_SYS_MAX} systems at most.`); return; }
   const to = f.link.value ? Number(f.link.value) : null;
-  if(to !== null && to !== id){ const l = whAddLink(to, id); if(l){ if(sig) l.sig = sig; if(tc.type) l.type = tc.type; for(const k of ['life', 'mass', 'size']) if(f[k].value) l[k] = f[k].value; if(f.dr.checked) l.dr = true; l.u = Date.now(); } }
+  if(to !== null && to !== id){ const l = whAddLink(to, id); if(l){ if(sig || tc.type) whEndSet(l, to, sig, tc.type || ''); for(const k of ['life', 'mass', 'size']) if(f[k].value) l[k] = f[k].value; if(f.dr.checked) l.dr = true; l.u = Date.now(); } }   // 059 (P11): the ID is the end in the system you scanned it from
   if(tc.cls && whIsJ(id)){ const m = /^C(13|[1-6])$/.exec(tc.cls), key = m ? (m[1] === '13' ? 'c13' : 'c' + m[1]) : tc.cls === 'Thera' ? 'th' : null; if(key && key !== whClsData(id)) whS.st.sys[id].cls = key; }
-  whSave(); whMsg(`Added ${whName(id)}${to !== null && to !== id ? `, linked to ${whName(to)}` : ''}${sig ? ` through ${sig}` : ''}.`);
+  whSave(); whEndSave(); whMsg(`Added ${whName(id)}${to !== null && to !== id ? `, linked to ${whName(to)}` : ''}${sig ? ` through ${sig}` : ''}.`);
   for(const k of ['sys', 'sig', 'ty']){ f[k].value = ''; f[k].removeAttribute('aria-invalid'); } for(const k of ['life', 'mass', 'size']) f[k].value = ''; f.dr.checked = false; f.dest.value = '';
   whSelect(id);
 }
@@ -33975,12 +34615,23 @@ function whHereOpen(x, y){
   whMenuClose(false);
   const S = whS, m = S.el.querySelector('.wh-hmenu'), w = whToWorld(x, y);
   S.here = [Math.round(w.x - WH_NW / 2), Math.round(w.y - WH_NH / 2)];
-  m.innerHTML = `<div class="wh-mh">Add a system here</div><form class="wh-here" data-wh-here autocomplete="off"><input type="text" name="sys" maxlength="40" spellcheck="false" placeholder="J123456, Thera or Amamake" aria-label="System to add here"><button type="submit">Add</button></form>`
+  m.innerHTML = whHereAllHtml() + `<div class="wh-mh">Add a system here</div><form class="wh-here" data-wh-here autocomplete="off"><input type="text" name="sys" maxlength="40" spellcheck="false" placeholder="J123456, Thera or Amamake" aria-label="System to add here"><button type="submit">Add</button></form>`
     + '<div class="wh-note wh-hn">Not linked to anything. Link it later with + Add.</div>';
   m.hidden = false;
   const bx = S.el.querySelector('.wh-box'), br = bx.getBoundingClientRect(), bh = Math.min(bx.clientHeight, innerHeight - br.top - 8);   // inside the map and on the screen
   m.style.left = Math.max(4, Math.min(x, bx.clientWidth - m.offsetWidth - 4)) + 'px'; m.style.top = Math.max(4, Math.min(y, bh - m.offsetHeight - 4)) + 'px';
   m.querySelector('input').focus();
+}
+// 059 (P13; the owner: "add a right click > remove all option that deletes any system not locked. add a verify step to this. also add a select all."):
+// above "Add a system here" while the map has systems; Remove all asks in the menu, naming how many go and how many locked ones stay
+function whHereAllHtml(){
+  const n = Object.keys(whState().st.sys).length; if(!n) return '';
+  return `<div class="wh-mg1" role="group" aria-label="All systems"><button type="button" class="wh-mi" data-wh-all="sel">Select all (${Number(n)})</button><button type="button" class="wh-mi wh-mdel" data-wh-all="rm">Remove all…</button></div>`;
+}
+function whHereAskHtml(){
+  const ids = Object.keys(whS.st.sys).map(Number), keep = ids.filter(whLocked).length, go = ids.length - keep;
+  return '<div class="wh-mh">Remove all</div>' + (go ? whAskHtml(`Remove ${go} system${go === 1 ? '' : 's'} and their connections?${keep ? ` ${keep} locked stay.` : ''}`, [['all-yes', 'Remove'], ['all-no', 'Cancel']])
+    : '<div class="wh-note wh-hn">Nothing to remove: every system is locked.</div>');
 }
 function whHereClose(){ const m = whS && whS.el && whS.el.querySelector('.wh-hmenu'); if(m && !m.hidden){ m.hidden = true; return true; } return false; }
 function whHereAdd(f){
@@ -34037,7 +34688,11 @@ function whMenuAct(act){
   const S = whS, n = S.menu; if(n === null || !S.st.sys[n]){ whMenuClose(true); return; }
   const [k, v] = act.split(':'), nm = whName(n), m = S.mk[n] || (S.mk[n] = {});
   if(k === 'copy'){ whCopyName(n); return; }
-  if(k === 'del'){ if(m.lock){ whMsg(WH_LOCKED(nm)); return; } whMenuClose(true); whRemoveAsk(n); return; }
+  if(k === 'del'){   // 059 (P20): asks first, in the menu; a locked system keeps its refusal with no question
+    if(m.lock){ whMsg(WH_LOCKED(nm)); return; }
+    const it0 = S.el.querySelector('.wh-smenu [data-wh-m="del"]'); if(!it0) return;
+    it0.outerHTML = whAskHtml(`Remove ${nm} and its connections?`, [['m-yes', 'Remove'], ['m-no', 'Cancel']]); whAskFocus(S.el.querySelector('.wh-smenu')); return;
+  }
   if(k === 'st'){ if(WH_ST.some(e => e[0] === v)) m.st = v; else delete m.st; whMsg(m.st ? `${nm}: ${whStLabel(m.st)}.` : `${nm}: no status.`); }
   if(k === 'tag'){ const t = whTagClean(S.el.querySelector('.wh-smenu [data-wh-mtag]').value); if(t) m.tag = t; else delete m.tag; whMsg(t ? `${nm} tagged ${t}.` : `${nm}: no tag.`); }
   if(k === 'lock'){
@@ -34073,36 +34728,52 @@ function whEdit(f){
     else if(k === 'statics'){ const c = whStatics(f.value); s.statics = c.ok; ed.querySelector('[data-wh-stc]').innerHTML = whStcsHtml(c.ok); ed.querySelector('[data-wh-bad]').hidden = !c.bad; f.setAttribute('aria-invalid', String(c.bad)); }
     else s[k] = String(f.value).slice(0, k === 'notes' ? 400 : 40);
     s.u = Date.now();
-  }else if(f.dataset.lf){
-    const l = S.st.links.find(x => whLinkKey(x.a, x.b) === f.dataset.l); if(!l) return;
-    const k = f.dataset.lf, v = String(f.value);
-    if(k === 'type'){ const u = v.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4); l.type = IT_WH_TYPE[u] || u === 'K162' ? u : ''; if(u && !l.type) whMsg(`“${u}” isn’t a wormhole type the page knows.`); }
-    else if(k === 'sig'){ const u = v.trim().toUpperCase().replace(/^([A-Z]{3})(\d)/, '$1-$2'); l.sig = /^[A-Z]{3}(-\d{0,3})?$/.test(u) ? u : ''; if(u && !l.sig) whMsg('A signature ID is three letters and three digits (RZL-429), or its start.'); }
-    else l[k] = IT_WH_INFO_TXT[k] && IT_WH_INFO_TXT[k][v] ? v : '';
-    l.u = Date.now();
   }
   whSave(); S.pn = {}; whPaint(true);
 }
 function whWire(el){
   el.addEventListener('click', (ev) => {
-    const b = ev.target.closest('button'); if(!b){ if(!ev.target.closest('.wh-menu')) whHereClose(); return; }
+    const b = ev.target.closest('button');
+    if(!b){
+      const r = ev.target.closest('[data-wh-lr]'); if(r && !ev.target.closest('input, select, label')){ whLPick(ev, r); return; }   // 059: a row of the panel's lists
+      if(!ev.target.closest('.wh-menu')) whHereClose(); return;
+    }
     const d = b.dataset;
     if(d.whRp){ whPnSet(whS.open === d.whRp ? '' : d.whRp); return; }   // 056: the button shows or hides its panel; nothing else shuts it
+    if(d.whAsk){ whAskAct(d.whAsk); return; }   // 059 (P20): a question's answer
+    if(d.whAll){ whAllAct(d.whAll); return; }
+    if(d.whSec){ whS.secs.sigs = !whS.secs.sigs; whSecSave(); whPnRedraw('[data-wh-sec="sigs"]'); return; }
+    if(d.whPaste !== undefined){ const P = whP3(whFocus()), o = b.getAttribute('aria-expanded') !== 'true'; P.open = o; if(o) P.res = null; whPnRedraw(o ? '[data-wh-ta]' : '[data-wh-paste]'); return; }
+    if(d.whRead !== undefined){ whScanRead(); return; }
+    if(d.whUndo !== undefined){ whSgUndo(whFocus()); whPnRedraw('[data-wh-paste]'); return; }
+    if(d.whLa){ whLAct(d.whL, d.whLa, b); return; }
+    if(d.whLs){ whLSort(d.whL, d.whLs); return; }
+    if(b.closest('.wh-pop[data-pop="share"]') && whShareClick(b)) return;   // 059 (P14): Share's Export / Import (046's boxes)
     if(d.whM){ whMenuAct(d.whM); return; }
     if(d.whPop){ whPop(d.whPop); return; }
     if('whPopx' in d){ whPopClose(); return; }
     if(d.whSel){ whSelect(Number(d.whSel)); return; }
-    if(d.whDel){ whRemoveAsk(Number(d.whDel)); return; }
-    if(d.whDl){ whS.st.links = whS.st.links.filter(l => whLinkKey(l.a, l.b) !== d.whDl); whSave(); whMsg('Connection deleted.'); whS.pn = {}; whPaint(true); return; }
+    if(d.whDel){ const n = Number(d.whDel); if(whLocked(n)){ whRemoveAsk(n); return; } whP3(n).ask = {k: 'del'}; whPnRedraw('[data-wh-ask="del-no"]'); return; }   // 059 (P20): asks first; a locked system keeps its refusal
     if(d.whZ) whZoomBtn(b, d.whZ);
     if(!ev.target.closest('.wh-menu')) whHereClose();
   });
-  el.addEventListener('change', (ev) => { if(ev.target.closest('[data-wh-ed]')) whEdit(ev.target); });
+  el.addEventListener('change', (ev) => {
+    const f = ev.target;
+    if(f.closest('[data-wh-ed]')){ whEdit(f); return; }
+    if(f.dataset.whSw === 'lazy'){ whS.sg.lazy = f.checked; whSgSave(); whPnRedraw('[data-wh-sw="lazy"]'); return; }   // 059 (P5): one setting for every system
+    if(f.dataset.whLall){ whLAll(f.dataset.whLall, f.checked); return; }
+    if(f.dataset.whShinc !== undefined) whShareExp();   // 059 (P14): the export made again with or without notes and who's there
+  });
+  el.addEventListener('keydown', (ev) => {   // 059 (P7): Space or Enter on a focused row as Ctrl-click
+    if(ev.key !== ' ' && ev.key !== 'Enter') return; const r = ev.target.closest && ev.target.closest('[data-wh-lr]'); if(!r || ev.target !== r) return;
+    ev.preventDefault(); whLPick(ev, r);
+  });
   el.querySelector('.wh-smenu').addEventListener('keydown', whMenuKey);
   el.addEventListener('input', (ev) => {
     const f = ev.target;
     if(f.matches('[data-f="statics"]')){ const o = f.closest('[data-wh-ed]').querySelector('[data-wh-stc]'); if(o) o.innerHTML = whStcsHtml(whStatics(f.value).ok); }
     if(f.name === 'ty' && f.closest('.wh-addf')) itWhTypeHint(f.form);
+    if(f.dataset.whTa !== undefined) whP3(whFocus()).text = f.value;   // 059: the paste box's text survives a rewrite of the panel
   });
   el.addEventListener('submit', (ev) => {
     const f = ev.target; ev.preventDefault();
@@ -34180,6 +34851,7 @@ function whWireMap(el){
       for(const [n, p] of M.P) if(p.x + WH_NW >= a.x && p.x <= z.x && p.y + WH_NH >= a.y && p.y <= z.y) M.group.add(n);
       whDraw();
     }
+    if(d.kind === 'pan' && !d.moved){ const e = whEndAt(d.sx, d.sy); if(e){ whMsg(e.txt.split('\n').join(' · ') + '.'); return; } }   // 059: a press on an end mark (a phone's way to its ID)
     if(d.kind === 'pan' && !d.moved && M.group.size){ M.group.clear(); whDraw(); }
   };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
@@ -34189,7 +34861,10 @@ function whWireMap(el){
   cv.addEventListener('touchstart', () => { M.lpOpen = false; }, {passive: true});
   cv.addEventListener('contextmenu', (ev) => { ev.preventDefault(); const q = pt(ev), hit = whHit(whToWorld(q.x, q.y)); if(hit !== null) whMenuOpen(hit, q.x, q.y); else whHereOpen(q.x, q.y); });
   // the box under the pointer named in a hover (its status not by colour alone): written only when the box under the pointer changes
-  cv.addEventListener('pointermove', (ev) => { if(ev.buttons || !M.cam || ev.pointerType !== 'mouse') return; const q = pt(ev), h = whHit(whToWorld(q.x, q.y)); if(h === M.hov) return; M.hov = h; cv.title = h === null ? '' : whHoverTxt(h); });
+  cv.addEventListener('pointermove', (ev) => {   // 059: with no box under the pointer, a connection's end mark names its ID
+    if(ev.buttons || !M.cam || ev.pointerType !== 'mouse') return; const q = pt(ev), h = whHit(whToWorld(q.x, q.y)), e = h === null ? whEndAt(q.x, q.y) : null, k = h !== null ? 'b' + h : e ? 'e' + e.txt : '';
+    if(k === M.hov) return; M.hov = k; cv.title = h !== null ? whHoverTxt(h) : e ? e.txt : ''; cv.style.cursor = e ? 'help' : '';
+  });
   cv.addEventListener('pointerleave', () => { M.hov = undefined; if(cv.title) cv.title = ''; });
   cv.addEventListener('wheel', (ev) => { ev.preventDefault(); const q = pt(ev); whZoom(Math.exp(-ev.deltaY * (ev.ctrlKey ? 0.01 : 0.0015)), q.x, q.y); }, {passive: false});
   const mc = box.querySelector('.wh-mini');
@@ -34271,6 +34946,7 @@ function whOnSwitch(tab){
   b.addEventListener('click', () => switchTab('wh'));
   document.addEventListener('visibilitychange', () => { whLocArm(); if(document.visibilityState !== 'hidden') whPaint(); });
   tmInit(); whMark();
+  whLinkOpen(); addEventListener('hashchange', whLinkOpen);   // 059 (P18)
 })();
 </script>
 

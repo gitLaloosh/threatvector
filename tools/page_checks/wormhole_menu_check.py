@@ -68,6 +68,11 @@ LP_AT = """(id) => { const S = whS, M = S.M, cv = whCv(), r = cv.getBoundingClie
   M.cam = {x: p.x + WH_NW / 2 - x / M.cam.s, y: p.y + WH_NH / 2 - y / M.cam.s, s: M.cam.s}; whDraw();
   return {x: r.x + x, y: r.y + y, on: document.elementFromPoint(r.x + x, r.y + y) === cv && whHit(whToWorld(x, y)) === id}; }"""
 MENU = "() => { const m = document.querySelector('.wh-smenu'); return m && !m.hidden; }"
+# 059: a point on empty map space (no box, no end mark, nothing over the canvas), on the screen
+EMPTY = """() => { const cv = whCv(), r = cv.getBoundingClientRect();
+  for(let y = r.height * 0.75; y > 60; y -= 23) for(let x = r.width * 0.5; x < r.width - 20; x += 31){ const X = r.x + x, Y = r.y + y;
+    if(Y < innerHeight - 10 && document.elementFromPoint(X, Y) === cv && whHit(whToWorld(x, y)) === null && !whEndAt(x, y)) return {x: X, y: Y}; }
+  return null; }"""
 
 def near(c, want, tol=40): return c[3] > 200 and all(abs(a - b) <= tol for a, b in zip(c[:3], want))
 
@@ -77,7 +82,7 @@ def menu_on(pg, sid):   # a right-click on the system; if another box lies over 
     else: pg.evaluate("([id, x, y]) => { const r = whCv().getBoundingClientRect(); whMenuOpen(id, x - r.x, y - r.y); }", [sid, a['x'], a['y']])
     pg.wait_for_timeout(150); return a
 
-def cases(b, html, parts=('empty', 'menu', 'lock', 'copy', 'store', 'phone')):
+def cases(b, html, parts=('empty', 'menu', 'lock', 'copy', 'store', 'all', 'phone')):
     out, errs = [], []
     ctx, pg = start(b, html, 1440, errs)
     if not pg.evaluate("typeof whMenuOpen === 'function'"): out.append('no system menu'); ctx.close(); return out, errs
@@ -171,12 +176,14 @@ def cases(b, html, parts=('empty', 'menu', 'lock', 'copy', 'store', 'phone')):
         pg.evaluate("() => document.querySelector('[data-pnb=\"sum\"] [data-wh-del]').click()"); pg.wait_for_timeout(150)
         if not pg.evaluate("(id) => !!whS.st.sys[id]", j1) or 'is locked' not in pg.inner_text('.wh-msg'): out.append('the System panel\'s Remove refuses while locked')
         n0 = pg.evaluate("(id) => whLinksOf(id).length", j1)
-        pg.click('[data-pnb="sum"] [data-wh-dl]'); pg.wait_for_timeout(150)
+        pg.evaluate("(id) => { const l = whLinksOf(id)[0], P = whP3(whFocus()); P.sel.cn = new Set([whLinkKey(l.a, l.b)]); whAskAct('cn-yes'); }", j1); pg.wait_for_timeout(150)   # 059: Delete selected in the Connections list
         if pg.evaluate("(id) => whLinksOf(id).length", j1) != n0 - 1: out.append('a connection touching a locked system can still be deleted')
         menu_on(pg, j1); pg.click('.wh-smenu [data-wh-m="lock"]'); pg.wait_for_timeout(150)
         menu_on(pg, j1)
         if pg.evaluate("() => document.querySelector('.wh-smenu [data-wh-m=\"del\"]').getAttribute('aria-disabled')"): out.append('unlocked: Remove is no longer greyed')
         pg.click('.wh-smenu [data-wh-m="del"]'); pg.wait_for_timeout(150)
+        if not pg.evaluate("(id) => !!whS.st.sys[id] && !!document.querySelector('.wh-smenu [data-wh-ask=\"m-yes\"]')", j1): out.append('the menu\'s Remove should ask first (059, P20)')
+        pg.click('.wh-smenu [data-wh-ask="m-yes"]'); pg.wait_for_timeout(150)
         gone = pg.evaluate("(id) => [!!whS.st.sys[id], whLinksOf(id).length, !!(JSON.parse(localStorage.getItem('tvWhMarks')).sys[id])]", j1)
         if gone != [False, 0, False]: out.append(f'Remove takes the system, its connections and its marks: {gone}')
         pg.click('[data-wh-pop="add"]'); pg.wait_for_timeout(100); pg.fill('.wh-addf input[name=sys]', J[1]); pg.click('.wh-addf button[type=submit]'); pg.wait_for_timeout(150); pg.evaluate("() => whPopClose()")
@@ -220,6 +227,29 @@ def cases(b, html, parts=('empty', 'menu', 'lock', 'copy', 'store', 'phone')):
         if r != ['home', True, False, 'from the older page']: out.append(f'store: read back after the older page (status, lock, a stray entry dropped, its edit kept): {r}')
         pg.evaluate("() => whMkSave()")
         if '31999999' in pg.evaluate("localStorage.getItem('tvWhMarks')"): out.append('store: marks for a system no longer on the map are dropped')
+    if 'all' in parts:   # 059 (P13; the owner: "add a right click > remove all option that deletes any system not locked. add a verify step to this. also add a select all.")
+        pg.evaluate("(id) => { whS.mk[id] = {...(whS.mk[id] || {}), lock: true}; whMkSave(); whPnSet(''); whMenuClose(false); whHereClose(); }", j0); pg.wait_for_timeout(100)
+        n = pg.evaluate("Object.keys(whS.st.sys).length"); e = pg.evaluate(EMPTY)
+        if not e: out.append('all: no empty map space to right-click')
+        else:
+            pg.mouse.click(e['x'], e['y'], button='right'); pg.wait_for_timeout(120)
+            it = pg.evaluate("[...document.querySelectorAll('.wh-hmenu [data-wh-all]')].map(b => b.textContent)")
+            if it != [f'Select all ({n})', 'Remove all…']: out.append(f'all: the empty-space menu\'s Select all and Remove all: {it}')
+            pg.click('.wh-hmenu [data-wh-all="sel"]'); pg.wait_for_timeout(100)
+            if pg.evaluate("whS.M.group.size") != n or not pg.evaluate("document.querySelector('.wh-hmenu').hidden"): out.append('all: Select all puts every system in the group and closes the menu')
+            pg.evaluate("whS.M.group.clear(); whDraw()"); pg.mouse.click(e['x'], e['y'], button='right'); pg.wait_for_timeout(120)
+            pg.click('.wh-hmenu [data-wh-all="rm"]'); pg.wait_for_timeout(100)
+            q = pg.evaluate("[document.querySelector('.wh-hmenu').textContent, document.activeElement && document.activeElement.dataset.whAsk]")
+            if f'Remove {n - 1} systems and their connections? 1 locked stay.' not in q[0] or q[1] != 'all-no': out.append(f'all: the verify step names how many go and how many locked stay, focus on Cancel: {q}')
+            pg.click('.wh-hmenu [data-wh-ask="all-no"]'); pg.wait_for_timeout(100)
+            if pg.evaluate("Object.keys(whS.st.sys).length") != n: out.append('all: Cancel removes nothing')
+            pg.mouse.click(e['x'], e['y'], button='right'); pg.wait_for_timeout(120); pg.click('.wh-hmenu [data-wh-all="rm"]'); pg.wait_for_timeout(80); pg.click('.wh-hmenu [data-wh-ask="all-yes"]'); pg.wait_for_timeout(200)
+            r = pg.evaluate("(id) => [Object.keys(whS.st.sys).map(Number), whS.st.links.length, Object.keys(JSON.parse(localStorage.getItem('tvWhChain')).sys).map(Number), document.querySelector('.wh-msg').textContent]", j0)
+            if r[0] != [j0] or r[1] != 0 or r[2] != [j0] or '1 locked kept' not in r[3]: out.append(f'all: Remove all keeps only the locked system, saved, said so: {r}')
+            pg.evaluate("(id) => { whS.mk[id] = {}; whMkSave(); whRemoveSys(id); whPaint(true); }", j0); pg.wait_for_timeout(100)
+            pg.mouse.click(e['x'], e['y'], button='right'); pg.wait_for_timeout(120)
+            if pg.evaluate("!!document.querySelector('.wh-hmenu [data-wh-all]')"): out.append('all: an empty map\'s menu has only "Add a system here"')
+            pg.evaluate("whHereClose()")
     if not pg.evaluate("document.documentElement.scrollWidth <= innerWidth"): out.append('1440: sideways scroll')
     ctx.close()
     if 'phone' in parts:
@@ -252,6 +282,14 @@ def cases(b, html, parts=('empty', 'menu', 'lock', 'copy', 'store', 'phone')):
                 elif not m['rows'] or not m['inside']: out.append(f'390: the menu\'s rows 44 px, inside the map and the screen: {m}')
                 if cam1 != cam0 or p1 != p0: out.append(f'390: press and hold pans or drags: camera {cam0} → {cam1}, system {p0} → {p1}')
                 if pg.evaluate("(id) => JSON.stringify(whMk(id))", j0) != '{}': out.append('390: lifting the finger picked a menu item (LESSON #167)')
+                if 'all' in parts:   # 059: press and hold on empty space opens the same menu, with Select all first; lifting the finger picks nothing
+                    pg.evaluate("whMenuClose(false); whHereClose(); whS.M.group.clear()"); e = pg.evaluate(EMPTY)
+                    if e:
+                        cdp.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': e['x'], 'y': e['y']}]}); pg.wait_for_timeout(750)
+                        cdp.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []}); pg.wait_for_timeout(200)
+                        h = pg.evaluate("() => { const m = document.querySelector('.wh-hmenu'); return [!m.hidden, [...m.querySelectorAll('[data-wh-all]')].every(b => b.getBoundingClientRect().height >= 44), whS.M.group.size]; }")
+                        if h != [True, True, 0]: out.append(f'390: press and hold on empty space: the menu with Select all (44 px), nothing picked on release: {h}')
+                        pg.evaluate("whHereClose()")
             if not pg.evaluate("document.documentElement.scrollWidth <= innerWidth"): out.append(f'390: sideways scroll ({"full" if full else "empty"})')
             ctx.close()
     return out, errs
@@ -264,6 +302,9 @@ MUTANTS = [
     ('the marks of a removed system kept', "delete st.sys[id]; delete st.pos[id]; delete whS.mk[id];", "delete st.sys[id]; delete st.pos[id];", ('lock',)),
     ('the empty map at its old height', "  if(box.style.getPropertyValue('--whH') !== H + 'px') box.style.setProperty('--whH', H + 'px');", "  if(n && box.style.getPropertyValue('--whH') !== H + 'px') box.style.setProperty('--whH', H + 'px');", ('empty',)),
     ('the release after a press and hold clicks the menu (LESSON #167)', "if(M.lpOpen){ M.lpOpen = false; ev.preventDefault(); }", "if(M.lpOpen){ M.lpOpen = false; }", ('phone',)),
+    ('Remove all without its verify step (059)', "  if(a === 'rm'){ m.innerHTML = whHereAskHtml(); whAskFocus(m); }", "  if(a === 'rm'){ whHereClose(); whRemoveAll(); }", ('all',)),
+    ('Remove all takes a locked system (059)', "const S = whState(), st = S.st, ids = Object.keys(st.sys).map(Number), keep = ids.filter(whLocked), go = ids.filter(n => !whLocked(n));", "const S = whState(), st = S.st, ids = Object.keys(st.sys).map(Number), keep = [], go = ids;", ('all',)),
+    ('the menu\'s Remove without asking (059)', "    it0.outerHTML = whAskHtml(`Remove ${nm} and its connections?`, [['m-yes', 'Remove'], ['m-no', 'Cancel']]); whAskFocus(S.el.querySelector('.wh-smenu')); return;", "    whMenuClose(true); whRemoveAsk(n); return;", ('lock',)),
     ('the status drawn on no border', "c.strokeStyle = sc || C.line; c.lineWidth = sc ? 2.2 : 1.2;", "c.strokeStyle = C.line; c.lineWidth = 1.2;", ('menu',)),
 ]
 
