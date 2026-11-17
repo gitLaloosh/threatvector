@@ -217,7 +217,7 @@ MUTANTS = [
     ('no curves', "  if(itm.jbKey){\n    const Zb = itJbZones()", "  if(false){\n    const Zb = itJbZones()", ('counts',)),   # 057: the curves' loop
     ('a bridge step drawn straight (D13)', "if(T.adj[a].includes(b)) { c.moveTo", "if(true) { c.moveTo", ('counts',)),
     ('the setting not kept', "      if(r.bridgesOn === true) d.bridgesOn = true;", "", ('ui',)),
-    ('the switch\'s row short on a phone', ".it-jb .jb-on{min-height:44px;} .it-rp-jbz", ".it-rp-jbz", ('phone',)),   # 057: the zones' rows share the rule
+    ('the switch\'s row short on a phone', ".it-jb .jb-on{min-height:44px;} .it-rp-box", ".it-rp-box", ('phone',)),   # 057: the zones' rows share the rule
 ]
 
 with sync_playwright() as p:
