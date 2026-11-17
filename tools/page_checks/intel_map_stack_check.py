@@ -97,6 +97,10 @@ WANT_EXAMPLE = """() => { const T = itMapTable(), mt = itMapMatch(), ix = sovInd
     const t3 = !!e && [...e].some(([k, l]) => (k === 'Major Threat Detection Array' || k === 'Minor Threat Detection Array') && l === 3), want = v >= -0.5 - 1e-9 && v <= -0.3 + 1e-9 && t3;
     if(want !== !!mt.m[i]) bad.push(i); if(mt.m[i]){ n++; if(itm.D[i] > itm.reach) far++; } if(t3) tda++; if(t3 && want) inR++; }
   return {n, tda, inR, bad: bad.length, list: mt.list.length, far}; }"""
+def pb_click(pg, k, out):   # 057: a settings button shows on hover; one that doesn't is a failure here, not a 30 s stall
+    pg.hover(f'.it-map-fbtns [data-im-f="{k}"]')
+    try: pg.click(f'[data-it-mpn="{k}"]', timeout=3000)
+    except Exception: out.append(f'the {k} settings button can\'t be pressed while its filter is hovered')
 VIS_PB = "(k) => { const f = document.querySelector(`.it-map-fbtns [data-im-f='${k}']`), b = f && f.parentNode.querySelector('.it-map-pb'); if(!b) return false; const cs = getComputedStyle(b); return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity) > 0.5 && b.getBoundingClientRect().width > 0; }"
 
 def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow', 'paths', 'panel', 'sovlv', 'wh', 'sec', 'store', 'example', 'phone')):
@@ -224,14 +228,19 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
             if pg.evaluate("() => (document.querySelector('.it-mpp .it-mp-cnt') || {}).textContent || ''") != f"{pg.evaluate('() => itMapMatch().list.length')} systems match every Only filter that is on": out.append('the panel\'s count')
             pg.keyboard.press('Escape'); pg.wait_for_timeout(150)
             if not pg.evaluate("() => document.querySelector('.it-mpp').hidden && document.activeElement === document.querySelector('[data-it-mpn=secr]')"): out.append('Escape doesn\'t shut the panel with focus back on its button')
-            if not pg.evaluate(VIS_PB, 'secr'): out.append('the settings button hidden while Security range is on')
-            pg.click('[data-it-mpn="secr"]'); pg.wait_for_timeout(150)
+            if not pg.evaluate(VIS_PB, 'secr'): out.append('the settings button hidden while it has keyboard focus (Escape put it back)')
+            # 057 (the owner: "hover should show settings button even when off or on. it doesn't need to stick when on")
+            pg.evaluate("() => document.activeElement && document.activeElement.blur()"); pg.mouse.move(700, 900); pg.wait_for_timeout(800)
+            if pg.evaluate(VIS_PB, 'secr'): out.append('the settings button stays up while Security range is on, not hovered (want it only on hover)')
+            pg.hover('.it-map-fbtns [data-im-f="secr"]'); pg.wait_for_timeout(300)
+            if not pg.evaluate(VIS_PB, 'secr'): out.append('no settings button on hover while Security range is on')
+            pb_click(pg, 'secr', out); pg.wait_for_timeout(150)
             pg.evaluate("() => itMapFilterSet('secr')"); pg.wait_for_timeout(300)
             if not pg.evaluate("() => !itMapSt().only.secr && itMapSt().secr.lo === -10 && document.querySelector('.it-mpp').hidden"): out.append('off doesn\'t keep the setting and shut the panel')
             pg.hover('.it-map-fbtns [data-im-f="secr"]'); pg.wait_for_timeout(700)
-            if pg.evaluate(VIS_PB, 'secr'): out.append('a settings button shows on hover while its filter is off')
+            if not pg.evaluate(VIS_PB, 'secr'): out.append('no settings button on hover while its filter is off (057: on hover, on or off)')
             pg.hover('.it-map-fbtns [data-im-f="sov"]'); pg.wait_for_timeout(700)
-            if pg.evaluate(VIS_PB, 'sov'): out.append('Sov\'s settings button shows on hover while it is off')
+            if not pg.evaluate(VIS_PB, 'sov'): out.append('no Sov settings button on hover while it is off (057)')
             pg.mouse.move(700, 900)
             pg.evaluate("() => { itMapFilterSet('sov'); sovOpen(true); }"); pg.wait_for_timeout(300)
             pg.evaluate("() => itMapFilterSet('sov')"); pg.wait_for_timeout(300)
@@ -306,7 +315,7 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
         if bd != '2': out.append(f'390 px: the folded button\'s count {bd!r} (want 2)')
         if pg.evaluate("() => { const b = document.querySelector('.it-map-fcur .it-map-fbd'); return b ? getComputedStyle(b).backgroundColor : ''; }") == pg.evaluate("() => getComputedStyle(document.body).getPropertyValue('--amber')"): out.append('390 px: the count is amber')
         pg.click('.it-map-fcur'); pg.wait_for_timeout(200)
-        pg.click('[data-it-mpn="secr"]'); pg.wait_for_timeout(300)
+        pb_click(pg, 'secr', out); pg.wait_for_timeout(300)
         r = pg.evaluate("() => { const x = document.querySelector('.it-mpp'), r = x.getBoundingClientRect(), b = itm.box.getBoundingClientRect(), q = [...x.querySelectorAll('.it-mp-q button, .rs-b')].map(e => Math.round(e.getBoundingClientRect().height));"
                         " return [!x.hidden, r.left >= b.left - 1 && r.right <= b.right + 1, Math.min(...q)]; }")
         if r[:2] != [True, True] or r[2] < 44: out.append(f'390 px: the Security range sheet {r} (want open inside the map, 44 px targets)')
@@ -324,7 +333,8 @@ MUTANTS = [
     ('Kills still amber (Q3)', "  const T = itMapTable(), c = itMapSt().colour;\n  if(c === 'jumps')", "  const T = itMapTable(), c = itMapSt().colour;\n  if((itm.rep.get(i) || {}).kills) return IT_MAP_KILL;\n  if(c === 'jumps')", ('kills',)),
     ('OR instead of AND (Q2)', "    if(ok && o.near) ok = D[i] >= 0 && D[i] <= s.near.n;", "    if(o.near) ok = ok || (D[i] >= 0 && D[i] <= s.near.n);", ('wh',)),
     ('the distance fade kept while filtering (Q6)', "alpha = (i) => mt ? (mt.m[i] ? 1 : IT_MAP_DIM)", "alpha = (i) => mt ? (mt.m[i] ? (!on(i) ? IT_MAP_FAINT : 1) : IT_MAP_DIM)", ('ex',)),
-    ('a settings button shown on hover while off', "  /* 058: the line between the column's groups", "  @media (hover: hover){ .it-map-fw:hover > button.it-map-pb{visibility:visible; opacity:1; transition-delay:0s;} }\n  /* 058: the line between the column's groups", ('panel',)),
+    ('no settings button on hover (057)', ".it-map-fw:hover > button.it-map-pb, .it-map-fw:has(", ".it-map-fw:has(", ('panel',)),
+    ('the settings button kept up while its filter is on (057: hover only)', ".it-map-fw:hover > button.it-map-pb, .it-map-fw:has(", ".it-map-fw > [aria-pressed=\"true\"] ~ button.it-map-pb, .it-map-fw:hover > button.it-map-pb, .it-map-fw:has(", ('panel',)),
     ('the stack not kept (Q11)', "function itMapStackSave(){ try{ localStorage.setItem(MAP_STACK_KEY, JSON.stringify(itMapSt())); }", "function itMapStackSave(){ try{ }", ('store',)),
     ('a ring faded off the matches (Q7)', "c.lineWidth = big ? 2.5 : 2.2; c.globalAlpha = 0.95;", "c.lineWidth = big ? 2.5 : 2.2; c.globalAlpha = itMapDimmed(i) ? 0.2 : 0.95;", ('rings',)),
     ('the alert glow at today\'s size zoomed out', "big ? r + 9 : 11 * Math.min(1.4", "big ? r + 9 : 22 * Math.min(1.4", ('glow',)),

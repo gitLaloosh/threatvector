@@ -12,8 +12,8 @@ Uses intel_check.py's made-up folder, mocks and names (you in 1DQ1-A, alert rang
     column's button) with every filter (or the column's button), the rail and zoom still clickable; remembered (nearShown) across a reload;
     pressed again it shuts; a map press on a system leaves it shut;
   * the filter column at the map's left edge, under the search box, inside the map, clear of the zoom buttons and the rail; Paths to you
-    last; (wide) Wormholes on shows its panel button right of the column, level with it, and off hovering shows none (058, the owner:
-    "disabling a filter (like security range) should hide the settings button for it"); the name line right of the panel buttons,
+    last; (wide) hovering Wormholes, on or off, shows its panel button right of the column, level with it, and the pointer away hides it
+    (057, the owner: "hover should show settings button even when off or on. it doesn't need to stick when on"; was 058's "only while on"); the name line right of the panel buttons,
     level with the filter that is on, clear of the rail; (phone) the column shut behind its button, opened it shuts Near You and Near You
     shuts it;
   * the Wormholes list: (1440) right of the panel buttons, inside the map, clear of Near You, the name line hidden; (760) no room beside
@@ -87,8 +87,10 @@ def case_wide(b, html, w, out, errs):
       return {{left: f.left-m.left<=12, under: f.top>=q.bottom, inMap: f.bottom<=m.bottom && f.top>=m.top, tall: f.height>f.width, clear: !ov(f,r) && z.every(x=>!ov(f,x)), last: ks[ks.length-1]==='paths'}}; }})()""")
     if not all(col.values()): out.append(f'{w}: the filter column at the left edge under the search box, clear of zoom and the rail, Paths to you last: {col}')
     pg.hover('[data-im-f="wh"]'); pg.wait_for_timeout(700)
-    if pg.evaluate("getComputedStyle(document.querySelector('[data-it-whl]')).visibility === 'visible'"): out.append(f'{w}: hovering Wormholes while it is off shows its panel button (058: only while on)')
-    pg.evaluate("itMapFilterSet('wh')"); pg.mouse.move(5, 5); pg.wait_for_timeout(700)
+    if pg.evaluate("getComputedStyle(document.querySelector('[data-it-whl]')).visibility !== 'visible'"): out.append(f'{w}: hovering Wormholes while it is off shows no panel button (057, the owner: "hover should show settings button even when off or on")')
+    pg.evaluate("itMapFilterSet('wh')"); pg.mouse.move(5, 5); pg.wait_for_timeout(900)
+    if pg.evaluate("getComputedStyle(document.querySelector('[data-it-whl]')).visibility === 'visible'"): out.append(f'{w}: Wormholes on keeps its panel button up with the pointer away (057: "it doesn\'t need to stick when on")')
+    pg.hover('[data-im-f="wh"]'); pg.wait_for_timeout(300)
     pb = pg.evaluate(f"""(()=>{{ const R={R}, p=document.querySelector('[data-it-whl]'), pr=R(p), f=R(document.querySelector('[data-im-f="wh"]')), c=R(document.querySelector('.it-map-fbtns'));
       return {{shown: getComputedStyle(p).visibility==='visible', right: pr.left>=c.right, level: Math.abs(pr.top-f.top)<4}}; }})()""")
     if not all(pb.values()): out.append(f'{w}: Wormholes on shows its panel button right of the column, level with it: {pb}')
@@ -158,7 +160,7 @@ def case_phone(b, html, out, errs):
     if pg.evaluate("!!document.querySelector('.it-map-fb.open')"): out.append('390: opening Near You should shut the filter column')
     pg.evaluate("itMapFilterSet('wh')"); W(pg, F_INTEL, line(time.time(), 'Scout Alt', f'{SYSNAME[near[8]]} wh')); tick(pg, 3200)
     pg.click('.it-map-fcur'); pg.wait_for_timeout(300)
-    pg.click('[data-it-whl]'); pg.wait_for_timeout(400)
+    pg.hover('.it-map-fbtns [data-im-f="wh"]'); pg.click('[data-it-whl]'); pg.wait_for_timeout(400)
     s = pg.evaluate(f"""(()=>{{ const R={R}, p=R(document.querySelector('.it-whp')), m=R(itm.box); return {{shown: itWhListShown(), inside: p.left>=m.left && p.right<=m.right && p.bottom<=m.bottom+1 && p.top>=m.top, near: {SHUT}}}; }})()""")
     if not all(s.values()): out.append(f'390: the Wormholes list a sheet inside the map, Near You shut: {s}')
     pg.click('.it-whp [data-it-whgo]'); pg.wait_for_timeout(400)

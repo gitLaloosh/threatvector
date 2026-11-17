@@ -226,10 +226,10 @@ def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'stand', 'key', 't
         pg.evaluate("__whOff()"); pg.wait_for_timeout(900)   # past the 0.6 s it stays after Wormholes was on
         vis = lambda: pg.evaluate("getComputedStyle(document.querySelector('[data-it-whl]')).visibility")
         v0 = vis(); pg.hover('[data-im-f="wh"]'); pg.wait_for_timeout(300); v1 = vis(); pg.mouse.move(5, 5); pg.wait_for_timeout(1000); v2 = vis()
-        if [v0, v1, v2] != ['hidden', 'hidden', 'hidden']: out.append(f'the list button: {v0} with Wormholes off, {v1} hovering it (058: only while it is on), {v2} after the pointer leaves')
+        if [v0, v1, v2] != ['hidden', 'visible', 'hidden']: out.append(f'the list button: {v0} with Wormholes off, {v1} hovering it (057: shown on hover, on or off), {v2} after the pointer leaves')
         pg.click('[data-im-f="wh"]'); pg.wait_for_timeout(300)
         if vis() != 'visible': out.append('the list button hidden while Wormholes is on')
-        pg.click('[data-it-whl]'); pg.wait_for_timeout(300)
+        pg.hover('.it-map-fbtns [data-im-f="wh"]'); pg.click('[data-it-whl]'); pg.wait_for_timeout(300)
         L = pg.evaluate("() => { const p = document.querySelector('.it-whp'); return p && [p.hidden, p.getAttribute('role'), !!p.querySelector('button.x-close'), document.activeElement && document.activeElement.name, p.querySelectorAll('.it-whp-r').length]; }")
         if not L or L[0] or L[1] != 'dialog' or not L[2] or L[3] != 'sys': out.append(f'the list: {L} (want open, a dialog with the shared close button, focus in the field)')
         pg.fill('.it-whp-add input[name=sys]', 'Nowhere Special'); pg.press('.it-whp-add input[name=sys]', 'Enter'); pg.wait_for_timeout(200)
@@ -247,9 +247,9 @@ def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'stand', 'key', 't
         if pg.evaluate("document.activeElement && document.activeElement.matches('[data-it-whrm], input[name=sys]')") is not True: out.append('focus lost after Remove')
         pg.click('.it-whp .x-close'); pg.wait_for_timeout(200)
         if pg.evaluate("[document.querySelector('.it-whp').hidden, document.activeElement && document.activeElement.matches('[data-it-whl]')]") != [True, True]: out.append('× doesn\'t close the list with focus back on the list button')
-        pg.click('[data-it-whl]'); pg.wait_for_timeout(200); pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
+        pg.hover('.it-map-fbtns [data-im-f="wh"]'); pg.click('[data-it-whl]'); pg.wait_for_timeout(200); pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
         if not pg.evaluate("document.querySelector('.it-whp').hidden"): out.append('Escape doesn\'t close the list')
-        pg.click('[data-it-whl]'); pg.wait_for_timeout(200); pg.mouse.click(5, 300); pg.wait_for_timeout(200)
+        pg.hover('.it-map-fbtns [data-im-f="wh"]'); pg.click('[data-it-whl]'); pg.wait_for_timeout(200); pg.mouse.click(5, 300); pg.wait_for_timeout(200)
         if not pg.evaluate("document.querySelector('.it-whp').hidden"): out.append('a press outside doesn\'t close the list')
         # the same line read again after a reload doesn't bring it back; a newer one does
         relaunch(pg)
@@ -291,7 +291,7 @@ def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'stand', 'key', 't
                         " const inBox = [...itm.box.querySelectorAll('[data-im-f], [data-it-whl]')].every(b => { const q = b.getBoundingClientRect(); return q.left >= box.left - 0.5 && q.right <= box.right + 0.5; });"
                         " return [getComputedStyle(l).visibility, Math.round(r.width), Math.round(r.height), r.right <= row.right + 0.5 && r.left >= row.left - 0.5, inBox]; }")
         if P != ['visible', 44, 44, True, True]: out.append(f'390 px: the list button {P} (want visible with Wormholes on, 44 px, inside the opened column, every button inside the map box)')
-        pg.click('[data-it-whl]'); pg.wait_for_timeout(300)
+        pg.hover('.it-map-fbtns [data-im-f="wh"]'); pg.click('[data-it-whl]'); pg.wait_for_timeout(300)
         if pg.evaluate("[document.querySelector('.it-whp').hidden, document.querySelector('.it-map-fb').classList.contains('open')]") != [False, False]: out.append('390 px: the list didn\'t open, or the filter row stayed open')
         if not pg.evaluate("document.scrollingElement.scrollWidth <= innerWidth + 1"): out.append('390 px: sideways scroll with the list open')
         pg.click('.it-whp .x-close'); pg.wait_for_timeout(200)

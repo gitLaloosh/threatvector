@@ -2783,16 +2783,17 @@
     .it-map-fb:not(.open) .it-map-fbtns{display:none;} .it-map-fb.open button.it-map-fcur{display:none;}
   }
   /* build queue 040, moved in 052: a filter with a panel (Wormholes' list now, Sov upgrades later) and its panel button share a box
-     (.it-map-fw); the button floats right of the column, level with its filter: shown while the filter is on or its panel is open, never on
-     hover of a filter that is off (058, the owner: "disabling a filter (like security range) should hide the settings button for it"). On a
-     phone only the panel buttons of the filters that are on show, inside the column beside them. The panel: a dialog over the map, placed by
+     (.it-map-fw); the button floats right of the column, level with its filter: shown while the filter is hovered (on or off) or has keyboard
+     focus, and while its panel is open; a filter that is on no longer keeps it up (057, the owner: "hover should show settings button even when
+     off or on. it doesn't need to stick when on, just show it on hover and they can press it"; it replaces 058's "never on hover while off"). On
+     a phone (no hover) only the panel buttons of the filters that are on show, inside the column beside them. The panel: a dialog over the map, placed by
      itMapCtlPlace (right of the panel buttons, level with its filter, clear of Near You). */
   .it-map-fw{position:relative; display:inline-flex; align-items:center;}
   .it-map-fw::before{content:''; position:absolute; left:100%; top:0; bottom:0; width:12px;}
   button.it-map-pb{position:absolute; left:calc(100% + 9px); top:0; width:32px; height:32px; min-height:32px; margin:0; padding:0; display:inline-flex; align-items:center; justify-content:center;
     border:1px solid var(--line); border-radius:6px; background:rgba(12,16,20,.92); color:var(--heading); cursor:pointer; visibility:hidden; opacity:0; transition:opacity .15s, visibility 0s .6s;}
   button.it-map-pb:hover{border-color:color-mix(in srgb, var(--cyan) 55%, transparent);} button.it-map-pb:focus-visible{outline:2px solid var(--cyan); outline-offset:1px;} button.it-map-pb svg{display:block;}
-  .it-map-fw > [aria-pressed="true"] ~ button.it-map-pb, button.it-map-pb[aria-expanded="true"]{visibility:visible; opacity:1; transition-delay:0s;}
+  .it-map-fw:hover > button.it-map-pb, .it-map-fw:has(:focus-visible) > button.it-map-pb, button.it-map-pb[aria-expanded="true"]{visibility:visible; opacity:1; transition-delay:0s;}
   /* 058: the line between the column's groups (colour, only, view); the folded phone button's count of the Only filters that are on (neutral, rule A) */
   .it-map-fbtns .it-map-fsep{display:block; width:24px; height:1px; margin:4px; background:var(--line);}
   button.it-map-fcur{position:relative;}

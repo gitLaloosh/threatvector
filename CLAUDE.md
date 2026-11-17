@@ -422,8 +422,9 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   view, not a dialog (no close button, no Escape); a map press leaves it shut (the owner at the review: "leave it shut"). The List | Map
   switch is gone; `nearView` stays stored. The filters are a column down the map's left edge under the search box (`.it-map-fb`, a grid
   wrapping into a second column when the map is too short, `--it-flr`); a filter with a panel shares a box with its panel button
-  (`.it-map-fw`, `button.it-map-pb`, `IT_MAP_PANEL_BTN`), shown while the filter is on and while its panel is open, never on hover of a filter that is off (058,
-  the owner: "disabling a filter (like security range) should hide the settings button for it"); the
+  (`.it-map-fw`, `button.it-map-pb`, `IT_MAP_PANEL_BTN`), shown while its filter is hovered, on or off, or has keyboard focus, and while its panel is open; a
+  filter that is on doesn't keep it up (057, the owner: "hover should show settings button even when off or on. it doesn't need to stick when on"; it
+  replaced 058's "never on hover while off"); on a phone, beside the filters that are on; the
   name line to the right of the panel buttons, level with the filter that is on, hidden while a panel is open (`.pop`); a filter's panel
   opens right of the panel buttons, level with its filter, inside the map and clear of Near You; on a phone the column is shut behind its
   one button and takes turns with Near You, a panel is a sheet that shuts Near You; on a wide map with no room for both side by side they

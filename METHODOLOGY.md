@@ -398,7 +398,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   that match are bright anywhere on the map, a little bigger and in full colour, the rest dim, and no system fades with
   distance; hostile and neutral rings, the alert range's glow and your pin never fade; the legend's second line says what
   is on and how many match, and "N match ›" at the bottom left moves the view to each, nearest first. View: Paths to you
-  (below), where no Only filter applies. A filter's settings button shows while it is on. What you pick is kept in this
+  (below), where no Only filter applies. A filter's settings button shows while you hover it, on or off (on a phone, beside a filter that is on). What you pick is kept in this
   browser (localStorage `tvMapStack`); a first visit opens on Security status. A ring marks a system with a report: its colour is
   the standing (hostile red, neutral grey, friendly blue), its size the gang (solo, 2–10, 11 or more); ✕ counts its
   kills. Hover a system, or a row in Near You or the Feed, for its route to you; press it to keep the route (past the
