@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-zbVinRETbevZHXOfO8G8BUX/oZmyqMQLjEELZLKl6Uc='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UH03t3ilS0QXxD67Gw5iIc8lHaNk/dcu8YitnIkzJPM='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3339,7 +3339,7 @@
   .wh-smenu input.wh-mcopy{width:100%; box-sizing:border-box;}
   /* 059 (part 3): the System panel's sections and lists (P1, P7, P21, P22), the question piece (P20), the empty-space menu's Select all / Remove all */
   .wh-mg1{display:flex; flex-direction:column; gap:2px; padding-bottom:4px; margin-bottom:4px; border-bottom:1px solid var(--line);}
-  .wh-ask{display:flex; flex-wrap:wrap; align-items:center; gap:6px; flex:1 1 100%; font:12px var(--sans); color:var(--amber);} .wh-menu .wh-ask{padding:4px 6px 6px;}
+  .wh-ask{display:flex; flex-wrap:wrap; align-items:center; gap:6px; flex:1 1 100%; font:12px var(--sans); color:var(--amber);} .wh-menu .wh-ask{padding:4px 6px 6px;} .wh-askb{display:inline-flex; gap:6px;}
   .wh-sec, .wh-secbd, .wh-paste, .wh-cnw{display:flex; flex-direction:column; gap:6px;} .wh-sec{padding-top:8px; border-top:1px solid var(--line);}
   .wh-sech{display:flex; align-items:center; gap:8px;} .wh-sech .wh-secn{flex:1 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   button.it-whp-xb.wh-sect{padding:0; border:0; background:none; min-height:28px; color:var(--heading); font:700 13px var(--sans);}   /* 046's chevron toggle as a heading */
@@ -34116,7 +34116,7 @@ function whP3(n){ const S = whS; if(S.p3.n !== n) S.p3 = whP3Blank(n); return S.
 // or Keep them) has the focus
 function whAskBtnsHtml(btns){ return btns.map(([a, l]) => `<button type="button" data-wh-ask="${escapeHtml(a)}">${escapeHtml(l)}</button>`).join(''); }
 function whAskFocus(root){ const bs = root ? root.querySelectorAll('.wh-ask button') : []; if(bs.length) bs[bs.length - 1].focus({preventScroll: true}); }
-function whAskHtml(q, btns, tip){ return `<span class="wh-ask" role="alert" title="${escapeHtml(tip || '')}"><span>${escapeHtml(q)}</span>${whAskBtnsHtml(btns)}</span>`; }
+function whAskHtml(q, btns, tip){ return `<span class="wh-ask" role="alert" title="${escapeHtml(tip || '')}"><span>${escapeHtml(q)}</span><span class="wh-askb">${whAskBtnsHtml(btns)}</span></span>`; }   // the buttons wrap together, never one alone (the owner's screenshot, 059)
 // P1: one section heading, for Signatures now and Local in part 5: the page's one chevron toggle (046's button.it-whp-xb), a note, a switch
 function whSecHeadHtml(key, title, note, open, sw){
   return `<div class="wh-sech"><button type="button" class="it-whp-xb wh-sect" data-wh-sec="${escapeHtml(key)}" aria-expanded="${escapeHtml(String(open))}" aria-controls="${escapeHtml('whSec-' + key)}">${IT_CHEV}<span>${escapeHtml(title)}</span></button>`

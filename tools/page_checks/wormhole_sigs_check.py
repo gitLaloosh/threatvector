@@ -207,6 +207,12 @@ def cases(b, html, parts=('panel', 'lazy', 'list', 'store', 'older')):
             ev("document.activeElement.blur()")
             pg.click('#whPnSum [data-wh-del]'); pg.wait_for_timeout(80)
             if ev("(n) => !!whS.st.sys[n]", B) is not True or 'Remove ' not in ev("document.querySelector('#whPnSum .wh-acts').textContent"): out.append(f'{tag}: Remove from the map should ask first')
+            # the owner's screenshot (059): Cancel wrapped alone onto the next line; the two buttons stay on one line together
+            # a width where the question and Remove fit on a line but Cancel doesn't: the two must go down together
+            tops = ev("""() => { const k = document.querySelector('#whPnSum .wh-acts .wh-ask'), [q, r] = [k.firstElementChild, k.querySelector('button')];
+              k.style.maxWidth = (q.getBoundingClientRect().width + r.getBoundingClientRect().width + 24) + 'px';
+              const t = [...k.querySelectorAll('button')].map(e => Math.round(e.getBoundingClientRect().top)); k.style.maxWidth = ''; return t; }""")
+            if len(tops) != 2 or tops[0] != tops[1]: out.append(f'{tag}: Remove and Cancel should sit on one line together: {tops}')
             pg.click('#whPnSum [data-wh-ask="del-yes"]'); pg.wait_for_timeout(120)
             if ev("(n) => !!whS.st.sys[n] || !!whS.sg.sys[n]", B) or str(B) in (ev(G) or {}).get('sys', {}): out.append(f'{tag}: the removed system\'s signatures should go with it (a jump back in shows none)')
             ev("(n) => { whS.mk[n] = {lock: true}; whMkSave(); whPnSet('sum'); whSelect(n); }", p[0]); pg.wait_for_timeout(80)
@@ -241,6 +247,7 @@ MUTANTS = [
     ('a band edge off by one', "return p >= 100 ? 3 : p >= 75 ? 2 : p >= 25 ? 1 : 0;", "return p >= 100 ? 3 : p >= 75 ? 2 : p > 25 ? 1 : 0;", ('list',)),
     ('Delete selected without asking', "  if(a === 'del'){ if(!sel.size) return; P.ask = {k}; P.edit[k] = null;", "  if(a === 'del'){ if(!sel.size) return; P.ask = null; whAskAct(k + '-yes'); return;", ('list',)),
     ('the sort not kept', "whS.sg.sort = {k: key, d: o.k === key ? -o.d : 1}; whSgSave();", "whS.sg.sort = {k: key, d: o.k === key ? -o.d : 1};", ('list',)),
+    ("the question's buttons wrap one by one", '<span class="wh-askb">${whAskBtnsHtml(btns)}</span>', '${whAskBtnsHtml(btns)}', ('store',)),
     ('Connections above Class and Statics', "    // 059 (P1): Class and Statics first", "    + `<div class=\"wh-cnw\"><div class=\"wh-sub\">Connections</div>${whCnListHtml(n)}</div>`\n    // 059 (P1): Class and Statics first", ('panel',)),
     ('a removed system\'s signatures kept', "delete whS.mk[id]; delete whS.sg.sys[id];", "delete whS.mk[id];", ('store',)),
 ]
