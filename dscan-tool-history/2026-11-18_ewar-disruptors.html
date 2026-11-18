@@ -22,6 +22,7 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <li><b>The chart</b>: a D zone for their (or your) furthest tracking and guidance disruptor; every badge 20 px with the icon of its farthest-reaching item and a faint frame, the letter under it as the fallback, 22 px apart (<code>DMG_BADGE_GAP</code>); the key rows carry the same icon; pointing at a key row or a badge lights both (<code>.hl</code>). One line under the key (<code>dmgDisruptLineHtml</code>): "Their disruptors: optimal −59%, falloff −59%, tracking −59%", the full sentence in its hover.</li>
 <li><b>The Matchup</b>: the reason under "they last" / "you last" opens with the disruptors' sentence ("counted in your damage").</li>
 <li><b>Info text</b>: <code>CARD_INFO.dmg</code> and <code>dmg#mine</code> (the big number counts disruptors; D is painters and disruptors). METHODOLOGY.md: "Disruptors" and the chart's badges.</li>
+<li><b>Found at the owner's hand test</b> (on main since before this build): <code>dmgKm</code> stripped trailing zeros with no decimal point, so 100 km read "1 km", 120 km "12 km", 250 km "25 km" (the headline, Adjust's range, key rows, the new line). Zeros now go only after a decimal point; <code>damage_chart_check</code> compares the page's words for whole tens and hundreds of km with its own (it fails on the page before the fix).</li>
 <li>Nothing new is kept in the browser.</li>
 </ul>
 <h2>Checks</h2>

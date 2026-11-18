@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ZKvYb/4nooxEiG8NITCt218bvjEnVMuWDG9P8tg8czA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-vZGmw3/MgdjVuSOU93gFilGQvGhJiHFVsPbykWV7jKA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -20294,7 +20294,8 @@ function dmgNiceY(v){
   return 10 * p;
 }
 function dmgFmt(v){ return Math.round(v).toLocaleString('en-US'); }
-function dmgKm(m){ const km = m / 1000; return (km >= 100 ? km.toFixed(0) : km >= 10 ? km.toFixed(1) : km.toFixed(2)).replace(/\.?0+$/, '') + ' km'; }
+// build queue 050 (found at its hand test): trailing zeros go only after a decimal point; "100" stayed "1" before
+function dmgKm(m){ const km = m / 1000, t = km >= 100 ? km.toFixed(0) : km >= 10 ? km.toFixed(1) : km.toFixed(2); return (t.includes('.') ? t.replace(/0+$/, '').replace(/\.$/, '') : t) + ' km'; }
 function dmgTopSpeed(estimate){
   const pt = estimate && estimate.projectedTarget;
   // v.41: their top speed in their current states (their prop module only if it is running)

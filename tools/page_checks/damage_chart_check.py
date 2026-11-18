@@ -317,6 +317,10 @@ def desktop(b):
     except Exception: ok = False
     check(ok and 'DPS applied to you' in before, f'Pilot loss, collapsed: "Use in assessments" off updates the row ({before!r} -> {pg.evaluate(PROW)!r})')
     pg.click('#profileFitL'); pg.click('#myShipUse'); pg.keyboard.press('Escape')
+    # build queue 050 (the owner's hand test: 100 km read "1 km"): the page's distance words for whole tens and hundreds of km
+    KM = [0, 450, 1500, 9999, 10000, 12500, 20000, 100000, 120000, 150000, 200000, 250000, 1000000]
+    got = pg.evaluate(f"() => {KM}.map(dmgKm)")
+    check(got == [km_text(x) for x in KM], f'distances in words: {got}')
     check(not errs, f'desktop: no page errors {errs}')
     pg.screenshot(path=os.path.join(os.environ.get('SHOTS', '/tmp'), 'dmg_desktop.png'), full_page=True)
     ctx.close()
