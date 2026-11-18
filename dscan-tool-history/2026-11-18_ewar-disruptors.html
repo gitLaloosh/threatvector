@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-18 — EWAR in the fight, phase A: tracking and guidance disruptors, icon badges</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>EWAR in the fight, phase A: tracking and guidance disruptors in the damage cards and the Matchup; the chart badges show the item's icon</h1>
+<p><span class="tag">Page</span><span class="tag">PYFA CORE</span> 2026-11-18 &middot; <code>v2026.11.18.1</code> &middot; build queue 050 &middot; plan <code>roadmap/ewar-plan.md</code> (Project docs; phases B and C not built), mockup <code>Claude outputs/ewar_mockup.html</code> (scripts <code>roadmap/ewar-mockup/</code>)</p>
+<h2>Why</h2>
+<ul>
+<li>The plan's phase A: the other ship's tracking and guidance disruptors change the DPS each ship lands, so the damage cards, the board and the times count them, as pyfa does with that fit projected. Section 11: every chart badge shows the icon of the item that reaches farthest, with a faint frame (the owner: "faint frame").</li>
+<li>At the build review (2026-11-17): the plan named <code>remoteResistanceID</code> for the resistance; pyfa takes the effect's own resistance attribute first, <code>weaponDisruptionResistance</code> (the owner: "Correct the plan, build it (Recommended)"). TD drones included as pyfa's <code>npcEntityWeaponDisruptor</code> counts them ("Yes, as pyfa does (Recommended)"). Vorton projectors aren't disrupted (no direct Gunnery requirement).</li>
+</ul>
+<h2>What changed</h2>
+<ul>
+<li><b>PYFA CORE projected</b>: <code>pyfaDisruptorData</code>, <code>pyfaDisruptionMults</code>, <code>pyfaDisruptsAny</code>, <code>pyfaDisruptedApp</code> (pyfa Effect6424, Effect6423, Effect6694: range factor for modules, full strength within a TD drone's maxRange, each multiplier scaled by the victim's resistance then stacking-penalised; the early return on <code>disallowOffensiveModifiers</code>; the missile's flight range again from the disrupted charge speed and flight time). <code>pyfaAppliedDpsProjected</code>, <code>dmgPoint</code> and <code>dmgTypedPoint</code> start from the disrupted weapons.</li>
+<li><b>Inputs</b>: each turret entry knows whether it needs Gunnery (<code>gunnery</code>), each missile entry its flight-range inputs (<code>mrIn</code>) and <code>mlo</code>; <code>projectedTarget.disrupt</code> lists a fit's active TDs, GDs and TD drones in space; <code>application.wdVictim</code> its resistance. <code>PROJ_TARGET_ATTRS</code> gains <code>weaponDisruptionResistance</code> (2113) and <code>PROJ_TARGET_EFFECTS</code> its sources (Siege 6582, the Republic Electronics booster 8267, subsystems 13054 / 13055; the Sharpshooter Mode through <code>MODE_EFFECT_ROWS</code>), by <code>tools/gen_projected_table.py</code>. The Bastion Module's effect 6658 has the line, but the Bastion Module I has no <code>weaponDisruptionResistanceBonus</code> in today's data: no resistance (LESSON #172).</li>
+<li><b>The chart</b>: a D zone for their (or your) furthest tracking and guidance disruptor; every badge 20 px with the icon of its farthest-reaching item and a faint frame, the letter under it as the fallback, 22 px apart (<code>DMG_BADGE_GAP</code>); the key rows carry the same icon; pointing at a key row or a badge lights both (<code>.hl</code>). One line under the key (<code>dmgDisruptLineHtml</code>): "Their disruptors: optimal −59%, falloff −59%, tracking −59%", the full sentence in its hover.</li>
+<li><b>The Matchup</b>: the reason under "they last" / "you last" opens with the disruptors' sentence ("counted in your damage").</li>
+<li><b>Info text</b>: <code>CARD_INFO.dmg</code> and <code>dmg#mine</code> (the big number counts disruptors; D is painters and disruptors). METHODOLOGY.md: "Disruptors" and the chart's badges.</li>
+<li><b>Found at the owner's hand test</b> (on main since before this build): <code>dmgKm</code> stripped trailing zeros with no decimal point, so 100 km read "1 km", 120 km "12 km", 250 km "25 km" (the headline, Adjust's range, key rows, the new line). Zeros now go only after a decimal point; <code>damage_chart_check</code> compares the page's words for whole tens and hundreds of km with its own (it fails on the page before the fix).</li>
+<li>Nothing new is kept in the browser.</li>
+</ul>
+<h2>Checks</h2>
+<ul>
+<li><code>tools/independent_checks/check_projected.py</code>: a disruptor part runs pyfa's own Effect6423 / 6424 / 6694 from every golden fit with a disruptor onto every golden fit's weapons over 14 distances (7,812 points, 35,107 weapon attributes pyfa changes), with the victim's resistance through pyfa's lifted <code>getResistance</code>, and compares the tool's inputs, multipliers and disrupted weapons (and the missile's flight range against pyfa's lifted <code>missileMaxRangeData</code>); asserts from <code>WEAPON_RANGE_MOD_EFFECTS</code> that no fitted item puts a penalised modifier of a disruptor's sign on those attributes (31 rows), which is what makes the tool's "own chain times the finished value" exact; 6 mutants, each caught. 0 mismatches.</li>
+<li>Regression suite: a new constructed golden fit, <code>arbitrator_constructed_td_drones</code> (5 Infiltrator TD-600 launched), and a new pin kind <code>disrupted@&lt;victim&gt;,d=&lt;m&gt;,w=&lt;weapon&gt;,f=&lt;field&gt;</code>: 27 pins from pyfa's handlers (a Hecate in Sharpshooter Mode, a Moros in Siege, a Jackdaw, a Leviathan, a Caracal with a Missile Guidance Computer and rigs), before the tool was compared. Every estimate of every golden fit is unchanged apart from the new fields.</li>
+<li><code>tools/page_checks/ewar_disrupt_check.py</code> (new): the line and its hover, the board equal to the card and below the same fight without disruptors, the why sentence, the Tracking Disruptor II's icon in the badge and key row, the highlight, a Hecate's third, a Caracal against guidance disruptors, no line without disruptors, 390 px; 7 mutants, each fails.</li>
+<li>PYFA CORE: <code>gen_projected_table.py</code> up to date, <code>check_projected.py</code> 0 mismatches, regression suite ALL PASS, then <code>check_pyfa_core.mjs --update</code> (projected).</li>
+</ul>
+<h2>Lesson for future models</h2>
+<ul>
+<li>#171: <code>tools/pyfa_effects.py</code> loads pyfa's handlers with <code>calculateRangeFactor</code> stubbed to 1; a check that runs projected handlers through it must put pyfa's own function back, or every disruptor is at full strength at any distance.</li>
+<li>#172: a projected effect's resistance is the effect's own <code>resistanceID</code> first; and an effect on an item is not its bonus: read the type's value (the Bastion Module I carries 6658 but no resistance bonus).</li>
+</ul>
+</body>
+</html>

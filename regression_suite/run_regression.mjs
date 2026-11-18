@@ -82,7 +82,7 @@ let anyFail = false;
 // painters), checked after every fit has run.
 const projApps = {}, projTargets = {}, projPins = [];
 let lastSandbox = null;
-const PROJ_PIN = /^(tackled|painted)@/;
+const PROJ_PIN = /^(tackled|painted|disrupted)@/;   // build queue 050: disrupted@<victim>,d=<m>,w=<weapon index>,f=<field>
 
 // PYFA CORE lock (2026-10-14, PYFA_CORE.md): code fenced as PYFA CORE in index.html
 // must match the fingerprints in tools/pyfa_core_manifest.json. A changed section
@@ -789,10 +789,21 @@ if (projPins.length) {
     for (const kv of parts.slice(1)) {
       const [k, v] = kv.split('=');
       if (k === 'lock') p.ignoreLockRange = v !== '1'; else if (k === 'dcr') p.ignoreDCR = v === '1';
-      else if (k === 'drones') p.droneMode = Number(v); else if (k === 'speed') p.speedFrac = Number(v); else p[k] = Number(v);
+      else if (k === 'drones') p.droneMode = Number(v); else if (k === 'speed') p.speedFrac = Number(v);
+      else if (k === 'f') p.f = v; else if (k === 'd') p.distance = Number(v); else p[k] = Number(v);
     }
     let actual;
-    if (projApps[fitId] && projTargets[tgtId] && lastSandbox) {
+    if (kind === 'disrupted') {
+      // build queue 050: this fit's tracking / guidance disruptors and TD drones on another golden fit's weapons
+      // (pyfaDisruptedApp); f = optimal / falloff / tracking / aoeCloudSize / aoeVelocity, or lower / higher /
+      // higherChance of the missile's flight range
+      const app = projApps[tgtId], src = projTargets[fitId] && projTargets[fitId].disrupt;
+      if (app && src && lastSandbox) {
+        const w = lastSandbox.pyfaDisruptedApp(app, src, p.distance).weapons[p.w];
+        const i = ['lower', 'higher', 'higherChance'].indexOf(p.f);
+        actual = !w ? undefined : i >= 0 ? (w.missileMaxRangeData || [])[i] : w[p.f];
+      }
+    } else if (projApps[fitId] && projTargets[tgtId] && lastSandbox) {
       const t = projTargets[tgtId];
       const r = lastSandbox.pyfaProjectedPoint(projApps[fitId], t, {distance: p.distance, tgtSpeed: p.speedFrac * lastSandbox.pyfaTargetValue(t, 'maxVelocity', null, false),
         ignoreLockRange: p.ignoreLockRange, ignoreDCR: p.ignoreDCR, droneMode: p.droneMode});
