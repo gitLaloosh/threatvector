@@ -88,7 +88,11 @@ SET = "([t, on]) => { it.set.bridges = t; it.set.bridgesOn = on; itWriteSet(); i
 STATE = """([far, near]) => { const g = itGraphGet(), i = g.at.get(far), D = itm.D, Dg = itm.Dg; let longer = 0; for(let k = 0; k < D.length; k++) if(Dg[k] >= 0 && D[k] > Dg[k]) longer++;
   return {D: D[i], Dg: Dg[i], same: D === Dg, longer, ij: itJumps(itMySys(), far), ijn: itJumps(itMySys(), near), src: itPtSources().includes(i), i}; }"""
 
-def cases(b, html, parts=('list', 'counts', 'ui', 'phone')):
+# 059: the route to a system pinned, its canvas curves counted (a bridge step is a curve, D13)
+ROUTE_Q = """([id]) => { const a = itRpAside; itRpAside = true; itm.pinned.add(id); window.__rec = {glow: [], qc: []}; itMapDraw(); const q = window.__rec.qc; window.__rec = null;
+  itm.pinned.delete(id); itRpAside = a; itMapDraw(); return q.length; }"""
+
+def cases(b, html, parts=('list', 'counts', 'lines', 'ui', 'phone')):
     out, errs = [], []
     if 'list' in parts or 'counts' in parts:
         ctx, pg = start(b, html, 1440, errs)
@@ -174,6 +178,29 @@ def cases(b, html, parts=('list', 'counts', 'ui', 'phone')):
             r = pg.evaluate("() => { const D = itm.D, k = itm.jbKey; itEx.map = null; const u = itExMapPic(800); return [!!u, itm.D === D, itm.jbKey === k, it.set.bridgesOn]; }")
             if r != [True, True, True, True]: out.append(f'the Intel example: {r} (want a picture, the live map\'s search and the setting untouched)')
         ctx.close()
+    if 'lines' in parts:   # 059: the jump bridge lines button (the owner: "button defaults to on when jump bridges are enabled ... just shows off state when they're turned off")
+        ctx, pg = start(b, html, 1440, errs)
+        BTN = "document.querySelector('#intelPanel .it-map-zoom [data-im-z=jb]')"
+        if not pg.evaluate(f"!!{BTN} && {BTN}.hidden"): out.append('lines: the button should be there and hidden while bridges are off')
+        pg.evaluate(SET, [COUNT_TEXT, True]); pg.wait_for_timeout(200); pg.evaluate("itMapDraw()")
+        r = pg.evaluate(f"(() => {{ const b = {BTN}; return [b.hidden, b.getAttribute('aria-pressed'), b.previousElementSibling.dataset.imZ, b.title.startsWith('Jump bridge lines: on'), Math.round(b.getBoundingClientRect().height)]; }})()")
+        if r != [False, 'true', 'me', True, 30]: out.append(f'lines: shown after the center button, on by default, 30 px: {r}')
+        if not any(c == '#00a800' for c in pg.evaluate(DRAW)['qc']): out.append('lines: on: no green curve drawn')
+        k0 = pg.evaluate("itm.view.k"); pg.evaluate(f"{BTN}.scrollIntoView({{block: 'center'}})"); pg.click('.it-map-zoom [data-im-z="jb"]'); pg.wait_for_timeout(200)
+        r = pg.evaluate(f"([far]) => [{BTN}.getAttribute('aria-pressed'), {BTN}.title.startsWith('Jump bridge lines: off'), itm.D[itGraphGet().at.get(far)], !!itm.jbKey, itm.view.k, JSON.parse(localStorage.getItem('dscanIntel')).jbHide]", [FAR])
+        if r != ['false', True, 2, True, k0, True]: out.append(f'lines: off: the button off, the bridges still counted (2 jumps), no zoom, kept: {r}')
+        if any(c == '#00a800' for c in pg.evaluate(DRAW)['qc']): out.append('lines: off: a green curve still drawn')
+        if pg.evaluate("() => { const [a, b] = itBridges().edges[0], x = (itm.Q[2 * a] + itm.Q[2 * b]) / 2, y = (itm.Q[2 * a + 1] + itm.Q[2 * b + 1]) / 2; return itMapPickBridge(x, y, true); }") != -1: out.append("lines: off: a bridge's hover still answers")
+        q = pg.evaluate(ROUTE_Q, [FAR])
+        if q < 1: out.append('lines: off: a route over a bridge lost its bridge step')
+        pg.evaluate("() => { it.set = {...it.set, jbHide: false}; it.set = itReadSet(); itMapDraw(); }")   # read back from what was saved
+        if pg.evaluate(f"[it.set.jbHide, {BTN}.getAttribute('aria-pressed')]") != [True, 'false']: out.append('lines: off read back from the saved settings')
+        pg.evaluate(f"{BTN}.click()"); pg.wait_for_timeout(200)
+        if not any(c == '#00a800' for c in pg.evaluate(DRAW)['qc']) or pg.evaluate(f"{BTN}.getAttribute('aria-pressed')") != 'true': out.append('lines: pressed again: on, the lines back')
+        pg.evaluate(SET, [COUNT_TEXT, False]); pg.evaluate("itMapDraw()")
+        if not pg.evaluate(f"{BTN}.hidden"): out.append('lines: "Use jump bridges on the map" off: no button')
+        if not pg.evaluate("[...document.querySelectorAll('button[aria-label=\\'Jump bridge lines\\']')].filter(b => !b.closest('.it-map-box') || b.closest('[inert]')).every(b => b.hidden)"): out.append("lines: the Intel example's copy should stay hidden")
+        ctx.close()
     if 'ui' in parts:
         ctx, pg = start(b, html, 1440, errs)
         pg.click('[data-it-act="gear"]'); pg.wait_for_timeout(300)
@@ -208,13 +235,17 @@ MUTANTS = [
     ('the alert glow on the bridges\' count', "if(Dg[i] >= 0 && Dg[i] <= it.set.range && seen(i)){", "if(D[i] <= it.set.range && seen(i)){", ('counts',)),
     ('the kill-range line on the bridges\' count', "  const dg = itm.Dg ? itm.Dg[i] : d;", "  const dg = d;", ('counts',)),
     ('Threat Vector\'s route compared with the bridges\' count', "jb ? itm.Dg[i] : d;", "jb ? d : d;", ('counts',)),   # 057: the stargate route's comparison
+    ('the lines button zooms the map too (059)', "    if(z && z.dataset.imZ === 'jb'){ it.set.jbHide = !it.set.jbHide; itWriteSet(); itm.hoverJb = -1; itMapTip(-1); itMapDraw(); return; }", "    if(z && z.dataset.imZ === 'jb'){ it.set.jbHide = !it.set.jbHide; itWriteSet(); }", ('lines',)),
+    ('the lines hidden but still drawn (059)', "  if(itm.jbKey && !itJbHidden()){", "  if(itm.jbKey){", ('lines',)),
+    ('a hidden line still hovers (059)', "  if(!itm.jbKey || !itm.Q || itJbHidden()) return -1;", "  if(!itm.jbKey || !itm.Q) return -1;", ('lines',)),
+    ("the lines' off state not kept (059)", "      if(r.jbHide === true) d.jbHide = true;", "", ('lines',)),
     ('a reverse line shown as ✗', "return rows.push({n, ln, st: 'dup', a, b,", "return rows.push({n, ln, st: 'bad', a, b,", ('list',)),
     ('a separator line refused for a third name', "ids = [L[L.length - 1], R[0]].filter(x => x !== undefined); }",
      "const u = [...new Set([...L, ...R])]; if(u.length > 2) return rows.push({n, ln, st: 'bad', msg: 'more than two systems'}); ids = u; }", ('list',)),
     ('sovBridgeEnds empty with the switch off', "function sovBridgeEnds(){ return itBridges().ends; }", "function sovBridgeEnds(){ return itBridgeOn() ? itBridges().ends : []; }", ('list',)),
     ('Within N not told the count changed', "${itMapStKey()}|${itm.home}|${itm.jbKey || ''}|", "${itMapStKey()}|${itm.home}|", ('counts',)),
     ('the map not searched again on a change', "const jbMoved = !moved && itBridgeKey() !== itm.jbKey;", "const jbMoved = false;", ('ui',)),
-    ('no curves', "  if(itm.jbKey){\n    const Zb = itJbZones()", "  if(false){\n    const Zb = itJbZones()", ('counts',)),   # 057: the curves' loop
+    ('no curves', "  if(itm.jbKey && !itJbHidden()){", "  if(false){", ('counts',)),   # 057: the curves' loop
     ('a bridge step drawn straight (D13)', "if(T.adj[a].includes(b)) { c.moveTo", "if(true) { c.moveTo", ('counts',)),
     ('the setting not kept', "      if(r.bridgesOn === true) d.bridgesOn = true;", "", ('ui',)),
     ('the switch\'s row short on a phone', ".it-jb .jb-on{min-height:44px;} .it-rp-box", ".it-rp-box", ('phone',)),   # 057: the zones' rows share the rule

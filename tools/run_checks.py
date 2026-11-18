@@ -33,6 +33,9 @@ AREAS = {
     'wormhole_tab_check': ['intel', 'layout'],   # 048
     'wormhole_menu_check': ['intel', 'layout'],   # 051
     'wormhole_layout_check': ['intel', 'layout'],   # 056
+    'wormhole_sigs_check': ['intel', 'layout'],   # 059
+    'wormhole_ends_check': ['intel', 'layout'],   # 059
+    'wormhole_chain_share_check': ['intel'],   # 059
     'dossier_fights_check': ['pilot', 'system'], 'intel_probe_check': ['intel'],   # 049
     'intel_map_stack_check': ['intel', 'layout'],   # 058
     'intel_bridges_check': ['intel', 'layout'],   # 041
@@ -57,7 +60,7 @@ AREAS = {
 NAMES = sorted({a for v in AREAS.values() for a in v})
 # v2026.10.31.7: a page check gets 5 minutes, these more (their longest run under load, x1.5); a hung check fails fast
 PAGE_TIMEOUT = 300
-SLOW = {'wormhole_layout_check': 900, 'intel_map_layout_check': 900, 'intel_map_stack_check': 900, 'intel_bridges_check': 600, 'intel_bridge_zones_check': 1500, 'sov_upgrades_check': 900, 'dossier_fights_check': 600, 'intel_kills_check': 600, 'wormhole_tab_check': 900, 'wormhole_menu_check': 900, 'wormhole_filter_check': 900, 'wormhole_sig_check': 900, 'wormhole_share_check': 900, 'route_planner_check': 900, 'intel_map_look_check': 600, 'region_names_check': 600, 'zkb_slow_check': 600, 'outage_check': 900, 'sso_game_check': 900}
+SLOW = {'wormhole_layout_check': 900, 'intel_map_layout_check': 900, 'intel_map_stack_check': 900, 'intel_bridges_check': 900, 'wormhole_sigs_check': 900, 'wormhole_ends_check': 900, 'wormhole_chain_share_check': 900, 'intel_bridge_zones_check': 1500, 'sov_upgrades_check': 900, 'dossier_fights_check': 600, 'intel_kills_check': 600, 'wormhole_tab_check': 900, 'wormhole_menu_check': 900, 'wormhole_filter_check': 900, 'wormhole_sig_check': 900, 'wormhole_share_check': 900, 'route_planner_check': 900, 'intel_map_look_check': 600, 'region_names_check': 600, 'zkb_slow_check': 600, 'outage_check': 900, 'sso_game_check': 900}
 QUARANTINE_MAX_DAYS = 14
 # build queue 027 (Project doc roadmap/page-publish-plan.md): the page checks run on the served copy before every pull request.
 # The source-form checks (the PYFA CORE lock, the HTML-sink baseline, LESSON markers) read comments, so they stay on the source.

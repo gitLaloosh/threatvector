@@ -134,8 +134,9 @@ def cases(b, html, parts=('table', 'path', 'loc', 'panel', 'add', 'map', 'phone'
         pg.fill('.wh-addf input[name=sys]', 'Nowhere Special'); pg.click('.wh-addf button[type=submit]'); pg.wait_for_timeout(100)
         if 'isn’t a wormhole system' not in pg.inner_text('.wh-msg'): out.append('+ Add should refuse an unknown name')
         pg.fill('.wh-addf input[name=sys]', J[6]); pg.fill('.wh-addf input[name=sig]', 'RZL429'); pg.click('.wh-addf button[type=submit]'); pg.wait_for_timeout(150)
-        jid = pg.evaluate("(n) => whIdOf(n)", J[6]); lk = pg.evaluate("(id) => whLinksOf(id).map(l => l.sig)", jid)
-        if lk != ['RZL-429']: out.append(f'+ Add: linked to where you are, through RZL-429: {lk}')
+        jid = pg.evaluate("(n) => whIdOf(n)", J[6]); lk = pg.evaluate("(id) => whLinksOf(id).map(l => { const o = l.a === id ? l.b : l.a, e = whEnd(l, o); return [e && e.sig, l.sig || '']; })", jid)
+        # 059: the ID typed is the end in the linked system (where you are), kept in tvWhEnds; the link's old single sig stays empty
+        if lk != [['RZL-429', '']]: out.append(f'+ Add: linked to where you are, through RZL-429 on your side: {lk}')
         pg.evaluate("() => whPopClose()")
         box = pg.locator('.wh-box > canvas:not(.wh-mini)').bounding_box()
         pg.mouse.click(box['x'] + box['width'] - 260, box['y'] + 120, button='right'); pg.wait_for_timeout(150)

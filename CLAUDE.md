@@ -554,7 +554,10 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   N, the tooltip's "N jumps" (`itMapJbTipHtml`), the search box. `itm.Dg` and `itJumps` (stargates): Near You, alerts, the Feed and its kill
   range (the tooltip's kill-range line too), the alert glow and the Near You fade, Paths to you (D9), Threat Vector's route (by stargate until
   057; the tooltip says "route by stargate" and `itRpTipHtml` compares with `itm.Dg`, D11). Bridges drawn as green curves (`--it-bridge`,
-  `itMapArc`) while counted; a route step that isn't a gate is its bridge's curve (D13). The Intel example: off. `intel_bridges_check.py`.
+  `itMapArc`) while counted; a route step that isn't a gate is its bridge's curve (D13). The lines button (059, the owner: "button defaults
+  to on when jump bridges are enabled ... just shows off state when they're turned off"): `[data-im-z="jb"]` under ⌖ in the zoom column
+  (`IT_JB_ICON`, `itJbBtnPaint`), shown only while `itBridgeOn()`; off (`it.set.jbHide`, `itJbHidden`) hides the curves and their hover
+  (`itMapPickBridge`), never the counts or a route's bridge step. The Intel example: off. `intel_bridges_check.py`.
 - **The Wormholes tab** (v2026.11.14.1, build queue 048, part 1 of the Project doc roadmap/wormhole-mapping-plan.md; mockup `Claude outputs/
   wormholes_tab_mockup.html` stays with the plan in Project docs until its last part): `#tabBtnWh` right after Intel (`TAB_PANELS`), "BETA" (the
   page's `.it-gtag`) until the owner says it's done; its name is `CARD_NAMES.whmap`. The chain is `tvWhChain` `{v: 1, sys, links, pos}` (D32: its own
@@ -576,6 +579,17 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   `whPnSet`; shut the first time and on anything unreadable). Only the map's own click on a system opens it (not a drag, Shift, Select mode, the menu,
   + Add); opening moves nothing; `whFree` starts right of it (the whole map under 96 px). Its body is written only while it shows (LESSON #120).
   `wormhole_layout_check.py`.
+  Build queue 059 (v2026.11.17.2; roadmap/wormholes-part3-plan.md, mockup `Claude outputs/wormholes_part3_mockup.html`): System's body is Class and
+  Statics, Connections, then Signatures. One list builder (`whListHtml`: the bar with "Selected: N of M" and its actions, sort headings with
+  `aria-sort`, rows selected like the map, the in-place edit row, the confirm piece `whAskHtml`) serves Signatures and Connections. Signatures:
+  the Probe Scanner's paste (`whScanRows`, every row with an ID, anomalies too) into the system in focus; Lazy update (off by default) removes the
+  missing only after a question; one-step Undo in memory; the game's icon shapes redrawn (`WH_SG_ICON`), the game's signal bands as colours.
+  Connections: this side's ID per end in `tvWhEnds` (`whSide`; an old single `sig` is "side not known"), colour by mass, EOL mark, →. Every
+  deletion asks first. The map: a small wormhole mark at each end (`whEndMarks`), its side's ID on hover or tap; close marks merge. The
+  empty-space menu: Select all, Remove all with a verify step (locked kept). Share beside + Add (046's boxes, `itWhShareHtml('chain')`): `{tv:
+  'wormholes', v: 1, sys: [], chain}`, `#wh=` links (deflate-raw, at most `WH_LINK_MAX_CH`), the import checked and merged only on the press
+  (`whChainMerge`). New keys, each safe both ways: `tvWhSigs`, `tvWhEnds`, `tvWhSecs` (never `tvWhChain`: `whRead` rebuilds from known fields).
+  `wormhole_sigs_check.py`, `wormhole_ends_check.py`, `wormhole_chain_share_check.py`.
   Build queue 051 (part 2, v2026.11.15.2; D25, D26, D34): the system menu (`whMenuOpen`, `.wh-smenu`, role menu, no close button) on a right-click
   or a 0.55 s press and hold on a system (empty space keeps "Add a system here", `.wh-hmenu`): a status as the box's border (`WH_ST`, tokens
   `--wh-st-*`, named in the menu, the System panel's tag and the box's hover `whHoverTxt`), a tag (`WH_TAG_MAX` 8; on the map in the page's tag

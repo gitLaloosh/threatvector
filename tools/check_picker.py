@@ -238,7 +238,8 @@ def changed_files(root, since=None):
         raise SystemExit('check_picker: no .git folder here; give --since <a copy of the repo as last delivered>')
     g = lambda *a: subprocess.run(['git', '-C', root, *a], capture_output=True, text=True)
     base = git_base(root)
-    names = set(g('diff', '--name-only', base).stdout.split()) | set(g('ls-files', '--others', '--exclude-standard').stdout.split())
+    # -z: one name per NUL, never split at a space (059: 'Claude outputs/x.html' read as 'Claude' and 'outputs/x.html' picked `all`)
+    names = {n for n in g('diff', '--name-only', '-z', base).stdout.split('\0') + g('ls-files', '--others', '--exclude-standard', '-z').stdout.split('\0') if n}
     for p in sorted(names):
         if LOCAL_FILE.search(p): continue
         old = g('show', f'{base}:{p}')

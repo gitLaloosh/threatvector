@@ -172,7 +172,7 @@ _tail = r'''
     m.eval_on_selector('#tabBtnIntel', 'b => b.click()'); setup_logs(m); m.click('[data-it-act="folder"]'); m.wait_for_timeout(500); m.click('#intelSwLabel'); tick(m, 3000)
     if m.query_selector('[data-it-nv="map"]'): m.click('[data-it-nv="map"]'); tick(m, 600)   # before 052 (no List | Map switch since)
     m.evaluate("() => document.querySelector('.it-map-box').scrollIntoView({block: 'center'})"); tick(m, 300)
-    bs = m.evaluate("() => [...document.querySelectorAll('.it-map-zoom button')].map(b => { const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; })")
+    bs = m.evaluate("() => [...document.querySelectorAll('.it-map-zoom button:not([hidden])')].map(b => { const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; })")
     m.evaluate("(id) => { const i = itGraphGet().at.get(id); itm.view.tx = itm.W / 2 - itm.P[2 * i] * itm.view.k; itm.view.ty = itm.H / 3 - itm.P[2 * i + 1] * itm.view.k; itMapDraw(); }", SYSID['E-VKJV'])   # 039: zoomed in on you, it may sit under the filter button
     x, y = m.evaluate("(id) => { const i = itGraphGet().at.get(id), r = itm.cv.getBoundingClientRect(); return [r.left + itm.Q[2 * i], r.top + itm.Q[2 * i + 1]]; }", SYSID['E-VKJV'])
     m.touchscreen.tap(x, y); tick(m, 400)
