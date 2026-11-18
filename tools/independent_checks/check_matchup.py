@@ -14,6 +14,8 @@ the tool's own strip function (mysMatchup, index.html) with an independent build
     resonances and local repair rates (oracle; pairs whose repairs aren't a plain amount / duration are left out
     as targets) and the tool's capacitor time to empty (pyfa's capacitor simulation, checked by
     regression_suite/compare_cap_sim.mjs).
+Since build queue 050 each ship's tracking and guidance disruptors and TD drones act on the other's weapons first: pyfa's
+own Effect6423 / 6424 / 6694 on the oracle at the fight's range (check_projected.py's dis_on), the application again inside.
 Tolerance 1e-6 relative (times: 1e-6 relative or both infinite).
 """
 import sys, os, re, json, math, subprocess, tempfile, itertools
@@ -114,6 +116,10 @@ def pyfa_typed(src_fit, src_app, inp, tgt, distance, speedFrac, tgtAngle, atkSpe
             for k, v in typed_dps_fighter_ability(f, a).items(): typed[k] += v * am.get((f, a.effectID), 0)
     return typed
 
+def disrupted(src_o, atk_o, distance, app, fn):
+    """fn(the attacker's application) with src_o's disruptors on atk_o's weapons at distance (build queue 050); app when there are none."""
+    if not CP.dis_sources(src_o): return fn(app)
+    with CP.dis_on(src_o, atk_o, distance): return fn(CA._Src(atk_o))
 def asb_windows(clip, cyc, reload, cycles):
     """v2026.10.14.57: the times an Ancillary Shield Booster on charges is cycling: `clip` cycles, a reload, again, until
     `cycles` are used (written from the description in METHODOLOGY.md, "The fight")."""
@@ -327,9 +333,11 @@ if __name__ == '__main__':
             my_top = me.getMaxVelocity(); their_top = tf_fit.getMaxVelocity()
             y_spd, y_ang, t_spd, t_ang, y_holds, t_holds = keep_rule(st, my_top, their_top, reach(t), reach(m))   # v.51 Stopped, v.53 Keep at Range
             y_frac = y_spd / my_top if my_top else 0.0; t_frac = t_spd / their_top if their_top else 0.0
-            inc = pyfa_typed(tf_fit, tf_app, t_inp, me, st['range'], y_frac, y_ang, t_frac * their_top, t_ang)
+            # build queue 050: each side's tracking / guidance disruptors and TD drones on the other's weapons, pyfa's own
+            # Effect6423 / 6424 / 6694 on the oracle (check_projected.py's dis_on), the application built again inside
+            inc = disrupted(me_o, orc(t), st['range'], tf_app, lambda app: pyfa_typed(tf_fit, app, t_inp, me, st['range'], y_frac, y_ang, t_frac * their_top, t_ang))
             m_src_fit = CP._Fit(me_o); m_app = CA._Src(me_o); m_inp = CP.pyfa_inputs(m_src_fit)
-            outd = pyfa_typed(m_src_fit, m_app, m_inp, tf_fit, st['range'], t_frac, t_ang, y_frac * my_top, y_ang)
+            outd = disrupted(orc(t), me_o, st['range'], m_app, lambda app: pyfa_typed(m_src_fit, app, m_inp, tf_fit, st['range'], t_frac, t_ang, y_frac * my_top, y_ang))
             you_ends, they_ends = [], []
             you_last = ttk(orc(m), capsec(m), inc, asb_input(orc(m), tool[m]['capacitor'], hold_of(m)), you_ends, aar_input(orc(m), aar_loaded(m), hold_of(m)))
             they_last = ttk(orc(t), capsec(t), outd, asb_input(orc(t), tool[t]['capacitor'], hold_of(t)), they_ends, aar_input(orc(t), aar_loaded(t), hold_of(t)))

@@ -41,7 +41,8 @@ import sys, os, re, json, collections
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pyfa_effects import *
 
-ATTRS = ('disallowOffensiveModifiers', 'stasisWebifierResistance', 'targetPainterResistance')
+ATTRS = ('disallowOffensiveModifiers', 'stasisWebifierResistance', 'targetPainterResistance',
+         'weaponDisruptionResistance')   # build queue 050: tracking / guidance disruptors' resistanceAttributeID (2113)
 attrId = {v['name']: int(k) for k, v in attrs.items()}
 # v2026.10.14.64 (D5 fighters): getFighterAbilityMult multiplies a fighter ability's damage on a FIT by the target ship's
 # attribute its {prefix}ResistanceID names (fighterAbilityAntiFighterMissileResistance, ...AntiCapitalMissileResistance):
@@ -68,6 +69,9 @@ def value(expr):
 
 def ctx_of(t):
     c = cat(t)
+    # build queue 050: a T3 destroyer's mode (group Ship Modifiers) is a ship mode, read through MODE_EFFECT_ROWS
+    # (tools/gen_mode_table.py) and passed to pyfaProjTargetAttrs as modeRows, never a fitted module
+    if gname(t) == 'Ship Modifiers': return 'mode'
     if c == 6: return 'ship'
     if c in (7, 32): return 'module'
     if c == 16: return 'skill'
@@ -85,7 +89,7 @@ def build():
     table, ctxs, skipped = {}, {}, collections.Counter()
     for eid in sorted(carriers):
         if eid not in EFFECTS: continue
-        for ctx in sorted({ctx_of(t) for t in carriers[eid]} - {None}):
+        for ctx in sorted({ctx_of(t) for t in carriers[eid]} - {None, 'mode'}):
             carrier = next(t for t in sorted(carriers[eid]) if ctx_of(t) == ctx)
             calls, err = run(eid, ctx, None, carrier=carrier if ctx == 'skill' else None, rich=True)
             if err: continue   # not one of ours (the recorder can't run every handler); ours are asserted below
@@ -107,18 +111,21 @@ def build():
         writes = [k for k in ATTRS if re.search(r"(boost|multiply|increase|force|preAssign)ItemAttr\(\s*'" + k + "'", body)]
         if writes and eid not in table:
             if int(eid) not in carriers: skipped[f'no SDE carrier: Effect{eid}'] += 1; continue
+            if all(ctx_of(t) == 'mode' for t in carriers[int(eid)]): skipped[f'ship mode (MODE_EFFECT_ROWS): Effect{eid}'] += 1; continue
             raise AssertionError(f'Effect{eid} writes {writes} but was not recorded')
     return dict(sorted(table.items(), key=lambda kv: int(kv[0]))), ctxs, skipped
 
 DRONE_ATTRS = ('speedFactor', 'signatureRadiusBonus', 'maxVelocity', 'shieldTransferRange', 'powerTransferRange', 'empFieldRange',
                'ecmBurstRange', 'maxRange', 'ECMRangeOptimal', 'falloff', 'falloffEffectiveness', 'radius',
-               'trackingSpeed', 'optimalSigRadius')   # v2026.10.14.40: + what getDroneMult reads for damage drones
+               'trackingSpeed', 'optimalSigRadius',   # v2026.10.14.40: + what getDroneMult reads for damage drones
+               'trackingSpeedBonus', 'maxRangeBonus', 'falloffBonus')   # build queue 050: what Effect6694 (TD drones) reads
 DRONE_ATTRS = tuple(a for a in DRONE_ATTRS if a in attrId)   # energyDestabilizationRange is not an SDE attribute
 def _effs(t): return {e['effectID'] for e in td.get(str(t), {}).get('dogmaEffects', [])}
 DMG_ATTR_IDS = {114, 116, 117, 118}   # em / explosive / kinetic / thermal damage: pyfa Drone.dealsDamage
 def _deals(t): return any(x['value'] > 0 for x in td.get(str(t), {}).get('dogmaAttributes', []) if x['attributeID'] in DMG_ATTR_IDS)
 # v2026.10.14.40 (D5, drone damage application): web / painter drones AND every damage drone
-projDrones = sorted(t for t, v in types.items() if v.get('published') and cat(t) == 18 and (_effs(t) & {6690, 6692} or _deals(t)))
+# build queue 050: and tracking disruptor drones (Effect6694 npcEntityWeaponDisruptor)
+projDrones = sorted(t for t, v in types.items() if v.get('published') and cat(t) == 18 and (_effs(t) & {6690, 6692, 6694} or _deals(t)))
 projDrones = [int(t) for t in projDrones]
 def _dsig(t): return (frozenset(reqs(t)), gname(t))
 droneReps = list({_dsig(t): t for t in projDrones}.values())
@@ -140,7 +147,7 @@ def build_drones():
     table, skillRows, byCtx, skipped = {}, [], {}, collections.Counter()
     for eid in sorted(carriers):
         if eid not in EFFECTS: continue
-        for ctx in sorted({ctx_of(t) for t in carriers[eid]} - {None}):
+        for ctx in sorted({ctx_of(t) for t in carriers[eid]} - {None, 'mode'}):
             skillCarriers = sorted(t for t in carriers[eid] if ctx_of(t) == 'skill') if ctx == 'skill' else [None]
             for carrier in skillCarriers:
                 def ev(coll, meth, a):
@@ -182,10 +189,10 @@ def build_drones():
         if not pat.search(body) or eid in recorded: continue
         if eid not in carriers: skipped[f'no SDE carrier: Effect{eid}'] += 1; continue
         hitsAny = False
-        for ctx in sorted({ctx_of(t) for t in carriers[eid]} - {None}):
+        for ctx in sorted({ctx_of(t) for t in carriers[eid]} - {None, 'mode'}):
             calls, err = run(eid, ctx, None, carrier=next((t for t in sorted(carriers[eid]) if ctx_of(t) == 'skill'), None) if ctx == 'skill' else None, rich=True)
             if err: raise AssertionError(f'Effect{eid} touches a drone attribute but the recorder could not run it: {err}')
-        skipped[f'touches a drone attribute, no web / painter / damage drone passes its filter: Effect{eid} {ename(eid)}'] += 1
+        skipped[f'touches a drone attribute, no web / painter / TD / damage drone passes its filter: Effect{eid} {ename(eid)}'] += 1
     for eid in {e for e, _ in byCtx}:
         variants = {json.dumps(r) for (e, c), r in byCtx.items() if e == eid}
         if len(variants) > 1: raise AssertionError(f"effect {eid}: drone rows differ by context: {variants}")
@@ -291,7 +298,7 @@ def build_fighters():
     table, skillRows, byCtx, skipped = {}, [], {}, collections.Counter()
     for eid in sorted(carriers):
         if eid not in EFFECTS: continue
-        for ctx in sorted({ctx_of(t) for t in carriers[eid]} - {None}):
+        for ctx in sorted({ctx_of(t) for t in carriers[eid]} - {None, 'mode'}):
             skillCarriers = sorted(t for t in carriers[eid] if ctx_of(t) == 'skill') if ctx == 'skill' else [None]
             for carrier in skillCarriers:
                 def ev(coll, meth, a):
@@ -339,7 +346,7 @@ def build_fighters():
         if loops and any(f"'{a}'" in loops.group(0) for a in FIGHTER_ATTRS): raise AssertionError(f'Effect{eid} loops over a fighter attribute but was not recorded')
         if not pat.search(body): continue
         if eid not in carriers: skipped[f'no SDE carrier: Effect{eid}'] += 1; continue
-        for ctx in sorted({ctx_of(t) for t in carriers[eid]} - {None}):
+        for ctx in sorted({ctx_of(t) for t in carriers[eid]} - {None, 'mode'}):
             calls, err = run(eid, ctx, None, carrier=next((t for t in sorted(carriers[eid]) if ctx_of(t) == 'skill'), None) if ctx == 'skill' else None, rich=True)
             if err: raise AssertionError(f'Effect{eid} touches a fighter attribute but the recorder could not run it: {err}')
         skipped[f'touches a fighter attribute, no damage fighter passes its filter: Effect{eid} {ename(eid)}'] += 1

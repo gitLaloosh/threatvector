@@ -223,6 +223,19 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
 
 - **Damage applied:** pyfa's damage graph, at one distance and one movement for each ship, with the attacker's own
   webs (modules, drones and support fighters), target painters and scram applied (pyfa's default). Resists aren't counted there; lock range is ignored.
+- **Disruptors** (build queue 050): the target ship's tracking disruptors, guidance disruptors and TD drones act on the
+  attacker's weapons, as pyfa counts them with that fit projected at that distance (Effect6424, Effect6423,
+  Effect6694). A module's strength falls off with pyfa's range factor (full to its optimal, then 0.5^((distance −
+  optimal) / falloff)², nothing past optimal + 3 × falloff); a TD drone is at full strength out to its own range and
+  does nothing past it. Tracking disruptors cut turrets' optimal, falloff and tracking (turrets needing Gunnery: not
+  Vorton projectors); guidance disruptors raise missiles' explosion radius and cut their explosion velocity, speed and
+  flight time, so their range (missiles needing Missile Launcher Operation). Drones, fighters and smartbombs aren't
+  touched. Several of one kind are stacking-penalized together; the disrupted hull's weapon disruption resistance
+  scales each one first (a Tactical Destroyer in Sharpshooter Mode, a dreadnought in Siege, a titan, some strategic
+  cruiser subsystems, the Republic Electronics booster). A Bastion Module gives none in today's game data. A hull with
+  "offensive modifiers disallowed" isn't disrupted. Both ways: their disruptors in your card and the times' "they
+  last", yours in theirs. The line under each chart's key says the cut at the chosen range, and the reason sentence
+  of the time it changes says it first. Not counted: sensor dampeners and ECM (later phases of the EWAR plan).
 - **A weapon with no charge loaded** (v2026.10.14.67): charted with the charge aboard that kills you fastest at this
   fight (the one the Weaknesses picks name first), marked "Assumed loaded" on the card and in the Matchup's hover.
   The Firepower card shows every charge aboard as a range.
@@ -249,8 +262,10 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
     chosen and then no longer possible, it's marked amber.
 - **What the chart marks** (v2026.10.14.54): their EWAR that reaches you, shaded from 0 out to its range with the
   EWAR / Misc card's letters and colours: **T** their warp scrambler and furthest web (the same inputs pyfa's graph
-  applies), **D** their furthest target painter, **C** their furthest running neutralizer and nosferatu (each module's
-  optimal range). Darker where two reach. Numbered pins mark their lock range and drone control range. The x axis
+  applies), **D** their furthest target painter and (build queue 050) their furthest tracking and guidance disruptor
+  (modules and TD drones, to their optimal), **C** their furthest running neutralizer and nosferatu (each module's
+  optimal range). Each badge shows the icon of the item that reaches farthest, its letter under it when the image
+  doesn't load; pointing at a key row lights its badge. Darker where two reach. Numbered pins mark their lock range and drone control range. The x axis
   prints their tackle distances and your range, the y axis the DPS there. While a slider is dragged the y axis only
   grows; it fits again on release. Markers are presentation only; the lines are pyfa's.
 - **Your card** (v2026.10.14.55, My Ship Perspective): the same chart for your guns on them: your ship as the attacker,

@@ -59,6 +59,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #29 pyfa's gaps are not the game's rules, and a control must change something.
 - #22 Auditing pyfa: missing attributes, split bonuses, unpublished hulls.
 - #27 A reference that swallows errors like pyfa hides its own gaps.
+- #172 An effect on an item is not its bonus, and a projected effect's resistance is the effect's own first: read both from the data, not from the plan.
 
 **Calculations: expected values, fixtures and golden fits**
 
@@ -198,6 +199,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #166 Cutting stored data down for one reader breaks the others: list every reader of that store, and the fields each reads, before trimming it. See also #134.
 - #168 A check that reads the real clock (or "main") passes or fails by when it runs: move what the page does at a set time (EVE's downtime) away from the run, and pin an older page to a commit. See also #115.
 - #169 Don't measure what's hidden, and don't key a cache on an inline element's width: skip what has no size, key on a real width, measure again when it shows.
+- #171 A reference built for one job carries that job's stubs: pyfa_effects runs every handler with calculateRangeFactor = 1, so projected handlers ran at full strength until the check put pyfa's own back.
 
 **Intel and live data (chat logs, zKillboard's feed)**
 
@@ -1077,6 +1079,30 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 172. An effect on an item is not its bonus, and a projected effect's resistance is the effect's own first
+
+- **What happened (build queue 050's review and build, 2026-11-17):** the EWAR plan named the target attribute a disruptor is resisted by
+  from `remoteResistanceID`, and listed the Bastion Module among the hulls that resist weapon disruption because its effect (6658) has a
+  `weaponDisruptionResistance` line. pyfa's `getResistanceAttrID` takes the effect's own `resistanceID` first (2113 for Effect6423 / 6424 /
+  6694) and only then the item's attributes; and the Bastion Module I in today's SDE has no `weaponDisruptionResistanceBonus` at all, so the
+  handler multiplies by its default: no resistance (the Siege Module II has -70). The plan was right about Siege and wrong about Bastion.
+- **How it was caught:** the review read `eos/modifiedAttributeDict.py` before the build; the Bastion by the new disruptor check, which reads
+  each victim's resistance from pyfa's own handlers and found a Vargur and a Kronos in Bastion at 1.0.
+- **Do this instead:** for a projected effect, take the resistance from pyfa's `getResistanceAttrID` (effect first), and for "which items give
+  X" run the handler on each carrier type and read the value, never the effect list alone. Say so in the plan's Sources with the type's value.
+
+## 171. A reference built for one job carries that job's stubs
+
+- **What happened (build queue 050, 2026-11-17):** the new disruptor part of `check_projected.py` ran pyfa's Effect6423 / 6424 through
+  `tools/pyfa_effects.py`, which loads `eos/effects.py` with `calculateRangeFactor` replaced by `lambda: 1` (the oracle only ever ran a fit's own
+  effects, where it never matters). Every disruptor came out at full strength at any distance, so pyfa and the tool disagreed past optimal, and
+  the first reading was that the tool was wrong.
+- **How it was caught:** the mismatches started exactly at the first distance past each disruptor's optimal; full strength there could only
+  mean the range factor was 1.
+- **Do this instead:** before trusting a reference in a new job, list what its loader stubs (`pyfa_effects.py`'s namespace) and put pyfa's own
+  function back for the duration (`dis_apply` swaps `calculateRangeFactor` in and out). A check whose reference agrees with nothing at a
+  boundary is telling you about the reference first.
 
 ## 170. A value stored rounded is rounded again wherever it is shown: work the shown value out in one place, and check every item against it
 

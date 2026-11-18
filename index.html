@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Qp1gwIFfXlHHt0P+7FViosgN2WJ6D6gL77ccUU2VxBg='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ZKvYb/4nooxEiG8NITCt218bvjEnVMuWDG9P8tg8czA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -1261,6 +1261,13 @@
   .dmg-marker.dmg-zline{stroke-dasharray:none; stroke-opacity:0.8;}
   .dmg-zline.tackle{stroke:var(--tank-armor);} .dmg-zline.disrupt{stroke:var(--tank-shield);} .dmg-zline.drain{stroke:var(--drain);}
   .dmg-badge text{fill:var(--bg); font:700 9.5px var(--sans);}
+  /* build queue 050 (ewar-plan.md section 11, the owner: "faint frame"): a zone's badge shows its item's icon on the panel,
+     the category colour as a faint 1 px frame and as the letter underneath (seen when the image doesn't load); a badge or
+     key row being pointed at lights both (frame solid, row tinted) */
+  .dmg-badge.ic rect{fill:var(--panel); stroke-width:1; stroke-opacity:0.5;}
+  .dmg-badge.ic.tackle rect{stroke:var(--tank-armor);} .dmg-badge.ic.disrupt rect{stroke:var(--tank-shield);} .dmg-badge.ic.drain rect{stroke:var(--drain);}
+  .dmg-badge.ic.tackle text{fill:var(--tank-armor);} .dmg-badge.ic.disrupt text{fill:var(--tank-shield);} .dmg-badge.ic.drain text{fill:var(--drain);}
+  .dmg-badge.ic.hl rect{stroke-opacity:1;} .dmg-badge.hl:not(.ic) rect{stroke:var(--heading); stroke-width:1;}
   .dmg-pin circle{fill:var(--panel-2); stroke:#7c8a94; stroke-width:1;}
   .dmg-pin text{fill:var(--heading); font:10px var(--mono);}
   .dmg-lead{fill:none; stroke:#5b6872; stroke-width:1;}
@@ -1283,6 +1290,13 @@
   .dmg-ck-l{min-width:0; overflow:hidden; text-overflow:ellipsis;}
   .dmg-ck-km{margin-left:auto; padding-left:8px; font-family:var(--mono); color:var(--text-dim); flex:none;}
   .dmg-ck-note{display:block; margin-top:2px;}
+  .ewar-badge.ic{position:relative; width:20px; height:20px; box-sizing:border-box; background:var(--panel); border:1px solid; overflow:hidden;}
+  .ewar-badge.ic.tackle{color:var(--tank-armor); border-color:color-mix(in srgb, var(--tank-armor) 50%, transparent);}
+  .ewar-badge.ic.disrupt{color:var(--tank-shield); border-color:color-mix(in srgb, var(--tank-shield) 50%, transparent);}
+  .ewar-badge.ic.drain{color:var(--drain); border-color:color-mix(in srgb, var(--drain) 50%, transparent);}
+  .ewar-badge.ic img{position:absolute; left:0; top:0; width:18px; height:18px; display:block;}
+  .dmg-ck-row[data-dmg-z]{border-radius:3px;} .dmg-ck-row.hl{background:var(--line-soft);}
+  .dmg-ck-row.hl .ewar-badge.ic{border-color:currentColor;}
   .dmg-eng{stroke:#9aa7b0; stroke-width:1;}
   .dmg-hover{stroke:var(--text-dim); stroke-width:1;}
   .dmg-line{fill:none; stroke-width:2; stroke-linejoin:round;}
@@ -3405,7 +3419,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.17.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.18.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3657,16 +3671,16 @@ function cardName(key){
 // CARD_INFO: plain text paragraphs (escaped when shown). JSON on purpose, so the Python tools can read it.
 const CARD_INFO = {
  "dmg": [
-  "**The big number:** the DPS that lands on you at the range and movement set under Adjust, as pyfa's damage graph: their webs, target painters and scram applied, resists not counted, their lock range ignored.",
-  "**On the chart:** their EWAR that reaches you is shaded out to its range with the {card:ewar} card's letters (T scram and web, D target painter, C neuts and nosferatu), darker where two reach. Numbered pins: their lock and drone range.",
+  "**The big number:** the DPS that lands on you at the range and movement set under Adjust, as pyfa's damage graph: their webs, target painters and scram applied, and your disruptors on their weapons; resists not counted, their lock range ignored.",
+  "**On the chart:** their EWAR that reaches you is shaded out to its range with the {card:ewar} card's letters (T scram and web, D painters and disruptors, C neuts and nosferatu), darker where two reach. Numbered pins: their lock and drone range.",
   "[Drones] Their drones hit fully when faster than you; otherwise they track like turrets from their ship, out to their drone control range.",
   "[Keep at Range] That ship moves straight away at the other's closing speed, up to its own top speed, so the distance holds. It isn't offered inside the other ship's scram or web range, or when the other closes faster than it can fly; chosen and then no longer possible, it's marked amber.",
   "[Wrecking hits] A close, perfect hit chance averages 1.5% above raw DPS, as in pyfa."
  ],
  "dmg#mine": [
-  "The same as {card:dmg}, from your side: the DPS your ship lands on them at the range and movement set under Adjust (the board's DPS applied to them), with your webs, target painters and scram, their resists not counted. Their speed and signature are their fit's own, prop module running.",
+  "The same as {card:dmg}, from your side: the DPS your ship lands on them at the range and movement set under Adjust (the board's DPS applied to them), with your webs, target painters and scram, and their disruptors on your weapons; their resists not counted. Their speed and signature are their fit's own, prop module running.",
   "**One fight:** Adjust here, the strip under the board and {card:dmg} in {card:perspective.threat} set the same range and movements; Chart across is this card's own.",
-  "[On the chart] Your EWAR that reaches them is shaded out to its range (T scram and web, D target painter, C neuts and nosferatu); pins are your lock and drone range. Your drones hit fully when faster than them, otherwise they track like turrets."
+  "[On the chart] Your EWAR that reaches them is shaded out to its range (T scram and web, D painters and disruptors, C neuts and nosferatu); pins are your lock and drone range. Your drones hit fully when faster than them, otherwise they track like turrets."
  ],
  "weak": [
   "**Least resisted:** the damage type that gets through its resists best, averaged over shield, armor and hull by their hit points (resists as fitted, skills at V).",
@@ -6418,13 +6432,13 @@ function pyfaFighterTargetParams(tgt){ return {tgtIsFit: !!(tgt && tgt.isFit), t
 // calc/projected.py and cache/projected.py unmodified on pyfa's own attribute values.
 // Generated by tools/gen_projected_table.py (pyfa handlers on the target ship's disallowOffensiveModifiers /
 // stasisWebifierResistance / targetPainterResistance, and on a web / painter drone's attributes):
-const PROJ_TARGET_EFFECTS = {"6581":[["disallowOffensiveModifiers","force",872,1,0.0,null]],"6658":[["targetPainterResistance","boost",2424,1,0.0,null]],"8517":[["stasisWebifierResistance","boost",3422,1,0.0,null]],"12192":[["stasisWebifierResistance","boost",729,5,0.0,null]],"12193":[["stasisWebifierResistance","boost",748,5,0.0,null]],"13007":[["stasisWebifierResistance","boost",6393,1,0.0,null]]};
-const PROJ_TARGET_ATTRS = {"disallowOffensiveModifiers":872,"stasisWebifierResistance":2115,"targetPainterResistance":2114,"fighterAbilityAntiFighterMissileResistance":2189,"fighterAbilityAntiCapitalMissileResistance":2244,"fighterAbilityKamikazeResistance":2433};
-const PROJ_TARGET_DEFAULTS = {"872":0.0,"2115":1.0,"2114":1.0,"2189":0.05000000074505806,"2244":0.10000000149011612,"2433":0.0};
+const PROJ_TARGET_EFFECTS = {"6581":[["disallowOffensiveModifiers","force",872,1,0.0,null]],"6582":[["weaponDisruptionResistance","boost",2353,1,0.0,null]],"6658":[["targetPainterResistance","boost",2424,1,0.0,null],["weaponDisruptionResistance","boost",2353,1,0.0,null]],"8267":[["weaponDisruptionResistance","boost",2353,1,0.0,null]],"8517":[["stasisWebifierResistance","boost",3422,1,0.0,null]],"12192":[["stasisWebifierResistance","boost",729,5,0.0,null]],"12193":[["stasisWebifierResistance","boost",748,5,0.0,null]],"13007":[["stasisWebifierResistance","boost",6393,1,0.0,null]],"13054":[["weaponDisruptionResistance","boost",2685,5,0.0,null]],"13055":[["weaponDisruptionResistance","boost",2683,5,0.0,null]]};
+const PROJ_TARGET_ATTRS = {"disallowOffensiveModifiers":872,"stasisWebifierResistance":2115,"targetPainterResistance":2114,"weaponDisruptionResistance":2113,"fighterAbilityAntiFighterMissileResistance":2189,"fighterAbilityAntiCapitalMissileResistance":2244,"fighterAbilityKamikazeResistance":2433};
+const PROJ_TARGET_DEFAULTS = {"872":0.0,"2115":1.0,"2114":1.0,"2113":1.0,"2189":0.05000000074505806,"2244":0.10000000149011612,"2433":0.0};
 const PROJ_DRONE_EFFECTS = {"2013":[["maxVelocity","boost",591,1,0.0,"default",[3436],null]],"booster:2013":[["maxVelocity","boost",591,1,0.0,null,[3436],null]],"implant:2013":[["maxVelocity","boost",591,1,0.0,null,[3436],null]],"2014":[["maxRange","boost",294,1,0.0,"default",[3436],null]],"4575":[["maxVelocity","boost",2584,1,0.0,"default",[3436],null]],"4579":[["speedFactor","boost",1619,1,0.0,null,[12305],null]],"5111":[["trackingSpeed","boost",462,5,0.0,null,[3436],null]],"5165":[["maxVelocity","boost",793,1,0.0,null,[3436],null]],"5212":[["maxVelocity","boost",1864,1,0.0,null,null,null]],"5427":[["trackingSpeed","boost",500,5,0.0,null,[3436],null]],"5428":[["maxRange","boost",500,5,0.0,null,[3436],null]],"5555":[["maxVelocity","boost",486,5,5.0,null,[3441],null]],"5556":[["trackingSpeed","boost",486,5,5.0,null,[3441],null]],"5557":[["maxRange","boost",693,5,0.0,null,[23594],null]],"5558":[["trackingSpeed","boost",693,5,0.0,null,[23594],null]],"6176":[["maxVelocity","boost",2043,1,0.0,null,[3436],null]],"6555":[["maxVelocity","boost",20,1,1.0,"default",[3436],null]],"6557":[["trackingSpeed","boost",767,1,0.0,"default",[3436],null],["falloff","boost",349,1,0.0,"default",[3436],null],["maxRange","boost",351,1,0.0,"default",[3436],null]],"6559":[["falloff","boost",349,1,0.0,"default",[3436],null],["maxRange","boost",351,1,0.0,"default",[3436],null],["trackingSpeed","boost",767,1,0.0,"default",[3436],null]],"implant:6664":[["maxRange","boost",294,1,0.0,null,[3436],null]],"booster:6667":[["maxVelocity","boost",2603,1,0.0,null,[3436],null]],"implant:6667":[["maxVelocity","boost",2603,1,0.0,null,[3436],null]],"6670":[["maxRange","boost",294,1,0.0,"default",[3436],null]],"6671":[["maxVelocity","boost",591,1,0.0,"default",[3436],null]],"6925":[["maxVelocity","boost",1521,5,0.0,null,[3436],null],["trackingSpeed","boost",1521,5,0.0,null,[3436],null]],"7230":[["trackingSpeed","boost",658,5,0.0,null,[3436],null]],"implant:8023":[["trackingSpeed","boost",3028,1,0.0,null,[3436],null]],"implant:8024":[["maxRange","boost",3029,1,0.0,null,[3436],null],["falloff","boost",3029,1,0.0,null,[3436],null]],"8071":[["maxRange","boost",1000,5,0.0,null,[3436],null]],"8119":[["maxVelocity","boost",2584,1,0.0,"default",[3436],null]],"8154":[["maxRange","boost",1258,5,0.0,null,[3436],null],["trackingSpeed","boost",1258,5,0.0,null,[3436],null]],"booster:8477":[["trackingSpeed","boost",3353,1,0.0,null,[3436],null]],"booster:8479":[["maxRange","boost",294,1,0.0,null,[3436],null],["falloff","boost",349,1,0.0,null,[3436],null]],"11060":[["speedFactor","boost",5046,5,0.0,null,[3436],null]],"11419":[["trackingSpeed","boost",561,5,0.0,null,[3436],null]],"11518":[["maxVelocity","boost",5318,1,0.0,null,[3435],null]],"11519":[["speedFactor","boost",5319,1,0.0,null,[3436],null]],"12252":[["trackingSpeed","boost",999,5,0.0,null,[3441,24241,33699],null]],"12253":[["trackingSpeed","boost",5772,5,0.0,null,[23594],null]],"12565":[["trackingSpeed","boost",747,5,0.0,null,[3436],null]],"12566":[["maxVelocity","boost",2303,1,0.0,null,[3436],null]],"12810":[["speedFactor","boost",738,5,0.0,null,[3436],null]],"13026":[["trackingSpeed","boost",586,5,0.0,null,[3436],null]],"13050":[["maxVelocity","boost",6483,1,0.0,"default",[3436],null]]};
 const PROJ_DRONE_SKILL_ROWS = [[12305,"maxVelocity","boost",25.0,null,[3436],null],[23606,"maxRange","boost",25.0,null,[3436],null]];
-const PROJ_DRONE_ATTRS = {"speedFactor":20,"signatureRadiusBonus":554,"maxVelocity":37,"shieldTransferRange":87,"powerTransferRange":91,"empFieldRange":99,"ecmBurstRange":142,"maxRange":54,"ECMRangeOptimal":936,"falloff":158,"falloffEffectiveness":2044,"radius":162,"trackingSpeed":160,"optimalSigRadius":620};
-const PROJ_DRONE_DEFAULTS = {"20":1.0,"554":0.0,"37":0.0,"87":0.0,"91":0.0,"99":0.0,"142":0.0,"54":0.0,"936":0.0,"158":1.0,"2044":0.0,"162":0.0,"160":0.0,"620":1000.0};
+const PROJ_DRONE_ATTRS = {"speedFactor":20,"signatureRadiusBonus":554,"maxVelocity":37,"shieldTransferRange":87,"powerTransferRange":91,"empFieldRange":99,"ecmBurstRange":142,"maxRange":54,"ECMRangeOptimal":936,"falloff":158,"falloffEffectiveness":2044,"radius":162,"trackingSpeed":160,"optimalSigRadius":620,"trackingSpeedBonus":767,"maxRangeBonus":351,"falloffBonus":349};
+const PROJ_DRONE_DEFAULTS = {"20":1.0,"554":0.0,"37":0.0,"87":0.0,"91":0.0,"99":0.0,"142":0.0,"54":0.0,"936":0.0,"158":1.0,"2044":0.0,"162":0.0,"160":0.0,"620":1000.0,"767":0.0,"351":0.0,"349":0.0};
 // v2026.10.14.64 (turret-application-plan.md D5 fighters): every pyfa handler on what getFighterAbilityMult reads on a
 // fighter -- maxVelocity, radius and each damage ability's range / falloff / explosion / reduction / ResistanceID --
 // in the PROJ_DRONE_* row shapes, filters on the fighter (any of skills) AND (any of groups). Same generator.
@@ -6630,6 +6644,7 @@ function pyfaProjectedPoint(app, tgt, p){
 // The default graph's applied DPS of `app` (an attacker's estimate.application) on `tgt` at one point:
 // pyfaAppliedDps (PYFA CORE application) at the tackled speed and painted signature, the target's own radius.
 function pyfaAppliedDpsProjected(app, tgt, p){
+  app = pyfaDisruptedApp(app, tgt.disrupt, p.distance);   // build queue 050: the target's tracking / guidance disruptors
   const pt = pyfaProjectedPoint(app, tgt, p);
   return pyfaAppliedDps(app, Object.assign({}, p, {tgtSpeed: pt.tgtSpeed, tgtSigRadius: pt.tgtSigRadius, tgtRadius: tgt.radius}, pyfaFighterTargetParams(tgt)));
 }
@@ -6727,7 +6742,9 @@ function pyfaFighterBombInputs(a, chargeExplosionRadius){
   return {speed: a.maxVelocity, radius: a.radius, optimal: 0, falloff: 0, explosionRadius: chargeExplosionRadius, explosionVelocity: 0, drf: 0, drs: 0, resistAttrId: null};
 }
 // The target ship's disallowOffensiveModifiers and web / painter resistances (PROJ_TARGET_EFFECTS).
-function pyfaProjTargetAttrs(ship, modules, implantCarriers){
+// build queue 050: and its weaponDisruptionResistance, which a T3 destroyer's Sharpshooter Mode changes (pyfa Effect6800
+// modeDampTDResistsPostDiv, unpenalised): the ship mode's rows (MODE_EFFECT_ROWS, as pyfaShipSpeed reads them).
+function pyfaProjTargetAttrs(ship, modules, implantCarriers, modeRows = []){
   const pools = {};
   for(const n of Object.keys(PROJ_TARGET_ATTRS)) pools[n] = pyfaModPool();
   const addRows = (e, valueOf, w) => {
@@ -6737,9 +6754,79 @@ function pyfaProjTargetAttrs(ship, modules, implantCarriers){
   for(const e of ship.effectIds) addRows(String(e), (a, d) => ship.attr(a, d), 1);
   for(const m of modules) for(const e of m.effectIds) addRows(String(e), (a, d) => m.attr(a, d), m.weightOf(e));
   for(const c of implantCarriers || []) if(c.ctx === 'booster' || c.ctx === 'implant') for(const e of c.effectIds) addRows(String(e), (a, d) => c.attr(a, d), 1);
+  for(const n of Object.keys(pools)) pyfaModAdd(pools[n], 'mul', modeRowsMult(modeRows || [], 'ship', n, null, null), null);
   const out = {};
   for(const [n, id] of Object.entries(PROJ_TARGET_ATTRS)) out[id] = pyfaModValue(ship.attr(id, PROJ_TARGET_DEFAULTS[String(id)]), pools[n]);
   return out;
+}
+// TRACKING AND GUIDANCE DISRUPTORS (build queue 050, roadmap/ewar-plan.md phase A). pyfa runs a projected module's own handler
+// on the fit it is projected onto (a projected fit at projectionRange); here the fit's disruptors act on the OTHER ship's
+// weapons at each distance of the chart, so each point equals pyfa with projectionRange = that distance. Ported line for line:
+//   eos/effects.py Effect6424 shipModuleTrackingDisruptor: on modules whose item requires Gunnery (directly), trackingSpeed /
+//     maxRange / falloff boosted by trackingSpeedBonus / maxRangeBonus / falloffBonus x calculateRangeFactor(maxRange,
+//     falloffEffectiveness, projectionRange), stackingPenalties=True (group 'default')
+//   Effect6423 shipModuleGuidanceDisruptor: on charges requiring Missile Launcher Operation (directly), aoeCloudSize /
+//     aoeVelocity / maxVelocity / explosionDelay by aoeCloudSizeBonus / aoeVelocityBonus / missileVelocityBonus /
+//     explosionDelayBonus, the same range factor and stacking
+//   Effect6694 npcEntityWeaponDisruptor (TD drones): Effect6424's three bonuses at full strength while the drone's maxRange
+//     >= projectionRange, nothing past it (no range factor, no drone control range in the handler)
+//   each returns early when the disrupted ship has disallowOffensiveModifiers. Their resistanceAttributeID is 2113,
+//   weaponDisruptionResistance (eos/modifiedAttributeDict.py getResistanceAttrID: the effect's own resistanceID first; the
+//   modules carry no remoteResistanceID), so ModifiedAttributeDict.multiply makes each multiplier (m - 1) x resistance + 1
+//   before it joins its stacking chain (LESSON #172).
+// The disrupted ship's own stacking-penalised modifiers on these attributes all have the other sign (tracking computers and
+// enhancers, rigs, guidance enhancers and computers: tools/independent_checks/check_projected.py asserts it from
+// WEAPON_RANGE_MOD_EFFECTS), and pyfa penalises bonuses and penalties apart (__calculateValue), so the disruptors' own chain
+// multiplies the final value exactly.
+const PROJ_TD_EFFECT = 6424, PROJ_GD_EFFECT = 6423, PROJ_TD_DRONE_EFFECT = 6694;
+const PROJ_TD_ATTRS = {trackingSpeedBonus: 'tracking', maxRangeBonus: 'optimal', falloffBonus: 'falloff'};
+const PROJ_GD_ATTRS = {aoeCloudSizeBonus: 'aoeCloudSize', aoeVelocityBonus: 'aoeVelocity', missileVelocityBonus: 'maxVelocity', explosionDelayBonus: 'explosionDelay'};
+// One disruptor (an active module copy, or one drone in space) from its modified attributes a.
+function pyfaDisruptorData(a, typeId, name, attrMap, drone = false){
+  const o = {typeId, name, drone, optimal: a.maxRange || 0, falloff: drone ? 0 : (a.falloffEffectiveness || 0), bonus: {}};
+  for(const n of Object.keys(attrMap)) o.bonus[n] = a[n] || 0;
+  return o;
+}
+// The disrupted ship's multipliers at one distance. src: the disruptors' fit {tdMods, gdMods, tdDrones}; victim: the
+// disrupted fit {resist (its weaponDisruptionResistance), disallow (its disallowOffensiveModifiers)}.
+function pyfaDisruptionMults(src, victim, distance){
+  const out = {tracking: 1, optimal: 1, falloff: 1, aoeCloudSize: 1, aoeVelocity: 1, maxVelocity: 1, explosionDelay: 1};
+  if(!src || (victim && victim.disallow)) return out;
+  const res = victim && victim.resist !== undefined && victim.resist !== null ? victim.resist : 1;
+  const lists = {};
+  const push = (k, boost) => { let m = 1 + boost / 100; if(res !== 1) m = (m - 1) * res + 1; (lists[k] = lists[k] || []).push(m); };
+  for(const [arr, map] of [[src.tdMods, PROJ_TD_ATTRS], [src.gdMods, PROJ_GD_ATTRS]]) for(const m of arr || []){
+    const rangeFactor = pyfaCalculateRangeFactor(m.optimal, m.falloff, distance);
+    for(const [b, k] of Object.entries(map)) push(k, m.bonus[b] * rangeFactor);
+  }
+  for(const d of src.tdDrones || []){
+    if(d.optimal < (distance || 0)) continue;
+    for(const [b, k] of Object.entries(PROJ_TD_ATTRS)) push(k, d.bonus[b]);
+  }
+  for(const k of Object.keys(lists)) out[k] = pyfaPenalizedProduct(lists[k]);
+  return out;
+}
+function pyfaDisruptsAny(src){ return !!src && ((src.tdMods || []).length + (src.gdMods || []).length + (src.tdDrones || []).length) > 0; }
+// The attacker's application with its weapons as the target's disruptors leave them at distance (app itself when nothing
+// disrupts). Turrets: optimal, falloff, tracking. Missiles: explosion radius and velocity, and the flight range
+// (Module.missileMaxRangeData) from the disrupted charge maxVelocity and explosionDelay. Drones, fighters, Vorton and
+// smartbombs are not touched (the handlers' filters).
+function pyfaDisruptedApp(app, src, distance){
+  if(!pyfaDisruptsAny(src)) return app;
+  const k = pyfaDisruptionMults(src, app.wdVictim, distance);
+  if(Object.values(k).every(v => v === 1)) return app;
+  const weapons = app.weapons.map(w => {
+    if(w.kind === 'turret' && w.gunnery) return Object.assign({}, w, {optimal: (w.optimal || 0) * k.optimal, falloff: (w.falloff || 0) * k.falloff, tracking: w.tracking * k.tracking});
+    if(w.kind !== 'missile' || !w.mlo) return w;
+    const o = Object.assign({}, w, {aoeCloudSize: w.aoeCloudSize * k.aoeCloudSize, aoeVelocity: w.aoeVelocity * k.aoeVelocity});
+    if(w.mrIn && (k.maxVelocity !== 1 || k.explosionDelay !== 1)){
+      const [v, ms, r, mass, agility, fof] = w.mrIn;
+      const mr = pyfaMissileMaxRangeData(v * k.maxVelocity, ms * k.explosionDelay, r, mass, agility, fof);
+      o.missileMaxRangeData = mr ? [mr.lowerRange, mr.higherRange, mr.higherChance] : null;
+    }
+    return o;
+  });
+  return Object.assign({}, app, {weapons});
 }
 // ==== PYFA CORE END projected ====
 // ==== PYFA CORE BEGIN speed-calc ==== mirrors pyfa; change only to match pyfa (PYFA_CORE.md, tools/pyfa_core_manifest.json)
@@ -11987,7 +12074,7 @@ function resistanceCardHtml(f, estimate){
 const FIGHTER_EWAR_ABILITY = {6435: 'web', 6434: 'neut', 6437: 'ecm', 6436: 'point'};
 function fighterEwarEntries(f, a){
   const out = [], n = f.squadronSize;
-  const base = {name: f.name, qty: f.deployed, script: null, running: true, fighter: true, squadronSize: n};
+  const base = {name: f.name, typeId: f.typeId, qty: f.deployed, script: null, running: true, fighter: true, squadronSize: n};   // typeId: build queue 050
   for(const e of f.activeIds){
     const k = FIGHTER_EWAR_ABILITY[e];
     if(k === 'web') out.push(Object.assign({}, base, {category: 'tackle', kind: 'web', rangeM: a.fighterAbilityStasisWebifierOptimalRange,
@@ -15714,7 +15801,7 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
           magnitude.trackingSpeedBonusPct = attrVal(dogma, EWAR_TRACKING_SPEED_BONUS_ATTR, 0);
         }
       }
-      ewarModules.push({name: dt.type.name, category: ewarInfo.category, kind, rangeM, falloffM, qty: qtyOn, ...magnitude});
+      ewarModules.push({name: dt.type.name, typeId: dt.id, category: ewarInfo.category, kind, rangeM, falloffM, qty: qtyOn, ...magnitude});   // typeId: build queue 050 (the chart badges' icons)
     }
     // Misc fit-trait flags -- see MISC_TRAIT_GROUP_INFO comment above.
     // Same per-item-array convention as ewarModules just above (one pushed
@@ -17272,7 +17359,7 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
       // (they're scored in their own separate section further down).
       // v2026.10.14.34: computed for every weapon + charge (not only the first time a charge is seen), so the
       // damage-application inputs below get this weapon's own ranges; rangeByAmmo still keeps one per charge.
-      let rangeEntry = null, rangeMr = null, rangeTracking = null;
+      let rangeEntry = null, rangeMr = null, rangeTracking = null, rangeMrIn = null;   // rangeMrIn: build queue 050
       {
         if(isMissile){
           // Missile Projection/Bombardment (see MISSILE_LAUNCHER_OPERATION_
@@ -17297,6 +17384,9 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
             attrVal(chargeDogma, SHIP_AGILITY_ATTR, 0),
             isFof ? attrVal(chargeDogma, MAX_FOF_TARGET_RANGE_ATTR, MAX_FOF_TARGET_RANGE_DEFAULT) : 0) : null;
           rangeMr = mr;
+          // build queue 050: pyfaMissileMaxRangeData's inputs, so a guidance disruptor's maxVelocity / explosionDelay can be applied
+          rangeMrIn = mr ? [velocity, flightTimeSec * 1000, attrVal(shipDogma, RADIUS_ATTR, shipType.radius || 0), attrVal(chargeDogma, SHIP_MASS_ATTR, chargeCls.type.mass || 0),
+            attrVal(chargeDogma, SHIP_AGILITY_ATTR, 0), isFof ? attrVal(chargeDogma, MAX_FOF_TARGET_RANGE_ATTR, MAX_FOF_TARGET_RANGE_DEFAULT) : 0] : null;
           if(mr){
             rangeEntry = ({
               weaponName: weaponCls.type.name, ammoName: chargeCls.type.name, kind: 'missile', weaponTypeId: weaponItem.id, ammoTypeId: chargeItem.id,
@@ -17387,6 +17477,10 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
           const gated = REQUIRED_SKILL_ATTRS.some(attrId => attrVal(chargeDogma, attrId, 0) === MISSILE_LAUNCHER_OPERATION_SKILL_ID);
           const cg = chargeCls.group ? chargeCls.group.name : '';
           aw.missileMaxRangeData = rangeMr ? [rangeMr.lowerRange, rangeMr.higherRange, rangeMr.higherChance] : null;
+          // build queue 050: what a guidance disruptor needs (pyfa Effect6423 filters on the charge requiring Missile Launcher
+          // Operation directly, and changes the charge's maxVelocity and explosionDelay, which the flight range is made from)
+          aw.mlo = gated;
+          aw.mrIn = rangeMrIn;
           aw.fof = (chargeCls.type.dogma_effects || []).some(e => e.effect_id === FOF_MISSILE_LAUNCHING_EFFECT_ID);
           aw.aoeCloudSize = attrVal(chargeDogma, MISSILE_EXPLOSION_RADIUS_ATTR, 0) * (gated ? MISSILE_APPLICATION_SKILL_RADIUS_MULT : 1) * weaponRangeMultFor('missileExplosionRadius', chargeDogma, cg);
           aw.aoeVelocity = attrVal(chargeDogma, MISSILE_EXPLOSION_VELOCITY_ATTR, 0) * (gated ? MISSILE_APPLICATION_SKILL_VELOCITY_MULT : 1) * weaponRangeMultFor('missileExplosionVelocity', chargeDogma, cg);
@@ -17404,6 +17498,8 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
           aw.falloff = rangeEntry ? rangeEntry.exactM.falloff : 0;
           aw.tracking = rangeTracking || 0;
           aw.optimalSigRadius = attrVal(weaponDogma, TURRET_OPTIMAL_SIG_RADIUS_ATTR, 1000);
+          // build queue 050: pyfa Effect6424 / 6694 disrupt modules whose item requires Gunnery directly (eos requiresSkill)
+          aw.gunnery = REQUIRED_SKILL_ATTRS.some(attrId => attrVal(weaponDogma, attrId, 0) === GUNNERY_SKILL_ID);
         }
         applicationWeapons.set(appKey, aw);
       }
@@ -18078,7 +18174,7 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
         const rangeM = (kind === 'bubble' || kind === 'sphere') ? magnitude.bubbleRadiusM : kind === 'burstJammer' ? magnitude.burstRadiusM : a.maxRange;
         const category = kind !== 'projector' ? ewarInfo.category
           : ({web: 'tackle', bubble: 'tackle', neut: 'drain'}[magnitude.projectorType] || 'disrupt');
-        ewarOut.push({name: m.dt.type.name, category, kind, rangeM, falloffM: a.falloffEffectiveness,
+        ewarOut.push({name: m.dt.type.name, typeId: m.dt.id, category, kind, rangeM, falloffM: a.falloffEffectiveness,   // typeId: build queue 050
           qty, script: chargeDt ? chargeDt.type.name : null, running: activeQty(m.dt) > 0, ...magnitude});   // running: v.54, the chart's zones
       }
     }
@@ -18093,15 +18189,17 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
     // first, as everywhere in this engine.
     const shipRadiusM = attrVal(shipDogma, RADIUS_ATTR, shipType.radius || 0);
     const projWebMods = [], projTpMods = [], projWebDrones = [], projTpDrones = [];
+    const projTdMods = [], projGdMods = [], projTdDrones = [];   // build queue 050: this fit's tracking / guidance disruptors
     appDrones = [];   // v2026.10.14.40: damage drones in space for PYFA CORE application (getDroneMult)
-    let projScramRange = null;
+    let projScramRange = null, projScramTypeId = null;   // projScramTypeId: build queue 050
     for(const m of ewarCarriers){
       const effs = m.effectIds;
       const isWeb = PROJ_WEB_EFFECTS.filter(e => effs.includes(e)), isTp = PROJ_TP_EFFECTS.filter(e => effs.includes(e));
       const aoeWeb = effs.includes(PROJ_AOE_WEB_EFFECT), aoeTp = effs.includes(PROJ_AOE_TP_EFFECT);
       const scram = PROJ_SCRAM_EFFECTS.some(e => effs.includes(e)) && m.attr(PROJ_ACTIVATION_BLOCKED_ATTR, 0);
       const hic = effs.includes(PROJ_HIC_EFFECT);
-      if(!isWeb.length && !isTp.length && !aoeWeb && !aoeTp && !scram && !hic) continue;
+      const isTd = effs.includes(PROJ_TD_EFFECT), isGd = effs.includes(PROJ_GD_EFFECT);   // build queue 050
+      if(!isWeb.length && !isTp.length && !aoeWeb && !aoeTp && !scram && !hic && !isTd && !isGd) continue;
       const copies = Math.round(activeQty(m.dt));
       const scripts = ewarScriptsByModuleId.get(m.dt.id) || [];
       const burst = (m.dt.type.name || '').toLowerCase().includes('burst projector');
@@ -18112,11 +18210,19 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
         const attrOf = (n) => (n in a) ? a[n] : (n in PROJ_MODULE_RAW_ATTRS ? m.attr(PROJ_MODULE_RAW_ATTRS[n][0], PROJ_MODULE_RAW_ATTRS[n][1]) : 0);
         const maxRange = pyfaModuleMaxRange(attrOf, burst, shipRadiusM), falloff = pyfaModuleFalloff(attrOf);
         const resAttrID = Math.trunc(m.attr(PROJ_REMOTE_RESISTANCE_ID_ATTR, 0)) || null;
-        for(const _ of isWeb) projWebMods.push({boost: a.speedFactor, optimal: maxRange || 0, falloff: falloff || 0, stackingGroup: 'default', resAttrID});
-        if(aoeWeb) projWebMods.push({boost: a.speedFactor, optimal: Math.max(0, (maxRange || 0) + a.doomsdayAOERange), falloff: falloff || 0, stackingGroup: 'default', resAttrID});
-        for(const _ of isTp) projTpMods.push({boost: a.signatureRadiusBonus, optimal: maxRange || 0, falloff: falloff || 0, stackingGroup: 'default', resAttrID});
-        if(aoeTp) projTpMods.push({boost: a.signatureRadiusBonus, optimal: Math.max(0, (maxRange || 0) + a.doomsdayAOERange), falloff: falloff || 0, stackingGroup: 'default', resAttrID});
-        if(scram || (hic && chargeEffects.includes(PROJ_HIC_SCRAM_SCRIPT_EFFECT))) projScramRange = Math.max(projScramRange || 0, maxRange || 0);
+        const tid = m.dt.id;   // build queue 050: the chart badge's icon (the farthest-reaching module of its kind)
+        for(const _ of isWeb) projWebMods.push({boost: a.speedFactor, optimal: maxRange || 0, falloff: falloff || 0, stackingGroup: 'default', resAttrID, typeId: tid});
+        if(aoeWeb) projWebMods.push({boost: a.speedFactor, optimal: Math.max(0, (maxRange || 0) + a.doomsdayAOERange), falloff: falloff || 0, stackingGroup: 'default', resAttrID, typeId: tid});
+        for(const _ of isTp) projTpMods.push({boost: a.signatureRadiusBonus, optimal: maxRange || 0, falloff: falloff || 0, stackingGroup: 'default', resAttrID, typeId: tid});
+        if(aoeTp) projTpMods.push({boost: a.signatureRadiusBonus, optimal: Math.max(0, (maxRange || 0) + a.doomsdayAOERange), falloff: falloff || 0, stackingGroup: 'default', resAttrID, typeId: tid});
+        if(scram || (hic && chargeEffects.includes(PROJ_HIC_SCRAM_SCRIPT_EFFECT))){
+          if(projScramTypeId === null || (maxRange || 0) > (projScramRange || 0)) projScramTypeId = tid;
+          projScramRange = Math.max(projScramRange || 0, maxRange || 0);
+        }
+        // build queue 050: one entry per active copy, its script's numbers (pyfa Effect6424 / 6423 read the module's own
+        // modified maxRange, falloffEffectiveness and bonus attributes)
+        if(isTd) projTdMods.push(pyfaDisruptorData(a, m.dt.id, m.dt.type.name, PROJ_TD_ATTRS));
+        if(isGd) projGdMods.push(pyfaDisruptorData(a, m.dt.id, m.dt.type.name, PROJ_GD_ATTRS));
       }
     }
     const projShip = {attr: (a, d) => attrVal(shipDogma, a, d), effectIds: shipEffectIds, reqs: shipRequiredSkills.filter(Boolean)};
@@ -18141,23 +18247,25 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
       const n = droneActiveByType.get(d.typeId) || 0;
       const effs = (d.type.dogma_effects || []).map(e => e.effect_id);
       const deals = d.perDroneDps > 0;
-      if(!n || !(effs.includes(PROJ_WEB_DRONE_EFFECT) || effs.includes(PROJ_TP_DRONE_EFFECT) || deals)) continue;
+      if(!n || !(effs.includes(PROJ_WEB_DRONE_EFFECT) || effs.includes(PROJ_TP_DRONE_EFFECT) || effs.includes(PROJ_TD_DRONE_EFFECT) || deals)) continue;
       const dogma = d.type.dogma_attributes || [];
       const group = await getGroup(d.type.group_id);
       const a = projDroneAttrs({attr: (x, dflt) => x === RADIUS_ATTR ? attrVal(dogma, x, d.type.radius || 0) : attrVal(dogma, x, dflt),
         reqs: REQUIRED_SKILL_ATTRS.map(x => attrVal(dogma, x, 0)).filter(Boolean), group: group.name});
       const entry = {optimal: pyfaDroneMaxRange(x => a[x]) || 0, falloff: pyfaDroneFalloff(x => a[x]) || 0, stackingGroup: 'default',
-        resAttrID: Math.trunc(attrVal(dogma, PROJ_REMOTE_RESISTANCE_ID_ATTR, 0)) || null, speed: a.maxVelocity, radius: a.radius};
+        resAttrID: Math.trunc(attrVal(dogma, PROJ_REMOTE_RESISTANCE_ID_ATTR, 0)) || null, speed: a.maxVelocity, radius: a.radius, typeId: d.typeId};
       for(let i = 0; i < n; i++){
         if(effs.includes(PROJ_WEB_DRONE_EFFECT)) projWebDrones.push(Object.assign({boost: a.speedFactor}, entry));
         if(effs.includes(PROJ_TP_DRONE_EFFECT)) projTpDrones.push(Object.assign({boost: a.signatureRadiusBonus}, entry));
+        if(effs.includes(PROJ_TD_DRONE_EFFECT)) projTdDrones.push(pyfaDisruptorData(a, d.typeId, d.name, PROJ_TD_ATTRS, true));   // build queue 050
       }
       if(deals) appDrones.push({typeId: d.typeId, name: d.name, qty: n, dps: d.perDroneDps * n, typeDps: addTypeDps({}, d.perDroneDps * n, d.typeWeights || {}), speed: a.maxVelocity, radius: a.radius,
         optimal: entry.optimal, falloff: entry.falloff, tracking: a.trackingSpeed, optimalSigRadius: a.optimalSigRadius});
     }
     const projWebFighters = [];   // v2026.10.14.70: filled with the fighters below (support squadrons' webs)
-    projectedSrc = {scramRange: projScramRange, webMods: projWebMods, tpMods: projTpMods, webDrones: projWebDrones, tpDrones: projTpDrones,
-      webFighters: projWebFighters, tpFighters: [], droneControlRange};
+    projectedSrc = {scramRange: projScramRange, scramTypeId: projScramTypeId, webMods: projWebMods, tpMods: projTpMods, webDrones: projWebDrones, tpDrones: projTpDrones,
+      webFighters: projWebFighters, tpFighters: [], droneControlRange,
+      tdMods: projTdMods, gdMods: projGdMods, tdDrones: projTdDrones};   // build queue 050
     // v2026.10.14.64 (D5 fighters): every damage ability of each squadron type launched, with pyfa's modified attributes
     // (PROJ_FIGHTER_* handlers: skills at V, hull, modules / rigs, implants, boosters). One entry per type and ability;
     // its DPS is that ability's (pyfa getDpsPerEffect) for all the squadrons of that type in space.
@@ -18173,7 +18281,7 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
       // v2026.10.14.70 (fighter gaps delivery 2, the owner: "Webs applied, rest shown"): a support squadron's web goes into
       // PYFA CORE projected as pyfa's getProjFighterData does (one mobile web per squadron); its web, neutralizer, ECM and
       // warp disruption go on the EWAR card with pyfa's modified numbers (fighterEwarEntries; only the web is applied).
-      if(f.activeIds.includes(PROJ_WEB_FIGHTER_EFFECT)) for(let i = 0; i < f.deployed; i++) projWebFighters.push(pyfaFighterWebData(a, f.squadronSize));
+      if(f.activeIds.includes(PROJ_WEB_FIGHTER_EFFECT)) for(let i = 0; i < f.deployed; i++) projWebFighters.push(Object.assign(pyfaFighterWebData(a, f.squadronSize), {typeId: f.typeId}));
       ewarModules.push(...fighterEwarEntries(f, a));
       for(const part of f.appParts){
         if(!part.prefix) continue;
@@ -18191,10 +18299,14 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
       if(sigDefault.length) sigPen.default = sigDefault;
       if(sigPostMulMults.length) sigPen.postMul = sigPostMulMults.slice();
       if(sigPostDivMults.length) sigPen.postDiv = sigPostDivMults.slice();
-      const tAttrs = pyfaProjTargetAttrs(projShip, ewarCarriers, implantCarriers);
+      const tAttrs = pyfaProjTargetAttrs(projShip, ewarCarriers, implantCarriers, modeRows);   // build queue 050: + the ship mode
       projectedTarget = {isFit: true, radius: shipRadiusM, disallowOffensiveModifiers: !!tAttrs[PROJ_TARGET_ATTRS.disallowOffensiveModifiers],
         resist: {[PROJ_TARGET_ATTRS.stasisWebifierResistance]: tAttrs[PROJ_TARGET_ATTRS.stasisWebifierResistance],
-                 [PROJ_TARGET_ATTRS.targetPainterResistance]: tAttrs[PROJ_TARGET_ATTRS.targetPainterResistance]},
+                 [PROJ_TARGET_ATTRS.targetPainterResistance]: tAttrs[PROJ_TARGET_ATTRS.targetPainterResistance],
+                 [PROJ_TARGET_ATTRS.weaponDisruptionResistance]: tAttrs[PROJ_TARGET_ATTRS.weaponDisruptionResistance]},   // build queue 050
+        // build queue 050: this fit's tracking / guidance disruptors, applied to the ATTACKER's weapons when this fit is the
+        // target (pyfa runs a projected fit's Effect6424 / 6423 / 6694 on the fit it is projected onto)
+        disrupt: {tdMods: projTdMods, gdMods: projGdMods, tdDrones: projTdDrones},
         // v2026.10.14.64 (D5 fighters): the ship attributes fighter abilities' ResistanceID name (anti-fighter / anti-capital
         // missile resistance), SDE default when the hull has none (pyfa getFighterAbilityMult, the target being a fit)
         fighterResist: Object.fromEntries(Object.entries(PROJ_TARGET_ATTRS).filter(([n]) => /ResistanceID$|Resistance$/.test(n) && n.startsWith('fighterAbility')).map(([, id]) => [id, tAttrs[id]])),
@@ -18518,7 +18630,9 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
       drones: appDrones || [],   // v2026.10.14.40 (D5 drones): getDroneMult inputs, one entry per drone type in space
       fighters: appFighters || [],   // v2026.10.14.64 (D5 fighters): getFighterAbilityMult inputs, one entry per squadron type and ability
       unapplied: {droneDps: appDrones ? ((x) => x > 1e-6 ? x : 0)(droneDps - appDrones.reduce((s, d) => s + d.dps, 0)) : droneDps, fighterDps: appFighters ? ((x) => x > 1e-6 ? x : 0)(fighterDps - appFighters.reduce((s, f) => s + f.dps, 0)) : fighterDps, otherFixedDps: unappliedFixedDps, cargoGuessWeapons: cargoResolvedWeaponCount},
-      projected: projectedSrc   // v2026.10.14.35 (Phase 2a): this fit's webs / painters / scram as pyfa's damage graph applies them
+      projected: projectedSrc,   // v2026.10.14.35 (Phase 2a): this fit's webs / painters / scram as pyfa's damage graph applies them
+      // build queue 050: this fit as the one being disrupted (its weaponDisruptionResistance and disallowOffensiveModifiers)
+      wdVictim: projectedTarget ? {resist: projectedTarget.resist[PROJ_TARGET_ATTRS.weaponDisruptionResistance], disallow: !!projectedTarget.disallowOffensiveModifiers} : null
     },
     projectedTarget,            // v2026.10.14.35 (Phase 2a): this fit as the target of someone else's webs / painters / scram
     confirmedAmmoBreakdown,
@@ -20236,10 +20350,12 @@ function fightKeepState(side, st, myTop, theirTop, otherReach){
 function dmgTargetObj(pt, prop, sigScale){
   const v = (prop && pt.variants.on) ? pt.variants.on : pt.variants.off;
   return {isFit: true, radius: pt.radius, disallowOffensiveModifiers: pt.disallowOffensiveModifiers, resist: pt.resist, fighterResist: pt.fighterResist || null,
+    disrupt: pt.disrupt || null,   // build queue 050: the target's tracking / guidance disruptors (on the attacker's weapons)
     maxVelocity: v.maxVelocity, signatureRadius: {base: v.signatureRadius.base * sigScale, pool: v.signatureRadius.pool, scrammed: v.signatureRadius.scrammed}};
 }
 // The default graph at one point: their tackle on you first, then their weapons at your tackled speed and painted signature.
 function dmgPoint(app, tgt, q){
+  app = pyfaDisruptedApp(app, tgt.disrupt, q.d);   // build queue 050: the target's tracking / guidance disruptors on these weapons
   const p = {distance: q.d, tgtSpeed: q.ySpeed, tgtAngle: q.yAngle, atkSpeed: q.tSpeed, atkAngle: q.tAngle, ignoreLockRange: true};
   const pt = pyfaProjectedPoint(app, tgt, p);
   return {dps: pyfaAppliedDps(app, Object.assign({}, p, {tgtSpeed: pt.tgtSpeed, tgtSigRadius: pt.tgtSigRadius, tgtRadius: tgt.radius}, pyfaFighterTargetParams(tgt))), speed: pt.tgtSpeed, sig: pt.tgtSigRadius};
@@ -20253,17 +20369,28 @@ function dmgPoint(app, tgt, q){
 // so the key under the chart keeps its rows whatever the settings (subtext rule 4). Presentation only.
 // v2026.10.14.54 + v.55 (F4): who = 'their' (the threat card: the attacker is them) or 'your' (your card in the My
 // Ship Perspective); mwdOff: the target's MWD goes off inside the scram.
+// build queue 050 (ewar-plan.md phase A and section 11): D also for their tracking and guidance disruptors (modules and TD
+// drones, to their optimal, as the web's zone); each zone carries the type id of its farthest-reaching item, whose icon the
+// badge and the key row show (the letter under it when the image doesn't load).
 function dmgRangeMarks(app, est, xMax, mwdOff, who = 'their'){
-  const pr = app.projected, far = (arr) => Math.max(0, ...arr.filter(x => x > 0));
+  const pr = app.projected;
   const W = who === 'your' ? 'Your' : 'Their', other = who === 'your' ? 'their' : 'your';
   const zones = [];
-  const add = (x, cat, label, short) => { if(x > 0) zones.push({x, cat, letter: EWAR_BADGE_LETTER[cat], label, short}); };
-  add(pr.scramRange || 0, 'tackle', mwdOff ? `${W} scram (${other} MWD off)` : `${W} scram`, 'scram');
-  add(far([...pr.webMods, ...pr.webDrones, ...(pr.webFighters || [])].map(w => w.optimal)), 'tackle', `${W} web`, 'web');   // v.70: fighter webs
-  add(far([...pr.tpMods, ...pr.tpDrones].map(w => w.optimal)), 'disrupt', `${W} target painter`, 'painter');
+  const names = new Map(((est.moduleStates || {}).items || []).map(i => [i.typeId, i.name]));
+  const add = (x, cat, label, short, icon = null, iconName = null) => {
+    if(x > 0) zones.push({x, cat, letter: EWAR_BADGE_LETTER[cat], label, short, icon, iconName: iconName || (icon ? names.get(icon) || null : null)});
+  };
+  // the farthest entry of a list by its range (key 'optimal' or 'rangeM'): [range, its typeId, its name]
+  const far = (arr, k = 'optimal') => arr.filter(e => e[k] > 0).reduce((b, e) => e[k] > b[0] ? [e[k], e.typeId || null, e.name || null] : b, [0, null, null]);
+  add(pr.scramRange || 0, 'tackle', mwdOff ? `${W} scram (${other} MWD off)` : `${W} scram`, 'scram', pr.scramTypeId || null);
+  const web = far([...pr.webMods, ...pr.webDrones, ...(pr.webFighters || [])]), tp = far([...pr.tpMods, ...pr.tpDrones]);   // v.70: fighter webs
+  add(web[0], 'tackle', `${W} web`, 'web', web[1], web[2]);
+  add(tp[0], 'disrupt', `${W} target painter`, 'painter', tp[1], tp[2]);
+  const td = far([...(pr.tdMods || []), ...(pr.tdDrones || [])]), gd = far(pr.gdMods || []);
+  add(td[0], 'disrupt', `${W} tracking disruptor`, 'TD', td[1], td[2]);
+  add(gd[0], 'disrupt', `${W} guidance disruptor`, 'GD', gd[1], gd[2]);
   const ew = (est.ewarModules || []).filter(m => m.running);
-  add(far(ew.filter(m => m.kind === 'neut').map(m => m.rangeM)), 'drain', `${W} neut`, 'neut');
-  add(far(ew.filter(m => m.kind === 'nos').map(m => m.rangeM)), 'drain', `${W} nos`, 'nos');
+  for(const k of ['neut', 'nos']){ const f = far(ew.filter(m => m.kind === k), 'rangeM'); add(f[0], 'drain', `${W} ${k}`, k, f[1], f[2]); }
   zones.sort((a, b) => a.x - b.x);
   const pins = [];
   if(app.lockRange && app.lockRange <= xMax) pins.push({x: app.lockRange, label: `${W} lock range`});
@@ -20358,7 +20485,7 @@ function dmgModelMine(tf, mf, st, axisKey, threatName){
 // both lines give the same). Round tick numbers that would touch one of those are left out, close labels are nudged
 // apart with a short leader, and the axis end (which carries the unit) is always printed.
 const DMG_CH = 6.7;   // one character of the axis numbers (11 px mono)
-function dmgChartSvg(m, W, H, hoverIdx){
+function dmgChartSvg(m, W, H, hoverIdx, hl = null){
   const L = Math.max(46, Math.ceil(14 + m.yWidest.length * DMG_CH)), Tp = 30, B = 26, R = 12, pw = W - L - R, ph = H - Tp - B;
   const xOf = (x) => L + (m.axis.hi > m.axis.lo ? (Math.min(Math.max(x, m.axis.lo), m.axis.hi) - m.axis.lo) / (m.axis.hi - m.axis.lo) : 0) * pw;
   const yOf = (v) => Tp + ph - Math.min(v, m.yMax) / m.yMax * ph;
@@ -20424,18 +20551,19 @@ function dmgChartSvg(m, W, H, hoverIdx){
     s += `<text x="${f1(cx)}" y="${rowY}" class="dmg-xlab ${l.cls}" text-anchor="middle">${escapeHtml(l.txt)}</text>`;
   }
   // range lines and their badges (zones: the EWAR card's letter; pins: numbered), 20 px apart and inside the card
+  // build queue 050 (section 11): 22 px apart, the zones' badges 20 px with the item's icon (letter underneath)
   if(dist){
-    const tops = [...m.zones.map(z => ({x: xOf(z.x), z})), ...m.pins.map(p => ({x: xOf(p.x), p}))].sort((a, b) => a.x - b.x);
+    const tops = [...m.zones.map((z, zi) => ({x: xOf(z.x), z, zi})), ...m.pins.map(p => ({x: xOf(p.x), p}))].sort((a, b) => a.x - b.x);
     let last = -Infinity;
-    for(const t of tops){ t.cx = Math.max(t.x, L + 2, last + 20); last = t.cx; }
-    let next = W - 9;
-    for(let i = tops.length - 1; i >= 0; i--){ tops[i].cx = Math.min(tops[i].cx, next); next = tops[i].cx - 20; }
+    for(const t of tops){ t.cx = Math.max(t.x, L + 2, last + DMG_BADGE_GAP); last = t.cx; }
+    let next = W - 11;
+    for(let i = tops.length - 1; i >= 0; i--){ tops[i].cx = Math.min(tops[i].cx, next); next = tops[i].cx - DMG_BADGE_GAP; }
     for(const t of tops){
       const r = t.z || t.p;
       if(r.x <= m.axis.hi) s += `<line x1="${f1(t.x)}" y1="${Tp}" x2="${f1(t.x)}" y2="${axisY}" class="dmg-marker${t.z ? ` dmg-zline ${t.z.cat}` : ''}"></line>`;
       if(Math.abs(t.cx - t.x) > 0.5) s += `<line x1="${f1(t.x)}" y1="${Tp}" x2="${f1(t.cx)}" y2="${Tp - 3}" class="dmg-lead"></line>`;
       const title = `<title>${escapeHtml(`${r.label}: ${dmgKm(r.x)}`)}</title>`;
-      s += t.z ? `<g class="dmg-badge ${t.z.cat}">${title}<rect x="${f1(t.cx - 8)}" y="${Tp - 19}" width="16" height="16" rx="3"></rect><text x="${f1(t.cx)}" y="${Tp - 7.5}" text-anchor="middle">${t.z.letter}</text></g>`
+      s += t.z ? dmgZoneBadgeHtml(t.z, t.zi, t.cx, Tp, hl, `${t.z.iconName ? t.z.iconName + ' · ' : ''}${r.label}: ${dmgKm(r.x)}`)
         : `<g class="dmg-pin">${title}<circle cx="${f1(t.cx)}" cy="${Tp - 11}" r="8"></circle><text x="${f1(t.cx)}" y="${Tp - 7.5}" text-anchor="middle">${t.p.n}</text></g>`;
     }
   }
@@ -20459,18 +20587,71 @@ function dmgChartSvg(m, W, H, hoverIdx){
   s += `<rect x="${L}" y="${Tp}" width="${pw}" height="${ph}" class="dmg-hit"></rect></svg>`;
   return {svg: s, L, pw, Tp, ph};
 }
+// build queue 050 (ewar-plan.md phase A, the owner's Q4: "a line under each chart"): what the OTHER ship's tracking and
+// guidance disruptors do to this card's weapons at the set range, which the card's numbers already count; one line (subtext
+// rule 1), the whole sentence on hover. Nothing when the other ship has none.
+const DMG_BADGE_GAP = 22;   // section 11: the chart's badges are 20 px, so they sit at least 22 px apart (was 20)
+// The words for both: app is the disrupted ship's (the card's attacker), tgt the other ship as the card takes it (its
+// disruptors in tgt.disrupt), mine: the disrupted ship is yours. null when the other ship has no disruptor.
+function dmgDisruptText(app, tgt, mine, d){
+  const src = tgt && tgt.disrupt;
+  if(!pyfaDisruptsAny(src)) return null;
+  const k = pyfaDisruptionMults(src, app.wdVictim, d);
+  const W = mine ? 'Their' : 'Your', w = mine ? 'your' : 'their';
+  const nTd = (src.tdMods || []).length + (src.tdDrones || []).length, nGd = (src.gdMods || []).length;
+  const pct = (x) => { const v = Math.round((x - 1) * 100); return v ? `${v > 0 ? '+' : '−'}${Math.abs(v)}%` : null; };
+  const cut = (pairs) => pairs.map(([v, lab]) => { const p = pct(v); return p ? `${lab} ${p}` : null; }).filter(Boolean);
+  const turret = app.weapons.some(x => x.kind === 'turret' && x.gunnery), missile = app.weapons.find(x => x.kind === 'missile' && x.mlo && x.missileMaxRangeData);
+  const tc = turret ? cut([[k.optimal, 'optimal'], [k.falloff, 'falloff'], [k.tracking, 'tracking']]) : [];
+  let mc = [];
+  if(missile){
+    const reach = (a) => a[0] * (1 - a[2]) + a[1] * a[2];   // pyfa Module.maxRange's missile blend
+    const after = pyfaDisruptedApp({weapons: [missile], wdVictim: app.wdVictim}, src, d).weapons[0];
+    const r0 = reach(missile.missileMaxRangeData);
+    mc = cut([[k.aoeCloudSize, 'explosion radius'], [k.aoeVelocity, 'explosion velocity'],
+      [after.missileMaxRangeData && r0 > 0 ? reach(after.missileMaxRangeData) / r0 : 1, 'range']]);
+  }
+  const what = [nTd ? `${nTd} tracking disruptor${nTd === 1 ? '' : 's'}` : '', nGd ? `${nGd} guidance disruptor${nGd === 1 ? '' : 's'}` : ''].filter(Boolean).join(' and ');
+  if(!tc.length && !mc.length) return {none: true, short: `${W} disruptors: no effect at ${dmgKm(d)}`,
+    core: `${W} ${what} change nothing at ${dmgKm(d)}: out of range, or no weapon of ${w} they act on (turrets need Gunnery, missiles Missile Launcher Operation)`};
+  return {none: false, short: `${W} disruptors: ${[...tc, ...mc].join(', ')}`,
+    core: `${W} ${what} at ${dmgKm(d)}: ${[tc.length ? `${w} turrets' ${tc.join(', ')}` : '', mc.length ? `${w} missiles' ${mc.join(', ')}` : ''].filter(Boolean).join('; ')}`};
+}
+function dmgDisruptLineHtml(m){
+  const t = dmgDisruptText(m.app, m.tgt, m.side === 'mine', m.st.range);
+  if(!t) return '';
+  return ctxHtml(t.short, 'dmg-ck-note', t.none ? `${t.core}.` : `${t.core}. Counted in the DPS above, as pyfa counts them with that fit projected at this range.`);
+}
 // The key under the chart (board 5b): one row per zone (its badge, a swatch of its shade, what it is, how far) and per
 // pin, then one line. The rows come from the fit alone, so they're the same on every axis and setting (rule 4).
-function dmgChartKeyHtml(m){
-  if(!m.zones.length && !m.pins.length) return '';
-  const row = (mark, label, x) => `<div class="dmg-ck-row">${mark}<span class="dmg-ck-l" title="${escapeHtml(label)}">${escapeHtml(label)}</span><span class="dmg-ck-km">${escapeHtml(dmgKm(x))}</span></div>`;
-  const rows = m.zones.map(z => row(`<span class="ewar-badge ${z.cat}">${z.letter}</span><span class="dmg-ck-sw ${z.cat}"></span>`, z.label, z.x))
+function dmgChartKeyHtml(m, hl = null){
+  // build queue 050: what the other ship's disruptors do to this card's weapons (dmgDisruptLineHtml), last
+  if(!m.zones.length && !m.pins.length) return dmgDisruptLineHtml(m);
+  const row = (mark, label, x, zi = null, tip = label) => `<div${dmgCkRowAttrHtml(zi, hl)}>${mark}<span class="dmg-ck-l" title="${escapeHtml(tip)}">${escapeHtml(label)}</span><span class="dmg-ck-km">${escapeHtml(dmgKm(x))}</span></div>`;
+  const rows = m.zones.map((z, zi) => row(`${dmgCkBadgeHtml(z)}<span class="dmg-ck-sw ${z.cat}"></span>`, z.label, z.x, zi, z.iconName ? `${z.iconName} · ${z.label}` : z.label))
     .concat(m.pins.map(p => row(`<span class="dmg-ck-pin">${p.n}</span>`, p.label, p.x)));
   const dist = m.st.axis === 'distance';
   const who = m.side === 'mine' ? 'your' : 'their';
   const note = dist ? ctxHtml(`Shaded: inside ${who} range`, 'dmg-ck-note', `Shaded: inside ${who} EWAR range (letters as on ${cardName('ewar')}: T tackle, D disrupt, C cap drain), darker where two reach.${m.pins.length ? " Numbered: range limits that aren't EWAR." : ''}`)
     : ctxHtml('Marked when charting across distance', 'dmg-ck-note', 'These ranges are marked on the chart when it is charted across distance.');
-  return `<div class="dmg-ck-rows">${rows.join('')}</div>${note}`;
+  return `<div class="dmg-ck-rows">${rows.join('')}</div>${note}${dmgDisruptLineHtml(m)}`;
+}
+// build queue 050 (ewar-plan.md section 11): a key row's attributes (its zone, lit while its badge is pointed at) ...
+function dmgCkRowAttrHtml(zi, hl){
+  if(zi === null) return ' class="dmg-ck-row"';
+  if(hl === zi) return ` class="dmg-ck-row hl" data-dmg-z="${Number(zi)}"`;
+  return ` class="dmg-ck-row" data-dmg-z="${Number(zi)}"`;
+}
+// ... its badge: the zone's item icon over the letter, which shows when the image doesn't load ...
+function dmgCkBadgeHtml(z){
+  if(z.icon) return `<span class="ewar-badge ic ${escapeHtml(z.cat)}">${escapeHtml(z.letter)}<img src="https://images.evetech.net/types/${Number(z.icon)}/icon?size=32" alt="" loading="lazy" data-imgfail="hide"></span>`;
+  return `<span class="ewar-badge ${escapeHtml(z.cat)}">${escapeHtml(z.letter)}</span>`;
+}
+// ... and the same zone's badge above the chart (20 px with an icon, 16 px with its letter alone), lit with its key row.
+function dmgZoneBadgeHtml(z, zi, cx, Tp, hl, tip){
+  const g = `dmg-badge${z.icon ? ' ic' : ''} ${z.cat}${hl === zi ? ' hl' : ''}`;
+  if(z.icon) return `<g class="${escapeHtml(g)}" data-dmg-z="${Number(zi)}"><title>${escapeHtml(tip)}</title><rect x="${Number((cx - 10).toFixed(1))}" y="${Number(Tp - 21)}" width="20" height="20" rx="3"></rect><text x="${Number(cx.toFixed(1))}" y="${Number(Tp - 7.5)}" text-anchor="middle">${escapeHtml(z.letter)}</text><image href="https://images.evetech.net/types/${Number(z.icon)}/icon?size=32" x="${Number((cx - 9).toFixed(1))}" y="${Number(Tp - 20)}" width="18" height="18"></image></g>`;
+  return `<g class="${escapeHtml(g)}" data-dmg-z="${Number(zi)}"><title>${escapeHtml(tip)}</title><rect x="${Number((cx - 8).toFixed(1))}" y="${Number(Tp - 19)}" width="16" height="16" rx="3"></rect><text x="${Number(cx.toFixed(1))}" y="${Number(Tp - 7.5)}" text-anchor="middle">${escapeHtml(z.letter)}</text></g>`;
 }
 function dmgTipHtml(m, i){
   const x = m.xs[i], p2 = m.at(x);
@@ -20723,11 +20904,11 @@ function dmgDraw(card){
   out('legend').innerHTML = `${m.line1 ? '<span class="dmg-key"><svg width="22" height="8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" class="dmg-line dmg-still"></line></svg>You still</span>' : ''}<span class="dmg-key"><svg width="22" height="8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" class="dmg-line dmg-move"></line></svg><span class="dmg-key-t" title="${escapeHtml(m.line2Label)}">${escapeHtml(m.line2Label)}</span></span>`;
   const box = out('chart');
   const W = Math.max(280, Math.floor(box.clientWidth || card.clientWidth || 700)), H = W < 480 ? 200 : 280;
-  const g = dmgChartSvg(m, W, H, c.hover);
+  const g = dmgChartSvg(m, W, H, c.hover, c.hl === undefined ? null : c.hl);
   box.innerHTML = g.svg;
   c.geom = {W, H, L: g.L, pw: g.pw};
   const ckey = out('ckey');
-  if(ckey) ckey.innerHTML = dmgChartKeyHtml(m);
+  if(ckey) ckey.innerHTML = dmgChartKeyHtml(m, c.hl === undefined ? null : c.hl);
   out('table').innerHTML = dmgTableHtml(m);
   const set = (k, v) => { const el = out(k); if(el) el.textContent = v; };
   set('range', dmgKm(st.range));
@@ -20813,16 +20994,25 @@ function dmgWireControls(card){
     if(host) dmgFill(host, f);
   });
   const chart = card.querySelector('[data-out="chart"]');
+  // build queue 050 (section 11): a zone's badge and its key row light up together, from either one (hover, or a tap)
+  const zoneOf = (e) => { const z = e.target && e.target.closest ? e.target.closest('[data-dmg-z]') : null; return z ? Number(z.dataset.dmgZ) : null; };
   const hoverAt = (e) => {
     const g = c.geom; if(!g) return;
     const r = chart.getBoundingClientRect();
     const i = Math.round((e.clientX - r.left - g.L) / g.pw * DMG_SAMPLES);
-    const idx = Math.max(0, Math.min(DMG_SAMPLES, i));
-    if(idx !== c.hover){ c.hover = idx; dmgDraw(card); }
+    const idx = Math.max(0, Math.min(DMG_SAMPLES, i)), hl = zoneOf(e);
+    if(idx !== c.hover || hl !== (c.hl ?? null)){ c.hover = idx; c.hl = hl; dmgDraw(card); }
   };
   chart.addEventListener('pointermove', hoverAt);
   chart.addEventListener('pointerdown', hoverAt);
-  chart.addEventListener('pointerleave', (e) => { if(e.pointerType === 'mouse'){ c.hover = null; dmgDraw(card); } });
+  chart.addEventListener('pointerleave', (e) => { if(e.pointerType === 'mouse'){ c.hover = null; c.hl = null; dmgDraw(card); } });
+  const ckey = card.querySelector('[data-out="ckey"]');
+  if(ckey){
+    const keyAt = (e) => { const hl = zoneOf(e); if(hl !== (c.hl ?? null)){ c.hl = hl; dmgDraw(card); } };
+    ckey.addEventListener('pointerover', keyAt);
+    ckey.addEventListener('pointerdown', keyAt);
+    ckey.addEventListener('pointerleave', (e) => { if(e.pointerType === 'mouse' && c.hl !== null && c.hl !== undefined){ c.hl = null; dmgDraw(card); } });
+  }
   if(window.ResizeObserver){
     let w = chart.clientWidth;
     const ro = new ResizeObserver(() => { if(!card.isConnected){ ro.disconnect(); return; } if(Math.abs(chart.clientWidth - w) > 4){ w = chart.clientWidth; dmgDraw(card); } });
@@ -20867,6 +21057,7 @@ function dmgRefreshAll(){
 // (2.5 x HP / recharge time, as the Break Point uses), with the reps stopping when the capacitor runs out (pyfa's
 // capacitor simulation, timeToEmptyExactSec); "holds" when the incoming damage never gets through.
 function dmgTypedPoint(app, tgt, q){
+  app = pyfaDisruptedApp(app, tgt.disrupt, q.d);   // build queue 050
   const p = {distance: q.d, tgtSpeed: q.ySpeed, tgtAngle: q.yAngle, atkSpeed: q.tSpeed, atkAngle: q.tAngle, ignoreLockRange: true};
   const pt = pyfaProjectedPoint(app, tgt, p);
   const p2 = Object.assign({}, p, {tgtSpeed: pt.tgtSpeed, tgtSigRadius: pt.tgtSigRadius, tgtRadius: tgt.radius}, pyfaFighterTargetParams(tgt));
@@ -21137,6 +21328,11 @@ function mysMatchup(tf, mf, st){
   const inT = inactiveWeaponsText(tEst, 'their'), inM = inactiveWeaponsText(mEst, 'your');
   if(inT) why.you.text.push(inT.full);
   if(inM) why.them.text.push(inM.full);
+  // build queue 050 (ewar-plan.md phase A): the disruptors' cuts at this range, first in the time they change (their
+  // disruptors cut your DPS: "they last"; yours cut theirs: "you last")
+  const dT = dmgDisruptText(mApp, them, true, st.range), dM = dmgDisruptText(tApp, me, false, st.range);
+  if(dT && !dT.none) why.them.text.unshift(`${dT.core}, counted in your damage.`);
+  if(dM && !dM.none) why.you.text.unshift(`${dM.core}, counted in their damage.`);
   return {theirDps: inc.dps, yourDps: out.dps, youLast, theyLast, myTop, theirTop, edge, keep: F.keep, assumed: {their: asT, your: asM}, inactive: {their: inT, your: inM},
     trace: {you: youTr, them: themTr}, why,
     cells: [

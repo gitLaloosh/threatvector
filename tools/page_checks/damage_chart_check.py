@@ -29,7 +29,8 @@ against pyfa by tools/independent_checks/check_damage_chart.py; this checks the 
   * v2026.10.14.54 chart markers (F3, boards 5b + 5c), at 1440 and 375 px, with a fit carrying every kind (scram,
     web, painter, neut, nos, drones): the zones worked out again here from the fit's own projected inputs and EWAR
     modules (T scram / furthest web, D furthest painter, C furthest running neut / nos), each shaded from the plot's
-    left edge to its range; their badges carry the EWAR card's letters, 20 px apart and inside the chart; the pins
+    left edge to its range; their badges carry the EWAR card's letters (under the item's icon since build queue 050, titled with
+    the item's name first), 22 px apart and inside the chart; the pins
     numbered by distance; the key has a row per zone and pin with its km and keeps them on every axis; the x axis
     prints the tackle distances (tackle colour) and your range (white), the y axis the DPS at your range in each
     line's colour (one white number when equal); no axis numbers touch; the plot frame and the chart's height stay
@@ -395,12 +396,12 @@ def markers_at(b, W):
     check(len(exp) == 5, f'{W} Arbitrator: the fit carries scram, web, painter, neut and nos ({[(round(e[0]), e[1]) for e in exp]})')
     check([z['cls'].split()[-1] for z in s['zones']] == [e[1] for e in exp] and all(abs(z['x'] - L) < 0.6 and abs(z['x'] + z['w'] - xOf(e[0])) < 0.6 for z, e in zip(s['zones'], exp)),
           f'{W} Arbitrator: each zone shaded from the plot\'s left edge to its range, in its category ({[(round(z["x"]), round(z["w"])) for z in s["zones"]]})')
-    check([b_['letter'] for b_ in s['badges']] == [e[2] for e in exp] and all(b_['title'].startswith(e[3]) and b_['title'].endswith(km_text(e[0])) for b_, e in zip(s['badges'], exp)),
+    check([b_['letter'] for b_ in s['badges']] == [e[2] for e in exp] and all((b_['title'].startswith(e[3]) or ' · ' + e[3] in b_['title']) and b_['title'].endswith(km_text(e[0])) for b_, e in zip(s['badges'], exp)),   # build queue 050: the item's name first
           f'{W} Arbitrator: badges carry the EWAR card\'s letters in distance order, titled with what and how far ({[b_["title"] for b_ in s["badges"]]})')
     tops = s['badges'] + s['pins']
     cx = sorted(t['x'] + t['w'] / 2 for t in tops)
-    check(all(cx[i + 1] - cx[i] >= 19.5 for i in range(len(cx) - 1)) and min(t['x'] for t in tops) >= 0 and max(t['x'] + t['w'] for t in tops) <= s['W'] and all(t['y'] + t['h'] <= Tp for t in tops),
-          f'{W} Arbitrator: badges and pins above the plot, 20 px apart and inside the chart ({[round(c) for c in cx]})')
+    check(all(cx[i + 1] - cx[i] >= 21.5 for i in range(len(cx) - 1)) and min(t['x'] for t in tops) >= 0 and max(t['x'] + t['w'] for t in tops) <= s['W'] and all(t['y'] + t['h'] <= Tp for t in tops),
+          f'{W} Arbitrator: badges and pins above the plot, 22 px apart (build queue 050) and inside the chart ({[round(c) for c in cx]})')
     pins_exp = sorted([(x, l) for x, l, ok in ((s['inputs']['lock'], 'Their lock range', s['inputs']['lock'] and s['inputs']['lock'] <= s['hi']),
                                                 (s['inputs']['dcr'], 'Their drone range', s['inputs']['drones'] and s['inputs']['dcr'] and s['inputs']['dcr'] <= s['hi'])) if ok])
     check([p_['n'] for p_ in s['pins']] == [str(i + 1) for i in range(len(pins_exp))] and [p_['title'] for p_ in s['pins']] == [f'{l}: {km_text(x)}' for x, l in pins_exp] and len(pins_exp) >= 1,
