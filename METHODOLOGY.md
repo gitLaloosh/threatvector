@@ -427,6 +427,8 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   fade past Near You's range on the map, and Paths to you. The map can't know a bridge's access list or fuel, so a counted bridge is
   one you said you have. Sov upgrades' Jump bridge kind is every system in this list, with the switch on or off. The bridges are
   drawn at 70% of the game's green since build queue 057 (the owner: "the bridges really drown out some of the other content").
+  The bridge button in the map's zoom column (build queue 059; shown only while the switch is on, on by default) hides the green
+  curves and their hover; the counts still use your bridges and a route's bridge step is still drawn. Kept in `dscanIntel` (`jbHide`).
 - **Jump bridges by Ansiblex zone** (build queue 057): CCP's rules since 2026-09-22 (patch notes 24.01): a jump through an Ansiblex
   costs capacitor by the light-years from where it **arrives** to the owning alliance's capital: zone 1 up to 5 LY free, zone 2 to
   10 LY ×2, zone 3 to 15 ×6, zone 4 to 20 ×9, zone 5 past 20 ×15; only pilots of the alliance holding sov over the starting system
@@ -575,3 +577,18 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   removed until it's unlocked; its connections can still be deleted. Kept in this browser only (tvWhMarks), beside the chain.
 - **The System panel** (v2026.11.17.1, build queue 056): behind its button at the map's top left; a click on a system opens it. Open or shut as
   you left it, in this browser only (tvWhPanels).
+- **Signatures** (v2026.11.17.2, build queue 059): the Probe Scanner's list pasted into the System panel for the system in focus, one row per
+  line split by tabs (ID, scan group, group, name, signal, distance; distance isn't kept), every row with an ID kept (signatures, anomalies,
+  structures), at most 150 a system. A paste adds new IDs and updates kept ones; an empty group never replaces a known one (the game shows the
+  group only from a high enough signal). With Lazy update on, a paste is the whole list: IDs missing from it are removed, always after you
+  confirm. Colours follow the game's signal bands (under 25% red, under 75% orange, under 100% yellow, 100% green). Undo takes back the last
+  paste (memory only). Kept in this browser only (tvWhSigs; the panel's fold and the Connections list's sort in tvWhSecs).
+- **Each side's signature ID** (059): a hole has one ID in each system, kept per end (tvWhEnds); life, mass, size and Drifter belong to the
+  hole (tvWhChain). An ID set before 059 can't say which side it was on: it shows on both as "side not known" until a side gets its own. + Add's
+  ID goes on the end in the system it's linked to. A scan never sets a connection's ID; it only marks an end whose ID wasn't in a lazy scan.
+- **Share** (059): your chain as text (`{tv: 'wormholes', v: 1, sys: [], chain: {...}}`) or a link (`#wh=`, the same text deflated, at most
+  1,800 characters). Never in it: positions, locks, where you are; notes and who's there only if ticked. An import is checked (known systems
+  whose names match, known values only, limits counted) and shown first; adding it takes a press: per field the newer edit wins, status and
+  tag only fill empty ones, signatures per ID the later scan, and nothing of yours is removed or moved.
+- **Remove all** (059): every system not locked, with its connections, marks, signatures and end IDs, after a question; Select all puts every
+  system in the group.
