@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-19 — J-space statics known the moment you enter a system</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>J-space statics known the moment you enter a system</h1>
+<p><span class="tag">Page</span> 2026-11-19 &middot; <code>v2026.11.19.1</code> &middot; build queue 061 &middot; plan <code>roadmap/wh-statics-plan.md</code>, mockup <code>Claude outputs/wh_statics_mockup.html</code> (scripts in <code>roadmap/wh-statics-mockup/</code>)</p>
+<h2>Why</h2>
+<ul>
+<li>The owner: "i need you to find a way for us to know what a j-space systems's statics are when the user enters one. i know what wanderer does it." CCP's data doesn't list a system's statics; until now you typed them.</li>
+<li>His picks (Q1-Q8): Wanderer's file as the source; shown "similarly to the way they are in wanderer" in this page's own style; checked with the game data twice a day; the map box in class order, mass and lifetime on hover, statics first when typing a type; a small mark, yours replace; the info text cap 340; CCP's numbers on hover.</li>
+</ul>
+<h2>What changed</h2>
+<ul>
+<li><b>The table</b> (<code>INTEL_WH_STC</code>, its own block after the wormhole table): every one of the 2,604 wormhole systems' statics from Wanderer's community list (wanderer-industries/wanderer <code>priv/repo/data/wormholeSystems.json</code> at 4d4a035, MIT), written only by <code>tools/gen_wh_statics.py</code>, which checks every record first (the same systems as <code>INTEL_WH</code>, matched by ID; 1-3 codes each, all in <code>IT_WH_TYPE</code>; no K162) and keeps Wanderer's licence. It names the file, the commit and its sha256, and the system list it follows (<code>n</code>, and <code>of</code>, FNV-1a of <code>INTEL_WH.sys</code>): <code>whTable</code> uses it only while both match. 853 bytes gzipped.</li>
+<li><b>Yours, else the list's</b> (<code>whStcOf</code>, the one place that decides): the System panel's chips and the map box show what you typed, else the list's. The list's are never saved, shared or exported (tvWhChain unchanged). Under the chips the page's dim note, as Class has: "from the community list (Wanderer) · type your own to replace them" or "typed by you" (<code>whStcNoteHtml</code>). The field stays empty for the list's; typing replaces them, clearing brings them back, also while typing (<code>whStcPaint</code>).</li>
+<li><b>Class order</b> (<code>whStcSort</code>, <code>WH_STC_ORD</code>): chips and the map box by where they lead, in CCP's class-number order (C1-C6, highsec, lowsec, nullsec, Thera, shattered, Drifter, Pochven), typed statics too (stored as typed).</li>
+<li><b>The hover</b> (<code>whStcLifeTxt</code>): a chip's title adds CCP's numbers for the type, "up to 16 h · 2,000,000 t in all · 375,000 t per jump" (and "regains N t" where CCP has one), from <code>IT_WH_LIFE</code>, written by <code>tools/gen_wh_table.py</code> (attributes 1382-1385).</li>
+<li><b>Suggestions</b> (<code>whTyOptsHtml</code>, the browser's own list): the connection editor's Type field offers the system's statics first, then K162, then every other code; + Add's type field the "Linked to" system's, following that choice (<code>whAddTyList</code>). Typing anything is still allowed.</li>
+<li><b>Updates</b>: a new job in <code>.github/workflows/jump-table.yml</code>, <code>wh-statics</code>, twice a day: Wanderer's newest commit's file through <code>gen_wh_statics.py</code>; a pull request on <code>wh-statics/&lt;commit&gt;</code> when the statics changed (or the page's system list moved under them), listing each changed system. It also writes the field names of CCP's J-space system records into its run's summary (a report only), to settle whether CCP's own data has statics.</li>
+<li><b>Credit</b>: NOTICE.md's Credits name Wanderer (MIT). Info text: <code>CARD_INFO.whmap</code> "[Focus and adding]" says statics come from a community list until you type your own and that the hover has lifetime and mass (332 words; <code>check_subtext.py</code>'s whmap cap 320 → 340, the owner's Q7). METHODOLOGY.md's Wormholes section, CLAUDE.md, tools/README.md.</li>
+<li><b>Storage</b>: nothing new and no stored form changed. An older page reads tvWhChain as before (typed statics only); this page reads an older one's data unchanged.</li>
+</ul>
+<h2>Where the build differs from the plan</h2>
+<ul>
+<li>The statics are their own block, <code>INTEL_WH_STC</code>, not a field of <code>INTEL_WH</code> (the owner at the build review, "go with your recommendations"): <code>tools/jump_table_update.py</code> compares the whole of <code>INTEL_WH</code> with its rebuild, so a field in it would have made every scheduled run open a pull request that drops it; and a field carried over would pair systems with another system's statics if CCP's list of wormhole systems changed. <code>jump_table_update.py</code> is unchanged.</li>
+<li>The workflow job runs beside the jump-table and game-data jobs, not after them (order doesn't matter: each opens its own pull request). It reports CCP's J-space fields in its summary (the review's R2), since neither CCP's site nor ESI could be reached from the build session.</li>
+<li>The chain's lint (<code>gen_wh_statics.py --check</code>) checks the block on its own and compares it with Wanderer's pinned file only where GitHub's raw files can be reached; the Action compares it twice a day.</li>
+<li>+ Add's suggestion list follows "Linked to" (the plan named only "when Linked to names a J-space system"): a k-space or "nothing" link offers K162 first.</li>
+</ul>
+<h2>Checks</h2>
+<ul>
+<li><code>tools/page_checks/wormhole_statics_check.py</code> (new): the list's statics and note with nothing typed (and nothing saved), the map box; typing replaces and saves, clearing brings the list's back (also while typing), a reload; class order in the chips and the map box (a system whose list has them the other way round); the hover's numbers (C247: 16 h, 2,000,000 t, 375,000 t) and none on K162; both suggestion lists; Share carries typed statics only; statics made for another system list unused; a phone at 390 px. 12 mutants.</li>
+<li><code>tools/gen_wh_statics.py --check</code> and <code>--self-test</code> (fast lints): the block decodes, follows <code>INTEL_WH</code>, names its source; the self-test refuses a dropped or unknown system, an unknown code, K162, none or four statics, a static twice, markup, a string, an ID as text, a system twice, not a list, not JSON, another system list, a block with a system missing, a block without a full commit id; a renamed system still matches by ID.</li>
+<li><code>tools/gen_wh_table.py</code> (a step of the pyfa chain) now says both tables are up to date.</li>
+</ul>
+</body>
+</html>

@@ -4,6 +4,7 @@
 # request with the new table for the owner to merge; it never commits to the main branch itself.
 # Needs, once: Settings > Actions > General > Workflow permissions: "Read and write permissions" and "Allow GitHub
 # Actions to create and approve pull requests". Run it by hand from the Actions tab ("Run workflow").
+# The same schedule runs the game-data report (job game-data) and the wormhole statics check (job wh-statics, build queue 061).
 name: Jump table
 on:
   schedule:
@@ -82,3 +83,47 @@ jobs:
           git commit -m "Game data: items changed in EVE build $BUILD"
           git push origin "$branch"
           gh pr create --base "$BASE" --head "$branch" --title "Game data: items changed in EVE build $BUILD" --body-file "$RUNNER_TEMP/game-data-pr.md"
+  # build queue 061 (Project doc roadmap/wh-statics-plan.md; tools/gen_wh_statics.py): Wanderer's community list of wormhole statics
+  # (wanderer-industries/wanderer, MIT) against the page's INTEL_WH_STC. A pull request when the statics changed, or when the page's
+  # wormhole system list moved under them; a change in Wanderer's other fields doesn't count. The file is outside data: the tool checks
+  # every record and takes only type codes the page already knows. Never commits to the main branch.
+  wh-statics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wanderer's newest commit and its statics file
+        id: src
+        run: |
+          sha=$(git ls-remote https://github.com/wanderer-industries/wanderer HEAD | cut -f1)
+          if ! printf '%s' "$sha" | grep -Eqx '[0-9a-f]{40}'; then echo "No full commit id from Wanderer's repository: '$sha'"; exit 1; fi
+          curl -sSfL "https://raw.githubusercontent.com/wanderer-industries/wanderer/$sha/priv/repo/data/wormholeSystems.json" -o "$RUNNER_TEMP/wormholeSystems.json"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Compare with the page's statics
+        id: check
+        env:
+          SHA: ${{ steps.src.outputs.sha }}
+        run: python3 -I tools/gen_wh_statics.py index.html --src "$RUNNER_TEMP/wormholeSystems.json" --commit "$SHA" --write --body "$RUNNER_TEMP/wh-statics-pr.md"
+      - name: Open a pull request (only when the statics changed)
+        if: steps.check.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMIT: ${{ steps.check.outputs.commit }}
+          BASE: ${{ github.event.repository.default_branch }}
+        run: |
+          branch="wh-statics/$COMMIT"
+          if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            echo "A pull request branch for Wanderer $COMMIT already exists ($branch); nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add index.html
+          git commit -m "Wormhole statics: Wanderer's list changed ($COMMIT)"
+          git push origin "$branch"
+          gh pr create --base "$BASE" --head "$branch" --title "Wormhole statics: Wanderer's list changed ($COMMIT)" --body-file "$RUNNER_TEMP/wh-statics-pr.md"
+      # the 061 review (R2): whether CCP's own data gives a J-space system's statics; written into the run's summary, never fails the job
+      - name: Statics in CCP's own data (a report only)
+        continue-on-error: true
+        run: python3 -I tools/gen_wh_statics.py --ccp-fields
