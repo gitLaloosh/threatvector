@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-FjonAfA0ntI+00vxzsCkx2Dcr+etDIkMIfCToKQpQwY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-RL0M1GUNhu/tW0wPB1HgEyzRGRvO6D7JTAKddCCjzzI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -34037,11 +34037,12 @@ function whLinksOf(id){ return whState().st.links.filter(l => l.a === id || l.b 
 // ---- build queue 059 (part 3; Project doc roadmap/wormholes-part3-plan.md, P1-P22): signatures, per-end IDs, the System panel's sections. Each under
 // its own key, never in tvWhChain (whRead rebuilds systems and links from the fields it knows, so a 056 page or a revert would drop new fields there);
 // an older page never reads these keys, and this page drops what no longer has a system or a link on the map.
-//   tvWhSigs {v: 1, lazy, sort: {k, d}, sys: {id: {t, rows: [{id, sg, grp, nm, pct, f, t}]}}}: every row the Probe Scanner lists (P4, P8)
+//   tvWhSigs {v: 1, lazy, sort: {k, d}, sv, sys: {id: {t, rows: [{id, sg, grp, nm, pct, f, t, o}]}}}: every row the Probe Scanner lists (P4, P8);
+//     062 (S2, S3): `o` a row's place in the latest paste that listed it, `sv: 2` once the Type sort was given to everyone (an older page drops both)
 //   tvWhEnds {v: 1, links: {"<a>-<b>": {"<sysId>": {sig, type, gone?}}}}: each end's own signature ID (P9; the BUG: one ID per connection)
 //   tvWhSecs {v: 1, sigs, cn: {k, d}}: the Signatures section folded or open, the Connections list's sort (P1, P22)
 const WH_SG_KEY = 'tvWhSigs', WH_END_KEY = 'tvWhEnds', WH_SEC_KEY = 'tvWhSecs', WH_SG_ROWS = 150, WH_SIG_RX = /^[A-Z]{3}-\d{3}$/, WH_SIGP_RX = /^[A-Z]{3}(-\d{0,3})?$/;
-const WH_SG_SORTS = ['id', 'nm', 'pct', 'f'], WH_CN_SORTS = ['id', 'to', 'lf', 'f'];
+const WH_SG_SORTS = ['id', 'nm', 'pct', 'f', 'ty'], WH_CN_SORTS = ['id', 'to', 'lf', 'f'];
 function whJson(k){ try{ const o = typeof localStorage === 'undefined' ? null : JSON.parse(localStorage.getItem(k) || 'null'); return o && typeof o === 'object' && o.v === 1 ? o : null; }catch(e){ return null; } }
 function whPut(k, o){ try{ localStorage.setItem(k, JSON.stringify(o)); }catch(e){ } }
 function whTxt(x, n){ return typeof x === 'string' ? x.replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, n) : ''; }
@@ -34050,10 +34051,12 @@ function whSortRead(o, keys){ return o && keys.includes(o.k) && (o.d === 1 || o.
 function whSgRowRead(r){
   if(!r || typeof r !== 'object' || !WH_SIG_RX.test(r.id || '')) return null;
   const pct = Number(r.pct), t = whTm(r.t);
-  return {id: r.id, sg: whTxt(r.sg, 24), grp: whTxt(r.grp, 24), nm: whTxt(r.nm, 48), pct: Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) : 0, f: whTm(r.f) || t || Date.now(), t: t || Date.now()};
+  const o = {id: r.id, sg: whTxt(r.sg, 24), grp: whTxt(r.grp, 24), nm: whTxt(r.nm, 48), pct: Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) : 0, f: whTm(r.f) || t || Date.now(), t: t || Date.now()};
+  if(Number.isInteger(r.o) && r.o >= 0 && r.o < 100000) o.o = r.o;   // 062 S2: the paste's order (a row without it goes after those with it)
+  return o;
 }
 function whSgRead(sys){
-  const o = whJson(WH_SG_KEY) || {}, out = {v: 1, lazy: o.lazy === true, sort: whSortRead(o.sort, WH_SG_SORTS), sys: {}};
+  const o = whJson(WH_SG_KEY) || {}, out = {v: 1, lazy: o.lazy === true, sort: o.sv === 2 && o.sort && WH_SG_SORTS.includes(o.sort.k) ? whSortRead(o.sort, WH_SG_SORTS) : {k: 'ty', d: 1}, sys: {}};   // 062 S3 (Q6 "Switch everyone once"): Type, then the sort you pick
   for(const [k, s] of Object.entries(o.sys && typeof o.sys === 'object' ? o.sys : {})){
     if(!sys[k] || !s || !Array.isArray(s.rows)) continue;   // a system no longer on the map: its signatures go too (as whMkRead)
     const seen = new Set(), rows = s.rows.map(whSgRowRead).filter(r => r && !seen.has(r.id) && seen.add(r.id)).slice(0, WH_SG_ROWS);
@@ -34061,7 +34064,7 @@ function whSgRead(sys){
   }
   return out;
 }
-function whSgSave(){ const S = whS, sys = {}; for(const [k, s] of Object.entries(S.sg.sys)) if(S.st.sys[k] && s.rows.length) sys[k] = s; whPut(WH_SG_KEY, {v: 1, lazy: S.sg.lazy, sort: S.sg.sort, sys}); }
+function whSgSave(){ const S = whS, sys = {}; for(const [k, s] of Object.entries(S.sg.sys)) if(S.st.sys[k] && s.rows.length) sys[k] = s; whPut(WH_SG_KEY, {v: 1, lazy: S.sg.lazy, sort: S.sg.sort, sv: 2, sys}); }
 function whEndRead(st){
   const o = whJson(WH_END_KEY) || {}, out = {}, keys = new Set(st.links.map(l => whLinkKey(l.a, l.b)));
   for(const [k, e] of Object.entries(o.links && typeof o.links === 'object' ? o.links : {})){
@@ -34570,7 +34573,14 @@ function whLSaveHtml(c){ return `<span class="wh-leb"><button type="button" data
 function whSgGrpOptHtml(v){ return `<option value=""${escapeHtml(v ? '' : ' selected')}>(not known)</option>` + WH_SG_GROUPS.map(g => `<option${escapeHtml(g === v ? ' selected' : '')}>${escapeHtml(g)}</option>`).join(''); }
 // ---- P1-P7: the Signatures section: the paste box, Lazy update, the result line with Undo, the list
 const WH_SG_SORT = {id: (a, b) => a.id.localeCompare(b.id), nm: (a, b) => ((a.grp || '~') + (a.nm || '')).localeCompare((b.grp || '~') + (b.nm || '')) || a.id.localeCompare(b.id),
-  pct: (a, b) => a.pct - b.pct || a.id.localeCompare(b.id), f: (a, b) => b.f - a.f || a.id.localeCompare(b.id)};   // each key's natural order is d 1 (A to Z, low to high, newest first)
+  pct: (a, b) => a.pct - b.pct || a.id.localeCompare(b.id), f: (a, b) => b.f - a.f || a.id.localeCompare(b.id),
+  ty: (a, b) => whSgTyRank(a) - whSgTyRank(b) || (whSgTyRank(a) === WH_SG_TY_ORDER.length + 1 ? a.grp.localeCompare(b.grp) : 0) || whSgPos(a) - whSgPos(b) || a.id.localeCompare(b.id)};   // each key's natural order is d 1 (A to Z, low to high, newest first)
+// 062 S1 (the BUG; the owner: "unscanned items at the top, then scanned in the order provided"; the game's group order, Q5: "unscanned, wormhole, gas site,
+// data site, relic site, asteroid belt, combat site, then the rest for now"): no group known first, then this order, then any other group A to Z, then
+// the latest paste's order. "Asteroid belt" read as the Probe Scanner's Ore Site group (UNVERIFIED: the owner's next look with an ore site in the list).
+const WH_SG_TY_ORDER = ['Wormhole', 'Gas Site', 'Data Site', 'Relic Site', 'Ore Site', 'Combat Site'];
+function whSgTyRank(x){ if(!x.grp) return 0; const i = WH_SG_TY_ORDER.indexOf(x.grp); return i < 0 ? WH_SG_TY_ORDER.length + 1 : i + 1; }
+function whSgPos(x){ return Number.isFinite(x.o) ? x.o : 1e6; }
 function whSigSecHtml(n){
   const S = whS, s = S.sg.sys[n], rows = s ? s.rows : [], open = S.secs.sigs, note = rows.length ? `${rows.length} · scanned ${whAge(s.t)} ago` : 'none kept';
   const sw = {k: 'lazy', label: 'Lazy update', on: S.sg.lazy, title: 'On: a paste is the whole list, and signatures missing from it go (it asks first). Off: a paste only adds and updates.'};
@@ -34600,7 +34610,7 @@ function whSgListHtml(n){
       tip: [x.sg, x.grp || 'Type not known yet', x.nm, `signal ${Math.round(x.pct)}% (${WH_BAND_TXT[b]})`, `first seen ${whAge(x.f)} ago`, `last in a scan ${whAge(x.t)} ago`, old ? 'not in your last scan' : '', intel ? 'in Intel’s reports too' : ''].filter(Boolean).join(' · ')};
   });
   return whListHtml({k: 'sg', n, label: 'signatures', aria: `Signatures in ${whName(n)}`, sel: P.sel.sg, sort: so, rows,
-    cols: [['id', 'ID', ''], ['nm', 'Name', ''], ['pct', 'Signal', 'r'], ['f', 'Age', 'r ag']], acts: [['copy', 'Copy selected (the game’s own format)'], ['edit', 'Edit selected'], ['del', 'Delete selected']]});
+    cols: [['id', 'ID', ''], ['ty', 'Type', ''], ['pct', 'Signal', 'r'], ['f', 'Age', 'r ag']], acts: [['copy', 'Copy selected (the game’s own format)'], ['edit', 'Edit selected'], ['del', 'Delete selected']]});
 }
 function whSgCellsHtml(c, r){
   const x = r.x;
@@ -34752,6 +34762,8 @@ function whScanApply(n, text, force){
   }
   for(const id of removed){ by.delete(id); const l = whLinkBySig(n, id); if(l) whEndGone(l, n, now); }   // a connection's ID gone from the scan: the row goes, the connection stays, its end marked
   for(const id of seen){ const l = whLinkBySig(n, id); if(l) whEndGone(l, n, 0); }
+  const at = new Map(r.rows.map((x, i) => [x.id, i])), oldPos = (x) => at.has(x.id) ? at.get(x.id) : 1e6 + whSgPos(x);   // 062 S2 (Q7 "Latest paste"): this paste's order, the rest after in their old order
+  [...by.values()].sort((a, b) => oldPos(a) - oldPos(b) || a.id.localeCompare(b.id)).forEach((x, i) => { x.o = i; });
   const rows = [...by.values()].sort((a, b) => b.t - a.t || a.id.localeCompare(b.id)).slice(0, WH_SG_ROWS);
   if(rows.length) S.sg.sys[n] = {t: now, rows}; else delete S.sg.sys[n];
   whSgSave(); whEndSave(); S.drawKey = ''; whPaint(true);
