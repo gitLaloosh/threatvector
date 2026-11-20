@@ -53,7 +53,9 @@ ATTR_NAMES = ['maxRange', 'falloffEffectiveness', 'warpScrambleStrength', 'speed
               # long a target stays affected (the four per-type durations)
               'ecmBurstRange', 'doomsdayAOERange', 'doomsdayAOEDuration', 'doomsdayWarningDuration',
               'durationECMJammerBurstProjector', 'durationTargetIlluminationBurstProjector',
-              'durationSensorDampeningBurstProjector', 'durationWeaponDisruptionBurstProjector']
+              'durationSensorDampeningBurstProjector', 'durationWeaponDisruptionBurstProjector',
+              # build queue 060: what pyfa's Fit.addDrain reads on a capital neut / nos (the Chemosh's Effect12267 changes it)
+              'energyNeutralizerSignatureResolution']
 # v2026.10.14.26: CHARGE attributes modified by pyfa handlers (filteredChargeBoost: the filter tests the
 # module the charge is loaded in). A Command Burst charge's warfareBuffNMultiplier, boosted by the
 # Command Specialist skills, then multiplies the burst's warfareBuffNValue (charge effect 6737, 'self').

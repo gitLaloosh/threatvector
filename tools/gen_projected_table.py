@@ -42,7 +42,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pyfa_effects import *
 
 ATTRS = ('disallowOffensiveModifiers', 'stasisWebifierResistance', 'targetPainterResistance',
-         'weaponDisruptionResistance')   # build queue 050: tracking / guidance disruptors' resistanceAttributeID (2113)
+         'weaponDisruptionResistance',   # build queue 050: tracking / guidance disruptors' resistanceAttributeID (2113)
+         'energyWarfareResistance')   # build queue 060: neutralizers' / nosferatu's resistanceAttributeID (2045, Effect6187 / 6197 / 6691 / 6434)
 attrId = {v['name']: int(k) for k, v in attrs.items()}
 # v2026.10.14.64 (D5 fighters): getFighterAbilityMult multiplies a fighter ability's damage on a FIT by the target ship's
 # attribute its {prefix}ResistanceID names (fighterAbilityAntiFighterMissileResistance, ...AntiCapitalMissileResistance):
@@ -118,14 +119,16 @@ def build():
 DRONE_ATTRS = ('speedFactor', 'signatureRadiusBonus', 'maxVelocity', 'shieldTransferRange', 'powerTransferRange', 'empFieldRange',
                'ecmBurstRange', 'maxRange', 'ECMRangeOptimal', 'falloff', 'falloffEffectiveness', 'radius',
                'trackingSpeed', 'optimalSigRadius',   # v2026.10.14.40: + what getDroneMult reads for damage drones
-               'trackingSpeedBonus', 'maxRangeBonus', 'falloffBonus')   # build queue 050: what Effect6694 (TD drones) reads
+               'trackingSpeedBonus', 'maxRangeBonus', 'falloffBonus',   # build queue 050: what Effect6694 (TD drones) reads
+               'energyNeutralizerAmount', 'energyNeutralizerDuration', 'energyNeutralizerRangeOptimal')   # build queue 060: Effect6691 (EV drones)
 DRONE_ATTRS = tuple(a for a in DRONE_ATTRS if a in attrId)   # energyDestabilizationRange is not an SDE attribute
 def _effs(t): return {e['effectID'] for e in td.get(str(t), {}).get('dogmaEffects', [])}
 DMG_ATTR_IDS = {114, 116, 117, 118}   # em / explosive / kinetic / thermal damage: pyfa Drone.dealsDamage
 def _deals(t): return any(x['value'] > 0 for x in td.get(str(t), {}).get('dogmaAttributes', []) if x['attributeID'] in DMG_ATTR_IDS)
 # v2026.10.14.40 (D5, drone damage application): web / painter drones AND every damage drone
 # build queue 050: and tracking disruptor drones (Effect6694 npcEntityWeaponDisruptor)
-projDrones = sorted(t for t, v in types.items() if v.get('published') and cat(t) == 18 and (_effs(t) & {6690, 6692, 6694} or _deals(t)))
+# build queue 060: and neutralizer drones (Effect6691 entityEnergyNeutralizerFalloff, the EV drones)
+projDrones = sorted(t for t, v in types.items() if v.get('published') and cat(t) == 18 and (_effs(t) & {6690, 6691, 6692, 6694} or _deals(t)))
 projDrones = [int(t) for t in projDrones]
 def _dsig(t): return (frozenset(reqs(t)), gname(t))
 droneReps = list({_dsig(t): t for t in projDrones}.values())

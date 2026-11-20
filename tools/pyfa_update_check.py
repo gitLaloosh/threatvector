@@ -92,6 +92,7 @@ if '--run' in sys.argv:
         ('display rounding vs Python round', 'node tools/check_py_round.mjs index.html', lambda o: o.strip().splitlines()[-1].startswith('0 mismatches')),
         ('damage application vs pyfa getApplicationPerKey', env + 'python3 -I tools/independent_checks/check_application.py index.html', lambda o: o.strip().splitlines()[-1].startswith('0 mismatches')),  # v2026.10.14.34
         ('projected webs / painters / scram vs pyfa', env + 'python3 -I tools/independent_checks/check_projected.py index.html', lambda o: o.strip().splitlines()[-1].startswith('0 mismatches')),  # v2026.10.14.35
+        ('neutralizers / nosferatu vs pyfa', env + 'python3 -I tools/independent_checks/check_energy_drains.py index.html', lambda o: o.strip().splitlines()[-1].startswith('0 mismatches')),  # build queue 060
         ('damage chart vs pyfa', env + 'python3 -I tools/independent_checks/check_damage_chart.py index.html', lambda o: o.strip().splitlines()[-1].startswith('0 mismatches')),  # v2026.10.14.36
         ('matchup strip vs pyfa', env + 'python3 -I tools/independent_checks/check_matchup.py index.html', lambda o: o.strip().splitlines()[-1].startswith('0 mismatches')),  # v2026.10.14.41
         ('Weaknesses picks vs pyfa', env + 'python3 -I tools/independent_checks/check_weakness_picks.py index.html', lambda o: o.strip().splitlines()[-1].startswith('0 mismatches')),  # v2026.10.14.42
