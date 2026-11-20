@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1BrrXXip5k3coLtORFkH9f/DitiXuFv/I3thj2ZfgSY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-FjonAfA0ntI+00vxzsCkx2Dcr+etDIkMIfCToKQpQwY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3419,7 +3419,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.19.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.20.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -6846,9 +6846,11 @@ function pyfaDisruptedApp(app, src, distance){
 //   Their resistanceAttributeID is 2045, energyWarfareResistance (eos/modifiedAttributeDict.py getResistance: the effect's own
 //     resistanceID first; `resist or 1`, so 0 reads as 1). Module / Drone / Fighter.canBeApplied: an offensive item (all four
 //     effects are) isn't applied to a ship with disallowOffensiveModifiers.
-// Drones and fighters at a distance: [the owner's answer pending; option A, pyfa's EWAR graph (graphs/data/fitEwarStats/
-// getter.py Distance2NeutingStrGetter): EV drones in full while the distance is within the attacker's drone control range
-// (checkDroneControlRange, ignoreDCR off by default), fighters in full at any distance]
+// Drones and fighters at a distance (the owner at the build, 2026-11-20: "A"): as pyfa's EWAR graph (graphs/data/fitEwarStats/
+// getter.py Distance2NeutingStrGetter), EV drones in full while the distance is within the attacker's drone control range
+// (checkDroneControlRange, ignoreDCR off by default), fighters in full at any distance. pyfa's projected fit itself projects
+// drones and fighters at range 0 (Fit.__runProjectionEffects, forcedProjRange=0), so the handlers' own range checks never cut in.
+// LESSON #173
 const PROJ_NEUT_EFFECT = 6187, PROJ_NOS_EFFECT = 6197, PROJ_NEUT_DRONE_EFFECT = 6691, PROJ_NEUT_FIGHTER_EFFECT = 6434;
 // One running neutralizer or nosferatu copy from its modified attributes a.
 function pyfaEnergyModData(a, nos, typeId, name){
@@ -21276,7 +21278,7 @@ function capDrainWhyText(D, under, base, mine, d, said){   // said: the panel al
     D.nDrones ? pl(D.nDrones, 'neutralizer drone', 'neutralizer drones') : '', D.nFighters ? pl(D.nFighters, 'Cenobite squadron', 'Cenobite squadrons') : ''].filter(Boolean);
   const list = what.length < 2 ? what[0] : `${what.slice(0, -1).join(', ')} and ${what[what.length - 1]}`;
   const one = D.nNeut + D.nNos + D.nDrones + D.nFighters === 1, dr = one ? 'drains' : 'drain';
-  if(!(D.gjs > 0)) return `${W} ${list} ${dr} nothing from ${mine ? 'you' : 'them'} at ${dmgKm(d)}.`;
+  if(!(D.gjs > 0)) return null;   // nothing drains at this range: the time doesn't change, so nothing is said (B2)
   const now = under ? under.capSec : base;
   const cap = now === base ? `${w} capacitor ${base === Infinity ? 'holds' : `runs dry at ${ttkClock(base)}`} all the same`
     : said ? `without ${one ? 'it' : 'them'} ${w} capacitor would ${base === Infinity ? 'hold' : `run dry at ${ttkClock(base)}`}`
@@ -30722,7 +30724,9 @@ function itMpOpen(k, back = true){
     if(back){ const shown = b && b.offsetParent && getComputedStyle(b).visibility !== 'hidden', to = shown ? b : itm.el.querySelector('.it-map-fcur'); if(to) to.focus({preventScroll: true}); }
     return;
   }
-  if(!itm.box || !itMapSt().only[k] || (k !== 'secr' && k !== 'near')) return;
+  // build queue 060 (the owner's bug, 2026-11-20): the settings open whether the filter is on or off, as the Wormholes list's and Sov upgrades'
+  // do (057 shows the button on hover either way); opening them doesn't turn the filter on
+  if(!itm.box || (k !== 'secr' && k !== 'near')) return;
   if(itMpShown()) itMpOpen('', false);
   if(itm.el.querySelector('.it-map-fb.open')) itMapFbarOpen(false);
   itWhListOpen(false, false); sovOpen(false, false);   // one filter panel at a time

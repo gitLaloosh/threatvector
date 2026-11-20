@@ -107,7 +107,7 @@
         "python3 -I tools/independent_checks/check_energy_drains.py index.html (0 mismatches: build queue 060, pyfa's Effect6187 / 6197 / 6691 / 6434 and Fit.addDrain on oracle attributes from every golden fit with a neutralizer, nosferatu, EV drone or Cenobite onto every golden fit over a 19-distance grid, the drain lists and pyfa's eos/capSim.py on the target's best case plus them, and 7 mutants)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "0658ad97b0a9d09a5b1ad90621d8e9384fe211b0ea882d7d92a910728a140f2d"
+      "sha256": "c0ab49dd7de3d8b26b24f4a6119bffe5f22a7d74576157d9a15015c6d8548e82"
     },
     "cap-rep-effect-tables": {
       "kind": "audited",

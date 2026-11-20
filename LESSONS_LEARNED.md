@@ -60,6 +60,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #22 Auditing pyfa: missing attributes, split bonuses, unpublished hulls.
 - #27 A reference that swallows errors like pyfa hides its own gaps.
 - #172 An effect on an item is not its bonus, and a projected effect's resistance is the effect's own first: read both from the data, not from the plan.
+- #173 A handler's own range check is only as good as the distance pyfa passes it: follow the call (pyfa projects drones and fighters at range 0), and name pyfa's two models to the owner.
 
 **Calculations: expected values, fixtures and golden fits**
 
@@ -225,6 +226,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #90 A public repository keeps everything you save in it: check every saved file for personal data, pictures included.
 - #91 Before handing over a history rewrite, run its replacement list on the cleaned tree first.
 - #155 A delivery that changes behaviour changes the panels that describe it: search the info text for what the diff changes, in the same pull request.
+- #174 A page check writes its mutant copies next to the page: don't commit while one runs; add files by name.
 
 ---
 ## Checklist (in this order)
@@ -1079,6 +1081,27 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   attribute after its own charge / script and self effects (here `ewarAttrsFor(m, script)`), per copy, scripted
   copies first. When building golden fits for a handler table, give every module that takes a script one scripted
   copy.
+
+## 173. A handler's own range check is only as good as the distance pyfa passes it
+
+- **What happened (build queue 060's build, 2026-11-20):** the EWAR plan said a neutralizer drone (Effect6691) drains in full within its
+  own `energyNeutralizerRangeOptimal` and nothing past it, and a Cenobite's neutralizer (Effect6434) fades with distance like a module:
+  both read straight from the handlers' bodies. pyfa never hands a drone or fighter handler the fight's distance: a projected fit's
+  drones and fighters run with `forcedProjRange=0` (eos/saveddata/fit.py `__runProjectionEffects`), and pyfa's EWAR graph gives them
+  infinite range, EV drones only inside the attacker's drone control range. Built as planned, the page would have matched no pyfa
+  number past a few kilometres.
+- **How it was caught:** before porting, reading how pyfa calls the handler (the projection loop), not only the handler itself.
+- **Do this instead:** for a projected effect, follow the value from the handler to the code that calls it with which arguments
+  (checklist step 2, "the code that consumes it"), and when pyfa has two models of the same thing (projected fit, graph), name both to
+  the owner and let him pick. Phase A's TD drones used the plan's rule; the owner may want them looked at again.
+
+## 174. A page check writes its mutant copies next to the page: don't commit while one runs
+
+- **What happened (build queue 060, 2026-11-20):** `git add -A` ran while a page check was running its mutants in the background; the
+  check writes each mutant as a temporary .html file in the page's own folder (so relative paths resolve), and one was committed and
+  pushed to the branch. Removed in the next commit (never a force-push), so main never had it after the squash merge.
+- **Do this instead:** commit only once background page checks have finished, and add files by name (`git add <paths>`), or look at
+  `git status` for an unexpected `tmp*.html` before committing.
 
 ## 172. An effect on an item is not its bonus, and a projected effect's resistance is the effect's own first
 

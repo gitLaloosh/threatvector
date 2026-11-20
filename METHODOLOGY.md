@@ -292,7 +292,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   Battery, a T3 Core subsystem, a Halcyon booster; 0.3 on a Monitor, 0.5 on a Herald) and, for the capital neutralizers
   and nosferatu, min(1, target signature / 8,000 m) with the target's painted signature; a nosferatu in full whatever
   either capacitor holds, as pyfa. Neutralizer drones drain in full out to the attacker's drone control range and
-  Cenobites at any distance (pyfa's EWAR graph; [the owner's choice pending]). Each time's "why" says what drains and
+  Cenobites at any distance (pyfa's EWAR graph, the owner's pick). Each time's "why" says what drains and
   what it does to the capacitor ("Their 2 neutralizers drain 87.5 GJ/s from you at 12 km: ..."). Weapons that use
   capacitor keep firing after it's empty, as pyfa (the owner may revisit). The damage charts don't change. An Ancillary Shield Booster on charges (v2026.10.14.57) doesn't need the capacitor:
   it reps for a clip (an X-Large with Navy Cap Booster 400s: 9 cycles, 45 s), reloads for 60 s, and repeats while

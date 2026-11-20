@@ -15,9 +15,9 @@ own module states, drones in space and squadrons: inputs, as compare_fit_stats.p
     Fit.__generateDrain appends them (int(cycleTime), capNeed, clipSize, staggered, reloadTime, not an injector), typed by hand;
   Module / Drone / Fighter.canBeApplied: an offensive effect (all four are, SDE isOffensive) isn't applied to a target with
     disallowOffensiveModifiers, typed by hand.
-Modules project at the distance (pyfa: projectionRange). Drones and fighters: the owner's choice [pending; checked as option A,
+Modules project at the distance (pyfa: projectionRange). Drones and fighters (the owner's "A", 2026-11-20): as
 pyfa's EWAR graph, graphs/data/fitEwarStats/getter.py: EV drones while the distance is within the attacker's drone control range
-(checkDroneControlRange, ignoreDCR off), fighters at any distance]; their handlers run with projectionRange 0, as pyfa's
+(checkDroneControlRange, ignoreDCR off), fighters at any distance; their handlers run with projectionRange 0, as pyfa's
 Fit.__runProjectionEffects projects drones and fighters (forcedProjRange=0).
 Compared, over DRAIN_GRID distances, with the same target signature on both sides:
   * the attacker's inputs (amount, cycle, optimal, falloff, signature resolution) against estimate.application.projected;
