@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-20 — Wormholes tab part 4: Routes, Signatures by type, holes you jump through, effects, your chain on Intel's map</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Wormholes tab part 4: Routes, Signatures by type, holes you jump through, effects, your chain on Intel's map</h1>
+<p><span class="tag">Page</span> 2026-11-20 &middot; <code>v2026.11.20.2</code> &middot; build queue 062 &middot; plan <code>roadmap/wormholes-part4-plan.md</code>, mockup <code>Claude outputs/wh_part4_mockup.html</code></p>
+<h2>Why</h2>
+<ul>
+<li>The owner: "ok, re-plan on the routes feature and let's plan to include a fix for the bug regarding sorting signatures by type. also include The k-space → J auto-add to Intel's Wormholes list and we need to add any affects that the hole has. also include Your chain's k-space entrance ring on the Intel map".</li>
+<li>On routes: "we need to be able to pin multiple systems that the page will automatically calculate the route to each time we navigate another system/wormhole.", "the game's routing doesn't work inside of wormholes so it's only meant to be a point of reference.", and "get rid of the "set destination" button and we'll just show the route as it's represented in the panel."</li>
+<li>At the build review: "no guessed numbers" for the 30 shattered and Drifter systems until their beacon class is in the page's data.</li>
+</ul>
+<h2>What changed</h2>
+<ul>
+<li><b>Routes</b> (<code>#whPnRt</code>, the rail's second button): Home, the nearest highsec and lowsec, and pinned systems (<code>tvWhRoutes</code>), each worked out again when you move, by one search over the stargates, the bridge directions Intel lets you use and your chain both ways (<code>itRpSearch</code>, split out of <code>itRpUpdate</code> and shared, so the two can't drift). A strip of squares a jump (round through a hole, J-space in the wormhole colour, flagged underlined); hover, keyboard focus or a finger along it shows one line (a hole's ID only when recorded) and glows the route on the chain map with an EXIT pill. Pin by typing, the system menu's Pin route, × to unpin; Routes from here and back. Nothing is sent to EVE.</li>
+<li><b>Signatures by type</b> (the BUG): the Type heading, the game's order (unscanned, Wormhole, Gas, Data, Relic, Ore, Combat, then the rest A to Z), then the latest paste's order (<code>o</code>); everyone switched to Type once (<code>sv: 2</code>).</li>
+<li><b>Effects</b>: CCP's 36 effect beacons as <code>IT_WH_EFF_MOD</code> (<code>tools/gen_wh_table.py</code>, its own words table; a beacon attribute without words stops it); one row a line under the System panel's Effect. The strength is the beacon's own class: <code>tools/jump_table_update.py</code> now stores it as <code>INTEL_WH.effc</code>; until the Jump table workflow's next pull request brings it, C1-C6 systems use their class and the 30 shattered and Drifter systems show the name only.</li>
+<li><b>Holes you jump through</b>: a k-space ↔ J-space jump (not docked) merges that k-space system's hole into Intel's Wormholes list (<code>itWhJumpAdd</code>, <code>jw</code>), "you jumped in → J… (C3 · Pulsar · statics …)" with the effect's numbers on hover; a setting beside "keep wormhole reports for", on by default (<code>tvWormholes.auto</code>). The k-space end's ID typed on the Wormholes tab fills it in.</li>
+<li><b>Your chain on Intel's map</b>: k-space ends whose connection was seen within "keep wormhole reports for" get the wormhole ring (<code>itMapWh</code>, src 'chain'), "on your chain → J… (class · effect)".</li>
+<li><b>Info text</b>: <code>whmap</code> gains [Routes] and the Type sort (cap 400), <code>intel</code> the chain's ends (cap 675), the owner's Q15 "Raise the caps".</li>
+<li><b>Storage</b>: new key <code>tvWhRoutes</code>; new fields <code>o</code> and <code>sv</code> in <code>tvWhSigs</code>, <code>jw</code> and <code>auto</code> in <code>tvWormholes</code>, <code>'rt'</code> in <code>tvWhPanels.open</code>. An older page ignores or drops them (checked against f70fdd5); this page reads its older data unchanged.</li>
+</ul>
+<h2>Where the build differs from the plan</h2>
+<ul>
+<li>The auto-add's setting is kept beside "keep wormhole reports for" in <code>tvWormholes</code> (<code>auto</code>), not in Intel's own settings (<code>dscanIntel</code>): the two settings sit together and are saved together. Either way an older page's save drops it and it reads as on again.</li>
+<li>Bridges in the Routes search come from the same <code>itJbZones</code> Intel's route uses; no Routes case covers a bridge step (Intel's own bridge checks cover the zones).</li>
+<li>The strip's squares are focusable spans with the arrow keys stepping along a strip (one tab stop a strip), not buttons.</li>
+<li>The unpin × is the page's small remove button (<code>button.it-sigx</code>), and the pin field reuses the avoid list's row (<code>.it-rp-add</code>, <code>.it-rp-msg</code>).</li>
+</ul>
+<h2>Checks</h2>
+<ul>
+<li><code>wormhole_routes_check.py</code> (new): the rows, the strip, the hover lines, again once after a jump and never on an unchanged repaint, pins (typed, menu, ×) and Shortest through a reload, Routes from here, nothing sent to EVE, a phone; 047's route equal to f70fdd5's for several homes, flags and preferences (the shared search); 8 mutants.</li>
+<li><code>wormhole_effects_check.py</code> (new): <code>IT_WH_EFF_MOD</code> against the 36 beacons in pyfa's copy of CCP's data, derived without the words table; every effect at every class; the panel's rows; shattered and Drifter without numbers; <code>effc</code>; 4 mutants.</li>
+<li><code>wormhole_autoadd_check.py</code> (new): k → J and J → k, merged, docked and J → J skipped, the setting, the end's ID, a reload with <code>jw</code> saved, the older page, the example; 9 mutants.</li>
+<li><code>wormhole_sigs_check.py</code> (Type: 4 mutants), <code>wormhole_filter_check.py</code> (the chain's ends: 2 mutants), and the older checks that assumed one rail button, no Routes menu items or 047's search inside <code>itRpUpdate</code>.</li>
+</ul>
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #175: a stored field read at start-up runs before the rest of the script. <code>jw</code>'s reader called <code>whIsJ</code>, which reads a <code>const</code> declared further down; with nothing saved no one noticed, and with a <code>jw</code> saved every load threw. Check a reload with each new stored field present.</li>
+</ul>
+</body>
+</html>

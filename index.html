@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-rXP3cMyGT9MqdOapwLBbethfxwymLLLy61x+6fzbyHw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-325arADKZ4tieAtnHzm79HHKa/KefB6DHPzzqrm2H5o='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3431,7 +3431,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.20.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.20.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -31934,7 +31934,7 @@ function itWhEntryRead(w, ok){
   if(raws.length) o.raws = raws;
   if(w.via === 'import') o.via = 'import';
   const jw = w.jw;   // 062 (A2): the J-space system this hole was seen to lead to, when you jumped through it (out: you came out here); the
-  // J-space ID range written out: this runs at start-up, before the Wormholes tab's part of the script (WH_LO) has run
+  // J-space ID range written out: this runs at start-up, before the Wormholes tab's part of the script (WH_LO) has run (LESSON #175)
   if(jw && typeof jw === 'object' && Number.isInteger(jw.j) && jw.j >= 31000000 && jw.j < 32000000 && ok(Number(jw.t))) o.jw = {j: jw.j, t: Number(jw.t), ...(jw.out === true ? {out: true} : {})};
   return o;
 }

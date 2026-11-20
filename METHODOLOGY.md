@@ -628,3 +628,23 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   tag only fill empty ones, signatures per ID the later scan, and nothing of yours is removed or moved.
 - **Remove all** (059): every system not locked, with its connections, marks, signatures and end IDs, after a question; Select all puts every
   system in the group.
+- **Signatures by type** (v2026.11.20.2, build queue 062): the Type heading sorts as the game's Probe Scanner does: rows with no group yet first,
+  then Wormhole, Gas Site, Data Site, Relic Site, Ore Site, Combat Site (the owner's look in the game; "asteroid belt" read as Ore Site), then
+  any other group A to Z, and inside a group the latest paste's order (a row not in it after, in its old order). Type became everyone's sort once
+  (a sort picked after that is kept).
+- **Effects** (062): a system's effect with CCP's numbers for it, from the game's 36 effect beacons ("Class 1-6 <effect> Effects"), each as a
+  percent change: a multiplier as (value - 1) x 100, a resistance bonus as the change in damage taken. The strength is the beacon's own class,
+  read from CCP's data by `tools/jump_table_update.py` (shattered and Drifter systems needn't match their class); until a table carries it, a
+  C1-C6 system's class, and no numbers for shattered and Drifter systems (the owner: "no guessed numbers"). Text only: no fit's numbers change.
+- **Routes** (062): one search from where you are (or a system you picked, Routes from here) over the stargates, the jump-bridge directions you
+  can use and every connection of your chain both ways, in the order Intel's own route uses: the fewest flagged systems on the way (Intel
+  settings → Routes' avoid options), then CCP's route cost by security band (a jump into J-space costs as one into nullsec), then the fewest
+  jumps; Shortest counts jumps only. The quick rows are Home (a system with the Home status), the nearest highsec and the nearest lowsec by that
+  same order; then the systems you pin (tvWhRoutes, in this browser). Worked out again only when where you are, the chain, the pins, the
+  settings or the flags change. Your statuses never change a route. Nothing is sent to EVE: the game can't plot a route from wormhole space.
+- **Holes you jump through, in Intel's list** (062): a change of system between k-space and J-space (not docked) puts that k-space system's
+  hole in Intel's Wormholes list with the J-space system it leads to and its class, merged into a report already there (its IDs and lines
+  kept); leaving a chain adds the exit the same way. A setting in Intel settings, on unless you turn it off (kept in tvWormholes). The k-space
+  side's ID typed later on the Wormholes tab fills it in; removing either never removes the other.
+- **Your chain's k-space ends on Intel's map** (062): a k-space system on your chain whose connection was seen within "keep wormhole reports for"
+  gets the wormhole ring, like a live report.
