@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-RL0M1GUNhu/tW0wPB1HgEyzRGRvO6D7JTAKddCCjzzI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-9bDzzY3Z7zMfiM93Fkv4ZJGzSoESi5T8u5pm+y0MNkw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -31707,6 +31707,7 @@ function itWhWord(p){ return !p || !p.kw ? null : p.kw.has('drifter') ? 'drifter
 // lines as typed (IT_WH_RAW_MAX, each with what it set: build queue 046's merge reads `set`), and a removal mark per ID (`goneSig`).
 const IT_WH_TYPE = {"A009":"c13","A239":"ls","A641":"hs","A982":"c6","B041":"c6","B274":"hs","B449":"hs","B520":"hs","B735":"dr","C008":"c5","C125":"c2","C140":"ls","C247":"c3","C248":"ns","C391":"ls","C414":"dr","C729":"?","D364":"c2","D382":"c2","D792":"hs","D845":"hs","E004":"c1","E175":"c4","E545":"ns","E587":"ns","F135":"th","F216":"po","F353":"th","G008":"c6","G024":"c2","H121":"c1","H296":"c5","H900":"c5","I078":"po","I182":"c2","J244":"ls","J377":"ls","J492":"ls","K162":"exit","K329":"ns","K346":"ns","L005":"c2","L031":"th","L477":"c3","L614":"c5","L687":"po","M001":"c4","M164":"th","M267":"c3","M555":"c5","M609":"c4","N062":"c5","N110":"hs","N290":"ls","N432":"c5","N766":"c2","N770":"c5","N944":"ls","N968":"c3","O128":"c4","O477":"c3","O546":"po","O753":"po","O883":"c3","P060":"c1","Q003":"ns","Q063":"hs","Q317":"c1","R051":"ls","R081":"c4","R259":"dr","R327":"po","R474":"c6","R943":"c2","S047":"hs","S199":"ns","S804":"c6","S877":"dr","T405":"c4","T458":"th","U210":"ls","U319":"c6","U372":"po","U574":"c6","V283":"ns","V301":"c1","V753":"c6","V898":"ls","V911":"c5","V928":"dr","W237":"c6","X450":"ns","X702":"c3","X877":"c4","Y683":"c4","Y790":"c1","Z006":"c3","Z060":"ns","Z142":"ns","Z457":"c4","Z647":"c1","Z971":"c1"};
 const IT_WH_LIFE = {"A009":[270,3000000,5000,3000000],"A239":[1440,2000000,375000,0],"A641":[960,2000000,1000000,0],"A982":[1440,3000000,375000,0],"B041":[2880,3000000,1000000,0],"B274":[1440,2000000,375000,0],"B449":[960,2000000,1000000,0],"B520":[2880,3000000,1000000,0],"B735":[960,750000,375000,0],"C008":[270,3000000,5000,3000000],"C125":[960,1000000,62000,0],"C140":[1440,3300000,2000000,0],"C247":[960,2000000,375000,0],"C248":[960,3300000,2000000,0],"C391":[2880,3300000,2000000,0],"C414":[960,750000,375000,0],"C729":[720,1000000,410000,0],"D364":[960,1000000,375000,0],"D382":[960,2000000,375000,0],"D792":[1440,3000000,1000000,0],"D845":[1440,5000000,375000,0],"E004":[270,3000000,5000,3000000],"E175":[960,2000000,375000,0],"E545":[960,2000000,375000,0],"E587":[960,3000000,1000000,0],"F135":[960,750000,375000,0],"F216":[720,1000000,375000,0],"F353":[960,100000,62000,0],"G008":[270,3000000,5000,3000000],"G024":[960,2000000,375000,0],"H121":[960,500000,62000,0],"H296":[1440,3300000,2000000,0],"H900":[1440,3000000,375000,0],"I078":[720,750000,62000,0],"I182":[960,2000000,375000,0],"J244":[1440,1000000,62000,0],"J377":[1440,1000000,62000,0],"J492":[1440,1000000,62000,0],"K329":[960,3000000,375000,0],"K346":[960,3000000,375000,0],"L005":[270,3000000,5000,3000000],"L031":[960,3000000,1000000,0],"L477":[960,2000000,375000,0],"L614":[1440,1000000,62000,0],"L687":[720,750000,62000,0],"M001":[270,3000000,5000,3000000],"M164":[960,2000000,1000000,0],"M267":[960,1000000,375000,0],"M555":[1440,3000000,1000000,0],"M609":[960,1000000,62000,0],"N062":[1440,3000000,375000,0],"N110":[1440,1000000,62000,0],"N290":[1440,3000000,375000,0],"N432":[1440,3300000,2000000,0],"N766":[960,2000000,375000,0],"N770":[1440,3000000,375000,0],"N944":[1440,3300000,2000000,0],"N968":[960,2000000,375000,0],"O128":[1440,1000000,375000,0],"O477":[960,2000000,375000,0],"O546":[720,750000,62000,0],"O753":[720,1000000,375000,0],"O883":[960,1000000,62000,0],"P060":[960,500000,62000,0],"Q003":[270,3000000,5000,3000000],"Q063":[960,500000,62000,0],"Q317":[960,500000,62000,0],"R051":[960,3000000,1000000,0],"R081":[720,1000000,375000,0],"R259":[960,750000,375000,0],"R327":[720,1000000,375000,0],"R474":[1440,3000000,375000,0],"R943":[960,750000,375000,0],"S047":[1440,3000000,375000,0],"S199":[960,3300000,2000000,0],"S804":[1440,1000000,62000,0],"S877":[960,750000,375000,0],"T405":[960,2000000,375000,0],"T458":[960,500000,62000,0],"U210":[1440,3000000,375000,0],"U319":[2880,3300000,2000000,0],"U372":[720,1000000,375000,0],"U574":[1440,3000000,375000,0],"V283":[960,3000000,1000000,0],"V301":[960,500000,62000,0],"V753":[1440,3300000,2000000,0],"V898":[960,2000000,1000000,0],"V911":[1440,3300000,2000000,0],"V928":[960,750000,375000,0],"W237":[1440,3300000,2000000,0],"X450":[720,1000000,375000,0],"X702":[1440,1000000,375000,0],"X877":[960,2000000,375000,0],"Y683":[960,2000000,375000,0],"Y790":[960,500000,62000,0],"Z006":[270,3000000,5000,3000000],"Z060":[960,1000000,62000,0],"Z142":[960,3300000,2000000,0],"Z457":[960,2000000,375000,0],"Z647":[960,500000,62000,0],"Z971":[960,100000,62000,0]};
+const IT_WH_EFF_MOD = {"b":{"l":["Ship max speed","Inertia (align time)","Targeting range","Missile velocity","Missile explosion velocity","Stasis web strength"],"c":{"1":[30,15,30,15,30,-15],"2":[44,22,44,22,44,-22],"3":[58,29,58,29,58,-29],"4":[72,36,72,36,72,-36],"5":[86,43,86,43,86,-43],"6":[100,50,100,50,100,-50]}},"c":{"l":["Capacitor capacity","Capacitor recharge time","Local armor repair","Local shield boost","Remote armor repair","Remote shield repair","Remote capacitor transfer"],"c":{"1":[30,15,-15,-15,30,30,-15],"2":[44,22,-22,-22,44,44,-22],"3":[58,29,-29,-29,58,58,-29],"4":[72,36,-36,-36,72,72,-36],"5":[86,43,-43,-43,86,86,-43],"6":[100,50,-50,-50,100,100,-50]}},"m":{"l":["Targeting range","Turret, missile, drone and fighter damage","Turret and drone tracking","Missile explosion radius","Target painter strength"],"c":{"1":[-15,30,-15,30,-15],"2":[-22,44,-22,44,-22],"3":[-29,58,-29,58,-29],"4":[-36,72,-36,72,-36],"5":[-43,86,-43,86,-43],"6":[-50,100,-50,100,-50]}},"p":{"l":["Shield HP","Armor damage taken","Signature radius","Capacitor recharge time","Neutralizer and nosferatu amount"],"c":{"1":[30,15,30,-15,30],"2":[44,22,44,-22,44],"3":[58,29,58,-29,58],"4":[72,36,72,-36,72],"5":[86,43,86,-43,86],"6":[100,50,100,-50,100]}},"r":{"l":["Smartbomb range","Smartbomb and bomb damage","Overheat bonuses","Overheat damage to modules"],"c":{"1":[30,30,30,15],"2":[44,44,44,22],"3":[58,58,58,29],"4":[72,72,72,36],"5":[86,86,86,43],"6":[100,100,100,50]}},"w":{"l":["Armor HP","Shield damage taken","Signature radius","Small turret, light missile and rocket damage"],"c":{"1":[30,15,-15,60],"2":[44,22,-22,88],"3":[58,29,-29,116],"4":[72,36,-36,144],"5":[86,43,-43,172],"6":[100,50,-50,200]}}};
 const IT_WH_SIGS = 8, IT_WH_RAW_MAX = 10, IT_WH_RAW_SYS = 100, IT_WH_GONE_SIGS = 16;
 const IT_WH_DEST = {c1: ['C1', 'Class 1'], c2: ['C2', 'Class 2'], c3: ['C3', 'Class 3'], c4: ['C4', 'Class 4'], c5: ['C5', 'Class 5'], c6: ['C6', 'Class 6'],
   c13: ['C13', 'a shattered Class 13'], hs: ['HS', 'highsec'], ls: ['LS', 'lowsec'], ns: ['NS', 'nullsec'], th: ['Thera', 'Thera'], po: ['Pochven', 'Pochven'],
@@ -33919,7 +33920,7 @@ function whTable(){
     T.names = W.names.split('|'); T.names.forEach((n, i) => T.byName.set(n.toLowerCase(), T.ids[i]));
     const c = Uint8Array.from(atob(W.con), x => x.charCodeAt(0)), cv = new DataView(c.buffer);
     for(let i = 0; i < W.systems; i++) T.con.push(cv.getUint16(2 * i, true));
-    T.cls = W.cls; T.eff = W.eff; T.cons = W.cons; T.conr = [...atob(W.conr)].map(x => x.charCodeAt(0)); T.regions = W.regions;
+    T.cls = W.cls; T.eff = W.eff; T.effc = typeof W.effc === 'string' && W.effc.length === W.systems ? W.effc : ''; T.cons = W.cons; T.conr = [...atob(W.conr)].map(x => x.charCodeAt(0)); T.regions = W.regions;
     // 061 (the owner at the review: "go with your recommendations"): the statics only while they follow this system list (n, and FNV-1a of INTEL_WH.sys)
     const S = typeof INTEL_WH_STC === 'undefined' ? null : INTEL_WH_STC;
     if(S && S.n === W.systems && S.of === whFnv(W.sys)){ const cs = S.codes.split(' '); T.stc = S.stc.split('|').map(g => [...g].map(ch => cs[WH_STC_ABC.indexOf(ch)]).join(' ')); }
@@ -33937,6 +33938,20 @@ function whKnown(id){ return whIsJ(id) ? whTable().at.has(id) : itGraphGet().at.
 function whClsData(id){ const T = whTable(), i = T.at.get(id); return i === undefined ? null : WH_CLS_KEY[T.cls[i]] || null; }
 function whCls(id){ const s = whS && whS.st.sys[id]; return s && s.cls ? s.cls : whClsData(id); }   // yours if you changed it, else CCP's
 function whEff(id){ const T = whTable(), i = T.at.get(id); return i === undefined ? '' : WH_EFF[T.eff[i]] || ''; }
+// 062 (E1-E3; the owner: "we need to add any affects that the hole has", Q12 "Name and numbers"): the effect's numbers, CCP's beacons (IT_WH_EFF_MOD,
+// tools/gen_wh_table.py) at the beacon's own class: INTEL_WH.effc (tools/jump_table_update.py); until a table carries it, a C1-C6 system's own class,
+// and a shattered or Drifter system none (the owner at the review: "no guessed numbers"). Text only: no fit's numbers change.
+function whEffCls(id){
+  const T = whTable(), i = T.at.get(id); if(i === undefined || !WH_EFF[T.eff[i]]) return null;
+  if(T.effc) return /^[1-6]$/.test(T.effc[i]) ? T.effc[i] : null;
+  return /^[1-6]$/.test(T.cls[i]) ? T.cls[i] : null;
+}
+function whEffLines(id){
+  const T = whTable(), i = T.at.get(id), c = whEffCls(id), e = i === undefined ? null : IT_WH_EFF_MOD[T.eff[i]];
+  return !e || !c || !e.c[c] ? [] : e.l.map((w, k) => [w, e.c[c][k]]);
+}
+function whEffPct(v){ return `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)}%`; }
+function whEffTxt(id){ const e = whEff(id), l = whEffLines(id); return !e ? '' : l.length ? `${e}: ${l.map(([w, v]) => `${w} ${whEffPct(v)}`).join(' · ')}` : e; }
 function whPlace(id){
   if(whIsJ(id)){ const T = whTable(), i = T.at.get(id); if(i === undefined) return ''; const c = T.con[i]; return `${T.cons[c]} / ${T.regions[T.conr[c]]}`; }
   try{ return sysRegion(id) || ''; }catch(e){ return ''; }
@@ -34477,7 +34492,7 @@ function whSumHtml(n){
   whP3(n);
   return `<div class="wh-sh"><span class="wh-shn">${whNameHtml(n)}</span>${whYouHtml(n === S.last)}${whTagHtml(n)}${whStHtml(n)}${whTagPillHtml(n)}${whSharedHtml(s)}</div>`
     + `<div class="wh-kv"><span>${escapeHtml(k ? 'Region' : 'Constellation / region')}</span><b>${escapeHtml(whPlace(n) || 'not known')}</b></div>`
-    + (k ? `<div class="wh-kv"><span>Security</span><b>${escapeHtml(whSecTxt(n))}</b></div>` : `<div class="wh-kv"><span>Effect</span><b>${escapeHtml(eff || 'none')}</b></div>`)
+    + (k ? `<div class="wh-kv"><span>Security</span><b>${escapeHtml(whSecTxt(n))}</b></div>` : `<div class="wh-kv"><span>Effect</span><b>${escapeHtml(eff || 'none')}</b></div>${whEffKvHtml(n)}`)
     + `<div class="wh-kv"><span>Kept</span><b>until you remove it</b></div>${whLockKvHtml(n)}`
     // 059 (P1): Class and Statics first (the owner: "connections change, class and statics do not."), then Connections and Signatures, used together while scanning
     + (k ? '' : `<div class="wh-ed" data-wh-ed="${Number(n)}"><label>Class<select data-f="cls">${whOptsHtml(WH_CLS_OPT, whCls(n))}</select><span class="wh-note">${escapeHtml(own ? 'changed by you' : 'from CCP’s data')}</span></label>`
@@ -34491,6 +34506,12 @@ function whSumHtml(n){
 }
 function whStHtml(n){ const k = whMk(n).st; return k ? `<span class="it-gtag wh-st st-${escapeHtml(k)}" title="Status: the box's border on the map">${escapeHtml(whStLabel(k))}</span>` : ''; }
 function whTagPillHtml(n){ const m = whMk(n); return m.tag ? `<span class="it-gtag wh-st${escapeHtml(m.st ? ' st-' + m.st : '')}" title="Tag">${escapeHtml(m.tag)}</span>` : ''; }
+function whEffKvHtml(n){   // 062 (E3): one row a line, under the Effect line (the panel's own label / value rows)
+  if(!whEff(n)) return '';
+  const l = whEffLines(n);
+  return l.length ? `<div class="wh-kv" data-wh-eff>${l.map(([w, v]) => `<span>${escapeHtml(w)}</span><b>${escapeHtml(whEffPct(v))}</b>`).join('')}</div>`
+    : '<div class="wh-kv" data-wh-eff><span>Its numbers</span><b>not in the page’s data yet for this system</b></div>';
+}
 function whLockKvHtml(n){ return whLocked(n) ? '<div class="wh-kv"><span>Locked</span><b>can’t be moved or removed until you unlock it</b></div>' : ''; }
 function whRmHtml(n){
   if(whP3(n).ask && whP3(n).ask.k === 'del') return whAskHtml(`Remove ${whName(n)} and its connections?`, [['del-yes', 'Remove'], ['del-no', 'Cancel']]);   // P20: asks first

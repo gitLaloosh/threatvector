@@ -15,6 +15,8 @@ hover): attributes 1382 wormholeMaxStableTime, 1383 wormholeMaxStableMass, 1385 
 (source: pyfa-org/Pyfa staticdata/fsd_built/ dogmaattributes and typedogma at the manifest's commit e5483f8, checked 2026-11-19).
 CCP's record gives 1383-1385 unit 2 (kilograms), shown here in tonnes (kg / 1000, whole); 1382 unit 3, which CCP's record names
 seconds, but its values are minutes (C247 960 = 16 h; UNVERIFIED, the 061 hand test). K162 has none (its numbers are the other end's).
+
+IT_WH_EFF_MOD (build queue 062, E1): each J-space effect's numbers by its beacon's class (see the block above its table below).
 """
 import sys, os, re, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -67,18 +69,71 @@ for t, v in types.items():
     life[m.group(1)] = row
 assert life.get('C247') == [960, 2000000, 375000, 0], life.get('C247')
 print('lifetime and mass:', len(life), 'codes')
+# 062 (E1, plan roadmap/wormholes-part4-plan.md section 5; the owner: "we need to add any affects that the hole has", Q12 "Name and numbers"):
+# each J-space effect's numbers by its beacon's class, from CCP's 36 beacons "Class 1-6 <effect> Effects" (group 920 Effect Beacon; pyfa's copy of CCP's
+# data at the manifest's commit). One line per modifying attribute, as a percent change: operation 4 (multiply) (v - 1) x 100; operation 6 (a percent
+# added to a resonance, i.e. to the damage taken) v itself, the words saying "damage taken". The words are this table's (how each reads in the game's
+# own info window is UNVERIFIED: the hand test). A beacon attribute with no words here stops the generator, so a new one is never shown silently.
+# IT_WH_EFF_MOD {letter: {l: [words], c: {"1".."6": [percent, ...]}}}, letters as INTEL_WH.eff.
+from pyfa_sde import effs
+EFF_LETTER = {'Black Hole': 'b', 'Cataclysmic Variable': 'c', 'Magnetar': 'm', 'Pulsar': 'p', 'Red Giant': 'r', 'Wolf Rayet': 'w'}
+EFF_WORDS = {   # modifying attribute -> words; the order is the order shown
+    'shieldCapacityMultiplier': 'Shield HP', 'armorHPMultiplier': 'Armor HP',
+    'armorEmDamageResistanceBonus': 'Armor damage taken', 'shieldEmDamageResistanceBonus': 'Shield damage taken',
+    'signatureRadiusMultiplier': 'Signature radius', 'maxVelocityMultiplier': 'Ship max speed', 'agilityMultiplier': 'Inertia (align time)',
+    'maxTargetRangeMultiplier': 'Targeting range', 'capacitorCapacityMultiplierSystem': 'Capacitor capacity', 'rechargeRateMultiplier': 'Capacitor recharge time',
+    'damageMultiplierMultiplier': 'Turret, missile, drone and fighter damage', 'smallWeaponDamageMultiplier': 'Small turret, light missile and rocket damage',
+    'trackingSpeedMultiplier': 'Turret and drone tracking', 'missileVelocityMultiplier': 'Missile velocity',
+    'aoeVelocityMultiplier': 'Missile explosion velocity', 'aoeCloudSizeMultiplier': 'Missile explosion radius',
+    'armorDamageAmountMultiplier': 'Local armor repair', 'shieldBonusMultiplier': 'Local shield boost',
+    'armorDamageAmountMultiplierRemote': 'Remote armor repair', 'shieldBonusMultiplierRemote': 'Remote shield repair', 'energyTransferAmountBonus': 'Remote capacitor transfer',
+    'energyWarfareStrengthMultiplier': 'Neutralizer and nosferatu amount', 'stasisWebStrengthMultiplier': 'Stasis web strength',
+    'targetPainterStrengthMultiplier': 'Target painter strength', 'empFieldRangeMultiplier': 'Smartbomb range', 'smartbombDamageMultiplier': 'Smartbomb and bomb damage',
+    'overloadBonusMultiplier': 'Overheat bonuses', 'heatDamageMultiplier': 'Overheat damage to modules'}
+EFF_SAME = {'armorEmDamageResistanceBonus': ('armorExplosiveDamageResistanceBonus', 'armorKineticDamageResistanceBonus', 'armorThermalDamageResistanceBonus'),
+            'shieldEmDamageResistanceBonus': ('shieldExplosiveDamageResistanceBonus', 'shieldKineticDamageResistanceBonus', 'shieldThermalDamageResistanceBonus')}   # one line: all four must agree
+EFF_SKIP = {x for v in EFF_SAME.values() for x in v}
+effmod = {}
+for t, v in types.items():
+    m = re.fullmatch(r'Class (\d) (.+) Effects', _en(v.get('typeName')) or '')
+    if v.get('groupID') != 920 or not m or m.group(2) not in EFF_LETTER: continue
+    d = td.get(str(t), {}); vals = {attrs[str(x['attributeID'])]['name']: x['value'] for x in d.get('dogmaAttributes', [])}
+    ops = {}
+    for e in d.get('dogmaEffects', []):
+        for mi in effs[str(e['effectID'])].get('modifierInfo', []):
+            k = attrs[str(mi['modifyingAttributeID'])]['name']; assert ops.get(k, mi['operation']) == mi['operation'], (k, 'two operations'); ops[k] = mi['operation']
+    used = [k for k in EFF_WORDS if k in ops]
+    assert all(k in EFF_WORDS or k in EFF_SKIP for k in ops), (m.group(0), 'no words for', [k for k in ops if k not in EFF_WORDS and k not in EFF_SKIP])
+    for k, same in EFF_SAME.items():
+        if k in ops: assert all(vals.get(x) == vals[k] for x in same), (m.group(0), k, 'the four resonances differ')
+    row = []
+    for k in used:
+        op = ops[k]; assert op in (4, 6), (m.group(0), k, op)
+        row.append(int(round((vals[k] - 1) * 100)) if op == 4 else int(round(vals[k])))
+    e = effmod.setdefault(EFF_LETTER[m.group(2)], {'l': [EFF_WORDS[k] for k in used], 'c': {}})
+    assert e['l'] == [EFF_WORDS[k] for k in used], (m.group(0), 'another set of lines than its other classes')
+    e['c'][m.group(1)] = row
+assert sorted(effmod) == sorted(EFF_LETTER.values()) and all(sorted(x['c']) == list('123456') for x in effmod.values()), 'expected 6 effects x 6 classes'
+assert effmod['p']['c']['3'] == [58, 29, 58, -29, 58] and effmod['p']['l'][1] == 'Armor damage taken', effmod['p']   # Class 3 Pulsar (the plan's example)
+effmod = {k: {'l': effmod[k]['l'], 'c': dict(sorted(effmod[k]['c'].items()))} for k in sorted(effmod)}
+print('effects:', ', '.join(f"{k} {len(v['l'])} lines" for k, v in effmod.items()))
 html = next((a for a in sys.argv[1:] if not a.startswith('--')), os.path.join(os.path.dirname(__file__), '..', 'index.html'))
 src = open(html, encoding='utf-8').read()
 new = 'const IT_WH_TYPE = ' + json.dumps(dict(sorted(table.items())), separators=(',', ':')) + ';'
 new_life = 'const IT_WH_LIFE = ' + json.dumps(dict(sorted(life.items())), separators=(',', ':')) + ';'   # 061
-m = re.search(r'const IT_WH_TYPE = \{.*?\};', src); ml = re.search(r'const IT_WH_LIFE = \{.*?\};', src)
-state = [('IT_WH_TYPE', 'missing' if not m else 'same' if m.group(0) == new else 'CHANGED'), ('IT_WH_LIFE', 'missing' if not ml else 'same' if ml.group(0) == new_life else 'CHANGED')]
-if all(x == 'same' for _, x in state): print('index.html tables (IT_WH_TYPE, IT_WH_LIFE) are up to date with this SDE.')
+new_eff = 'const IT_WH_EFF_MOD = ' + json.dumps(effmod, separators=(',', ':')) + ';'   # 062
+EFF_RX = r'const IT_WH_EFF_MOD = \{.*?\}\}\};'
+m = re.search(r'const IT_WH_TYPE = \{.*?\};', src); ml = re.search(r'const IT_WH_LIFE = \{.*?\};', src); me = re.search(EFF_RX, src)
+state = [('IT_WH_TYPE', 'missing' if not m else 'same' if m.group(0) == new else 'CHANGED'), ('IT_WH_LIFE', 'missing' if not ml else 'same' if ml.group(0) == new_life else 'CHANGED'),
+         ('IT_WH_EFF_MOD', 'missing' if not me else 'same' if me.group(0) == new_eff else 'CHANGED')]
+if all(x == 'same' for _, x in state): print('index.html tables (IT_WH_TYPE, IT_WH_LIFE, IT_WH_EFF_MOD) are up to date with this SDE.')
 else: print('vs index.html: ' + ', '.join(f'{k} {x}' for k, x in state if x != 'same'))
 if '--write' in sys.argv:
     src, n = re.subn(r'const IT_WH_TYPE = \{.*?\};', lambda _: new, src, count=1)
     if n != 1: sys.exit('no IT_WH_TYPE line to replace (add a placeholder "const IT_WH_TYPE = {};" first)')
     if ml: src = re.sub(r'const IT_WH_LIFE = \{.*?\};', lambda _: new_life, src, count=1)
     else: src = re.sub(r'(const IT_WH_TYPE = \{.*?\};)', lambda x: x.group(1) + '\n' + new_life, src, count=1)
+    if me: src = re.sub(EFF_RX, lambda _: new_eff, src, count=1)
+    else: src = re.sub(r'(const IT_WH_LIFE = \{.*?\};)', lambda x: x.group(1) + '\n' + new_eff, src, count=1)
     open(html, 'w', encoding='utf-8', newline='\n').write(src)
     print('written')
