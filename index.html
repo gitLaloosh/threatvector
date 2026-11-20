@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-9bDzzY3Z7zMfiM93Fkv4ZJGzSoESi5T8u5pm+y0MNkw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UZX4RapuuXdVCEfEMv/AsfN09AKqSi6A9EaUkfB5lXc='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -29906,7 +29906,7 @@ function itSettingsHtml(numbered){
     <div class="it-box">${n(1, 'Chat logs folder')}<div class="v">${it.dir ? escapeHtml(it.dirName) : 'not chosen'}</div>${itFolderStateHtml()}</div>
     <div class="it-box${itWaitHtml('cls')}">${n(2, 'Intel channels')}${itWaitHtml('note')}${itChansHtml(chans)}</div>
     <div class="it-box">${n(3, 'You')}${itYouListHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
-    <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
+    <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label title="Jumping between k-space and a wormhole system adds that k-space system’s hole to the map’s Wormholes list, with the system it leads to (on the Local log or EVE location)"><input type="checkbox" data-it-whauto${itWhStore().auto ? ' checked' : ''}> add a hole when you jump into or out of J-space</label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
     ${itRpBoxHtml(numbered)}
     ${itBridgeBoxHtml(numbered)}
     ${numbered ? '' : itAliasBoxHtml()}
@@ -31655,7 +31655,7 @@ const IT_WH_LEG_HTML = '<span><i class="ring" style="width:12px;height:12px;bord
 const IT_WH_KEY = 'tvWormholes', IT_WH_KEEP = [1, 2, 4, 8, 12, 24, 48], IT_WH_MAX_H = 48, IT_WH_MAX = 500;
 const IT_WH_LIST_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6.5 4.5h9M6.5 9h9M6.5 13.5h9"/><circle cx="3" cy="4.5" r=".9" fill="currentColor"/><circle cx="3" cy="9" r=".9" fill="currentColor"/><circle cx="3" cy="13.5" r=".9" fill="currentColor"/></svg>';
 let itWhSt = null, itWhAside = false, itWhColC = null;   // itWhAside: inside the Intel example's sandbox (an empty store, never saved)
-function itWhBlank(){ return {v: 1, rep: {}, gone: {}, keepH: 24}; }
+function itWhBlank(){ return {v: 1, rep: {}, gone: {}, keepH: 24, auto: true}; }   // 062 (A1): auto, the k-space ↔ J-space add; read as on when missing
 // read back with checks: systems on the map only, times inside the last 48 h, the hours one of the choices, at most IT_WH_MAX entries
 function itWhRead(){
   const st = itWhBlank();
@@ -31663,6 +31663,7 @@ function itWhRead(){
   try{ o = typeof localStorage === 'undefined' ? null : JSON.parse(localStorage.getItem(IT_WH_KEY) || 'null'); }catch(e){ o = null; }
   if(!o || typeof o !== 'object' || o.v !== 1) return st;
   if(IT_WH_KEEP.includes(Number(o.keepH))) st.keepH = Number(o.keepH);
+  if(o.auto === false) st.auto = false;
   const g = itGraphGet(), now = Date.now(), ok = (id, t) => Number.isInteger(id) && g.at.has(id) && Number.isFinite(t) && t >= now - IT_WH_MAX_H * 3600e3 && t <= now + 3600e3;
   for(const [k, w] of Object.entries(o.rep && typeof o.rep === 'object' ? o.rep : {})){
     const id = Number(k), t = Number(w && w.t);
@@ -31865,6 +31866,28 @@ function itWhTake(e){
   itWhSave();
   itWhListPaint(true);
 }
+// 062 (A1-A3; the owner: "when entering a wormhole from k-space, automatically add a wormhole to the wormhole list of the intel map ... the page already
+// captures all of the needed information about the wormhole aside from the signature ID in k-space"; Q8 "Switch, on", Q9 leaving a chain too): a jump
+// between k-space system k and J-space system j (whSeen, not docked) merges into k's entry as itWhTake merges a report (its IDs, details and lines
+// kept), never replaces it (itWhAdd would); the class where IT_WH_CLS_RX takes it; `jw` names j for the row's words. Never in the Intel example.
+function itWhJumpAdd(k, j, t, out){
+  if(itWhAside || !itGraphGet().at.has(k) || !whIsJ(j)) return false;
+  const st = itWhStore(), now = Date.now(); if(!st.auto || !(t >= now - st.keepH * 3600e3) || (st.gone[k] || 0) >= t) return false;
+  const r = st.rep[k], old = r && r.t >= now - st.keepH * 3600e3 ? r : null;
+  const n = old ? {...old} : {id: k, t, who: '', drifter: false, src: 'you', sigs: []};
+  n.t = Math.max(t, old ? old.t : 0); n.jw = {j, t, ...(out ? {out: true} : {})};
+  const cl = whClsName(whCls(j)); if(IT_WH_CLS_RX.test(cl)){ const inf = itWhInfoMerge(old && old.info, {cls: cl}); if(inf) n.info = inf; }
+  delete st.gone[k]; st.rep[k] = itWhDrSet(n); itWhSave(); itWhChanged();
+  return true;
+}
+// 062 (A4, Q10 "Yes"): the k-space side's ID typed on the Wormholes tab's connection end fills the Intel entry that jump made; one way only, and
+// removing either never removes the other (Q11)
+function itWhJumpSig(k, j, sig, type){
+  if(itWhAside || !sig) return;
+  const st = itWhStore(), w = st.rep[k]; if(!w || !w.jw || w.jw.j !== j || !/^[A-Z]{3}-\d{3}$/.test(sig)) return;
+  const add = [itWhSigNew(sig, false, IT_WH_TYPE[type] ? type : '', false, w.info && w.info.cls ? {cls: w.info.cls} : undefined)];
+  w.sigs = itWhSigMerge(w, add, Date.now(), '', 'you'); itWhSave(); itWhChanged();
+}
 // read back with checks (itWhRead): 044's fields, each its own shape; anything else dropped. An entry 040 wrote (no sigs) keeps its Drifter as a
 // Drifter report with no ID.
 function itWhInfoRead(o){
@@ -31897,6 +31920,9 @@ function itWhEntryRead(w, ok){
       ...(n > 1 ? {n: Math.min(99, n)} : {}), ...(r.via === 'import' ? {via: 'import'} : {})}; });   // 046: a repeat's count, a shared list's lines
   if(raws.length) o.raws = raws;
   if(w.via === 'import') o.via = 'import';
+  const jw = w.jw;   // 062 (A2): the J-space system this hole was seen to lead to, when you jumped through it (out: you came out here); the
+  // J-space ID range written out: this runs at start-up, before the Wormholes tab's part of the script (WH_LO) has run
+  if(jw && typeof jw === 'object' && Number.isInteger(jw.j) && jw.j >= 31000000 && jw.j < 32000000 && ok(Number(jw.t))) o.jw = {j: jw.j, t: Number(jw.t), ...(jw.out === true ? {out: true} : {})};
   return o;
 }
 // ---- how they show (a purple mono tag; a part ends in "…"; a Drifter one hot pink with "DR"; the title says what it is and who reported it)
@@ -32347,7 +32373,11 @@ function itWhNear(sys, now = Date.now()){
 function itWhBadgeHtml(drifter, title, short = false){ return `<span class="it-gtag it-wh${escapeHtml(drifter ? ' dr' : '')}" title="${escapeHtml(title)}">${escapeHtml(short ? (drifter ? 'DRIFTER' : 'WH') : drifter ? 'Drifter WH' : 'Wormhole')}</span>`; }   // short: the Paths to you tree (045)
 function itWhBadgeTitle(w){ const st = itWhStore(); return `${w.drifter ? 'A Drifter wormhole' : 'A wormhole'}: ${itWhByTxt(w)}, ${itAgo(w.t)} ago. The map’s Wormholes filter keeps it ${st.keepH} h`; }
 // who it's from: added by you, reported by someone, or (046) from a shared list (the owner: "I agree" to saying so)
-function itWhByTxt(w){ return w.src === 'you' ? 'added by you' : `${w.via ? 'from a shared list, ' : ''}reported by ${w.who}`; }
+function itWhByTxt(w){ return w.jw && whReady ? itWhJwTxt(w.jw) : w.src === 'you' ? 'added by you' : `${w.via ? 'from a shared list, ' : ''}reported by ${w.who}`; }
+function itWhJwTxt(jw){   // 062 (A3): "you jumped in → J123456 (C3 · Pulsar · statics D845 N968)"
+  const j = jw.j, e = whEff(j), stc = whStcSort(whStcOf(j).codes || '');
+  return `${jw.out ? 'you came out of' : 'you jumped in →'} ${whName(j)} (${[whClsName(whCls(j)), e, stc ? 'statics ' + stc : ''].filter(Boolean).join(' · ')})`;
+}
 // the map: the kept ones (map index -> entry), the live ones (Intel's, within "forget reports after" and "Map: within"), and which are marked
 // with the rings and labels (the Wormholes filter: every kept one; the other filters: the live ones, as reports)
 function itMapWh(){
@@ -32521,7 +32551,7 @@ function itWhRowsHtml(){
     const j = my ? itJumps(my, w.id) : null, left = Math.max(1, Math.ceil((w.t + st.keepH * 3600e3 - now) / 3600e3)), name = itSysName(w.id);
     const by = `${itWhByTxt(w)} · ${itAgo(w.t)} ago · gone in ${left} h`;
     return `<div class="it-whp-r"><span class="it-whp-j">${itJumpsHtml(j)}</span><button type="button" class="it-whp-s it-sn it-whp-go ${escapeHtml(itSecClass(w.id))}" data-it-whgo="${Number(w.id)}" title="Show on the map">${escapeHtml(name)}</button>${itWhBadgeHtml(w.drifter, '')}`
-      + `<span class="it-whp-by">${itWhRawTogHtml(w)}${itWhSigsHtml(w.sigs, 4, w.id)}${itWhInfoHtml(w.info, w.t)}${escapeHtml(by)}</span><button type="button" data-it-whrm="${Number(w.id)}" aria-label="${escapeHtml(`Remove ${name}`)}">Remove</button>${itWhRawHtml(w)}</div>`;
+      + `<span class="it-whp-by"${w.jw && whReady && whEff(w.jw.j) ? ` title="${escapeHtml(whEffTxt(w.jw.j))}"` : ''}>${itWhRawTogHtml(w)}${itWhSigsHtml(w.sigs, 4, w.id)}${itWhInfoHtml(w.info, w.t)}${escapeHtml(by)}</span><button type="button" data-it-whrm="${Number(w.id)}" aria-label="${escapeHtml(`Remove ${name}`)}">Remove</button>${itWhRawHtml(w)}</div>`;
   }).join('');
 }
 // ---- build queue 053: the Sov upgrades filter (Project doc roadmap/intel-layout-sov-plan.md section 5; mockup Claude outputs/
@@ -33476,6 +33506,7 @@ function rsBind(root){
     if(t.dataset.itSndfile !== undefined){ const sl = t.dataset.slot || 'near', f = t.files && t.files[0]; t.value = ''; itSndPick(sl, f).then(() => { const again = el.querySelector(`[data-it-snd="${sl}"]`); if(again) again.focus({preventScroll: true}); }); return; }
     if(t.dataset.itVol !== undefined){ it.set.volume = Math.max(0, Math.min(100, Number(t.value) || 0)); itWriteSet(); itRender(true); const again = el.querySelector('[data-it-vol]'); if(again) again.focus({preventScroll: true}); return; }
     if(t.dataset.itWhkeep !== undefined){ itWhSetKeep(Number(t.value)); return; }   // build queue 040: kept in tvWormholes, not dscanIntel
+    if(t.dataset.itWhauto !== undefined){ const st = itWhStore(); st.auto = t.checked; itWhSave(); return; }   // 062 (A1): beside it, in tvWormholes too
     const k = t.dataset.itSet;
     if(!k) return;
     if(k === 'range' || k === 'forget' || k === 'killRange') it.set[k] = Number(t.value);
@@ -34102,6 +34133,7 @@ function whEndSet(l, n, sig, type){
   const k = whLinkKey(l.a, l.b), e = whS.ends[k] || (whS.ends[k] = {});
   if(sig || type) e[n] = {sig, type}; else delete e[n];
   if(!Object.keys(e).length) delete whS.ends[k];
+  if(sig && !whIsJ(n)) itWhJumpSig(n, l.a === n ? l.b : l.a, sig, type);   // 062 (A4): the k-space end's ID fills the Intel entry its jump made
 }
 function whEndGone(l, n, t){ const e = whEnd(l, n); if(!e || !e.sig) return false; if(t) e.gone = t; else delete e.gone; return true; }
 // P12: the connection a scanned ID in system n is: this end's own ID (whole, or a part only it fits), else the old single ID
@@ -34161,7 +34193,7 @@ function whSeen(id, t, docked){
   if(id === S.last){ S.lastT = t; return; }
   const prev = S.last; S.last = id; S.lastT = t;
   const j = whIsJ(id), jp = prev !== null && whIsJ(prev);
-  if(prev !== null && (j || jp) && !docked){ whAddSys(prev, t); whAddSys(id, t); whAddLink(prev, id, t); whSave(); }   // a hole: from where you were last
+  if(prev !== null && (j || jp) && !docked){ whAddSys(prev, t); whAddSys(id, t); whAddLink(prev, id, t); whSave(); if(j !== jp) itWhJumpAdd(j ? prev : id, j ? id : prev, t, !j); }   // a hole: from where you were last; 062 (A1) k ↔ J also Intel's list
   else if(j && whAddSys(id, t)) whSave();   // into a hole docked (a clone jump into your own structure, say), or the first reading: the system, no connection
   if(j) S.sel = id;
   const kind = j ? 'j' : 'k', was = S.kind; S.kind = kind;
