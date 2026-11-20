@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-JR+U/38wxGj+BWuRjN75l1jS2bWLqZVBoFD4ZV9GhWA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-qisG2Tf6aGmi6SsLX7q+LuCkpmVWaUNJR6xVfg1uvyU='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3332,6 +3332,18 @@
   .wh-pnb{display:flex; flex-direction:column; gap:8px; font:13px var(--sans); color:var(--text);}
   .wh-box:has(.wh-pnl:not([hidden])) .wh-gsel{left:392px;}   /* N selected: right of the rail, and of the panel while it shows */
   .wh-sh{display:flex; flex-wrap:wrap; align-items:center; gap:6px;} .wh-shn{font:700 16px var(--sans); color:var(--heading);} .wh-sh .it-gtag{margin-left:0;}
+  /* 062 (R5): the Routes panel. A row on --panel-2 (rule B's rows); the strip is new on purpose (nothing on the page draws a route as squares), its colours
+     the page's security classes (.it-sn) and --it-wh; a jump through a hole round, a flagged system underlined (not colour alone) */
+  .wh-rt-top{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px;} .wh-rt-top label.mys-use{margin-left:auto;}
+  .wh-rt-list{display:flex; flex-direction:column; gap:2px; position:relative;}
+  .wh-rt-row{padding:5px 6px; border-radius:4px; background:var(--panel-2);}
+  .wh-rt-l1{display:flex; align-items:center; gap:6px; min-height:24px; font-size:12px;} .wh-rt-sec{font:600 11px var(--mono, monospace); min-width:26px;}
+  .wh-rt-n{margin-left:auto; color:var(--heading); font-variant-numeric:tabular-nums;}
+  .wh-rt-strip{display:flex; flex-wrap:wrap; gap:2px; margin:4px 0 1px; touch-action:pan-y;}
+  .wh-rt-q{width:10px; height:10px; border-radius:2px; background:currentColor; box-sizing:border-box;} .wh-rt-q.j{color:var(--it-wh);} .wh-rt-q.hole{border-radius:50%;}
+  .wh-rt-q.fl{box-shadow:0 2px 0 var(--amber);} .wh-rt-strip.hov .wh-rt-q:not(.on){opacity:.3;} .wh-rt-q:focus-visible{outline:2px solid var(--cyan); outline-offset:1px;}
+  @media (max-width:599px){ .wh-rt-l1{flex-wrap:wrap;} .wh-rt-strip{min-height:44px; align-content:center; gap:3px;} .wh-rt-q{width:14px; height:14px;}
+    .wh-rt-top button, .wh-rt-top label.mys-use, .wh-rt-l1 .wh-n{min-height:44px;} .wh-rt-l1 button.it-sigx{margin:0;} }
   .wh-kv{display:grid; grid-template-columns:max-content minmax(0, 1fr); gap:2px 8px; font:12px var(--sans);} .wh-kv > span{color:var(--text-dim);} .wh-kv > b{font-weight:600; color:var(--text);}
   .wh-sub{font:700 11px var(--sans); text-transform:uppercase; letter-spacing:.5px; color:var(--text-dim); margin-top:2px;}
   .wh-rep{display:flex; flex-wrap:wrap; gap:4px;}
@@ -29906,7 +29918,7 @@ function itSettingsHtml(numbered){
     <div class="it-box">${n(1, 'Chat logs folder')}<div class="v">${it.dir ? escapeHtml(it.dirName) : 'not chosen'}</div>${itFolderStateHtml()}</div>
     <div class="it-box${itWaitHtml('cls')}">${n(2, 'Intel channels')}${itWaitHtml('note')}${itChansHtml(chans)}</div>
     <div class="it-box">${n(3, 'You')}${itYouListHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
-    <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label title="Jumping between k-space and a wormhole system adds that k-space system’s hole to the map’s Wormholes list, with the system it leads to (on the Local log or EVE location)"><input type="checkbox" data-it-whauto${itWhStore().auto ? ' checked' : ''}> add a hole when you jump into or out of J-space</label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
+    <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label title="Jumping between k-space and a wormhole system adds that k-space system’s hole to the map’s Wormholes list, with the system it leads to (on the Local log or EVE location)"><input type="checkbox" data-it-whauto${itOnHtml(itWhStore().auto, 'checked')}> add a hole when you jump into or out of J-space</label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
     ${itRpBoxHtml(numbered)}
     ${itBridgeBoxHtml(numbered)}
     ${numbered ? '' : itAliasBoxHtml()}
@@ -32374,6 +32386,7 @@ function itWhBadgeHtml(drifter, title, short = false){ return `<span class="it-g
 function itWhBadgeTitle(w){ const st = itWhStore(); return `${w.drifter ? 'A Drifter wormhole' : 'A wormhole'}: ${itWhByTxt(w)}, ${itAgo(w.t)} ago. The map’s Wormholes filter keeps it ${st.keepH} h`; }
 // who it's from: added by you, reported by someone, or (046) from a shared list (the owner: "I agree" to saying so)
 function itWhByTxt(w){ return w.src === 'chain' ? `on your chain → ${whName(w.chain)} (${[whClsName(whCls(w.chain)), whEff(w.chain)].filter(Boolean).join(' · ')})` : w.jw && whReady ? itWhJwTxt(w.jw) : w.src === 'you' ? 'added by you' : `${w.via ? 'from a shared list, ' : ''}reported by ${w.who}`; }
+function itWhJwTitleHtml(w){ return w.jw && whReady && whEff(w.jw.j) ? ` title="${escapeHtml(whEffTxt(w.jw.j))}"` : ''; }   // 062 (A3): the effect's numbers on hover
 function itWhJwTxt(jw){   // 062 (A3): "you jumped in → J123456 (C3 · Pulsar · statics D845 N968)"
   const j = jw.j, e = whEff(j), stc = whStcSort(whStcOf(j).codes || '');
   return `${jw.out ? 'you came out of' : 'you jumped in →'} ${whName(j)} (${[whClsName(whCls(j)), e, stc ? 'statics ' + stc : ''].filter(Boolean).join(' · ')})`;
@@ -32561,7 +32574,7 @@ function itWhRowsHtml(){
     const j = my ? itJumps(my, w.id) : null, left = Math.max(1, Math.ceil((w.t + st.keepH * 3600e3 - now) / 3600e3)), name = itSysName(w.id);
     const by = `${itWhByTxt(w)} · ${itAgo(w.t)} ago · gone in ${left} h`;
     return `<div class="it-whp-r"><span class="it-whp-j">${itJumpsHtml(j)}</span><button type="button" class="it-whp-s it-sn it-whp-go ${escapeHtml(itSecClass(w.id))}" data-it-whgo="${Number(w.id)}" title="Show on the map">${escapeHtml(name)}</button>${itWhBadgeHtml(w.drifter, '')}`
-      + `<span class="it-whp-by"${w.jw && whReady && whEff(w.jw.j) ? ` title="${escapeHtml(whEffTxt(w.jw.j))}"` : ''}>${itWhRawTogHtml(w)}${itWhSigsHtml(w.sigs, 4, w.id)}${itWhInfoHtml(w.info, w.t)}${escapeHtml(by)}</span><button type="button" data-it-whrm="${Number(w.id)}" aria-label="${escapeHtml(`Remove ${name}`)}">Remove</button>${itWhRawHtml(w)}</div>`;
+      + `<span class="it-whp-by"${itWhJwTitleHtml(w)}>${itWhRawTogHtml(w)}${itWhSigsHtml(w.sigs, 4, w.id)}${itWhInfoHtml(w.info, w.t)}${escapeHtml(by)}</span><button type="button" data-it-whrm="${Number(w.id)}" aria-label="${escapeHtml(`Remove ${name}`)}">Remove</button>${itWhRawHtml(w)}</div>`;
   }).join('');
 }
 // ---- build queue 053: the Sov upgrades filter (Project doc roadmap/intel-layout-sov-plan.md section 5; mockup Claude outputs/
@@ -32996,6 +33009,29 @@ function itRpFlags(){
   if(s.mine) for(const id of s.list) add(g.at.get(id), 'avoid list');
   return out;
 }
+// 062 (R1, the plan: "split the search out of itRpUpdate into one function both call, so the two never drift"): 047's search, as it was. N nodes,
+// from src: fewest flagged systems on the way (flag(x): x counts once you go through it; the destination never does), then the cost of entering each
+// system (cost(y)), then the fewest jumps; neighbours in the order nb(x) gives them, so one route each. {f, c, len, par}
+function itRpSearch(N, src, nb, cost, flag){
+  const f = new Int32Array(N).fill(1 << 30), c = new Float64Array(N).fill(Infinity), len = new Int32Array(N).fill(-1), par = new Int32Array(N).fill(-1), done = new Uint8Array(N);
+  f[src] = 0; c[src] = 0; len[src] = 0;
+  const near = (a, b) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a));
+  const less = (a, b) => f[a] < f[b] || (f[a] === f[b] && (near(c[a], c[b]) ? len[a] < len[b] : c[a] < c[b]));
+  const h = [src];
+  const up = (k) => { while(k > 0){ const q = (k - 1) >> 1; if(!less(h[k], h[q])) break; [h[k], h[q]] = [h[q], h[k]]; k = q; } };
+  const down = (k) => { for(;;){ const l = 2 * k + 1, r = l + 1; let m = k; if(l < h.length && less(h[l], h[m])) m = l; if(r < h.length && less(h[r], h[m])) m = r; if(m === k) break; [h[k], h[m]] = [h[m], h[k]]; k = m; } };
+  while(h.length){
+    const x = h[0], last = h.pop(); if(h.length){ h[0] = last; down(0); }
+    if(done[x]) continue; done[x] = 1;
+    const fx = f[x] + (x !== src && flag(x) ? 1 : 0);   // a system counts once you go through it: the destination never does
+    for(const y of nb(x)){
+      if(done[y]) continue;
+      const cy = c[x] + cost(y), ly = len[x] + 1;
+      if(fx < f[y] || (fx === f[y] && (near(cy, c[y]) ? ly < len[y] : cy < c[y]))){ f[y] = fx; c[y] = cy; len[y] = ly; par[y] = x; h.push(y); up(h.length - 1); }
+    }
+  }
+  return {f, c, len, par};
+}
 // Threat Vector's route from your system to every system (a search on (flagged, cost, jumps), neighbours in index order: one route each)
 function itRpUpdate(){
   if(itRpAside || !itm.P || itm.home < 0) return false;
@@ -33007,23 +33043,7 @@ function itRpUpdate(){
   const key = `${home}|${s.pref}|${pen}|${[...flags].map(([i, w]) => `${i}:${w.join('+')}`).sort().join(',')}|jb:${jo ? Z.used.join(',') : ''}`;
   if(key === itRp.key && itRp.par && itRp.home === home){ itRp.flags = flags; return false; }
   const nb = jo ? (x) => { const e = jo.get(x); return e ? T.adj[x].concat(e) : T.adj[x]; } : (x) => T.adj[x];   // a bridge jump costs as a gate jump into its arrival
-  const n = T.n, p = Math.exp(0.15 * pen), f = new Int32Array(n).fill(1 << 30), c = new Float64Array(n).fill(Infinity), len = new Int32Array(n).fill(-1), par = new Int32Array(n).fill(-1), done = new Uint8Array(n);
-  f[home] = 0; c[home] = 0; len[home] = 0;
-  const near = (a, b) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a));
-  const less = (a, b) => f[a] < f[b] || (f[a] === f[b] && (near(c[a], c[b]) ? len[a] < len[b] : c[a] < c[b]));
-  const h = [home];
-  const up = (k) => { while(k > 0){ const q = (k - 1) >> 1; if(!less(h[k], h[q])) break; [h[k], h[q]] = [h[q], h[k]]; k = q; } };
-  const down = (k) => { for(;;){ const l = 2 * k + 1, r = l + 1; let m = k; if(l < h.length && less(h[l], h[m])) m = l; if(r < h.length && less(h[r], h[m])) m = r; if(m === k) break; [h[k], h[m]] = [h[m], h[k]]; k = m; } };
-  while(h.length){
-    const x = h[0], last = h.pop(); if(h.length){ h[0] = last; down(0); }
-    if(done[x]) continue; done[x] = 1;
-    const fx = f[x] + (x !== home && flags.has(x) ? 1 : 0);   // a system counts once you go through it: the destination never does
-    for(const y of nb(x)){
-      if(done[y]) continue;
-      const cy = c[x] + itRpCost(T, y, s.pref, p), ly = len[x] + 1;
-      if(fx < f[y] || (fx === f[y] && (near(cy, c[y]) ? ly < len[y] : cy < c[y]))){ f[y] = fx; c[y] = cy; len[y] = ly; par[y] = x; h.push(y); up(h.length - 1); }
-    }
-  }
+  const n = T.n, p = Math.exp(0.15 * pen), {f, len, par} = itRpSearch(n, home, nb, (y) => itRpCost(T, y, s.pref, p), (x) => flags.has(x));   // 062 (R1): the search shared with the Routes panel
   // 057: the fewest jumps over the same graph, for the tooltip's "(shortest N)" (041 compared with the stargates alone)
   let sd = null;
   if(jo){ sd = new Int16Array(n).fill(-1); sd[home] = 0; const q = [home]; for(let k = 0; k < q.length; k++){ const x = q[k]; for(const y of nb(x)) if(sd[y] < 0){ sd[y] = sd[x] + 1; q.push(y); } } }
@@ -33941,6 +33961,7 @@ const WH_STC_ABC = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx
 const WH_STC_NOTE = {list: 'from the community list (Wanderer) · type your own to replace them', you: 'typed by you'};   // D3
 // 056: the System panel's map control, the ringed planet (the owner: "A"; our own drawing) and which panel is open, kept as you left it ("As you left it")
 const WH_SYS_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="4.4"/><path d="M3.1 11.6C1.2 13.2.9 14.5 1.7 15c1.6 1 6.4-1 10.3-4.4 3.9-3.4 5.6-6.9 4-7.7-.7-.4-2 0-3.5 1"/></svg>';
+const WH_RT_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="4" cy="4" r="2"/><circle cx="14" cy="9" r="2"/><circle cx="5" cy="14.5" r="2"/><path d="M6 4.6c4 .4 6 1.6 6.4 3M12.3 10.6c-1.4 2.3-3.4 3.4-5.4 3.8"/></svg>';   // 062 (R7): the Routes panel's control, three stops on a path
 const WH_PN_KEY = 'tvWhPanels';   // {v: 1, open: 'sum' | ''}: shut the first time and on anything it can't read; the older page never reads it
 // 051 (part 2, D25 / D26 / D34): the system menu. A status shown as the box's border colour, a tag, Lock (the owner: "LOCK is all we need ...
 // just need the lock to prevent accidental deletions of home systems for example"), Copy the name, Remove. Kept under their own key, tvWhMarks
@@ -34281,10 +34302,12 @@ function whShellHtml(){
 }
 function whAddSelHtml(k){ return `<select name="${escapeHtml(k)}" aria-label="${escapeHtml(k[0].toUpperCase() + k.slice(1) + ' (optional)')}">${itWhOptHtml(k)}</select>`; }
 function whRailHtml(){   // 056: one map control per working panel at the map's top left (hidden until the map has a system, the owner: "A"), its panel beside it: a view, not a dialog
-  return `<div class="it-map-rail wh-rail" role="toolbar" aria-label="Map panels" hidden><button type="button" data-wh-rp="sum" aria-controls="whPnSum" aria-pressed="false" title="System (press to show the panel)" aria-label="System (press to show the panel)">${WH_SYS_ICON}</button></div>`
-    + `<section class="wh-pnl" id="whPnSum" aria-label="System" hidden><h3>System</h3><div class="wh-pnb" data-pnb="sum"></div></section>`;
+  return `<div class="it-map-rail wh-rail" role="toolbar" aria-label="Map panels" hidden><button type="button" data-wh-rp="sum" aria-controls="whPnSum" aria-pressed="false" title="System (press to show the panel)" aria-label="System (press to show the panel)">${WH_SYS_ICON}</button>`
+    + `<button type="button" data-wh-rp="rt" aria-controls="whPnRt" aria-pressed="false" title="Routes (press to show the panel)" aria-label="Routes (press to show the panel)">${WH_RT_ICON}</button></div>`   // 062 (R7)
+    + `<section class="wh-pnl" id="whPnSum" aria-label="System" hidden><h3>System</h3><div class="wh-pnb" data-pnb="sum"></div></section>`
+    + `<section class="wh-pnl" id="whPnRt" aria-label="Routes" hidden><h3>Routes</h3><div class="wh-pnb" data-pnb="rt"></div></section>`;
 }
-function whPnRead(){ try{ const o = JSON.parse(localStorage.getItem(WH_PN_KEY) || 'null'); return o && o.v === 1 && o.open === 'sum' ? 'sum' : ''; }catch(e){ return ''; } }
+function whPnRead(){ try{ const o = JSON.parse(localStorage.getItem(WH_PN_KEY) || 'null'); return o && o.v === 1 && (o.open === 'sum' || o.open === 'rt') ? o.open : ''; }catch(e){ return ''; } }   // 062: 'rt' (an older page reads it as shut)
 function whPnSet(open, quiet){   // the rail's button, and a click on a system (quiet: whSelect draws next)
   const S = whS; S.open = open; try{ localStorage.setItem(WH_PN_KEY, JSON.stringify({v: 1, open})); }catch(e){ }
   if(!quiet){ S.pn = {}; whPanels(); }   // the view stays where it is (as Near You); ⤢ then fits in the uncovered part
@@ -34345,7 +34368,7 @@ function whView(){ const cv = whCv(); return {w: cv.clientWidth, h: cv.clientHei
 function whToWorld(sx, sy){ const M = whS.M; return {x: M.cam.x + sx / M.cam.s, y: M.cam.y + sy / M.cam.s}; }
 function whHit(w){ let hit = null; for(const [n, p] of whS.M.P) if(w.x >= p.x && w.x <= p.x + WH_NW && w.y >= p.y && w.y <= p.y + WH_NH) hit = n; return hit; }
 function whFree(){   // the part of the map no panel or control covers: Fit and "bring you into view" aim there
-  const v = whView(), box = whS.el.querySelector('.wh-box').getBoundingClientRect(), pn = whS.el.querySelector('#whPnSum'), r = {l: 0, t: 48, r: v.w, b: v.h};
+  const v = whView(), box = whS.el.querySelector('.wh-box').getBoundingClientRect(), pn = whS.el.querySelector('.wh-pnl:not([hidden])'), r = {l: 0, t: 48, r: v.w, b: v.h};   // 062: whichever panel is open
   if(pn && !pn.hidden){ const q = pn.getBoundingClientRect(), l = q.right - box.left + 4; if(q.width && v.w - l >= 96) r.l = l; }   // 056: right of the open panel; a phone's sheet leaves too little: the whole map (as itMapFree)
   return {...r, w: r.r - r.l, h: r.b - r.t};
 }
@@ -34416,6 +34439,7 @@ function whDraw(){
     if(Math.abs(b.y - a.y) > Math.abs(b.x - a.x)) c.bezierCurveTo(a.x, (a.y + b.y) / 2, b.x, (a.y + b.y) / 2, b.x, b.y); else c.bezierCurveTo((a.x + b.x) / 2, a.y, (a.x + b.x) / 2, b.y, b.x, b.y);
     c.stroke(); c.setLineDash([]);   // 059: no text on the lines any more; each end's ID is its mark (whEndMarks)
   }
+  whRtGlow(c, ctr, C);   // 062 (R6): a hovered route's hole steps, under the boxes
   for(const [n, p] of M.P){
     const sy = st.sys[n], k = !whIsJ(n), sk = k ? whSecKey(n) : null, kc = sk === null ? C.k : IT_MAP_SEC[sk], cl = whCls(n);
     if(M.group.has(n)){ c.strokeStyle = C.lo; c.lineWidth = 1.5; c.setLineDash([4, 3]); c.beginPath(); c.roundRect(p.x - 7, p.y - 7, WH_NW + 14, WH_NH + 14, 8); c.stroke(); c.setLineDash([]); }
@@ -34444,6 +34468,7 @@ function whDraw(){
       c.fillStyle = sc || C.text; c.fillText(tg, tx + 5, ty + 9);
     }
   }
+  whRtOver(c, C, font);   // 062 (R6): its systems outlined and the exit's pill
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   whEndMarks(c, C, dpr, w, h);
   if(M.band){ const b = M.band, x = Math.min(b.x0, b.x1), y = Math.min(b.y0, b.y1); c.globalAlpha = 0.1; c.fillStyle = C.lo; c.fillRect(x, y, Math.abs(b.x1 - b.x0), Math.abs(b.y1 - b.y0)); c.globalAlpha = 1;
@@ -34551,9 +34576,9 @@ function whTagPillHtml(n){ const m = whMk(n); return m.tag ? `<span class="it-gt
 function whEffKvHtml(n){   // 062 (E3): one row a line, under the Effect line (the panel's own label / value rows)
   if(!whEff(n)) return '';
   const l = whEffLines(n);
-  return l.length ? `<div class="wh-kv" data-wh-eff>${l.map(([w, v]) => `<span>${escapeHtml(w)}</span><b>${escapeHtml(whEffPct(v))}</b>`).join('')}</div>`
-    : '<div class="wh-kv" data-wh-eff><span>Its numbers</span><b>not in the page’s data yet for this system</b></div>';
+  return l.length ? `<div class="wh-kv" data-wh-eff>${whEffRowsHtml(l)}</div>` : '<div class="wh-kv" data-wh-eff><span>Its numbers</span><b>not in the page’s data yet for this system</b></div>';
 }
+function whEffRowsHtml(l){ return l.map(([w, v]) => `<span>${escapeHtml(w)}</span><b>${escapeHtml(whEffPct(v))}</b>`).join(''); }
 function whLockKvHtml(n){ return whLocked(n) ? '<div class="wh-kv"><span>Locked</span><b>can’t be moved or removed until you unlock it</b></div>' : ''; }
 function whRmHtml(n){
   if(whP3(n).ask && whP3(n).ask.k === 'del') return whAskHtml(`Remove ${whName(n)} and its connections?`, [['del-yes', 'Remove'], ['del-no', 'Cancel']]);   // P20: asks first
@@ -35032,6 +35057,11 @@ function whPanels(){
   const t = `System${n === null ? '' : ': ' + whName(n)} (press to ${on ? 'hide' : 'show'} the panel)`;   // written only when it changes
   if(btn.title !== t){ btn.title = t; btn.setAttribute('aria-label', t); }
   if(btn.getAttribute('aria-pressed') !== String(on)) btn.setAttribute('aria-pressed', String(on));
+  const rt = has && S.open === 'rt', rp = S.el.querySelector('#whPnRt'), rb = rail.querySelector('[data-wh-rp="rt"]');   // 062 (R7): one panel open at a time
+  if(rp.hidden === rt) rp.hidden = !rt;
+  if(rb.getAttribute('aria-pressed') !== String(rt)) rb.setAttribute('aria-pressed', String(rt));
+  if(rt){ const b = rp.querySelector('[data-pnb="rt"]'), html = whRtHtml();
+    if(S.pn.rt !== html && !(b.contains(document.activeElement) && document.activeElement.matches(WH_TYPING))){ S.pn.rt = html; whRtState().hov = null; b.innerHTML = whRtHtml(); } }
   if(!on) return;   // 056: System's body is written only while it shows (LESSON #120); opening clears S.pn, so it is written then
   const b = pnl.querySelector('[data-pnb="sum"]'), html = n === null ? '' : whSumHtml(n);
   if(S.pn.sum !== html && !(b.contains(document.activeElement) && document.activeElement.matches(WH_TYPING))){ S.pn.sum = html; b.innerHTML = n === null ? '' : whSumHtml(n); }   // never under a field being typed in (a builder, for check_html_sinks)
@@ -35110,7 +35140,7 @@ function whHereAdd(f){
 }
 // ---- the system menu (051, D25): right-click a system, or press and hold on a phone. A menu, so no close button: Esc, a press outside or a pick
 // closes it; focus on its first item, the arrows move. Status (D26), a tag, Lock / Unlock (D34), Copy the name, Remove (refused while locked).
-// "Routes from here" waits for the Routes panel (part 4), so it isn't in the menu yet.
+// "Routes from here" and "Pin route" came with the Routes panel (062).
 function whStLabel(k){ const x = WH_ST.find(e => e[0] === k); return x ? x[1] : ''; }
 function whMenuStHtml(m){
   return WH_ST.map(([k, l]) => `<button type="button" class="wh-mi st-${escapeHtml(k)}" role="menuitemradio" aria-checked="${escapeHtml(String(m.st === k))}" data-wh-m="st:${escapeHtml(k)}"><i class="wh-sw" aria-hidden="true"></i>${escapeHtml(l)}</button>`).join('')
@@ -35125,6 +35155,7 @@ function whMenuHtml(n){
   return `<div class="wh-mh" role="none">${whNameHtml(n)}</div><div class="wh-mg" role="group" aria-label="Status">${whMenuStHtml(m)}</div>`
     + `<div class="wh-mtag" role="none"><input type="text" maxlength="${WH_TAG_MAX}" value="${escapeHtml(m.tag || '')}" placeholder="Tag, e.g. A1" aria-label="Tag, up to 8 letters" spellcheck="false" autocomplete="off" data-wh-mtag><button type="button" class="wh-mi" role="menuitem" data-wh-m="tag">Set tag</button></div>`
     + `<button type="button" class="wh-mi" role="menuitem" data-wh-m="lock">${escapeHtml(m.lock ? 'Unlock' : 'Lock (can’t be moved or removed)')}</button>`
+    + `<button type="button" class="wh-mi" role="menuitem" data-wh-m="pin">${escapeHtml(whRtState().pins.includes(Number(n)) ? 'Unpin route' : 'Pin route')}</button><button type="button" class="wh-mi" role="menuitem" data-wh-m="route">Routes from here</button>`   // 062 (R3, R4)
     + `<button type="button" class="wh-mi" role="menuitem" data-wh-m="copy">Copy the name</button>${whMenuRmHtml(n, m)}`;
 }
 function whMenuOpen(n, x, y){
@@ -35153,6 +35184,7 @@ function whMenuAct(act){
   const S = whS, n = S.menu; if(n === null || !S.st.sys[n]){ whMenuClose(true); return; }
   const [k, v] = act.split(':'), nm = whName(n), m = S.mk[n] || (S.mk[n] = {});
   if(k === 'copy'){ whCopyName(n); return; }
+  if(k === 'pin' || k === 'route'){ const R = whRtState(); whMenuClose(false); if(k === 'pin') whRtPin(n); else { R.from = n; R.key = ''; } R.msg = ''; whPnSet('rt'); return; }   // 062: both open Routes
   if(k === 'del'){   // 059 (P20): asks first, in the menu; a locked system keeps its refusal with no question
     if(m.lock){ whMsg(WH_LOCKED(nm)); return; }
     const it0 = S.el.querySelector('.wh-smenu [data-wh-m="del"]'); if(!it0) return;
@@ -35196,6 +35228,154 @@ function whEdit(f){
   }
   whSave(); S.pn = {}; whPaint(true);
 }
+// ---- build queue 062 (part 4; Project doc roadmap/wormholes-part4-plan.md, R1-R9; mockup Claude outputs/wh_part4_mockup.html): the Routes panel. The owner:
+// "this needs to more closely reflect the in-game routing.", "we need to be able to pin multiple systems that the page will automatically calculate the
+// route to each time we navigate another system/wormhole.", "the game's routing doesn't work inside of wormholes so it's only meant to be a point of
+// reference."; on a hole step "sig id is useful if it was recorded but not required"; "get rid of the "set destination" button and we'll just show the
+// route as it's represented in the panel." So: nothing is sent to EVE from here. One search from where you are over the stargates, the bridge
+// directions 057 lets you use and every connection of your chain both ways (R1; 047's order and cost, itRpSearch), worked out again only when its key
+// changes (R8). A hole into J-space costs as into nullsec (R2); the hole jumps count as jumps. Your statuses never change a route (Q2 "Ignore statuses").
+// Pins kept in this browser: tvWhRoutes {v: 1, pins: [system ids, as pinned], short} (an older page never reads it; R4: separate from Intel's map pins)
+const WH_RT_KEY = 'tvWhRoutes', WH_RT_MAX = 30;
+var whRt = null;   // var: whPanels may ask before this line has run
+function whRtState(){
+  if(whRt) return whRt;
+  const o = whJson(WH_RT_KEY) || {}, pins = [];
+  for(const x of Array.isArray(o.pins) ? o.pins : []) if(Number.isInteger(x) && x > 0 && !pins.includes(x) && pins.length < WH_RT_MAX) pins.push(x);
+  return (whRt = {pins, short: o.short === true, from: null, key: '', res: null, hov: null, msg: ''});
+}
+function whRtSave(){ const R = whRtState(); whPut(WH_RT_KEY, {v: 1, pins: R.pins, short: R.short}); }
+function whRtPin(id, on){
+  const R = whRtState(), k = R.pins.indexOf(id), want = on === undefined ? k < 0 : on;
+  if(want && k < 0){ if(R.pins.length >= WH_RT_MAX){ R.msg = `At most ${WH_RT_MAX} pinned systems: unpin one first.`; return false; } R.pins.push(id); }
+  else if(!want && k >= 0) R.pins.splice(k, 1);
+  whRtSave(); R.key = ''; return true;
+}
+// the graph: the map table's systems (its indexes), then your chain's J-space systems; hole edges both ways, in the chain's order
+function whRtGraph(){
+  const T = itMapTable(), g = itGraphGet(); if(!T) return null;
+  const n = T.n, st = whS.st, J = Object.keys(st.sys).map(Number).filter(whIsJ).sort((a, b) => a - b), jx = new Map(J.map((id, k) => [id, n + k]));
+  const idx = (id) => whIsJ(id) ? jx.get(id) : g.at.get(id), idOf = (x) => x < n ? g.ids[x] : J[x - n], hole = new Map();
+  const put = (a, b, l) => { const h = hole.get(a); if(h) h.push([b, l]); else hole.set(a, [[b, l]]); };
+  for(const l of st.links){ const a = idx(l.a), b = idx(l.b); if(a === undefined || b === undefined || a === b) continue; put(a, b, l); put(b, a, l); }
+  return {T, n, N: n + J.length, idx, idOf, hole};
+}
+function whRtHome(){ for(const id of Object.keys(whS.st.sys).map(Number).sort((a, b) => a - b)) if(whMk(id).st === 'home') return id; return null; }   // Q3
+function whRtFrom(){ const R = whRtState(), S = whS; return R.from !== null && (S.st.sys[R.from] || itGraphGet().at.has(R.from)) ? R.from : S.last; }
+function whRtRows(){
+  const R = whRtState(), S = whS, from = whRtFrom();
+  if(from === null) return {err: 'You aren’t on the map yet: jump into a wormhole, or turn on Intel or Use my game location.'};
+  const G = whRtGraph(); if(!G) return {err: 'The map isn’t ready yet.'};
+  const src = G.idx(from); if(src === undefined) return {err: `${whName(from)} isn’t on the map.`};
+  const s0 = itRpSet(), pref = R.short ? 'Shorter' : s0.pref, pen = pref === 'Shorter' ? 0 : s0.pen, flags = itRpFlags(), Z = itJbZones(), jo = Z.st === 'ok' && Z.out.size ? Z.out : null, home = whRtHome();
+  const key = JSON.stringify([from, R.pins, pref, pen, S.st.links.map(l => [l.a, l.b, l.life, l.mass, l.size, whEnd(l, l.a), whEnd(l, l.b)]), [...flags].map(([i, w]) => i + ':' + w.join('+')), jo ? Z.used : 0, home]);
+  if(key === R.key && R.res) return R.res;
+  const p = Math.exp(0.15 * pen), nb = (x) => { let a = x < G.n ? G.T.adj[x] : []; const e = jo && x < G.n ? jo.get(x) : null; if(e) a = a.concat(e); const h = G.hole.get(x); return h ? a.concat(h.map(q => q[0])) : a; };
+  const Q = itRpSearch(G.N, src, nb, (y) => y < G.n ? itRpCost(G.T, y, pref, p) : pref === 'Shorter' ? 1 : 2 * p, (x) => x < G.n && flags.has(x));   // R2: J-space as nullsec
+  const kindOf = (x, y) => x < G.n && y < G.n && G.T.adj[x].includes(y) ? 'gate' : jo && x < G.n && (jo.get(x) || []).includes(y) ? 'bridge' : 'hole';
+  const linkOf = (x, y) => ((G.hole.get(x) || []).find(q => q[0] === y) || [])[1] || null;
+  const mk = (kind, t, id) => {
+    if(t === undefined || t === null || t < 0 || Q.len[t] < 0) return {kind, id, none: true};
+    const path = []; for(let x = t; x >= 0 && path.length <= G.N; x = Q.par[x]){ path.push(x); if(x === src) break; } path.reverse();
+    const hops = [];
+    for(let k = 1; k < path.length; k++){ const x = path[k - 1], y = path[k], kd = kindOf(x, y);
+      hops.push({a: G.idOf(x), b: G.idOf(y), kind: kd, l: kd === 'hole' ? linkOf(x, y) : null, flag: k < path.length - 1 && y < G.n && flags.has(y) ? flags.get(y) : null}); }
+    return {kind, id: G.idOf(t), hops, holes: hops.filter(h => h.kind === 'hole').length, warn: hops.filter(h => h.flag).length};
+  };
+  const best = (band) => { let b = -1; for(let x = 0; x < G.n; x++){ if(Q.len[x] < 0 || itRpBand(G.T, x) !== band) continue;
+    if(b < 0 || Q.f[x] < Q.f[b] || (Q.f[x] === Q.f[b] && (Q.c[x] < Q.c[b] || (Q.c[x] === Q.c[b] && Q.len[x] < Q.len[b])))) b = x; } return b; };
+  const out = [];
+  if(home !== null && home !== from) out.push(mk('home', G.idx(home), home));
+  for(const [kind, band] of [['hs', 2], ['ls', 1]]){ const b = best(band); if(b !== src) out.push(b < 0 ? {kind, none: true} : mk(kind, b)); }   // no quick row for where you already are
+  for(const id of R.pins) out.push(Object.assign(id === from ? {kind: 'pin', id, hops: [], holes: 0, warn: 0, here: true} : mk('pin', G.idx(id), id), {pin: id}));
+  R.key = key; R.res = {from, out, pref};
+  return R.res;
+}
+const WH_RT_LIFE = {eol: 'end of life', lt1h: 'under 1 h left'}, WH_RT_MASS = {reduced: 'reduced mass', critical: 'critical mass'}, WH_RT_SIZE = {small: 'small ships only', medium: 'up to cruisers'};
+function whRtSecTxt(id){ if(whIsJ(id)) return whClsName(whCls(id)); const v = whSec(id); return v === null ? '' : itMapSecText(v); }
+function whRtTip(h){   // R5: one line; an ID and its type only when they were recorded (the owner: "ID not known isn't useful in this case")
+  const where = `${whRtSecTxt(h.b)} ${whName(h.b)}${whPlace(h.b) ? ' · ' + whPlace(h.b) : ''}${whIsJ(h.b) && whEff(h.b) ? ' · ' + whEff(h.b) : ''}`;
+  if(h.kind !== 'hole') return `${h.kind === 'bridge' ? 'jump bridge → ' : ''}${where}${h.flag ? ' · ⚠ ' + h.flag.join(', ') : ''}`;
+  const e = whEnd(h.l, h.a), id = e && e.sig ? ` · ${e.sig}${e.type ? ` (${e.type})` : ''}` : '', l = h.l;
+  return `${whName(h.a)} → ${whName(h.b)}${id}${[WH_RT_LIFE[l.life], WH_RT_MASS[l.mass], WH_RT_SIZE[l.size]].filter(Boolean).map(w => ' · ' + w).join('')} · ${where}`;
+}
+function whRtStripHtml(r, k){   // one square a jump in the arriving system's colour; through a hole round (not colour alone); J-space the wormhole colour
+  return `<div class="wh-rt-strip" role="list" data-wh-rt-row="${Number(k)}" aria-label="${escapeHtml(`${r.hops.length} jumps to ${whName(r.id)}`)}">${whRtSqsHtml(r)}</div>`;
+}
+function whRtSqsHtml(r){ return r.hops.map((h, i) => whRtSqHtml(h, i)).join(''); }
+function whRtSqHtml(h, i){
+  const cls = `wh-rt-q${whIsJ(h.b) ? ' j' : ' it-sn s' + Number(whSecKey(h.b))}${h.kind === 'hole' ? ' hole' : ''}${h.flag ? ' fl' : ''}`;
+  return `<span class="${escapeHtml(cls)}" role="listitem" tabindex="${Number(i ? -1 : 0)}" data-wh-rt-q="${Number(i)}" aria-label="${escapeHtml(whRtTip(h))}"></span>`;
+}
+const WH_RT_KIND = {home: 'Home', hs: 'nearest highsec', ls: 'nearest lowsec'};
+function whRtRowHtml(r, k){
+  if(r.none) return `<div class="wh-rt-row"><div class="wh-rt-l1">${whRtSecHtml(r)}${whRtNameHtml(r, true)}<span class="wh-rt-n wh-note">no route</span>${whRtRmHtml(r)}</div></div>`;
+  return `<div class="wh-rt-row"><div class="wh-rt-l1">${whRtSecHtml(r)}${whRtNameHtml(r, false)}${whRtWarnHtml(r)}<b class="wh-rt-n" title="${escapeHtml(whRtLenTxt(r))}">${escapeHtml(r.here ? 'here' : String(r.hops.length))}</b>${whRtRmHtml(r)}</div>`
+    + (r.hops.length ? whRtStripHtml(r, k) : '') + '</div>';
+}
+function whRtRowsHtml(out){ return out.map((r, k) => whRtRowHtml(r, k)).join(''); }
+function whRtLenTxt(r){ const n = r.hops.length; return r.here ? 'You’re here' : `${n} jump${n === 1 ? '' : 's'}${r.holes ? `, ${r.holes} by wormhole` : ''}`; }
+function whRtSecHtml(r){ return r.id === undefined ? '' : whIsJ(r.id) ? whTagHtml(r.id) : `<span class="wh-rt-sec it-sn s${Number(whSecKey(r.id))}">${escapeHtml(whRtSecTxt(r.id))}</span>`; }
+function whRtNameHtml(r, none){   // the name (a button when it's on your chain), then the quick row's kind
+  const kind = r.kind !== 'pin' ? `<span class="wh-note">${escapeHtml(WH_RT_KIND[r.kind])}</span>` : '';
+  if(r.id === undefined) return kind;
+  return (whS.st.sys[r.id] ? `<button type="button" class="wh-n sm" data-wh-sel="${Number(r.id)}">${whNameHtml(r.id)}</button>` : `<b>${whNameHtml(r.id)}</b>`) + kind;
+}
+function whRtWarnHtml(r){ return r.warn ? `<span class="it-warn" title="${escapeHtml(`Passes ${r.warn} flagged system${r.warn === 1 ? '' : 's'}`)}">⚠${Number(r.warn)}</span>` : ''; }
+function whRtRmHtml(r){ return r.kind === 'pin' ? `<button type="button" class="it-sigx" data-wh-rt-rm="${Number(r.pin)}" aria-label="${escapeHtml('Unpin ' + whName(r.pin))}" title="Unpin">×</button>` : ''; }
+function whRtFromHtml(from, me){ return from === undefined || from === null ? 'not known' : whNameHtml(from) + (from === me ? ' (you)' : ''); }
+function whRtAvoidTxt(s){ const a = [['camp', 'camps'], ['bub', 'bubbles'], ['host', 'hostiles'], ['kill', 'kills'], ['mine', 'your avoid list']].filter(([k]) => s[k]).map(([, w]) => w); return a.length ? `avoiding ${a.join(', ')}` : 'avoiding nothing'; }
+function whRtHtml(){
+  const R = whRtState(), res = whRtRows(), me = whS.last, s = itRpSet();
+  let o = `<div class="wh-rt-top"><span class="wh-note">From ${whRtFromHtml(res.from, me)}</span>`
+    + (R.from !== null && R.from !== me ? '<button type="button" data-wh-rt-me>From where you are</button>' : '')
+    + `<label class="mys-use" title="On: the fewest jumps for every row. Off: your preference in Intel ⚙ → Routes."><input type="checkbox" class="mys-sw" role="switch" data-wh-rt-short${itOnHtml(R.short, 'checked')}> Shortest</label></div>`
+    + `<form class="it-rp-add" data-wh-rt-pin autocomplete="off"><input type="text" name="sys" placeholder="Pin a system, e.g. Jita or J123456" aria-label="Pin a system" maxlength="40" spellcheck="false"><button type="submit">Pin</button></form>`
+    + `<div class="it-rp-msg" role="status">${escapeHtml(R.msg)}</div>`;
+  if(res.err) return o + `<div class="wh-note" role="status">${escapeHtml(res.err)}</div>`;
+  o += `<div class="wh-rt-list">${whRtRowsHtml(res.out)}<div class="it-map-tip" data-wh-rt-tip hidden></div></div>`;
+  if(!R.pins.length) o += '<div class="wh-note">Pin systems here, or right-click a system on the map → Pin route. Every route is worked out again each time you move.</div>';
+  return o + `<div class="wh-note">${escapeHtml(`${R.short ? 'Shortest' : IT_RP_PREF_NAME[s.pref]} · ${whRtAvoidTxt(s)} · change in Intel ⚙ → Routes`)}</div>`;   // R9: one set of route settings
+}
+// hovering a square (focus by keys; a finger along the strip on a phone): its line under the strip, the row's other squares dimmed, its route on the
+// chain map (R6). Nothing timed: each change draws once (LESSON #120)
+function whRtHover(q){
+  const R = whRtState(), st = q && q.closest('.wh-rt-strip'), pn = whS.el.querySelector('#whPnRt'), tip = pn && pn.querySelector('[data-wh-rt-tip]');
+  for(const x of pn ? pn.querySelectorAll('.wh-rt-strip.hov') : []) if(x !== st){ x.classList.remove('hov'); for(const y of x.children) y.classList.remove('on'); }
+  const r = st && R.res && R.res.out && R.res.out[Number(st.dataset.whRtRow)], h = r && r.hops[Number(q.dataset.whRtQ)];
+  if(!h || !tip){ if(tip) tip.hidden = true; if(R.hov){ R.hov = null; whDraw(); } return; }
+  st.classList.add('hov'); for(const y of st.children) y.classList.toggle('on', y === q);
+  tip.textContent = whRtTip(h); tip.hidden = false;
+  const lb = tip.parentNode.getBoundingClientRect(), qb = q.getBoundingClientRect();
+  tip.style.top = `${Math.round(qb.bottom - lb.top + 4)}px`; tip.style.left = `${Math.round(Math.max(0, Math.min(qb.left - lb.left - 8, lb.width - tip.offsetWidth)))}px`;
+  const hv = {row: Number(st.dataset.whRtRow), q: Number(q.dataset.whRtQ)};
+  if(!R.hov || R.hov.row !== hv.row || R.hov.q !== hv.q){ R.hov = hv; whDraw(); }
+}
+function whRtHovRow(){ const R = whRtState(); return whS.open === 'rt' && R.hov && R.res && R.res.out ? R.res.out[R.hov.row] || null : null; }
+function whRtGlow(c, ctr, C){   // under the connection lines: the hovered row's hole steps
+  const r = whRtHovRow(), M = whS.M; if(!r || r.none) return;
+  c.save(); c.strokeStyle = C.lo; c.globalAlpha = 0.35; c.lineWidth = 10; c.lineCap = 'round';
+  for(const h of r.hops){ if(h.kind !== 'hole' || !M.P.has(h.a) || !M.P.has(h.b)) continue; const a = ctr(h.a), b = ctr(h.b); c.beginPath(); c.moveTo(a.x, a.y);
+    if(Math.abs(b.y - a.y) > Math.abs(b.x - a.x)) c.bezierCurveTo(a.x, (a.y + b.y) / 2, b.x, (a.y + b.y) / 2, b.x, b.y); else c.bezierCurveTo((a.x + b.x) / 2, a.y, (a.x + b.x) / 2, b.y, b.x, b.y); c.stroke(); }
+  c.restore();
+}
+function whRtOver(c, C, font){   // over the boxes: the route's systems outlined, and at the exit "EXIT · then N j to <to>"
+  const r = whRtHovRow(), M = whS.M; if(!r || r.none || !r.hops.length) return;
+  c.save(); c.strokeStyle = C.lo; c.lineWidth = 1.6;
+  for(const id of new Set([whRtState().res.from, ...r.hops.map(h => h.b)])){ const p = M.P.get(id); if(!p) continue; c.beginPath(); c.roundRect(p.x - 10, p.y - 10, WH_NW + 20, WH_NH + 20, 9); c.stroke(); }
+  const k = r.hops.map(h => h.kind).lastIndexOf('hole'), last = k >= 0 ? r.hops[k] : null, p = last && !whIsJ(last.b) ? M.P.get(last.b) : null, rest = r.hops.length - k - 1;
+  if(p && rest > 0){ const t = `EXIT · then ${rest} j to ${whName(r.id)}`; c.font = `700 10px ${font}`; const w = c.measureText(t).width + 12, x = p.x + WH_NW + 16, y = p.y + WH_NH / 2 - 8;
+    c.globalAlpha = 0.18; c.fillStyle = C.lo; c.beginPath(); c.roundRect(x, y, w, 16, 3); c.fill(); c.globalAlpha = 1; c.fillText(t, x + 6, y + 11.5); }
+  c.restore();
+}
+function whRtPinForm(f){
+  const R = whRtState(), v = String(f.sys.value || '').trim(), id = v ? whIdOf(v) : null;
+  if(!v) return;
+  if(!id) R.msg = `“${v.slice(0, 40)}” isn’t a system the page knows.`;
+  else { R.msg = R.pins.includes(id) ? `${whName(id)} is pinned already.` : ''; if(!R.pins.includes(id) && whRtPin(id, true)) f.sys.value = ''; }
+  const a = document.activeElement; if(a && f.contains(a)) a.blur();   // whPanels never rewrites under a field being typed in: the field is done with
+  whS.pn = {}; whPanels(); const i = whS.el.querySelector('#whPnRt [data-wh-rt-pin] input'); if(i) i.focus({preventScroll: true});
+}
 function whWire(el){
   el.addEventListener('click', (ev) => {
     const b = ev.target.closest('button');
@@ -35215,6 +35395,8 @@ function whWire(el){
     if(d.whLs){ whLSort(d.whL, d.whLs); return; }
     if(b.closest('.wh-pop[data-pop="share"]') && whShareClick(b)) return;   // 059 (P14): Share's Export / Import (046's boxes)
     if(d.whM){ whMenuAct(d.whM); return; }
+    if(d.whRtRm){ const R = whRtState(); whRtPin(Number(d.whRtRm), false); R.msg = ''; whS.pn = {}; whPanels(); const i = whS.el.querySelector('#whPnRt [data-wh-rt-pin] input'); if(i) i.focus({preventScroll: true}); return; }   // 062
+    if('whRtMe' in d){ const R = whRtState(); R.from = null; R.key = ''; whS.pn = {}; whPanels(); return; }
     if(d.whPop){ whPop(d.whPop); return; }
     if('whPopx' in d){ whPopClose(); return; }
     if(d.whSel){ whSelect(Number(d.whSel)); return; }
@@ -35228,7 +35410,20 @@ function whWire(el){
     if(f.name === 'link' && f.closest('.wh-addf')){ whAddTyList(f.form); return; }   // 061 (D6)
     if(f.dataset.whSw === 'lazy'){ whS.sg.lazy = f.checked; whSgSave(); whPnRedraw('[data-wh-sw="lazy"]'); return; }   // 059 (P5): one setting for every system
     if(f.dataset.whLall){ whLAll(f.dataset.whLall, f.checked); return; }
+    if(f.dataset.whRtShort !== undefined){ const R = whRtState(); R.short = f.checked; whRtSave(); R.key = ''; whS.pn = {}; whPanels(); const e = whS.el.querySelector('[data-wh-rt-short]'); if(e) e.focus({preventScroll: true}); return; }   // 062
     if(f.dataset.whShinc !== undefined) whShareExp();   // 059 (P14): the export made again with or without notes and who's there
+  });
+  // 062 (R5): a route's squares: hover and keyboard focus show its line; a finger along the strip on a phone; the arrows step along it
+  el.addEventListener('pointerover', (ev) => { const q = ev.target.closest && ev.target.closest('.wh-rt-q'); if(q && ev.pointerType !== 'touch') whRtHover(q); });
+  el.addEventListener('pointerout', (ev) => { const q = ev.target.closest && ev.target.closest('.wh-rt-q'); if(q && ev.pointerType !== 'touch' && !(ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.wh-rt-q')) && document.activeElement !== q) whRtHover(null); });
+  el.addEventListener('pointerdown', (ev) => { const st = ev.target.closest && ev.target.closest('.wh-rt-strip'); if(st && ev.pointerType === 'touch'){ const q = ev.target.closest('.wh-rt-q') || st.firstElementChild; whRtHover(q); } });
+  el.addEventListener('pointermove', (ev) => { if(ev.pointerType !== 'touch') return; const st = ev.target.closest && ev.target.closest('.wh-rt-strip'); if(!st) return; const q = document.elementFromPoint(ev.clientX, ev.clientY); if(q && q.classList && q.classList.contains('wh-rt-q') && !q.classList.contains('on')) whRtHover(q); });
+  el.addEventListener('focusin', (ev) => { const q = ev.target.closest && ev.target.closest('.wh-rt-q'); if(q) whRtHover(q); });
+  el.addEventListener('focusout', (ev) => { const q = ev.target.closest && ev.target.closest('.wh-rt-q'); if(q && !(ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.wh-rt-q'))) whRtHover(null); });
+  el.addEventListener('keydown', (ev) => {
+    const q = ev.target.closest && ev.target.closest('.wh-rt-q'); if(!q || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(ev.key)) return;
+    const a = [...q.parentNode.children], i = a.indexOf(q), j = ev.key === 'Home' ? 0 : ev.key === 'End' ? a.length - 1 : Math.max(0, Math.min(a.length - 1, i + (ev.key === 'ArrowLeft' ? -1 : 1)));
+    ev.preventDefault(); if(j !== i){ q.tabIndex = -1; a[j].tabIndex = 0; a[j].focus({preventScroll: true}); }
   });
   el.addEventListener('keydown', (ev) => {   // 059 (P7): Space or Enter on a focused row as Ctrl-click
     if(ev.key !== ' ' && ev.key !== 'Enter') return; const r = ev.target.closest && ev.target.closest('[data-wh-lr]'); if(!r || ev.target !== r) return;
@@ -35243,7 +35438,7 @@ function whWire(el){
   });
   el.addEventListener('submit', (ev) => {
     const f = ev.target; ev.preventDefault();
-    if(f.matches('[data-wh-here]')) whHereAdd(f); else if(f.matches('.wh-addf')) whAddForm(f);
+    if(f.matches('[data-wh-here]')) whHereAdd(f); else if(f.matches('.wh-addf')) whAddForm(f); else if(f.matches('[data-wh-rt-pin]')) whRtPinForm(f);   // 062
   });
   document.addEventListener('keydown', (ev) => {
     if(ev.key !== 'Escape' || !whS.el || !whS.el.offsetParent) return;

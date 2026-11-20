@@ -39,6 +39,7 @@ AREAS = {
     'wormhole_statics_check': ['intel', 'layout'],   # 061
     'wormhole_effects_check': ['intel', 'layout'],   # 062
     'wormhole_autoadd_check': ['intel'],   # 062
+    'wormhole_routes_check': ['intel', 'layout'],   # 062
     'dossier_fights_check': ['pilot', 'system'], 'intel_probe_check': ['intel'],   # 049
     'intel_map_stack_check': ['intel', 'layout'],   # 058
     'intel_bridges_check': ['intel', 'layout'],   # 041
