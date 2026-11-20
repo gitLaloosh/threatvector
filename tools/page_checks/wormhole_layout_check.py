@@ -92,7 +92,7 @@ def run(b, html, w):
     sz = 44 if phone else 30
     if not (rail and round(rail[2] - rail[0]) == sz and round(rail[3] - rail[1]) == sz): out.append(f'{tag} one rail button, {sz} px: {rail}')
     elif rail[0] - box[0] > 12: out.append(f'{tag} the rail at the map\'s left edge: {rail} {box}')
-    if pg.evaluate("document.querySelectorAll('.wh-rail button').length") != 1: out.append(f'{tag} one button only (the owner: "Only working panels")')
+    if pg.evaluate("[...document.querySelectorAll('.wh-rail button')].map(b => b.dataset.whRp).join()") != 'sum,rt': out.append(f'{tag} System and Routes only (the owner: "Only working panels"; Routes since 062)')
     if not phone and not (rail and topl and rail[1] > topl[3]): out.append(f'{tag} the rail under the "you\'re in" line: {rail} {topl}')
     if phone and not (rail and zoom and rail[1] > zoom[3]): out.append(f'{tag} the rail under the button row: {rail} {zoom}')
     f = pg.evaluate("() => { const a = getComputedStyle(document.querySelector('.wh-rail button')), z = getComputedStyle(document.querySelector('.wh-ctl .it-map-zoom button')); return [a.backgroundColor === z.backgroundColor, a.borderTopColor === z.borderTopColor]; }")
@@ -182,7 +182,7 @@ def cases(b, html, widths=(1440, 760, 390)):
     return out, errs
 
 MUTANTS = [
-    ('open by default', "return o && o.v === 1 && o.open === 'sum' ? 'sum' : ''; }catch(e){ return ''; } }", "return o && o.v === 1 && o.open === '' ? '' : 'sum'; }catch(e){ return 'sum'; } }", (1440,)),
+    ('open by default', "return o && o.v === 1 && (o.open === 'sum' || o.open === 'rt') ? o.open : ''; }catch(e){ return ''; } }", "return o && o.v === 1 && o.open === '' ? '' : 'sum'; }catch(e){ return 'sum'; } }", (1440,)),
     ('whFree ignoring the panel', "if(q.width && v.w - l >= 96) r.l = l; }", "if(false) r.l = l; }", (1440,)),
     ('not remembered', "S.open = open; try{ localStorage.setItem(WH_PN_KEY, JSON.stringify({v: 1, open})); }catch(e){ }", "S.open = open;", (1440,)),
     ('a click not opening it', "else{ if(!M.selMode && whS.open !== 'sum') whPnSet('sum', true); whSelect(d.hit); }", "else{ whSelect(d.hit); }", (1440,)),

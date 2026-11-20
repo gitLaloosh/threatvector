@@ -341,7 +341,7 @@ MUTANTS = [
     ('sending with the switch off (047, the hand test)', "  if(!itRpSendOn()){ itRpNote({off: true}); return; }", "  if(false){ itRpNote({off: true}); return; }"),
     ('the search box drawn by the browser (047, the hand test)', "  input[type=text], input[type=search], select{", "  input[type=text], select{"),
     ('the rounded number instead of the band', "function itRpBand(T, i){ if(T.band) return T.band[i];", "function itRpBand(T, i){"),
-    ('cost before the flagged count (no detours)', "    const fx = f[x] + (x !== home && flags.has(x) ? 1 : 0);   // a system counts once you go through it: the destination never does\n", "    const fx = 0;\n"),
+    ('cost before the flagged count (no detours)', "    const fx = f[x] + (x !== src && flag(x) ? 1 : 0);   // a system counts once you go through it: the destination never does\n", "    const fx = 0;\n"),   # 062: in itRpSearch, shared with the Routes panel
     ('the destination named in the warning', "return path.slice(1, -1).filter(x => itRp.flags.has(x))", "return path.slice(1).filter(x => itRp.flags.has(x))"),
     ('every waypoint clearing the others', "clear_other_waypoints: done === 0 ? 'true' : 'false'", "clear_other_waypoints: 'true'"),
     ('the waypoints sent at once', "      const r = await esiFetch(`${ESI}/ui/autopilot/waypoint/?${q}`, {method: 'POST'}, 'waypoints', {scope: SSO_WP});\n      if(r.status === 204 || r.ok)",
