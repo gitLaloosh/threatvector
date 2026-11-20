@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UZX4RapuuXdVCEfEMv/AsfN09AKqSi6A9EaUkfB5lXc='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-JR+U/38wxGj+BWuRjN75l1jS2bWLqZVBoFD4ZV9GhWA='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -32373,7 +32373,7 @@ function itWhNear(sys, now = Date.now()){
 function itWhBadgeHtml(drifter, title, short = false){ return `<span class="it-gtag it-wh${escapeHtml(drifter ? ' dr' : '')}" title="${escapeHtml(title)}">${escapeHtml(short ? (drifter ? 'DRIFTER' : 'WH') : drifter ? 'Drifter WH' : 'Wormhole')}</span>`; }   // short: the Paths to you tree (045)
 function itWhBadgeTitle(w){ const st = itWhStore(); return `${w.drifter ? 'A Drifter wormhole' : 'A wormhole'}: ${itWhByTxt(w)}, ${itAgo(w.t)} ago. The map’s Wormholes filter keeps it ${st.keepH} h`; }
 // who it's from: added by you, reported by someone, or (046) from a shared list (the owner: "I agree" to saying so)
-function itWhByTxt(w){ return w.jw && whReady ? itWhJwTxt(w.jw) : w.src === 'you' ? 'added by you' : `${w.via ? 'from a shared list, ' : ''}reported by ${w.who}`; }
+function itWhByTxt(w){ return w.src === 'chain' ? `on your chain → ${whName(w.chain)} (${[whClsName(whCls(w.chain)), whEff(w.chain)].filter(Boolean).join(' · ')})` : w.jw && whReady ? itWhJwTxt(w.jw) : w.src === 'you' ? 'added by you' : `${w.via ? 'from a shared list, ' : ''}reported by ${w.who}`; }
 function itWhJwTxt(jw){   // 062 (A3): "you jumped in → J123456 (C3 · Pulsar · statics D845 N968)"
   const j = jw.j, e = whEff(j), stc = whStcSort(whStcOf(j).codes || '');
   return `${jw.out ? 'you came out of' : 'you jumped in →'} ${whName(j)} (${[whClsName(whCls(j)), e, stc ? 'statics ' + stc : ''].filter(Boolean).join(' · ')})`;
@@ -32387,6 +32387,16 @@ function itMapWh(){
     const i = g.at.get(w.id); if(i === undefined) continue;
     kept.set(i, w);
     if(w.src === 'intel' && w.t >= fresh && D && D[i] >= 0 && D[i] <= itm.reach) live.set(i, w);
+  }
+  // 062 (K1, the mapping plan's D14; Q13 "Seen recently"): your chain's k-space ends whose connection was seen within "keep wormhole reports for"
+  // are marked like a live report (thin rings on every filter; 045's bold mark with Wormholes on); one mark a system, an Intel entry kept as it is.
+  // Never in the Intel example (itWhAside)
+  if(!itWhAside && whReady && whS) for(const l of whS.st.links){
+    const k = whIsJ(l.a) ? (whIsJ(l.b) ? null : l.b) : whIsJ(l.b) ? l.a : null; if(k === null || !(l.seen >= cut)) continue;
+    const i = g.at.get(k); if(i === undefined) continue;
+    const w = kept.get(i) || {id: k, t: l.seen, who: '', drifter: false, src: 'chain', sigs: [], chain: k === l.a ? l.b : l.a};
+    if(w.src === 'chain' && l.seen > w.t){ w.t = l.seen; w.chain = k === l.a ? l.b : l.a; }
+    kept.set(i, w); if(D && D[i] >= 0 && D[i] <= itm.reach) live.set(i, w);
   }
   // 058 (Q21): with Wormholes on, the kept holes that match every Only filter that is on join the live ones; a kept hole that doesn't match
   // keeps only the off-filter rule (live: thin rings, as a report; else no wormhole mark). The owner: "045's bold + pulse", "Off-filter rule"
