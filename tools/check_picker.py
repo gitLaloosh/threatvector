@@ -108,7 +108,7 @@ FILES = [
     ('tools/sde_change_report.py', []), ('tools/independent_checks/check_sde_change_report.py', []),
     ('tools/independent_checks/*', [CHAIN, 'calc']),
     ('tools/pyfa_*', [CHAIN, 'calc']), ('tools/cap_sim_oracle.py', [CHAIN, 'calc']), ('tools/audit_*', [CHAIN, 'calc']),
-    ('tools/gen_intel_tables.py', ['intel']), ('tools/jump_table_update.py', ['intel']),
+    ('tools/gen_intel_tables.py', ['intel']), ('tools/jump_table_update.py', ['intel']), ('tools/gen_wh_statics.py', ['intel']),   # 061: the community list's statics, not a calculation input
     ('tools/gen_errors_md.py', []), ('tools/gen_*', [CHAIN, 'calc']),
     ('tools/check_pyfa_core.mjs', [CHAIN, 'calc']), ('tools/check_py_round.mjs', [CHAIN, 'calc']), ('tools/dump_*', [CHAIN, 'calc']),
     ('tools/speed_prop_effects.sha256', [CHAIN, 'calc']), ('tools/select_class_presets.py', [CHAIN, 'calc']),

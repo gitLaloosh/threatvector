@@ -28,6 +28,9 @@ is why this project uses it.
 - **CCP hf.**: EVE Online's game data (ESI, the Static Data Export and the client's static data files), its images
   (images.evetech.net), and the names of ships, items, systems and pilots.
 - **zKillboard** (<https://zkillboard.com/>): killmail statistics and its live kill feed (R2Z2).
+- **Wanderer** (<https://github.com/wanderer-industries/wanderer>), the wormhole mapper, by Wanderer Industries, MIT license: each
+  wormhole system's statics come from its community list (`priv/repo/data/wormholeSystems.json`; the commit is in the page's `INTEL_WH_STC`),
+  written into the page by `tools/gen_wh_statics.py`, which keeps its license text.
 - **acorn** (<https://github.com/acornjs/acorn>), the JavaScript parser, MIT license: a copy of its `dist/acorn.js` (8.18.0)
   is kept in `tools/publish/` (with its license, `acorn-LICENSE`) to take the comments out of the copy of the page the site serves.
 

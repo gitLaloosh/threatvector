@@ -36,6 +36,7 @@ AREAS = {
     'wormhole_sigs_check': ['intel', 'layout'],   # 059
     'wormhole_ends_check': ['intel', 'layout'],   # 059
     'wormhole_chain_share_check': ['intel'],   # 059
+    'wormhole_statics_check': ['intel', 'layout'],   # 061
     'dossier_fights_check': ['pilot', 'system'], 'intel_probe_check': ['intel'],   # 049
     'intel_map_stack_check': ['intel', 'layout'],   # 058
     'intel_bridges_check': ['intel', 'layout'],   # 041
@@ -107,6 +108,9 @@ def fast(html):
         ('the security check self-test', 'python3 -I tools/check_sec_shown.py --self-test', lambda l: l.endswith(': ok')),
         ('zKillboard request gates', q('check_request_gates.py'), lambda l: l.endswith(' 0 problems')),
         ('changed-items list (GAME_DATA_PENDING)', q('check_game_data_pending.py'), lambda l: l.endswith(' 0 problems')),   # v2026.11.04.3
+        # build queue 061: the community list's statics block (sound on its own; against Wanderer's pinned file when it can be reached)
+        ('wormhole statics (INTEL_WH_STC)', q('gen_wh_statics.py') + ' --check', lambda l: l.endswith(' 0 problems')),
+        ('wormhole statics self-test', 'python3 -I tools/gen_wh_statics.py --self-test', lambda l: l.endswith(': ok')),
         # build queue 034 (LESSON #153): the patch-day report on made-up CCP data, a local stand-in for CCP's site (seconds, no network)
         ('the patch-day report (made-up CCP data)', f'python3 -I tools/independent_checks/check_sde_change_report.py {html}', lambda l: l.endswith(': 0 problems')),
         ('error codes and ERRORS.md', q('gen_errors_md.py'), lambda l: l.endswith('ERRORS.md is up to date')),

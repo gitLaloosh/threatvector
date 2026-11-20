@@ -583,8 +583,16 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   connection you can delete. Two hole jumps between two readings show as one connection.
 - **Systems:** CCP's static data (the SDE): every system with an ID from 31,000,000 to 31,999,999, its class from the system, else its
   constellation, else its region (only the five Drifter systems carry their own), its effect from its secondary sun's effect beacon
-  (Black Hole, Cataclysmic Variable, Magnetar, Pulsar, Red Giant, Wolf-Rayet). Statics aren't in the SDE: you type them, and each is coloured
-  by where its type leads (the same table as Intel's wormhole reports).
+  (Black Hole, Cataclysmic Variable, Magnetar, Pulsar, Red Giant, Wolf-Rayet). Each static is coloured by where its type leads (the same
+  table as Intel's wormhole reports).
+- **Statics** (build queue 061): CCP's data doesn't list a system's statics, so the page carries Wanderer's community list (an open-source
+  wormhole mapper, MIT license; the file and its commit are named in the page's `INTEL_WH_STC`, written by `tools/gen_wh_statics.py`, which a
+  scheduled job compares with Wanderer's newest twice a day). A system shows the list's statics until you type your own, which replace them;
+  clearing the field brings the list's back. The list's are never saved, shared or exported. They're listed by where they lead in CCP's class
+  order (C1-C6, highsec, lowsec, nullsec, Thera, shattered, Drifter, Pochven). A static's hover adds CCP's own numbers for its type: how long it
+  lasts at most, the mass it takes in all and per jump, and any mass it regains. CCP's numbers differ from Wanderer's for some types; the page
+  shows CCP's (the owner). The statics are matched by system ID, never by name, and used only while they follow the page's own list of
+  wormhole systems.
 - **Intel in a hole:** jumps are counted from your chain's nearest k-space system (where you came in), since there are no gates to count from.
 - **Kept:** in this browser only (tvWhChain), until you remove it; nothing expires.
 - **The system menu** (v2026.11.15.2, build queue 051): a status (Home, Friendly, Looking for, Warning, Target, Dangerous) drawn as the box's

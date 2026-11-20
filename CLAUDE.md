@@ -82,7 +82,8 @@ Before changing any calculation:
    Exception: the pull requests `.github/workflows/jump-table.yml` opens (the stargate table, `INTEL_JUMPS`,
    when an EVE build changed a gate; `tools/jump_table_update.py`) change only that table and no version.
    The same for its "Game data" pull requests (v2026.11.04.3, `tools/sde_change_report.py`): they change only
-   `GAME_DATA_PENDING`. After the owner merges one, work from the merged copy (he runs `git pull`).
+   `GAME_DATA_PENDING`; and its "Wormhole statics" ones (build queue 061, `tools/gen_wh_statics.py`): they change only `INTEL_WH_STC`.
+   After the owner merges one, work from the merged copy (he runs `git pull`).
 5. Deliver on a branch, through a pull request the owner merges (the owner, 2026-11-03: "one builder with access to
    branch. the rest can read for planning purposes."; the build queue README's "Repo access: one builder, on branches").
    - Only the one build session with write access pushes. Research and planning sessions only read the repository.
@@ -598,6 +599,15 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   rebuilds systems from known fields), a locked system's place there too (`whAt`). A press and hold that opened a menu cancels its touchend
   (LESSON #167). The map's height (`--whH`) is worked out before the empty map returns, so the empty map is as tall as the full one (the owner).
   `wormhole_menu_check.py`.
+  Build queue 061 (roadmap/wh-statics-plan.md, mockup `Claude outputs/wh_statics_mockup.html`; the owner: "i need you to find a way for us to know what
+  a j-space systems's statics are when the user enters one"): every wormhole system's statics from Wanderer's community list (MIT), `INTEL_WH_STC` in its
+  own block after the wormhole table, written only by `tools/gen_wh_statics.py` (every record checked; matched by system ID; the jump-table workflow's
+  job wh-statics twice a day), never a field of `INTEL_WH` (`jump_table_update.py` rebuilds and compares that whole). `whTable` uses it only while its
+  `n` and `of` (FNV-1a of `INTEL_WH.sys`, `whFnv`) match. `whStcOf(n)` is the one place that decides: what you typed (tvWhChain, unchanged), else the
+  list's, never saved, shared or exported; the System panel's note (`whStcNoteHtml`, `WH_STC_NOTE`), the map box, typing (`whStcPaint`: an empty field
+  shows the list's again). Chips and the map box in class order (`whStcSort`, `WH_STC_ORD`); a chip's hover adds CCP's lifetime and masses
+  (`whStcLifeTxt`, `IT_WH_LIFE` from `tools/gen_wh_table.py`; the owner: "CCP's numbers"). The connection editor's Type field and + Add's type field
+  suggest the system's statics, then K162, then the rest (`whTyOptsHtml`; + Add follows Linked to, `whAddTyList`). `wormhole_statics_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a
