@@ -114,7 +114,10 @@ if __name__ == '__main__':
                 for m in o.modules:
                     if m.state < 2 or int(m.item.typeID) in asb: continue
                     need = m.get('capacitorNeed') or 0
-                    if need <= 0: continue
+                    # build queue 060 (B1): a negative capacitorNeed counts too -- a running nosferatu's own gain (pyfa Effect6197
+                    # in the 'module' context forces it to -powerTransferAmount; Fit.__generateDrain takes any non-zero value)
+                    if need == 0: continue
+                    if m.item.group.name == 'Capacitor Booster': continue   # an injector (isInjector in __generateDrain): the tool's d[5]
                     cyc = max(m.get(a) or 0 for a in ('speed', 'duration', 'durationHighisGood', 'durationSensorDampeningBurstProjector', 'durationTargetIlluminationBurstProjector', 'durationECMJammerBurstProjector', 'durationWeaponDisruptionBurstProjector')) + (m.get('moduleReactivationDelay') or 0)
                     want.append((int(cyc + 1e-6), need))
                 def by_cycle(lst):
@@ -122,10 +125,11 @@ if __name__ == '__main__':
                     for c, n in lst:
                         k = next((x for x in out if abs(x - c) <= 1), c); out[k] = out.get(k, 0) + n
                     return out
-                g = by_cycle([(int(d[0]), d[1]) for d in (t.get('capacitor') or {}).get('simInputs', {}).get('best', []) if not d[5] and d[1] > 0])
-                w = by_cycle(want)
-                ok = len(g) == len(w) and all(any(abs(gc - wc) <= 1 and close(gn, wn) for wc, wn in w.items()) for gc, gn in g.items())
-                if not ok: diffs.append(f'cap need per cycle tool {sorted((c, round(n, 4)) for c, n in g.items())} pyfa {sorted((c, round(n, 4)) for c, n in w.items())}')
+                tl = [(int(d[0]), d[1]) for d in (t.get('capacitor') or {}).get('simInputs', {}).get('best', []) if not d[5] and d[1] != 0]
+                for sign in (1, -1):   # 060: drains and gains apart, so a nosferatu's gain can't cancel a drain on the same cycle
+                    g = by_cycle([x for x in tl if x[1] * sign > 0]); w = by_cycle([x for x in want if x[1] * sign > 0])
+                    ok = len(g) == len(w) and all(any(abs(gc - wc) <= 1 and close(gn, wn) for wc, wn in w.items()) for gc, gn in g.items())
+                    if not ok: diffs.append(f'cap {"need" if sign > 0 else "gain"} per cycle tool {sorted((c, round(n, 4)) for c, n in g.items())} pyfa {sorted((c, round(n, 4)) for c, n in w.items())}')
                 continue
             got = ex.get(f)
             tol = STACKING_TOL.get(f, 1e-6)

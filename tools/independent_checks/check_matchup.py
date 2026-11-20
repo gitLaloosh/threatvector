@@ -16,6 +16,9 @@ the tool's own strip function (mysMatchup, index.html) with an independent build
     regression_suite/compare_cap_sim.mjs).
 Since build queue 050 each ship's tracking and guidance disruptors and TD drones act on the other's weapons first: pyfa's
 own Effect6423 / 6424 / 6694 on the oracle at the fight's range (check_projected.py's dis_on), the application again inside.
+Since build queue 060 (phase B) each ship's capacitor time carries the other's neutralizers, nosferatu, EV drones and Cenobites at the
+fight's range: pyfa's own handlers on the oracle (check_energy_drains.py's pyfa_drains) with the target's painted signature at that
+point, then pyfa's eos/capSim.py on the target's best case plus them (check_energy_drains.py's pyfa_sim).
 Tolerance 1e-6 relative (times: 1e-6 relative or both infinite).
 """
 import sys, os, re, json, math, subprocess, tempfile, itertools
@@ -23,6 +26,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, '..'))
 import check_projected as CP
 import check_application as CA
+import check_energy_drains as ED   # build queue 060: pyfa's Effect6187 / 6197 / 6691 / 6434 and addDrain on the oracle
 from golden_oracle import oracle_for, GOLDEN
 from pyfa_fit_oracle import resonances
 from compare_implants import _mult, DMG as DMG_ATTRS
@@ -314,6 +318,11 @@ if __name__ == '__main__':
     VEX = [f'eft:vexor_aar_paste_{v}' for v in ('loaded', 'cargo', 'none')] + ['km:vexor_aar_paste_none']
     # every threat against each Vexor (weaker ones make long fights: reloads, paste running out), and the Vexors as threats
     pairs += [('eft:orthrus_threat', v) for v in VEX] + [(v, 'eft:osprey_navy_issue_mine') for v in VEX] + [(t, v) for t in threats for v in VEX] + [(v, m) for v in VEX for m in mine[:3]]
+    # build queue 060: fits with a running neutralizer, nosferatu, EV drone or Cenobite, as threats on my ships and as my ship
+    neut = [k for k in cands if ED.sources(orc(k)) and SIMPLE_REPS(orc(k)) and not orc(k).errors and not orc(k).oracleGaps]
+    neut_mine = [k for k in neut if (tool[k]['projectedTarget']['variants'] or {}).get('propTypeId')]
+    pairs += [(n, m) for n in neut for m in mine[:3] if n != m] + [(t, n) for t in threats[:3] for n in neut_mine if t != n]
+    pairs += [(a, b) for a in neut for b in neut_mine if a != b][:12]
     gin, gout, js = os.path.join(tmp, 'in.json'), os.path.join(tmp, 'out.json'), os.path.join(tmp, 'run.js')
     open(js, 'w').write(NODE)
     json.dump({'fits': {k: tool[k] for k in {x for pr in pairs for x in pr}}, 'pairs': pairs, 'grid': GRID}, open(gin, 'w'))
@@ -325,6 +334,15 @@ if __name__ == '__main__':
     def clock(x):
         r = int(math.floor(x + 0.5)); return f'{r // 3600}:{r % 3600 // 60:02d}:{r % 60:02d}' if r >= 3600 else f'{r // 60}:{r % 60:02d}'
     capsec = lambda k: math.inf if tool[k]['capacitor'].get('stable') else (tool[k]['capacitor'].get('timeToEmptyExactSec') if tool[k]['capacitor'].get('timeToEmptyExactSec') is not None else math.inf)
+    drained = [0]
+    def capsec_under(k, tgt_o, att_o, sig, d):
+        """build queue 060: fit k's capacitor empty time with att_o's drains on it at d (its painted signature sig)."""
+        tv = {'signatureRadius': sig, 'energyWarfareResistance': tgt_o.ship.get('energyWarfareResistance'), 'disallowOffensiveModifiers': tgt_o.ship.get('disallowOffensiveModifiers')}
+        dr = ED.pyfa_drains(att_o, tv, d)
+        si = (tool[k].get('capacitor') or {}).get('simInputs') or {}
+        if not dr or not (si.get('capacity', 0) > 0 and si.get('rechargeMs', 0) > 0): return capsec(k)
+        r = ED.pyfa_sim(si['capacity'], si['rechargeMs'], list(si.get('best') or []) + dr)
+        return math.inf if r['stable'] else r['timeToEmptyExactSec']
     for t, m in pairs:
         tf_fit = CP._Fit(orc(t)); tf_app = CA._Src(orc(t)); t_inp = CP.pyfa_inputs(tf_fit)
         diffs = []
@@ -338,13 +356,18 @@ if __name__ == '__main__':
             inc = disrupted(me_o, orc(t), st['range'], tf_app, lambda app: pyfa_typed(tf_fit, app, t_inp, me, st['range'], y_frac, y_ang, t_frac * their_top, t_ang))
             m_src_fit = CP._Fit(me_o); m_app = CA._Src(me_o); m_inp = CP.pyfa_inputs(m_src_fit)
             outd = disrupted(orc(t), me_o, st['range'], m_app, lambda app: pyfa_typed(m_src_fit, app, m_inp, tf_fit, st['range'], t_frac, t_ang, y_frac * my_top, y_ang))
+            # build queue 060: each side's drains on the other's capacitor at this range (pyfa's handlers, then pyfa's cap sim)
+            y_sig = CP.pyfa_point(tf_fit, me, t_inp, dict(distance=st['range'], speedFrac=y_frac, ignoreLockRange=True, ignoreDCR=False, droneMode=1))[1]
+            t_sig = CP.pyfa_point(m_src_fit, tf_fit, m_inp, dict(distance=st['range'], speedFrac=t_frac, ignoreLockRange=True, ignoreDCR=False, droneMode=1))[1]
+            cs_m, cs_t = capsec_under(m, me_o, orc(t), y_sig, st['range']), capsec_under(t, orc(t), me_o, t_sig, st['range'])
+            drained[0] += (cs_m != capsec(m)) + (cs_t != capsec(t))
             you_ends, they_ends = [], []
-            you_last = ttk(orc(m), capsec(m), inc, asb_input(orc(m), tool[m]['capacitor'], hold_of(m)), you_ends, aar_input(orc(m), aar_loaded(m), hold_of(m)))
-            they_last = ttk(orc(t), capsec(t), outd, asb_input(orc(t), tool[t]['capacitor'], hold_of(t)), they_ends, aar_input(orc(t), aar_loaded(t), hold_of(t)))
+            you_last = ttk(orc(m), cs_m, inc, asb_input(orc(m), tool[m]['capacitor'], hold_of(m)), you_ends, aar_input(orc(m), aar_loaded(m), hold_of(m)))
+            they_last = ttk(orc(t), cs_t, outd, asb_input(orc(t), tool[t]['capacitor'], hold_of(t)), they_ends, aar_input(orc(t), aar_loaded(t), hold_of(t)))
             exp = [sum(inc.values()), sum(outd.values()), you_last, they_last, my_top, their_top, y_holds, t_holds]
             got = out[t + '|' + m][i]; points += 1
             inf_seen += (you_last == math.inf) + (they_last == math.inf)
-            finite_cut += sum(1 for x, k in ((you_last, m), (they_last, t)) if x != math.inf and x > capsec(k))
+            finite_cut += sum(1 for x, c in ((you_last, cs_m), (they_last, cs_t)) if x != math.inf and x > c)
             if got is None: diffs.append(f'{st}: tool gave no matchup'); continue
             names = ('theirDps', 'yourDps', 'youLast', 'theyLast', 'myTop', 'theirTop', 'youCanKeep', 'theyCanKeep')
             keep_seen[0] += (st['mode'] == 'keep') + (st['theirMode'] == 'keep'); keep_seen[1] += (not y_holds) + (not t_holds)
@@ -359,7 +382,8 @@ if __name__ == '__main__':
                 if not why['text'] or re.search(r'undefined|NaN|null|\[object', words):
                     if len(diffs) < 4: diffs.append(f'{side} why {st}: {words!r}')
                 ok_t = {clock(x) for x in e_ends if x != math.inf}
-                cap_t = clock(capsec(m if side == 'you' else t)) if capsec(m if side == 'you' else t) != math.inf else None
+                cs = cs_m if side == 'you' else cs_t
+                cap_t = clock(cs) if cs != math.inf else None
                 for c in re.findall(r'breaks at (\d+:\d\d(?::\d\d)?)', words):
                     if c not in ok_t and len(diffs) < 4: diffs.append(f'{side} why {st}: "breaks at {c}" is no layer end ({sorted(ok_t)})')
                 for c in re.findall(r'capacitor (?:runs|ran) dry at (\d+:\d\d(?::\d\d)?)', words):
@@ -374,5 +398,7 @@ if __name__ == '__main__':
     print(f'Keep at Range: {keep_seen[0]} keeping ships; the "can hold" verdict compared for both ships at every point ({keep_seen[1]} can\'t)')
     print(f'Ancillary Shield Boosters: {len(asb_threats)} as threats, {len(asb_mine)} as my ship ({", ".join(asb_fits)}), plus the owner\'s Orthrus / Osprey Navy Issue both ways')
     print(f'Ancillary Armor Repairers: {len(aar_threats)} as threats, {len(aar_mine)} as my ship ({", ".join(aar_fits)}), plus 3 Vexors (paste loaded / cargo only / none) and the paste-less one as a killmail (a clip assumed), both ways')
+    print(f'Neutralizer / nosferatu fits: {len(neut)} ({", ".join(neut)}), {len(neut_mine)} as my ship')
+    print(f'Capacitor drains (build queue 060): {drained[0]} of {2 * points} times with the other ship\'s neutralizers or nosferatu changing the capacitor')
     print(f'Why panel: {why_seen[0]} explanations, each layer\'s end compared; sentence kinds seen: {dict(sorted(why_kinds.items()))}')
     print(f'{bad} mismatches (strip numbers vs pyfa projected.py + application.py by damage type, and the time-to-kill rule)')

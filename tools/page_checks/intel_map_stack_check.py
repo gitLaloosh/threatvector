@@ -26,6 +26,8 @@ Checks, at 1440 px and 390 px:
   * the security shown (the owner at the review): a system stored at 0.45 and low-sec shows 0.4, in the 0.4 colour, outside quick High;
   * stored: tvMapStack across a reload, a bad value read as the defaults, tvSov keeps its form; the Intel example never reads or writes it;
   * no sideways scroll, no page errors;
+  * build queue 060: each settings button (Security range, Within N jumps) pressed with its filter off opens its settings, the
+    filter still off (the owner's bug: it did nothing);
   * mutants, each must fail (see MUTANTS).
 v2026.11.16.2 fails (one filter at a time, no tvMapStack).
 """
@@ -239,6 +241,13 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
             if not pg.evaluate("() => !itMapSt().only.secr && itMapSt().secr.lo === -10 && document.querySelector('.it-mpp').hidden"): out.append('off doesn\'t keep the setting and shut the panel')
             pg.hover('.it-map-fbtns [data-im-f="secr"]'); pg.wait_for_timeout(700)
             if not pg.evaluate(VIS_PB, 'secr'): out.append('no settings button on hover while its filter is off (057: on hover, on or off)')
+            # build queue 060 (the owner's bug, 2026-11-20): pressed while its filter is off, the settings open; the filter stays off
+            for fk in ('secr', 'near'):
+                if pg.evaluate("(k) => itMapSt().only[k]", fk): pg.evaluate("(k) => itMapFilterSet(k)", fk); pg.wait_for_timeout(300)
+                pb_click(pg, fk, out); pg.wait_for_timeout(300)
+                st = pg.evaluate("(k) => { const x = document.querySelector('.it-mpp'); return {open: !!x && !x.hidden && !!itMapPanel() && itMapPanel().k === k, on: !!itMapSt().only[k]}; }", fk)
+                if not (st['open'] and not st['on']): out.append(f'the {fk} settings button pressed with its filter off: {st} (want the settings open, the filter still off)')
+                pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
             pg.hover('.it-map-fbtns [data-im-f="sov"]'); pg.wait_for_timeout(700)
             if not pg.evaluate(VIS_PB, 'sov'): out.append('no Sov settings button on hover while it is off (057)')
             pg.mouse.move(700, 900)
@@ -342,6 +351,7 @@ MUTANTS = [
     ('a match not bigger (Q8)', "hit === '1' ? dotR + 1.6 : dotR;", "dotR;", ('ex',)),
     ('the 0.45 line ignored', "return t >= 5 && T.band && T.band[i] === 1 ? 4 : t;", "return t;", ('sec',)),
     ('a number in the circles with no colour', "const col = itMapSt().colour; if(col) c.fillText(", "const col = itMapSt().colour || 'sec'; if(col) c.fillText(", ('colour',)),
+    ('the settings only open with the filter on (060\'s bug)', "  if(!itm.box || (k !== 'secr' && k !== 'near')) return;", "  if(!itm.box || !itMapSt().only[k] || (k !== 'secr' && k !== 'near')) return;", ('panel',)),
     ('the panel\'s numbers cut off (the hand test)', ".it-mpp .rs-v{width:5.2ch;}", ".it-mpp .rs-v{}", ('panel',)),
     # 055: the example's stack is set aside for everything it draws, in itExSandbox (it was set only for the picture, in itExMapPic)
     ('the example writing the user\'s stack', "itm.st = itMapStackBlank(); itm.mt = null;", "itMapSt().colour = 'region'; itMapStackSave(); itm.mt = null;", ('example',)),

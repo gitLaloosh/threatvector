@@ -388,7 +388,9 @@ for (const [fitId, fit] of Object.entries(golden)) {
     // Booster injection, ASBs on capacitor) and asbDry (ASBs out of charges)
     // are flattened for pinning, only when present.
     if (typeof result.capacitor.injectionPerSec === 'number') result.capacitorInjectionPerSec = result.capacitor.injectionPerSec;
-    for (const [obj, pre] of [[result.capacitor.withoutBoosts, 'capacitorNoBoost'], [result.capacitor.asbDry, 'capacitorAsbDry']]) {
+    // build queue 060 (B1): a running nosferatu's gain to its own ship, and the best case without it (withoutNos)
+    if (typeof result.capacitor.nosGainPerSec === 'number') result.capacitorNosGainPerSec = result.capacitor.nosGainPerSec;
+    for (const [obj, pre] of [[result.capacitor.withoutBoosts, 'capacitorNoBoost'], [result.capacitor.asbDry, 'capacitorAsbDry'], [result.capacitor.withoutNos, 'capacitorWithoutNos']]) {
       if (!obj) continue;
       result[pre + 'ActiveDrainPerSec'] = obj.activeDrainPerSec;
       result[pre + 'NetRate'] = obj.netRate;

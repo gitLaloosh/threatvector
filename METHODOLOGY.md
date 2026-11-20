@@ -68,8 +68,9 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   first). Since v2026.10.14.66 you choose them in the Fighter bay: one square per squadron, and each type's
   abilities (the game's icons) on or off. A damage ability switched off adds nothing; a speed ability switched on
   makes the squadron faster in the fight, as pyfa's handler does. Since v2026.10.14.70 a support squadron's web (Dromi)
-  slows the target in the fight, as pyfa's damage graph applies it; its neutralizer, ECM and warp disruption (Cenobite,
-  Scarab, Siren) are shown on the EWAR / Misc card with the carrier's bonuses, not applied.
+  slows the target in the fight, as pyfa's damage graph applies it; since build queue 060 a Cenobite's neutralizer drains
+  the other ship's capacitor in the times (below); its ECM and warp disruption (Scarab, Siren) are shown on the EWAR / Misc
+  card with the carrier's bonuses, not applied.
 - **Skills, all at V:**
   - Turrets and missiles: damage and rate-of-fire skills (Surgical Strike / Rapid Firing, or Warhead Upgrades /
     Rapid Launch), plus the weapon-size and T2 Specialization skills.
@@ -178,8 +179,12 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   gets none.
 - **The ring:** green (50% and up) through amber to red when it runs out. Its hover gives the in-game fitting window's
   figure (pyfa's EVE stability value).
-- **Net cap rate** is the simple average (peak recharge − drain + injection); the state comes from the simulation, so
-  the two can disagree.
+- **Nosferatu** (build queue 060): a running nosferatu adds its full amount to its own ship's capacitor every cycle, as
+  pyfa does (its effect sets its own capacitor need to minus its transfer amount), whether or not it has a target. The
+  ring's hover gives the result without that gain, and the Weaknesses card keeps its capacitor flag for a fit that holds
+  only on it ("drains in 13m48s without its nosferatu's gain"), with the time without it.
+- **Net cap rate** is the simple average (peak recharge − drain + injection + nosferatu); the state comes from the
+  simulation, so the two can disagree.
 - **Drain resistance:** a fitted Capacitor Battery cuts incoming neutralizers and nosferatu by that much; the EWAR card's
   own neutralizer figures assume an unresisted target.
 
@@ -189,8 +194,8 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   disruptors, target painters, burst jammers and projectors), C capacitor warfare (neutralizers, nosferatu), B command
   bursts. Ranges are optimal + falloff, skills at V, with the hull's, subsystems' and rigs' bonuses.
 - **Support fighters** in space get one chip per squadron type (a Dromi's web, a Siren's warp disruption, a Cenobite's
-  neutralizer, a Scarab's ECM), each for one squadron with the carrier's bonuses. Only the web counts in the Damage
-  Application card and the times, as pyfa's damage graph does; the rest is shown, as module neutralizers are.
+  neutralizer, a Scarab's ECM), each for one squadron with the carrier's bonuses. The web counts in the Damage
+  Application card, the neutralizer in the times (build queue 060); the rest is shown.
 - **Misc (!):** what changes the fight outside its stats: a cynosural field, Micro Jump Drives and Field Generators, an
   Interdiction Nullifier, a PANIC.
 
@@ -281,7 +286,15 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   use them. The chart is a snapshot at that distance, as pyfa's graph: it doesn't play the fight out over time.
 - **They last / you last** (not a pyfa number): damage by type against each layer's resists, shield then armor then
   hull, minus that layer's local repairs and the shield's peak passive regen, with the repairs stopping when pyfa's
-  capacitor simulation runs dry. An Ancillary Shield Booster on charges (v2026.10.14.57) doesn't need the capacitor:
+  capacitor simulation runs dry. Since build queue 060 (EWAR phase B) that simulation carries the other ship's
+  neutralizers, nosferatu, neutralizer drones and Cenobites at the strip's range, as pyfa adds a projected fit's drains:
+  a module's amount by pyfa's range factor (optimal, falloff), the target's energy warfare resistance (a Capacitor
+  Battery, a T3 Core subsystem, a Halcyon booster; 0.3 on a Monitor, 0.5 on a Herald) and, for the capital neutralizers
+  and nosferatu, min(1, target signature / 8,000 m) with the target's painted signature; a nosferatu in full whatever
+  either capacitor holds, as pyfa. Neutralizer drones drain in full out to the attacker's drone control range and
+  Cenobites at any distance (pyfa's EWAR graph, the owner's pick). Each time's "why" says what drains and
+  what it does to the capacitor ("Their 2 neutralizers drain 87.5 GJ/s from you at 12 km: ..."). Weapons that use
+  capacitor keep firing after it's empty, as pyfa (the owner may revisit). The damage charts don't change. An Ancillary Shield Booster on charges (v2026.10.14.57) doesn't need the capacitor:
   it reps for a clip (an X-Large with Navy Cap Booster 400s: 9 cycles, 45 s), reloads for 60 s, and repeats while
   charges last (loaded plus hold), then stops. An Ancillary Armor Repairer with Nanite Repair Paste (v2026.10.14.61)
   repairs 3x for its clip (8 cycles; a Medium with Repair Systems V: 72 s) from when the armor starts taking damage,
