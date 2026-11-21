@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-21 — System names found without their "-"; three Intel bugs in J-space</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>System names found without their "-"; three Intel bugs in J-space</h1>
+<p><span class="tag">Page</span><span class="tag">Intel</span><span class="tag">System Analyzer</span><span class="tag">Wormholes</span> 2026-11-21 &middot; <code>v2026.11.21.2</code> &middot; build queue 064 &middot; plan: <code>roadmap/dashless-search-plan.md</code> &middot; no mockup (the owner's choice)</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-16: "system search in intel map should be searchable without "-" and still hit. test for any conflicts if done this way.", widened on 2026-11-20: "(should be the case in all system searches for all tabs)". His answers to the plan's questions: "1. just the feed search box, 2. your recommendation, 3. no mockup." The count over the page's own name lists found no two systems sharing a dashless form (5,268 k-space and 2,604 J-space names).</li>
+<li>Three bugs from his screenshot in a J-space system whose way in wasn't known, flagged for the delivery after 063: "left panel bug" (the map's filter column in 4 columns of 3 rows), the status line naming the system by its ID, and "Your system isn't known yet" while the system was known. At the review: "With the Wormholes tab hint (Recommended)" for the new line, "Yes, same wording (Recommended)" for the System Analyzer's line, "Yes, build it".</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>One helper for every box</b> (<code>sysFind</code>, <code>sysSuggest</code>, <code>sysManyText</code>; the dashless forms built once per name load, <code>sysFlatK</code> / <code>sysFlatJ</code>): a query with a "-" matches exactly as before; one without is compared with each name's dashless form ("1dq1a" is 1DQ1-A). A form two systems share is never picked; the box lists them and asks for the dash. Each box asks for its own kind of system: <code>'k'</code> (stargates) for the Intel map's search, Routes → Avoid, Intel's Wormholes list → Add, the "word = system" list and the System Analyzer; <code>'all'</code> (J-space too) for the Wormholes tab's + Add, "Add a system here" and its Routes pin. So J-space names never fill a stargate-only list (the plan had them in one shared list; found at the review). <code>whIdOf</code> stays exact: it also reads the Local log's names.</li>
+<li><b>The Feed search:</b> a query without a "-" also meets each system's dashless name (<code>itSearchText(e, flat)</code>); a query with one sees the text exactly as before. Pasted Sov and jump bridge lists and Intel's reading of chat lines are unchanged.</li>
+<li><b>The System Analyzer's typed box:</b> the browser's <code>&lt;datalist&gt;</code> is gone; it uses the map search's own list. The map search's combobox is now <code>sysComboBind</code>, shared by both (rows, keys, a press); the System Analyzer's rows show the system and its region, its list in the flow under the box so the ⚙ panel never cuts it off. On a phone both lists' rows are 44 px.</li>
+<li><b>No map, only its message</b> (the "left panel bug"): while your system isn't known, the map box gets <code>nomap</code> and shows only its message, with no filter column, canvas, search, zoom or rail, and Near You is hidden; all come back with the map. The filter column had been laid out for a map of height 0. Also found: <code>itm.cv.hidden</code> never hid the canvas (LESSON #176), so after a pilot switch into J-space the old map and its YOU pin stayed under the message.</li>
+<li><b>The status line</b> names EVE location's J-space system by name (<code>whName</code>), not its ID.</li>
+<li><b>In J-space with no known way in</b> (<code>itNoSysJ</code>): Intel's line "You're in J… and where you came in isn't known (link it on the Wormholes tab), so no jumps and no alerts until then.", the same on the map, and in the System Analyzer's "My location".</li>
+<li><b>Checks:</b> <code>tools/page_checks/dashless_search_check.py</code> (made-up names for the shared form; the old map-search code run beside the new one for queries with a "-"; every box; the System Analyzer's list at 1440 and 390 px; the J-space lines and the empty map at both widths; 15 mutants). Info text: checked; none. Stored browser data: none.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #176: the <code>hidden</code> attribute loses to any rule that sets <code>display</code>. The check first read <code>fb.hidden</code> and passed; a screenshot of the state showed the old map still drawn. Assert the computed display, and look at a screenshot of each new state.</li>
+<li>A plan's "one shared list" needs a scope per caller: the boxes that can only take systems with stargates would have been handed J-space names, and a short query like "j1" would have filled the map search's eight places with names the map then dropped.</li>
+</ul>
+</body>
+</html>

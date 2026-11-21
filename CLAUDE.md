@@ -384,6 +384,13 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   table doesn't hold); a person's
   name in its standing's colour with its icon (`standNameHtml` / `std-n`), victims included. A dossier kill from the past 4 hours has
   its time in amber (`PD_RECENT_MS`).
+- **System names typed without their "-"** (v2026.11.21.2, build queue 064; roadmap/dashless-search-plan.md; the owner: "(should be the case in all
+  system searches for all tabs)"): every box where a system is typed goes through `sysFind` (an id, null, or the ids sharing a dashless form, never
+  picked: `sysManyText`) or `sysSuggest` (starts-with, then contains, as the map search did); a query with a "-" matches exactly as before. Each
+  box names its scope: `'k'` systems with stargates, `'all'` J-space too (the Wormholes tab's boxes only). `whIdOf` stays exact (the Local log's
+  names). Suggestion lists are `sysComboBind` (the map search and the System Analyzer's typed box). The Feed search meets dashless names only for a
+  query without a "-". Pasted Sov / bridge lists and the chat reader keep `byLower`. No map (your system not known): the box is `nomap`, only its
+  message (LESSON #176). `dashless_search_check.py`.
 - **What was asked for stays on screen** (v2026.11.01.5, LESSON #121): the Pilot Dossier draws the hull asked for (a pilot opened
   from the Fleet tab, a typed hull, a System Analyzer row) as its first row in every size, tagged On this kill / Lost on this kill /
   Asked for with its rank; the 8 used most recently follow (build queue 037: newest first, in a size by their newest kill in it); "Show N more hulls" is a button that draws every hull read. A Fleet-tab kill missing
