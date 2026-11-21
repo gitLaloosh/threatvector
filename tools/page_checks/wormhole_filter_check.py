@@ -27,8 +27,9 @@ outside; at the build review "Keywords (Recommended)" (never looked up as pilots
     one removed, and the same line read again after a reload doesn't bring it back, a newer one does; closed by x (focus back on the
     list button), Escape, and a press outside;
   * the Intel example: its sandbox never reads or writes the user's wormholes;
-  * your chain's k-space ends (build queue 062, K1-K2, Q13 "Seen recently"): one seen within "keep wormhole reports for" ringed like a live report
-    on every filter, its hover "on your chain → J… (class · effect)", bold with Wormholes on; one seen before that not; none inside the example;
+  * your chain's k-space ends (062's K1-K2 taken out by build queue 066, the owner: "B: chains off Intel's map (Recommended)"): a chain end
+    seen just now, with no Intel entry, is neither kept nor ringed on any filter; an Intel entry at a chain end, removed from the list, stays off
+    while the chain still names it; another Intel entry is kept;
   * 390 px: the list button in the opened row (44 px), the row closes as the list opens, x puts focus on the filter button; no sideways
     scroll;
   * the timings at the largest settings (LESSON #160): 500 kept over the galaxy, kept 48 h, the map's largest reach, zoomed out to the
@@ -55,7 +56,7 @@ near = sorted((s for s, v in D0.items() if 1 <= v <= 4), key=lambda s: (D0[s], s
 A, B, C, X, Y, P1 = near[0], near[1], near[2], near[3], near[4], near[5]   # A: a pilot report with wh; B: "wh" alone; C: "drifter"; X, Y: no wormhole
 FAR = max((s for s, v in D0.items() if v <= 60), key=lambda s: D0[s])   # far past the map's reach (a gate route, so a place on the map)
 HAND = near[6]   # added by hand
-CHN, STALE = near[12], near[13]   # 062: your chain's k-space ends (a fresh connection, a stale one)
+CHN, STALE = near[12], near[13]   # 066: two k-space systems for your chain's ends (one with an Intel entry too)
 OLD = near[7]    # kept 2 h ago by Intel: kept, not live
 HOST = M.PILOTS[M.pick(98000003, 0)][0]
 WHC, DRC = '#a98bd8', '#ff5fbf'   # 045: Drifter hot pink (044 D15)
@@ -275,17 +276,16 @@ def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'stand', 'key', 't
           const inside = itExSandbox(() => { const n = Object.keys(itWhStore().rep).length; itWhTake({t: Date.now(), who: 'x', p: {kw: new Set(['wormhole']), sys: [{id: itGraphGet().ids[0]}]}}); return [n, itWhStore() !== mine]; });
           return [inside, localStorage.getItem('tvWormholes') === before, itWhStore() === mine]; }""")
         if e != [[0, True], True, True]: out.append(f'the Intel example\'s sandbox and the wormholes: {e} (want an empty store inside, nothing written, yours back after)')
-    if 'chain' in parts:   # 062 (K1): your chain's k-space ends; CHN a fresh one, STALE one seen 30 h ago (keep 24 h)
-        R = pg.evaluate("""([k1, k2]) => { const T = whTable(), J = T.ids.filter((id, i) => T.cls[i] === '3' && T.eff[i] === 'p' && /^J\\d{6}$/.test(T.names[i])), now = Date.now();
-          const S = whState(); [k1, k2, J[0], J[1]].forEach(id => whAddSys(id, now)); whAddLink(k1, J[0], now - 3600e3); whAddLink(k2, J[1], now - 30 * 3600e3); whSave();
-          __onlyOff(); itMapRefresh(true); itMapDraw(); const g = itGraphGet(), i1 = g.at.get(k1), i2 = g.at.get(k2), w = itm.wh.live.get(i1);
-          const off = [itm.wh.live.has(i1), !itm.wh.kept.has(i2), w ? itWhByTxt(w) : '', whName(J[0])];
-          __whOn(); itMapDraw(); const on = itMapWhBoldAt(i1);
-          const ex = itExSandbox(() => itMapWh().kept.has(i1)); __whOff(); [k1, k2, J[0], J[1]].forEach(id => whRemoveSys(id)); itMapRefresh(true); return {off, on, ex}; }""", [CHN, STALE])
-        if not R['off'][0] or not R['off'][1]: out.append(f'your chain\'s k-space end ringed like a live report, a stale one not: {R}')
-        if R['off'][2] != f"on your chain → {R['off'][3]} (C3 · Pulsar)": out.append(f'the chain end\'s hover words: {R["off"][2]!r}')
-        if not R['on']: out.append('the chain end bold with Wormholes on')
-        if R['ex']: out.append('the chain end inside the Intel example')
+    if 'chain' in parts:   # 066 (option B): your chain's ends never put a hole on Intel's map; CHN a chain end seen 1 h ago, STALE an Intel entry at a chain end
+        R = pg.evaluate("""([k1, k2]) => { const T = whTable(), J = T.ids.filter((id, i) => T.cls[i] === '3' && /^J\\d{6}$/.test(T.names[i])), now = Date.now();
+          [k1, k2, J[0], J[1]].forEach(id => whAddSys(id, now)); whAddLink(k1, J[0], now - 3600e3); whAddLink(k2, J[1], now - 60e3); whSave();
+          const st = itWhStore(); st.rep[k2] = {id: k2, t: now - 600e3, who: 'Mk Scout', drifter: false, src: 'intel'}; itWhSave(); itWhChanged();
+          const g = itGraphGet(), i1 = g.at.get(k1), i2 = g.at.get(k2), seen = () => { itMapRefresh(true); itMapDraw(); return [itm.wh.kept.has(i1), itm.wh.live.has(i1), itm.wh.kept.has(i2)]; };
+          __onlyOff(); const off = seen(); __whOn(); const on = seen(); itWhRemove(k2); const gone = seen(); __whOff(); const after = seen();
+          [k1, k2, J[0], J[1]].forEach(id => whRemoveSys(id)); itMapRefresh(true); return {off, on, gone, after}; }""", [CHN, STALE])
+        if R['off'][:2] != [False, False] or R['on'][:2] != [False, False]: out.append(f'a chain end with no Intel entry kept or ringed on the Intel map: {R}')
+        if not R['off'][2] or not R['on'][2]: out.append(f'an Intel entry at a chain end not kept: {R}')
+        if R['gone'][2] or R['after'][2]: out.append(f'an Intel entry at a chain end came back after Remove while the chain names it: {R}')
     if 'time' in parts:
         T = pg.evaluate("""() => { const g = itGraphGet(), st = itWhStore(), now = Date.now(); st.keepH = 48; st.rep = {};
           for(let k = 0; k < 500; k++){ const id = g.ids[Math.floor(k * g.ids.length / 500)]; st.rep[id] = {id, t: now - k * 300000, who: 'Mk Scout', drifter: k % 5 === 0, src: k % 7 ? 'intel' : 'you'}; }
@@ -318,8 +318,7 @@ def cases(b, html, parts=('take', 'store', 'badge', 'filter', 'stand', 'key', 't
     return out, errs
 
 MUTANTS = [
-    ('062: a stale chain end ringed', "if(k === null || !(l.seen >= cut)) continue;", "if(k === null) continue;", ('chain',)),
-    ('062: the chain ends inside the Intel example', "  if(!itWhAside && whReady && whS) for(const l of whS.st.links){", "  if(whReady && whS) for(const l of whS.st.links){", ('chain',)),
+    ('066: 062\'s chain ends back on Intel\'s map', "  // jumps still add one (itWhJumpAdd), which its list can remove\n", "  // jumps still add one (itWhJumpAdd), which its list can remove\n  if(!itWhAside && whReady && whS) for(const l of whS.st.links){ const k = whIsJ(l.a) ? (whIsJ(l.b) ? null : l.b) : whIsJ(l.b) ? l.a : null; if(k === null || !(l.seen >= cut)) continue; const i = g.at.get(k); if(i === undefined) continue; const w = kept.get(i) || {id: k, t: l.seen, who: '', drifter: false, src: 'intel', sigs: []}; kept.set(i, w); if(D && D[i] >= 0 && D[i] <= itm.reach) live.set(i, w); }\n", ('chain',)),
     ('the filter not dimming', "    if(ok && o.wh) ok = W.kept.has(i);", "    if(ok && o.wh) ok = true;", ('filter',)),   # 058: in itMapMatch
     ('a removal not setting gone', "if(w){ st.gone[id] = Math.max(w.t, st.gone[id] || 0); delete st.rep[id];", "if(w){ delete st.rep[id];", ('list',)),
     ('kept ones faint past the reach', "alpha = (i) => mt ? (mt.m[i] ? 1 : IT_MAP_DIM)", "alpha = (i) => mt ? (mt.m[i] ? (!on(i) ? IT_MAP_FAINT : 1) : IT_MAP_DIM)", ('filter',)),   # 058: a match bright anywhere
