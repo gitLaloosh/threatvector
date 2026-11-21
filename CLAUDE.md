@@ -608,6 +608,17 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   shows the list's again). Chips and the map box in class order (`whStcSort`, `WH_STC_ORD`); a chip's hover adds CCP's lifetime and masses
   (`whStcLifeTxt`, `IT_WH_LIFE` from `tools/gen_wh_table.py`; the owner: "CCP's numbers"). The connection editor's Type field and + Add's type field
   suggest the system's statics, then K162, then the rest (`whTyOptsHtml`; + Add follows Linked to, `whAddTyList`). `wormhole_statics_check.py`.
+  Build queue 062 (v2026.11.20.2; roadmap/wormholes-part4-plan.md, mockup `Claude outputs/wh_part4_mockup.html`): the Routes panel, the rail's second
+  button (`data-wh-rp="rt"`, `#whPnRt`, `WH_RT_ICON`; `tvWhPanels.open` 'rt', one panel at a time; `whFree` reads the open one). Rows (`whRtRows`): Home
+  (the Home status), nearest highsec, nearest lowsec (none for the band you're in), then the pins as pinned (`tvWhRoutes` `{v: 1, pins, short}`, at most
+  `WH_RT_MAX`; typed, or the system menu's Pin route / Routes from here). One search (`itRpSearch`, split out of `itRpUpdate`: 047's order and cost, so the
+  two never drift) over the map table plus your chain's J-space systems (`whRtGraph`; holes both ways, J-space as nullsec in Safer), again only when its key
+  changes. A strip of squares a jump (`whRtStripHtml`: holes round, J-space `--it-wh`, flagged underlined); hover, focus or a finger along it shows one
+  line (`whRtTip`: a hole's ID and type only when recorded, never "ID not known") and glows the route on the chain map (`whRtGlow`, `whRtOver`, the EXIT
+  pill). No Set destination: nothing goes to EVE (the owner). Signatures' Type sort (`WH_SG_TY_ORDER`, `o`, `sv: 2`); effects with CCP's numbers
+  (`IT_WH_EFF_MOD` from `tools/gen_wh_table.py`, the beacon's class `INTEL_WH.effc` from `tools/jump_table_update.py`; `whEffLines`, none guessed for
+  shattered and Drifter systems); k ↔ J jumps add Intel's hole (`itWhJumpAdd`, `jw`, `tvWormholes.auto`; LESSON #175); the chain's k-space ends ringed
+  on Intel's map (`itMapWh`, src 'chain'). `wormhole_routes_check.py`, `wormhole_effects_check.py`, `wormhole_autoadd_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a

@@ -44,7 +44,8 @@ the lines it knows): sys = base64 of uint16 LE deltas of the sorted IDs (the fir
 that order; cls = one character a system for its wormholeClassID (the system's own, else its constellation's, else its region's: in build
 3698585 only the five Drifter systems carry their own): 1-6, s shattered (13), t Thera (12), d a Drifter system (14-18); eff = one character
 a system for the effect its secondary sun's beacon gives (mapSecondarySuns.effectBeaconTypeID, named in types.jsonl "Class N <effect>
-Effects"): b Black Hole, c Cataclysmic Variable, m Magnetar, p Pulsar, r Red Giant, w Wolf-Rayet, "-" none; con = uint16 LE index a
+Effects"): b Black Hole, c Cataclysmic Variable, m Magnetar, p Pulsar, r Red Giant, w Wolf-Rayet, "-" none; effc (build queue 062, E2) = one
+character a system, the N of that beacon's name (its strength: shattered and Drifter systems needn't match their class), "-" none; con = uint16 LE index a
 system into cons (constellation names, sorted by ID), conr = uint8 a constellation into regions (region names, sorted by ID). Build 3698585:
 2,604 systems, 1,038 with an effect. A change opens the same pull request as a gate change.
 
@@ -154,24 +155,24 @@ def read_wh(files, jsys, regions, rcls, types_lines):
                 if not line.strip() or not any(f'"_key": {b},' in line or f'"_key":{b},' in line for b in want): continue
                 o = json.loads(line)
                 if int(o['_key']) in want: bname[int(o['_key'])] = (o.get('name') or {}).get('en', '')
-    ids = sorted(jsys); cls, eff = [], []
+    ids = sorted(jsys); cls, eff, effc = [], [], []
     for k in ids:
         nm, c, r, own = jsys[k]
         v = own or ccls.get(c) or rcls.get(r)
         assert v in WH_CLS, f'{nm}: wormhole class {v!r}'
         cls.append(WH_CLS[v])
         if k in beacon:
-            mm_ = re.fullmatch(r'Class \d+ (.+) Effects', bname.get(beacon[k], ''))
-            assert mm_ and mm_.group(1) in WH_EFF, f'{nm}: effect beacon {beacon[k]} {bname.get(beacon[k])!r}'
-            eff.append(WH_EFF[mm_.group(1)])
-        else: eff.append('-')
+            mm_ = re.fullmatch(r'Class (\d) (.+) Effects', bname.get(beacon[k], ''))
+            assert mm_ and mm_.group(2) in WH_EFF, f'{nm}: effect beacon {beacon[k]} {bname.get(beacon[k])!r}'
+            eff.append(WH_EFF[mm_.group(2)]); effc.append(mm_.group(1))   # 062 (E2): the beacon's own class sets the strength (shattered and Drifter systems included)
+        else: eff.append('-'); effc.append('-')
     cids = sorted({jsys[k][1] for k in ids}); ci = {c: i for i, c in enumerate(cids)}
     rids = sorted({cons[c][1] for c in cids}); ri = {r: i for i, r in enumerate(rids)}
     assert len(cids) < 65536 and len(rids) < 256 and all('|' not in jsys[k][0] for k in ids)
     d = [ids[0] - WH_LO] + [ids[i] - ids[i - 1] for i in range(1, len(ids))]
     assert all(0 <= v < 65536 for v in d)
     b64 = lambda f, a: base64.b64encode(struct.pack('<%d%s' % (len(a), f), *a)).decode()
-    return {'systems': len(ids), 'sys': b64('H', d), 'names': '|'.join(jsys[k][0] for k in ids), 'cls': ''.join(cls), 'eff': ''.join(eff),
+    return {'systems': len(ids), 'sys': b64('H', d), 'names': '|'.join(jsys[k][0] for k in ids), 'cls': ''.join(cls), 'eff': ''.join(eff), 'effc': ''.join(effc),
             'con': b64('H', [ci[jsys[k][1]] for k in ids]), 'cons': [cons[c][0] for c in cids], 'conr': b64('B', [ri[cons[c][1]] for c in cids]),
             'regions': [regions.get(r, str(r)) for r in rids]}
 

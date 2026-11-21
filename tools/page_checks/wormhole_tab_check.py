@@ -13,8 +13,8 @@ Made-up Intel (intel_check.py's folder and stand-ins), CCP's wormhole system nam
   * EVE location (a stand-in answer through itGameLoc): a docked answer adds no connection, an undocked one does; read with Intel off while the
     tab is in front, not while it isn't;
   * the System panel: CCP's class, a k-space name in its security colour, statics chips coloured by where they lead (C5 amber, HS green, K162
-    grey), edits saved and kept after a reload; tvWormholes untouched; opened by its one rail button (build queue 056: no stacked sections, no
-    buttons for Signatures, Routes and Local until their parts are built; the layout is wormhole_layout_check.py);
+    grey), edits saved and kept after a reload; tvWormholes untouched; opened by its rail button (build queue 056: no stacked sections, no
+    buttons for Signatures and Local until their parts are built; Routes since 062; the layout is wormhole_layout_check.py);
   * + Add refuses an unknown name and adds a J-system linked to the focus with its signature ID; "Add a system here" on empty space puts it there;
   * dragging saves a position, Rearrange drops them; Shift-drag selects a group that moves together; the overview moves the view;
   * a phone: the More menu (one row; System, Pilot and Fit in it; a pick switches; Esc closes), no sideways scroll; mutants; no page errors.
@@ -114,7 +114,7 @@ def cases(b, html, parts=('table', 'path', 'loc', 'panel', 'add', 'map', 'phone'
     pg.click('#tabBtnWh'); pg.wait_for_timeout(300)
     if 'panel' in parts:
         rp = pg.evaluate("() => [[...document.querySelectorAll('.wh-rail button')].map(b => b.dataset.whRp), document.querySelectorAll('.wh-pn, .wh-pnh, .wh-panels').length]")
-        if rp != [['sum'], 0]: out.append(f'056: one rail button, System, and no stacked sections: {rp}')
+        if rp != [['sum', 'rt'], 0]: out.append(f'056: the rail\'s buttons (System; Routes since 062), and no stacked sections: {rp}')
         pg.click('.wh-rail [data-wh-rp="sum"]'); pg.wait_for_timeout(150)   # 056: Playwright fills only visible fields
         if not pg.evaluate("!!document.getElementById('whPnSum').offsetParent"): out.append('056: the rail button opens System')
         j0 = pg.evaluate("(n) => whIdOf(n)", J[0]); pg.evaluate("(id) => whSelect(id)", j0); pg.wait_for_timeout(150)

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-FjonAfA0ntI+00vxzsCkx2Dcr+etDIkMIfCToKQpQwY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-325arADKZ4tieAtnHzm79HHKa/KefB6DHPzzqrm2H5o='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3332,6 +3332,18 @@
   .wh-pnb{display:flex; flex-direction:column; gap:8px; font:13px var(--sans); color:var(--text);}
   .wh-box:has(.wh-pnl:not([hidden])) .wh-gsel{left:392px;}   /* N selected: right of the rail, and of the panel while it shows */
   .wh-sh{display:flex; flex-wrap:wrap; align-items:center; gap:6px;} .wh-shn{font:700 16px var(--sans); color:var(--heading);} .wh-sh .it-gtag{margin-left:0;}
+  /* 062 (R5): the Routes panel. A row on --panel-2 (rule B's rows); the strip is new on purpose (nothing on the page draws a route as squares), its colours
+     the page's security classes (.it-sn) and --it-wh; a jump through a hole round, a flagged system underlined (not colour alone) */
+  .wh-rt-top{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px;} .wh-rt-top label.mys-use{margin-left:auto;}
+  .wh-rt-list{display:flex; flex-direction:column; gap:2px; position:relative;}
+  .wh-rt-row{padding:5px 6px; border-radius:4px; background:var(--panel-2);}
+  .wh-rt-l1{display:flex; align-items:center; gap:6px; min-height:24px; font-size:12px;} .wh-rt-sec{font:600 11px var(--mono, monospace); min-width:26px;}
+  .wh-rt-n{margin-left:auto; color:var(--heading); font-variant-numeric:tabular-nums;}
+  .wh-rt-strip{display:flex; flex-wrap:wrap; gap:2px; margin:4px 0 1px; touch-action:pan-y;}
+  .wh-rt-q{width:10px; height:10px; border-radius:2px; background:currentColor; box-sizing:border-box;} .wh-rt-q.j{color:var(--it-wh);} .wh-rt-q.hole{border-radius:50%;}
+  .wh-rt-q.fl{box-shadow:0 2px 0 var(--amber);} .wh-rt-strip.hov .wh-rt-q:not(.on){opacity:.3;} .wh-rt-q:focus-visible{outline:2px solid var(--cyan); outline-offset:1px;}
+  @media (max-width:599px){ .wh-rt-l1{flex-wrap:wrap;} .wh-rt-strip{min-height:44px; align-content:center; gap:3px;} .wh-rt-q{width:14px; height:14px;}
+    .wh-rt-top button, .wh-rt-top label.mys-use, .wh-rt-l1 .wh-n{min-height:44px;} .wh-rt-l1 button.it-sigx{margin:0;} }
   .wh-kv{display:grid; grid-template-columns:max-content minmax(0, 1fr); gap:2px 8px; font:12px var(--sans);} .wh-kv > span{color:var(--text-dim);} .wh-kv > b{font-weight:600; color:var(--text);}
   .wh-sub{font:700 11px var(--sans); text-transform:uppercase; letter-spacing:.5px; color:var(--text-dim); margin-top:2px;}
   .wh-rep{display:flex; flex-wrap:wrap; gap:4px;}
@@ -3419,7 +3431,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.20.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.20.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3800,7 +3812,7 @@ const CARD_INFO = {
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. Filters (left): one colour (press it again for none); Only filters, any number, all must match (their settings beside them); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter on, systems past {card:itnear}'s range are faded.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. Filters (left): one colour (press it again for none); Only filters, any number, all must match (their settings beside them); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h (your chain's k-space ends too), edited and shared in its list (a name there shows it on the map). With no Only filter on, systems past {card:itnear}'s range are faded.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus jump bridges you can use with Use jump bridges on the map (green curves, the bridge button hides them; the alert glow and Paths to you stay by stargate).",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list. With Use jump bridges on, routes take only bridge jumps arriving in the ticked zones (zone 1 free by default).",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
@@ -3840,9 +3852,10 @@ const CARD_INFO = {
  "whmap": [
   "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. A change of system that lands you docked (a jump clone, a pod death) adds no connection.",
   "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move together; right-click empty space for Select all. The overview in the corner shows where everything is. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
-  "[Focus and adding] Click a system for the System panel (its button, top left): class, effect, statics (a community list's until you type your own; hover one for its lifetime and mass), notes, connections, signatures. Right-click it (press and hold on a phone) for its menu: status, tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one there.",
+  "[Focus and adding] Click a system for the System panel (its button, top left): class, effect and its numbers, statics (a community list's until you type your own; hover one for its lifetime and mass), notes, connections, signatures. Right-click it (press and hold on a phone) for its menu: status, tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one there.",
   "[Connections] Each side of a hole has its own signature ID: hover the mark at its end, or see that side's list.",
-  "[Signatures] Paste the Probe Scanner's list (Ctrl+A, Ctrl+C) for the system in focus: signatures and anomalies. Colours follow the game's signal. Select rows (Ctrl-click adds) to copy, edit or delete. With Lazy update on, a paste is the whole list: signatures missing from it go, after you confirm. Undo takes back the last paste.",
+  "[Signatures] Paste the Probe Scanner's list (Ctrl+A, Ctrl+C) for the system in focus: signatures and anomalies. Colours follow the game's signal; Type sorts as the game does. Select rows (Ctrl-click adds) to copy, edit or delete. With Lazy update on, a paste is the whole list: signatures missing from it go, after you confirm. Undo takes back the last paste.",
+  "[Routes] Its panel (the button under System's) shows the way to Home, the nearest highsec and lowsec and the systems you pin (type one, or right-click → Pin route or Routes from here), again each time you move. One square a jump, round through a hole; hover one for its system. For reference only: nothing is sent to EVE.",
   "[Sharing] Share copies your chain as text or a link: positions and locks stay with you, notes and who's there only if ticked. Import shows what it adds first; the newer edit wins and nothing of yours is removed.",
   "[Kept] In this browser only, until you remove it: nothing expires. Lock a system (your home, say) so it can't be moved or removed; Remove all leaves locked ones. In a wormhole, Intel counts jumps from where you came into the chain."
  ]
@@ -29906,7 +29919,7 @@ function itSettingsHtml(numbered){
     <div class="it-box">${n(1, 'Chat logs folder')}<div class="v">${it.dir ? escapeHtml(it.dirName) : 'not chosen'}</div>${itFolderStateHtml()}</div>
     <div class="it-box${itWaitHtml('cls')}">${n(2, 'Intel channels')}${itWaitHtml('note')}${itChansHtml(chans)}</div>
     <div class="it-box">${n(3, 'You')}${itYouListHtml(chars)}<div class="it-gl" data-it-glbox>${itGlHtml()}</div></div>
-    <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
+    <div class="it-box">${n(4, 'Range and alerts')}${rsHtml('killRange')}${rsHtml('nearRange')}${rsHtml('range')}<label><input type="checkbox" data-it-set="sound"${it.set.sound ? ' checked' : ''}> sound</label>${itSoundHtml()}<label><input type="checkbox" data-it-set="notify"${it.set.notify ? ' checked' : ''}> desktop notification${notifyNote}</label><label>forget reports after <select data-it-set="forget">${opts(IT_FORGET, it.set.forget, ' min')}</select></label><label title="How long a wormhole Intel reported (wh, wormhole, drifter) stays on the map’s Wormholes filter, kept in this browser; other reports go after “forget reports after”">keep wormhole reports for <select data-it-whkeep>${itWhKeepOptsHtml()}</select></label><label title="Jumping between k-space and a wormhole system adds that k-space system’s hole to the map’s Wormholes list, with the system it leads to (on the Local log or EVE location)"><input type="checkbox" data-it-whauto${itOnHtml(itWhStore().auto, 'checked')}> add a hole when you jump into or out of J-space</label><label><input type="checkbox" data-it-set="hideFriendly"${it.set.hideFriendly ? ' checked' : ''}> hide friendlies</label></div>
     ${itRpBoxHtml(numbered)}
     ${itBridgeBoxHtml(numbered)}
     ${numbered ? '' : itAliasBoxHtml()}
@@ -31655,7 +31668,7 @@ const IT_WH_LEG_HTML = '<span><i class="ring" style="width:12px;height:12px;bord
 const IT_WH_KEY = 'tvWormholes', IT_WH_KEEP = [1, 2, 4, 8, 12, 24, 48], IT_WH_MAX_H = 48, IT_WH_MAX = 500;
 const IT_WH_LIST_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6.5 4.5h9M6.5 9h9M6.5 13.5h9"/><circle cx="3" cy="4.5" r=".9" fill="currentColor"/><circle cx="3" cy="9" r=".9" fill="currentColor"/><circle cx="3" cy="13.5" r=".9" fill="currentColor"/></svg>';
 let itWhSt = null, itWhAside = false, itWhColC = null;   // itWhAside: inside the Intel example's sandbox (an empty store, never saved)
-function itWhBlank(){ return {v: 1, rep: {}, gone: {}, keepH: 24}; }
+function itWhBlank(){ return {v: 1, rep: {}, gone: {}, keepH: 24, auto: true}; }   // 062 (A1): auto, the k-space ↔ J-space add; read as on when missing
 // read back with checks: systems on the map only, times inside the last 48 h, the hours one of the choices, at most IT_WH_MAX entries
 function itWhRead(){
   const st = itWhBlank();
@@ -31663,6 +31676,7 @@ function itWhRead(){
   try{ o = typeof localStorage === 'undefined' ? null : JSON.parse(localStorage.getItem(IT_WH_KEY) || 'null'); }catch(e){ o = null; }
   if(!o || typeof o !== 'object' || o.v !== 1) return st;
   if(IT_WH_KEEP.includes(Number(o.keepH))) st.keepH = Number(o.keepH);
+  if(o.auto === false) st.auto = false;
   const g = itGraphGet(), now = Date.now(), ok = (id, t) => Number.isInteger(id) && g.at.has(id) && Number.isFinite(t) && t >= now - IT_WH_MAX_H * 3600e3 && t <= now + 3600e3;
   for(const [k, w] of Object.entries(o.rep && typeof o.rep === 'object' ? o.rep : {})){
     const id = Number(k), t = Number(w && w.t);
@@ -31707,6 +31721,7 @@ function itWhWord(p){ return !p || !p.kw ? null : p.kw.has('drifter') ? 'drifter
 // lines as typed (IT_WH_RAW_MAX, each with what it set: build queue 046's merge reads `set`), and a removal mark per ID (`goneSig`).
 const IT_WH_TYPE = {"A009":"c13","A239":"ls","A641":"hs","A982":"c6","B041":"c6","B274":"hs","B449":"hs","B520":"hs","B735":"dr","C008":"c5","C125":"c2","C140":"ls","C247":"c3","C248":"ns","C391":"ls","C414":"dr","C729":"?","D364":"c2","D382":"c2","D792":"hs","D845":"hs","E004":"c1","E175":"c4","E545":"ns","E587":"ns","F135":"th","F216":"po","F353":"th","G008":"c6","G024":"c2","H121":"c1","H296":"c5","H900":"c5","I078":"po","I182":"c2","J244":"ls","J377":"ls","J492":"ls","K162":"exit","K329":"ns","K346":"ns","L005":"c2","L031":"th","L477":"c3","L614":"c5","L687":"po","M001":"c4","M164":"th","M267":"c3","M555":"c5","M609":"c4","N062":"c5","N110":"hs","N290":"ls","N432":"c5","N766":"c2","N770":"c5","N944":"ls","N968":"c3","O128":"c4","O477":"c3","O546":"po","O753":"po","O883":"c3","P060":"c1","Q003":"ns","Q063":"hs","Q317":"c1","R051":"ls","R081":"c4","R259":"dr","R327":"po","R474":"c6","R943":"c2","S047":"hs","S199":"ns","S804":"c6","S877":"dr","T405":"c4","T458":"th","U210":"ls","U319":"c6","U372":"po","U574":"c6","V283":"ns","V301":"c1","V753":"c6","V898":"ls","V911":"c5","V928":"dr","W237":"c6","X450":"ns","X702":"c3","X877":"c4","Y683":"c4","Y790":"c1","Z006":"c3","Z060":"ns","Z142":"ns","Z457":"c4","Z647":"c1","Z971":"c1"};
 const IT_WH_LIFE = {"A009":[270,3000000,5000,3000000],"A239":[1440,2000000,375000,0],"A641":[960,2000000,1000000,0],"A982":[1440,3000000,375000,0],"B041":[2880,3000000,1000000,0],"B274":[1440,2000000,375000,0],"B449":[960,2000000,1000000,0],"B520":[2880,3000000,1000000,0],"B735":[960,750000,375000,0],"C008":[270,3000000,5000,3000000],"C125":[960,1000000,62000,0],"C140":[1440,3300000,2000000,0],"C247":[960,2000000,375000,0],"C248":[960,3300000,2000000,0],"C391":[2880,3300000,2000000,0],"C414":[960,750000,375000,0],"C729":[720,1000000,410000,0],"D364":[960,1000000,375000,0],"D382":[960,2000000,375000,0],"D792":[1440,3000000,1000000,0],"D845":[1440,5000000,375000,0],"E004":[270,3000000,5000,3000000],"E175":[960,2000000,375000,0],"E545":[960,2000000,375000,0],"E587":[960,3000000,1000000,0],"F135":[960,750000,375000,0],"F216":[720,1000000,375000,0],"F353":[960,100000,62000,0],"G008":[270,3000000,5000,3000000],"G024":[960,2000000,375000,0],"H121":[960,500000,62000,0],"H296":[1440,3300000,2000000,0],"H900":[1440,3000000,375000,0],"I078":[720,750000,62000,0],"I182":[960,2000000,375000,0],"J244":[1440,1000000,62000,0],"J377":[1440,1000000,62000,0],"J492":[1440,1000000,62000,0],"K329":[960,3000000,375000,0],"K346":[960,3000000,375000,0],"L005":[270,3000000,5000,3000000],"L031":[960,3000000,1000000,0],"L477":[960,2000000,375000,0],"L614":[1440,1000000,62000,0],"L687":[720,750000,62000,0],"M001":[270,3000000,5000,3000000],"M164":[960,2000000,1000000,0],"M267":[960,1000000,375000,0],"M555":[1440,3000000,1000000,0],"M609":[960,1000000,62000,0],"N062":[1440,3000000,375000,0],"N110":[1440,1000000,62000,0],"N290":[1440,3000000,375000,0],"N432":[1440,3300000,2000000,0],"N766":[960,2000000,375000,0],"N770":[1440,3000000,375000,0],"N944":[1440,3300000,2000000,0],"N968":[960,2000000,375000,0],"O128":[1440,1000000,375000,0],"O477":[960,2000000,375000,0],"O546":[720,750000,62000,0],"O753":[720,1000000,375000,0],"O883":[960,1000000,62000,0],"P060":[960,500000,62000,0],"Q003":[270,3000000,5000,3000000],"Q063":[960,500000,62000,0],"Q317":[960,500000,62000,0],"R051":[960,3000000,1000000,0],"R081":[720,1000000,375000,0],"R259":[960,750000,375000,0],"R327":[720,1000000,375000,0],"R474":[1440,3000000,375000,0],"R943":[960,750000,375000,0],"S047":[1440,3000000,375000,0],"S199":[960,3300000,2000000,0],"S804":[1440,1000000,62000,0],"S877":[960,750000,375000,0],"T405":[960,2000000,375000,0],"T458":[960,500000,62000,0],"U210":[1440,3000000,375000,0],"U319":[2880,3300000,2000000,0],"U372":[720,1000000,375000,0],"U574":[1440,3000000,375000,0],"V283":[960,3000000,1000000,0],"V301":[960,500000,62000,0],"V753":[1440,3300000,2000000,0],"V898":[960,2000000,1000000,0],"V911":[1440,3300000,2000000,0],"V928":[960,750000,375000,0],"W237":[1440,3300000,2000000,0],"X450":[720,1000000,375000,0],"X702":[1440,1000000,375000,0],"X877":[960,2000000,375000,0],"Y683":[960,2000000,375000,0],"Y790":[960,500000,62000,0],"Z006":[270,3000000,5000,3000000],"Z060":[960,1000000,62000,0],"Z142":[960,3300000,2000000,0],"Z457":[960,2000000,375000,0],"Z647":[960,500000,62000,0],"Z971":[960,100000,62000,0]};
+const IT_WH_EFF_MOD = {"b":{"l":["Ship max speed","Inertia (align time)","Targeting range","Missile velocity","Missile explosion velocity","Stasis web strength"],"c":{"1":[30,15,30,15,30,-15],"2":[44,22,44,22,44,-22],"3":[58,29,58,29,58,-29],"4":[72,36,72,36,72,-36],"5":[86,43,86,43,86,-43],"6":[100,50,100,50,100,-50]}},"c":{"l":["Capacitor capacity","Capacitor recharge time","Local armor repair","Local shield boost","Remote armor repair","Remote shield repair","Remote capacitor transfer"],"c":{"1":[30,15,-15,-15,30,30,-15],"2":[44,22,-22,-22,44,44,-22],"3":[58,29,-29,-29,58,58,-29],"4":[72,36,-36,-36,72,72,-36],"5":[86,43,-43,-43,86,86,-43],"6":[100,50,-50,-50,100,100,-50]}},"m":{"l":["Targeting range","Turret, missile, drone and fighter damage","Turret and drone tracking","Missile explosion radius","Target painter strength"],"c":{"1":[-15,30,-15,30,-15],"2":[-22,44,-22,44,-22],"3":[-29,58,-29,58,-29],"4":[-36,72,-36,72,-36],"5":[-43,86,-43,86,-43],"6":[-50,100,-50,100,-50]}},"p":{"l":["Shield HP","Armor damage taken","Signature radius","Capacitor recharge time","Neutralizer and nosferatu amount"],"c":{"1":[30,15,30,-15,30],"2":[44,22,44,-22,44],"3":[58,29,58,-29,58],"4":[72,36,72,-36,72],"5":[86,43,86,-43,86],"6":[100,50,100,-50,100]}},"r":{"l":["Smartbomb range","Smartbomb and bomb damage","Overheat bonuses","Overheat damage to modules"],"c":{"1":[30,30,30,15],"2":[44,44,44,22],"3":[58,58,58,29],"4":[72,72,72,36],"5":[86,86,86,43],"6":[100,100,100,50]}},"w":{"l":["Armor HP","Shield damage taken","Signature radius","Small turret, light missile and rocket damage"],"c":{"1":[30,15,-15,60],"2":[44,22,-22,88],"3":[58,29,-29,116],"4":[72,36,-36,144],"5":[86,43,-43,172],"6":[100,50,-50,200]}}};
 const IT_WH_SIGS = 8, IT_WH_RAW_MAX = 10, IT_WH_RAW_SYS = 100, IT_WH_GONE_SIGS = 16;
 const IT_WH_DEST = {c1: ['C1', 'Class 1'], c2: ['C2', 'Class 2'], c3: ['C3', 'Class 3'], c4: ['C4', 'Class 4'], c5: ['C5', 'Class 5'], c6: ['C6', 'Class 6'],
   c13: ['C13', 'a shattered Class 13'], hs: ['HS', 'highsec'], ls: ['LS', 'lowsec'], ns: ['NS', 'nullsec'], th: ['Thera', 'Thera'], po: ['Pochven', 'Pochven'],
@@ -31864,6 +31879,28 @@ function itWhTake(e){
   itWhSave();
   itWhListPaint(true);
 }
+// 062 (A1-A3; the owner: "when entering a wormhole from k-space, automatically add a wormhole to the wormhole list of the intel map ... the page already
+// captures all of the needed information about the wormhole aside from the signature ID in k-space"; Q8 "Switch, on", Q9 leaving a chain too): a jump
+// between k-space system k and J-space system j (whSeen, not docked) merges into k's entry as itWhTake merges a report (its IDs, details and lines
+// kept), never replaces it (itWhAdd would); the class where IT_WH_CLS_RX takes it; `jw` names j for the row's words. Never in the Intel example.
+function itWhJumpAdd(k, j, t, out){
+  if(itWhAside || !itGraphGet().at.has(k) || !whIsJ(j)) return false;
+  const st = itWhStore(), now = Date.now(); if(!st.auto || !(t >= now - st.keepH * 3600e3) || (st.gone[k] || 0) >= t) return false;
+  const r = st.rep[k], old = r && r.t >= now - st.keepH * 3600e3 ? r : null;
+  const n = old ? {...old} : {id: k, t, who: '', drifter: false, src: 'you', sigs: []};
+  n.t = Math.max(t, old ? old.t : 0); n.jw = {j, t, ...(out ? {out: true} : {})};
+  const cl = whClsName(whCls(j)); if(IT_WH_CLS_RX.test(cl)){ const inf = itWhInfoMerge(old && old.info, {cls: cl}); if(inf) n.info = inf; }
+  delete st.gone[k]; st.rep[k] = itWhDrSet(n); itWhSave(); itWhChanged();
+  return true;
+}
+// 062 (A4, Q10 "Yes"): the k-space side's ID typed on the Wormholes tab's connection end fills the Intel entry that jump made; one way only, and
+// removing either never removes the other (Q11)
+function itWhJumpSig(k, j, sig, type){
+  if(itWhAside || !sig) return;
+  const st = itWhStore(), w = st.rep[k]; if(!w || !w.jw || w.jw.j !== j || !/^[A-Z]{3}-\d{3}$/.test(sig)) return;
+  const add = [itWhSigNew(sig, false, IT_WH_TYPE[type] ? type : '', false, w.info && w.info.cls ? {cls: w.info.cls} : undefined)];
+  w.sigs = itWhSigMerge(w, add, Date.now(), '', 'you'); itWhSave(); itWhChanged();
+}
 // read back with checks (itWhRead): 044's fields, each its own shape; anything else dropped. An entry 040 wrote (no sigs) keeps its Drifter as a
 // Drifter report with no ID.
 function itWhInfoRead(o){
@@ -31896,6 +31933,9 @@ function itWhEntryRead(w, ok){
       ...(n > 1 ? {n: Math.min(99, n)} : {}), ...(r.via === 'import' ? {via: 'import'} : {})}; });   // 046: a repeat's count, a shared list's lines
   if(raws.length) o.raws = raws;
   if(w.via === 'import') o.via = 'import';
+  const jw = w.jw;   // 062 (A2): the J-space system this hole was seen to lead to, when you jumped through it (out: you came out here); the
+  // J-space ID range written out: this runs at start-up, before the Wormholes tab's part of the script (WH_LO) has run (LESSON #175)
+  if(jw && typeof jw === 'object' && Number.isInteger(jw.j) && jw.j >= 31000000 && jw.j < 32000000 && ok(Number(jw.t))) o.jw = {j: jw.j, t: Number(jw.t), ...(jw.out === true ? {out: true} : {})};
   return o;
 }
 // ---- how they show (a purple mono tag; a part ends in "…"; a Drifter one hot pink with "DR"; the title says what it is and who reported it)
@@ -32346,7 +32386,12 @@ function itWhNear(sys, now = Date.now()){
 function itWhBadgeHtml(drifter, title, short = false){ return `<span class="it-gtag it-wh${escapeHtml(drifter ? ' dr' : '')}" title="${escapeHtml(title)}">${escapeHtml(short ? (drifter ? 'DRIFTER' : 'WH') : drifter ? 'Drifter WH' : 'Wormhole')}</span>`; }   // short: the Paths to you tree (045)
 function itWhBadgeTitle(w){ const st = itWhStore(); return `${w.drifter ? 'A Drifter wormhole' : 'A wormhole'}: ${itWhByTxt(w)}, ${itAgo(w.t)} ago. The map’s Wormholes filter keeps it ${st.keepH} h`; }
 // who it's from: added by you, reported by someone, or (046) from a shared list (the owner: "I agree" to saying so)
-function itWhByTxt(w){ return w.src === 'you' ? 'added by you' : `${w.via ? 'from a shared list, ' : ''}reported by ${w.who}`; }
+function itWhByTxt(w){ return w.src === 'chain' ? `on your chain → ${whName(w.chain)} (${[whClsName(whCls(w.chain)), whEff(w.chain)].filter(Boolean).join(' · ')})` : w.jw && whReady ? itWhJwTxt(w.jw) : w.src === 'you' ? 'added by you' : `${w.via ? 'from a shared list, ' : ''}reported by ${w.who}`; }
+function itWhJwTitleHtml(w){ return w.jw && whReady && whEff(w.jw.j) ? ` title="${escapeHtml(whEffTxt(w.jw.j))}"` : ''; }   // 062 (A3): the effect's numbers on hover
+function itWhJwTxt(jw){   // 062 (A3): "you jumped in → J123456 (C3 · Pulsar · statics D845 N968)"
+  const j = jw.j, e = whEff(j), stc = whStcSort(whStcOf(j).codes || '');
+  return `${jw.out ? 'you came out of' : 'you jumped in →'} ${whName(j)} (${[whClsName(whCls(j)), e, stc ? 'statics ' + stc : ''].filter(Boolean).join(' · ')})`;
+}
 // the map: the kept ones (map index -> entry), the live ones (Intel's, within "forget reports after" and "Map: within"), and which are marked
 // with the rings and labels (the Wormholes filter: every kept one; the other filters: the live ones, as reports)
 function itMapWh(){
@@ -32356,6 +32401,16 @@ function itMapWh(){
     const i = g.at.get(w.id); if(i === undefined) continue;
     kept.set(i, w);
     if(w.src === 'intel' && w.t >= fresh && D && D[i] >= 0 && D[i] <= itm.reach) live.set(i, w);
+  }
+  // 062 (K1, the mapping plan's D14; Q13 "Seen recently"): your chain's k-space ends whose connection was seen within "keep wormhole reports for"
+  // are marked like a live report (thin rings on every filter; 045's bold mark with Wormholes on); one mark a system, an Intel entry kept as it is.
+  // Never in the Intel example (itWhAside)
+  if(!itWhAside && whReady && whS) for(const l of whS.st.links){
+    const k = whIsJ(l.a) ? (whIsJ(l.b) ? null : l.b) : whIsJ(l.b) ? l.a : null; if(k === null || !(l.seen >= cut)) continue;
+    const i = g.at.get(k); if(i === undefined) continue;
+    const w = kept.get(i) || {id: k, t: l.seen, who: '', drifter: false, src: 'chain', sigs: [], chain: k === l.a ? l.b : l.a};
+    if(w.src === 'chain' && l.seen > w.t){ w.t = l.seen; w.chain = k === l.a ? l.b : l.a; }
+    kept.set(i, w); if(D && D[i] >= 0 && D[i] <= itm.reach) live.set(i, w);
   }
   // 058 (Q21): with Wormholes on, the kept holes that match every Only filter that is on join the live ones; a kept hole that doesn't match
   // keeps only the off-filter rule (live: thin rings, as a report; else no wormhole mark). The owner: "045's bold + pulse", "Off-filter rule"
@@ -32520,7 +32575,7 @@ function itWhRowsHtml(){
     const j = my ? itJumps(my, w.id) : null, left = Math.max(1, Math.ceil((w.t + st.keepH * 3600e3 - now) / 3600e3)), name = itSysName(w.id);
     const by = `${itWhByTxt(w)} · ${itAgo(w.t)} ago · gone in ${left} h`;
     return `<div class="it-whp-r"><span class="it-whp-j">${itJumpsHtml(j)}</span><button type="button" class="it-whp-s it-sn it-whp-go ${escapeHtml(itSecClass(w.id))}" data-it-whgo="${Number(w.id)}" title="Show on the map">${escapeHtml(name)}</button>${itWhBadgeHtml(w.drifter, '')}`
-      + `<span class="it-whp-by">${itWhRawTogHtml(w)}${itWhSigsHtml(w.sigs, 4, w.id)}${itWhInfoHtml(w.info, w.t)}${escapeHtml(by)}</span><button type="button" data-it-whrm="${Number(w.id)}" aria-label="${escapeHtml(`Remove ${name}`)}">Remove</button>${itWhRawHtml(w)}</div>`;
+      + `<span class="it-whp-by"${itWhJwTitleHtml(w)}>${itWhRawTogHtml(w)}${itWhSigsHtml(w.sigs, 4, w.id)}${itWhInfoHtml(w.info, w.t)}${escapeHtml(by)}</span><button type="button" data-it-whrm="${Number(w.id)}" aria-label="${escapeHtml(`Remove ${name}`)}">Remove</button>${itWhRawHtml(w)}</div>`;
   }).join('');
 }
 // ---- build queue 053: the Sov upgrades filter (Project doc roadmap/intel-layout-sov-plan.md section 5; mockup Claude outputs/
@@ -32955,6 +33010,29 @@ function itRpFlags(){
   if(s.mine) for(const id of s.list) add(g.at.get(id), 'avoid list');
   return out;
 }
+// 062 (R1, the plan: "split the search out of itRpUpdate into one function both call, so the two never drift"): 047's search, as it was. N nodes,
+// from src: fewest flagged systems on the way (flag(x): x counts once you go through it; the destination never does), then the cost of entering each
+// system (cost(y)), then the fewest jumps; neighbours in the order nb(x) gives them, so one route each. {f, c, len, par}
+function itRpSearch(N, src, nb, cost, flag){
+  const f = new Int32Array(N).fill(1 << 30), c = new Float64Array(N).fill(Infinity), len = new Int32Array(N).fill(-1), par = new Int32Array(N).fill(-1), done = new Uint8Array(N);
+  f[src] = 0; c[src] = 0; len[src] = 0;
+  const near = (a, b) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a));
+  const less = (a, b) => f[a] < f[b] || (f[a] === f[b] && (near(c[a], c[b]) ? len[a] < len[b] : c[a] < c[b]));
+  const h = [src];
+  const up = (k) => { while(k > 0){ const q = (k - 1) >> 1; if(!less(h[k], h[q])) break; [h[k], h[q]] = [h[q], h[k]]; k = q; } };
+  const down = (k) => { for(;;){ const l = 2 * k + 1, r = l + 1; let m = k; if(l < h.length && less(h[l], h[m])) m = l; if(r < h.length && less(h[r], h[m])) m = r; if(m === k) break; [h[k], h[m]] = [h[m], h[k]]; k = m; } };
+  while(h.length){
+    const x = h[0], last = h.pop(); if(h.length){ h[0] = last; down(0); }
+    if(done[x]) continue; done[x] = 1;
+    const fx = f[x] + (x !== src && flag(x) ? 1 : 0);   // a system counts once you go through it: the destination never does
+    for(const y of nb(x)){
+      if(done[y]) continue;
+      const cy = c[x] + cost(y), ly = len[x] + 1;
+      if(fx < f[y] || (fx === f[y] && (near(cy, c[y]) ? ly < len[y] : cy < c[y]))){ f[y] = fx; c[y] = cy; len[y] = ly; par[y] = x; h.push(y); up(h.length - 1); }
+    }
+  }
+  return {f, c, len, par};
+}
 // Threat Vector's route from your system to every system (a search on (flagged, cost, jumps), neighbours in index order: one route each)
 function itRpUpdate(){
   if(itRpAside || !itm.P || itm.home < 0) return false;
@@ -32966,23 +33044,7 @@ function itRpUpdate(){
   const key = `${home}|${s.pref}|${pen}|${[...flags].map(([i, w]) => `${i}:${w.join('+')}`).sort().join(',')}|jb:${jo ? Z.used.join(',') : ''}`;
   if(key === itRp.key && itRp.par && itRp.home === home){ itRp.flags = flags; return false; }
   const nb = jo ? (x) => { const e = jo.get(x); return e ? T.adj[x].concat(e) : T.adj[x]; } : (x) => T.adj[x];   // a bridge jump costs as a gate jump into its arrival
-  const n = T.n, p = Math.exp(0.15 * pen), f = new Int32Array(n).fill(1 << 30), c = new Float64Array(n).fill(Infinity), len = new Int32Array(n).fill(-1), par = new Int32Array(n).fill(-1), done = new Uint8Array(n);
-  f[home] = 0; c[home] = 0; len[home] = 0;
-  const near = (a, b) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a));
-  const less = (a, b) => f[a] < f[b] || (f[a] === f[b] && (near(c[a], c[b]) ? len[a] < len[b] : c[a] < c[b]));
-  const h = [home];
-  const up = (k) => { while(k > 0){ const q = (k - 1) >> 1; if(!less(h[k], h[q])) break; [h[k], h[q]] = [h[q], h[k]]; k = q; } };
-  const down = (k) => { for(;;){ const l = 2 * k + 1, r = l + 1; let m = k; if(l < h.length && less(h[l], h[m])) m = l; if(r < h.length && less(h[r], h[m])) m = r; if(m === k) break; [h[k], h[m]] = [h[m], h[k]]; k = m; } };
-  while(h.length){
-    const x = h[0], last = h.pop(); if(h.length){ h[0] = last; down(0); }
-    if(done[x]) continue; done[x] = 1;
-    const fx = f[x] + (x !== home && flags.has(x) ? 1 : 0);   // a system counts once you go through it: the destination never does
-    for(const y of nb(x)){
-      if(done[y]) continue;
-      const cy = c[x] + itRpCost(T, y, s.pref, p), ly = len[x] + 1;
-      if(fx < f[y] || (fx === f[y] && (near(cy, c[y]) ? ly < len[y] : cy < c[y]))){ f[y] = fx; c[y] = cy; len[y] = ly; par[y] = x; h.push(y); up(h.length - 1); }
-    }
-  }
+  const n = T.n, p = Math.exp(0.15 * pen), {f, len, par} = itRpSearch(n, home, nb, (y) => itRpCost(T, y, s.pref, p), (x) => flags.has(x));   // 062 (R1): the search shared with the Routes panel
   // 057: the fewest jumps over the same graph, for the tooltip's "(shortest N)" (041 compared with the stargates alone)
   let sd = null;
   if(jo){ sd = new Int16Array(n).fill(-1); sd[home] = 0; const q = [home]; for(let k = 0; k < q.length; k++){ const x = q[k]; for(const y of nb(x)) if(sd[y] < 0){ sd[y] = sd[x] + 1; q.push(y); } } }
@@ -33475,6 +33537,7 @@ function rsBind(root){
     if(t.dataset.itSndfile !== undefined){ const sl = t.dataset.slot || 'near', f = t.files && t.files[0]; t.value = ''; itSndPick(sl, f).then(() => { const again = el.querySelector(`[data-it-snd="${sl}"]`); if(again) again.focus({preventScroll: true}); }); return; }
     if(t.dataset.itVol !== undefined){ it.set.volume = Math.max(0, Math.min(100, Number(t.value) || 0)); itWriteSet(); itRender(true); const again = el.querySelector('[data-it-vol]'); if(again) again.focus({preventScroll: true}); return; }
     if(t.dataset.itWhkeep !== undefined){ itWhSetKeep(Number(t.value)); return; }   // build queue 040: kept in tvWormholes, not dscanIntel
+    if(t.dataset.itWhauto !== undefined){ const st = itWhStore(); st.auto = t.checked; itWhSave(); return; }   // 062 (A1): beside it, in tvWormholes too
     const k = t.dataset.itSet;
     if(!k) return;
     if(k === 'range' || k === 'forget' || k === 'killRange') it.set[k] = Number(t.value);
@@ -33899,6 +33962,7 @@ const WH_STC_ABC = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx
 const WH_STC_NOTE = {list: 'from the community list (Wanderer) · type your own to replace them', you: 'typed by you'};   // D3
 // 056: the System panel's map control, the ringed planet (the owner: "A"; our own drawing) and which panel is open, kept as you left it ("As you left it")
 const WH_SYS_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="4.4"/><path d="M3.1 11.6C1.2 13.2.9 14.5 1.7 15c1.6 1 6.4-1 10.3-4.4 3.9-3.4 5.6-6.9 4-7.7-.7-.4-2 0-3.5 1"/></svg>';
+const WH_RT_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="4" cy="4" r="2"/><circle cx="14" cy="9" r="2"/><circle cx="5" cy="14.5" r="2"/><path d="M6 4.6c4 .4 6 1.6 6.4 3M12.3 10.6c-1.4 2.3-3.4 3.4-5.4 3.8"/></svg>';   // 062 (R7): the Routes panel's control, three stops on a path
 const WH_PN_KEY = 'tvWhPanels';   // {v: 1, open: 'sum' | ''}: shut the first time and on anything it can't read; the older page never reads it
 // 051 (part 2, D25 / D26 / D34): the system menu. A status shown as the box's border colour, a tag, Lock (the owner: "LOCK is all we need ...
 // just need the lock to prevent accidental deletions of home systems for example"), Copy the name, Remove. Kept under their own key, tvWhMarks
@@ -33919,7 +33983,7 @@ function whTable(){
     T.names = W.names.split('|'); T.names.forEach((n, i) => T.byName.set(n.toLowerCase(), T.ids[i]));
     const c = Uint8Array.from(atob(W.con), x => x.charCodeAt(0)), cv = new DataView(c.buffer);
     for(let i = 0; i < W.systems; i++) T.con.push(cv.getUint16(2 * i, true));
-    T.cls = W.cls; T.eff = W.eff; T.cons = W.cons; T.conr = [...atob(W.conr)].map(x => x.charCodeAt(0)); T.regions = W.regions;
+    T.cls = W.cls; T.eff = W.eff; T.effc = typeof W.effc === 'string' && W.effc.length === W.systems ? W.effc : ''; T.cons = W.cons; T.conr = [...atob(W.conr)].map(x => x.charCodeAt(0)); T.regions = W.regions;
     // 061 (the owner at the review: "go with your recommendations"): the statics only while they follow this system list (n, and FNV-1a of INTEL_WH.sys)
     const S = typeof INTEL_WH_STC === 'undefined' ? null : INTEL_WH_STC;
     if(S && S.n === W.systems && S.of === whFnv(W.sys)){ const cs = S.codes.split(' '); T.stc = S.stc.split('|').map(g => [...g].map(ch => cs[WH_STC_ABC.indexOf(ch)]).join(' ')); }
@@ -33937,6 +34001,20 @@ function whKnown(id){ return whIsJ(id) ? whTable().at.has(id) : itGraphGet().at.
 function whClsData(id){ const T = whTable(), i = T.at.get(id); return i === undefined ? null : WH_CLS_KEY[T.cls[i]] || null; }
 function whCls(id){ const s = whS && whS.st.sys[id]; return s && s.cls ? s.cls : whClsData(id); }   // yours if you changed it, else CCP's
 function whEff(id){ const T = whTable(), i = T.at.get(id); return i === undefined ? '' : WH_EFF[T.eff[i]] || ''; }
+// 062 (E1-E3; the owner: "we need to add any affects that the hole has", Q12 "Name and numbers"): the effect's numbers, CCP's beacons (IT_WH_EFF_MOD,
+// tools/gen_wh_table.py) at the beacon's own class: INTEL_WH.effc (tools/jump_table_update.py); until a table carries it, a C1-C6 system's own class,
+// and a shattered or Drifter system none (the owner at the review: "no guessed numbers"). Text only: no fit's numbers change.
+function whEffCls(id){
+  const T = whTable(), i = T.at.get(id); if(i === undefined || !WH_EFF[T.eff[i]]) return null;
+  if(T.effc) return /^[1-6]$/.test(T.effc[i]) ? T.effc[i] : null;
+  return /^[1-6]$/.test(T.cls[i]) ? T.cls[i] : null;
+}
+function whEffLines(id){
+  const T = whTable(), i = T.at.get(id), c = whEffCls(id), e = i === undefined ? null : IT_WH_EFF_MOD[T.eff[i]];
+  return !e || !c || !e.c[c] ? [] : e.l.map((w, k) => [w, e.c[c][k]]);
+}
+function whEffPct(v){ return `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)}%`; }
+function whEffTxt(id){ const e = whEff(id), l = whEffLines(id); return !e ? '' : l.length ? `${e}: ${l.map(([w, v]) => `${w} ${whEffPct(v)}`).join(' · ')}` : e; }
 function whPlace(id){
   if(whIsJ(id)){ const T = whTable(), i = T.at.get(id); if(i === undefined) return ''; const c = T.con[i]; return `${T.cons[c]} / ${T.regions[T.conr[c]]}`; }
   try{ return sysRegion(id) || ''; }catch(e){ return ''; }
@@ -34037,11 +34115,12 @@ function whLinksOf(id){ return whState().st.links.filter(l => l.a === id || l.b 
 // ---- build queue 059 (part 3; Project doc roadmap/wormholes-part3-plan.md, P1-P22): signatures, per-end IDs, the System panel's sections. Each under
 // its own key, never in tvWhChain (whRead rebuilds systems and links from the fields it knows, so a 056 page or a revert would drop new fields there);
 // an older page never reads these keys, and this page drops what no longer has a system or a link on the map.
-//   tvWhSigs {v: 1, lazy, sort: {k, d}, sys: {id: {t, rows: [{id, sg, grp, nm, pct, f, t}]}}}: every row the Probe Scanner lists (P4, P8)
+//   tvWhSigs {v: 1, lazy, sort: {k, d}, sv, sys: {id: {t, rows: [{id, sg, grp, nm, pct, f, t, o}]}}}: every row the Probe Scanner lists (P4, P8);
+//     062 (S2, S3): `o` a row's place in the latest paste that listed it, `sv: 2` once the Type sort was given to everyone (an older page drops both)
 //   tvWhEnds {v: 1, links: {"<a>-<b>": {"<sysId>": {sig, type, gone?}}}}: each end's own signature ID (P9; the BUG: one ID per connection)
 //   tvWhSecs {v: 1, sigs, cn: {k, d}}: the Signatures section folded or open, the Connections list's sort (P1, P22)
 const WH_SG_KEY = 'tvWhSigs', WH_END_KEY = 'tvWhEnds', WH_SEC_KEY = 'tvWhSecs', WH_SG_ROWS = 150, WH_SIG_RX = /^[A-Z]{3}-\d{3}$/, WH_SIGP_RX = /^[A-Z]{3}(-\d{0,3})?$/;
-const WH_SG_SORTS = ['id', 'nm', 'pct', 'f'], WH_CN_SORTS = ['id', 'to', 'lf', 'f'];
+const WH_SG_SORTS = ['id', 'nm', 'pct', 'f', 'ty'], WH_CN_SORTS = ['id', 'to', 'lf', 'f'];
 function whJson(k){ try{ const o = typeof localStorage === 'undefined' ? null : JSON.parse(localStorage.getItem(k) || 'null'); return o && typeof o === 'object' && o.v === 1 ? o : null; }catch(e){ return null; } }
 function whPut(k, o){ try{ localStorage.setItem(k, JSON.stringify(o)); }catch(e){ } }
 function whTxt(x, n){ return typeof x === 'string' ? x.replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, n) : ''; }
@@ -34050,10 +34129,12 @@ function whSortRead(o, keys){ return o && keys.includes(o.k) && (o.d === 1 || o.
 function whSgRowRead(r){
   if(!r || typeof r !== 'object' || !WH_SIG_RX.test(r.id || '')) return null;
   const pct = Number(r.pct), t = whTm(r.t);
-  return {id: r.id, sg: whTxt(r.sg, 24), grp: whTxt(r.grp, 24), nm: whTxt(r.nm, 48), pct: Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) : 0, f: whTm(r.f) || t || Date.now(), t: t || Date.now()};
+  const o = {id: r.id, sg: whTxt(r.sg, 24), grp: whTxt(r.grp, 24), nm: whTxt(r.nm, 48), pct: Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) : 0, f: whTm(r.f) || t || Date.now(), t: t || Date.now()};
+  if(Number.isInteger(r.o) && r.o >= 0 && r.o < 100000) o.o = r.o;   // 062 S2: the paste's order (a row without it goes after those with it)
+  return o;
 }
 function whSgRead(sys){
-  const o = whJson(WH_SG_KEY) || {}, out = {v: 1, lazy: o.lazy === true, sort: whSortRead(o.sort, WH_SG_SORTS), sys: {}};
+  const o = whJson(WH_SG_KEY) || {}, out = {v: 1, lazy: o.lazy === true, sort: o.sv === 2 && o.sort && WH_SG_SORTS.includes(o.sort.k) ? whSortRead(o.sort, WH_SG_SORTS) : {k: 'ty', d: 1}, sys: {}};   // 062 S3 (Q6 "Switch everyone once"): Type, then the sort you pick
   for(const [k, s] of Object.entries(o.sys && typeof o.sys === 'object' ? o.sys : {})){
     if(!sys[k] || !s || !Array.isArray(s.rows)) continue;   // a system no longer on the map: its signatures go too (as whMkRead)
     const seen = new Set(), rows = s.rows.map(whSgRowRead).filter(r => r && !seen.has(r.id) && seen.add(r.id)).slice(0, WH_SG_ROWS);
@@ -34061,7 +34142,7 @@ function whSgRead(sys){
   }
   return out;
 }
-function whSgSave(){ const S = whS, sys = {}; for(const [k, s] of Object.entries(S.sg.sys)) if(S.st.sys[k] && s.rows.length) sys[k] = s; whPut(WH_SG_KEY, {v: 1, lazy: S.sg.lazy, sort: S.sg.sort, sys}); }
+function whSgSave(){ const S = whS, sys = {}; for(const [k, s] of Object.entries(S.sg.sys)) if(S.st.sys[k] && s.rows.length) sys[k] = s; whPut(WH_SG_KEY, {v: 1, lazy: S.sg.lazy, sort: S.sg.sort, sv: 2, sys}); }
 function whEndRead(st){
   const o = whJson(WH_END_KEY) || {}, out = {}, keys = new Set(st.links.map(l => whLinkKey(l.a, l.b)));
   for(const [k, e] of Object.entries(o.links && typeof o.links === 'object' ? o.links : {})){
@@ -34084,6 +34165,7 @@ function whEndSet(l, n, sig, type){
   const k = whLinkKey(l.a, l.b), e = whS.ends[k] || (whS.ends[k] = {});
   if(sig || type) e[n] = {sig, type}; else delete e[n];
   if(!Object.keys(e).length) delete whS.ends[k];
+  if(sig && !whIsJ(n)) itWhJumpSig(n, l.a === n ? l.b : l.a, sig, type);   // 062 (A4): the k-space end's ID fills the Intel entry its jump made
 }
 function whEndGone(l, n, t){ const e = whEnd(l, n); if(!e || !e.sig) return false; if(t) e.gone = t; else delete e.gone; return true; }
 // P12: the connection a scanned ID in system n is: this end's own ID (whole, or a part only it fits), else the old single ID
@@ -34143,7 +34225,7 @@ function whSeen(id, t, docked){
   if(id === S.last){ S.lastT = t; return; }
   const prev = S.last; S.last = id; S.lastT = t;
   const j = whIsJ(id), jp = prev !== null && whIsJ(prev);
-  if(prev !== null && (j || jp) && !docked){ whAddSys(prev, t); whAddSys(id, t); whAddLink(prev, id, t); whSave(); }   // a hole: from where you were last
+  if(prev !== null && (j || jp) && !docked){ whAddSys(prev, t); whAddSys(id, t); whAddLink(prev, id, t); whSave(); if(j !== jp) itWhJumpAdd(j ? prev : id, j ? id : prev, t, !j); }   // a hole: from where you were last; 062 (A1) k ↔ J also Intel's list
   else if(j && whAddSys(id, t)) whSave();   // into a hole docked (a clone jump into your own structure, say), or the first reading: the system, no connection
   if(j) S.sel = id;
   const kind = j ? 'j' : 'k', was = S.kind; S.kind = kind;
@@ -34221,10 +34303,12 @@ function whShellHtml(){
 }
 function whAddSelHtml(k){ return `<select name="${escapeHtml(k)}" aria-label="${escapeHtml(k[0].toUpperCase() + k.slice(1) + ' (optional)')}">${itWhOptHtml(k)}</select>`; }
 function whRailHtml(){   // 056: one map control per working panel at the map's top left (hidden until the map has a system, the owner: "A"), its panel beside it: a view, not a dialog
-  return `<div class="it-map-rail wh-rail" role="toolbar" aria-label="Map panels" hidden><button type="button" data-wh-rp="sum" aria-controls="whPnSum" aria-pressed="false" title="System (press to show the panel)" aria-label="System (press to show the panel)">${WH_SYS_ICON}</button></div>`
-    + `<section class="wh-pnl" id="whPnSum" aria-label="System" hidden><h3>System</h3><div class="wh-pnb" data-pnb="sum"></div></section>`;
+  return `<div class="it-map-rail wh-rail" role="toolbar" aria-label="Map panels" hidden><button type="button" data-wh-rp="sum" aria-controls="whPnSum" aria-pressed="false" title="System (press to show the panel)" aria-label="System (press to show the panel)">${WH_SYS_ICON}</button>`
+    + `<button type="button" data-wh-rp="rt" aria-controls="whPnRt" aria-pressed="false" title="Routes (press to show the panel)" aria-label="Routes (press to show the panel)">${WH_RT_ICON}</button></div>`   // 062 (R7)
+    + `<section class="wh-pnl" id="whPnSum" aria-label="System" hidden><h3>System</h3><div class="wh-pnb" data-pnb="sum"></div></section>`
+    + `<section class="wh-pnl" id="whPnRt" aria-label="Routes" hidden><h3>Routes</h3><div class="wh-pnb" data-pnb="rt"></div></section>`;
 }
-function whPnRead(){ try{ const o = JSON.parse(localStorage.getItem(WH_PN_KEY) || 'null'); return o && o.v === 1 && o.open === 'sum' ? 'sum' : ''; }catch(e){ return ''; } }
+function whPnRead(){ try{ const o = JSON.parse(localStorage.getItem(WH_PN_KEY) || 'null'); return o && o.v === 1 && (o.open === 'sum' || o.open === 'rt') ? o.open : ''; }catch(e){ return ''; } }   // 062: 'rt' (an older page reads it as shut)
 function whPnSet(open, quiet){   // the rail's button, and a click on a system (quiet: whSelect draws next)
   const S = whS; S.open = open; try{ localStorage.setItem(WH_PN_KEY, JSON.stringify({v: 1, open})); }catch(e){ }
   if(!quiet){ S.pn = {}; whPanels(); }   // the view stays where it is (as Near You); ⤢ then fits in the uncovered part
@@ -34285,7 +34369,7 @@ function whView(){ const cv = whCv(); return {w: cv.clientWidth, h: cv.clientHei
 function whToWorld(sx, sy){ const M = whS.M; return {x: M.cam.x + sx / M.cam.s, y: M.cam.y + sy / M.cam.s}; }
 function whHit(w){ let hit = null; for(const [n, p] of whS.M.P) if(w.x >= p.x && w.x <= p.x + WH_NW && w.y >= p.y && w.y <= p.y + WH_NH) hit = n; return hit; }
 function whFree(){   // the part of the map no panel or control covers: Fit and "bring you into view" aim there
-  const v = whView(), box = whS.el.querySelector('.wh-box').getBoundingClientRect(), pn = whS.el.querySelector('#whPnSum'), r = {l: 0, t: 48, r: v.w, b: v.h};
+  const v = whView(), box = whS.el.querySelector('.wh-box').getBoundingClientRect(), pn = whS.el.querySelector('.wh-pnl:not([hidden])'), r = {l: 0, t: 48, r: v.w, b: v.h};   // 062: whichever panel is open
   if(pn && !pn.hidden){ const q = pn.getBoundingClientRect(), l = q.right - box.left + 4; if(q.width && v.w - l >= 96) r.l = l; }   // 056: right of the open panel; a phone's sheet leaves too little: the whole map (as itMapFree)
   return {...r, w: r.r - r.l, h: r.b - r.t};
 }
@@ -34356,6 +34440,7 @@ function whDraw(){
     if(Math.abs(b.y - a.y) > Math.abs(b.x - a.x)) c.bezierCurveTo(a.x, (a.y + b.y) / 2, b.x, (a.y + b.y) / 2, b.x, b.y); else c.bezierCurveTo((a.x + b.x) / 2, a.y, (a.x + b.x) / 2, b.y, b.x, b.y);
     c.stroke(); c.setLineDash([]);   // 059: no text on the lines any more; each end's ID is its mark (whEndMarks)
   }
+  whRtGlow(c, ctr, C);   // 062 (R6): a hovered route's hole steps, under the boxes
   for(const [n, p] of M.P){
     const sy = st.sys[n], k = !whIsJ(n), sk = k ? whSecKey(n) : null, kc = sk === null ? C.k : IT_MAP_SEC[sk], cl = whCls(n);
     if(M.group.has(n)){ c.strokeStyle = C.lo; c.lineWidth = 1.5; c.setLineDash([4, 3]); c.beginPath(); c.roundRect(p.x - 7, p.y - 7, WH_NW + 14, WH_NH + 14, 8); c.stroke(); c.setLineDash([]); }
@@ -34384,6 +34469,7 @@ function whDraw(){
       c.fillStyle = sc || C.text; c.fillText(tg, tx + 5, ty + 9);
     }
   }
+  whRtOver(c, C, font);   // 062 (R6): its systems outlined and the exit's pill
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   whEndMarks(c, C, dpr, w, h);
   if(M.band){ const b = M.band, x = Math.min(b.x0, b.x1), y = Math.min(b.y0, b.y1); c.globalAlpha = 0.1; c.fillStyle = C.lo; c.fillRect(x, y, Math.abs(b.x1 - b.x0), Math.abs(b.y1 - b.y0)); c.globalAlpha = 1;
@@ -34474,7 +34560,7 @@ function whSumHtml(n){
   whP3(n);
   return `<div class="wh-sh"><span class="wh-shn">${whNameHtml(n)}</span>${whYouHtml(n === S.last)}${whTagHtml(n)}${whStHtml(n)}${whTagPillHtml(n)}${whSharedHtml(s)}</div>`
     + `<div class="wh-kv"><span>${escapeHtml(k ? 'Region' : 'Constellation / region')}</span><b>${escapeHtml(whPlace(n) || 'not known')}</b></div>`
-    + (k ? `<div class="wh-kv"><span>Security</span><b>${escapeHtml(whSecTxt(n))}</b></div>` : `<div class="wh-kv"><span>Effect</span><b>${escapeHtml(eff || 'none')}</b></div>`)
+    + (k ? `<div class="wh-kv"><span>Security</span><b>${escapeHtml(whSecTxt(n))}</b></div>` : `<div class="wh-kv"><span>Effect</span><b>${escapeHtml(eff || 'none')}</b></div>${whEffKvHtml(n)}`)
     + `<div class="wh-kv"><span>Kept</span><b>until you remove it</b></div>${whLockKvHtml(n)}`
     // 059 (P1): Class and Statics first (the owner: "connections change, class and statics do not."), then Connections and Signatures, used together while scanning
     + (k ? '' : `<div class="wh-ed" data-wh-ed="${Number(n)}"><label>Class<select data-f="cls">${whOptsHtml(WH_CLS_OPT, whCls(n))}</select><span class="wh-note">${escapeHtml(own ? 'changed by you' : 'from CCP’s data')}</span></label>`
@@ -34488,6 +34574,12 @@ function whSumHtml(n){
 }
 function whStHtml(n){ const k = whMk(n).st; return k ? `<span class="it-gtag wh-st st-${escapeHtml(k)}" title="Status: the box's border on the map">${escapeHtml(whStLabel(k))}</span>` : ''; }
 function whTagPillHtml(n){ const m = whMk(n); return m.tag ? `<span class="it-gtag wh-st${escapeHtml(m.st ? ' st-' + m.st : '')}" title="Tag">${escapeHtml(m.tag)}</span>` : ''; }
+function whEffKvHtml(n){   // 062 (E3): one row a line, under the Effect line (the panel's own label / value rows)
+  if(!whEff(n)) return '';
+  const l = whEffLines(n);
+  return l.length ? `<div class="wh-kv" data-wh-eff>${whEffRowsHtml(l)}</div>` : '<div class="wh-kv" data-wh-eff><span>Its numbers</span><b>not in the page’s data yet for this system</b></div>';
+}
+function whEffRowsHtml(l){ return l.map(([w, v]) => `<span>${escapeHtml(w)}</span><b>${escapeHtml(whEffPct(v))}</b>`).join(''); }
 function whLockKvHtml(n){ return whLocked(n) ? '<div class="wh-kv"><span>Locked</span><b>can’t be moved or removed until you unlock it</b></div>' : ''; }
 function whRmHtml(n){
   if(whP3(n).ask && whP3(n).ask.k === 'del') return whAskHtml(`Remove ${whName(n)} and its connections?`, [['del-yes', 'Remove'], ['del-no', 'Cancel']]);   // P20: asks first
@@ -34570,7 +34662,14 @@ function whLSaveHtml(c){ return `<span class="wh-leb"><button type="button" data
 function whSgGrpOptHtml(v){ return `<option value=""${escapeHtml(v ? '' : ' selected')}>(not known)</option>` + WH_SG_GROUPS.map(g => `<option${escapeHtml(g === v ? ' selected' : '')}>${escapeHtml(g)}</option>`).join(''); }
 // ---- P1-P7: the Signatures section: the paste box, Lazy update, the result line with Undo, the list
 const WH_SG_SORT = {id: (a, b) => a.id.localeCompare(b.id), nm: (a, b) => ((a.grp || '~') + (a.nm || '')).localeCompare((b.grp || '~') + (b.nm || '')) || a.id.localeCompare(b.id),
-  pct: (a, b) => a.pct - b.pct || a.id.localeCompare(b.id), f: (a, b) => b.f - a.f || a.id.localeCompare(b.id)};   // each key's natural order is d 1 (A to Z, low to high, newest first)
+  pct: (a, b) => a.pct - b.pct || a.id.localeCompare(b.id), f: (a, b) => b.f - a.f || a.id.localeCompare(b.id),
+  ty: (a, b) => whSgTyRank(a) - whSgTyRank(b) || (whSgTyRank(a) === WH_SG_TY_ORDER.length + 1 ? a.grp.localeCompare(b.grp) : 0) || whSgPos(a) - whSgPos(b) || a.id.localeCompare(b.id)};   // each key's natural order is d 1 (A to Z, low to high, newest first)
+// 062 S1 (the BUG; the owner: "unscanned items at the top, then scanned in the order provided"; the game's group order, Q5: "unscanned, wormhole, gas site,
+// data site, relic site, asteroid belt, combat site, then the rest for now"): no group known first, then this order, then any other group A to Z, then
+// the latest paste's order. "Asteroid belt" read as the Probe Scanner's Ore Site group (UNVERIFIED: the owner's next look with an ore site in the list).
+const WH_SG_TY_ORDER = ['Wormhole', 'Gas Site', 'Data Site', 'Relic Site', 'Ore Site', 'Combat Site'];
+function whSgTyRank(x){ if(!x.grp) return 0; const i = WH_SG_TY_ORDER.indexOf(x.grp); return i < 0 ? WH_SG_TY_ORDER.length + 1 : i + 1; }
+function whSgPos(x){ return Number.isFinite(x.o) ? x.o : 1e6; }
 function whSigSecHtml(n){
   const S = whS, s = S.sg.sys[n], rows = s ? s.rows : [], open = S.secs.sigs, note = rows.length ? `${rows.length} · scanned ${whAge(s.t)} ago` : 'none kept';
   const sw = {k: 'lazy', label: 'Lazy update', on: S.sg.lazy, title: 'On: a paste is the whole list, and signatures missing from it go (it asks first). Off: a paste only adds and updates.'};
@@ -34600,7 +34699,7 @@ function whSgListHtml(n){
       tip: [x.sg, x.grp || 'Type not known yet', x.nm, `signal ${Math.round(x.pct)}% (${WH_BAND_TXT[b]})`, `first seen ${whAge(x.f)} ago`, `last in a scan ${whAge(x.t)} ago`, old ? 'not in your last scan' : '', intel ? 'in Intel’s reports too' : ''].filter(Boolean).join(' · ')};
   });
   return whListHtml({k: 'sg', n, label: 'signatures', aria: `Signatures in ${whName(n)}`, sel: P.sel.sg, sort: so, rows,
-    cols: [['id', 'ID', ''], ['nm', 'Name', ''], ['pct', 'Signal', 'r'], ['f', 'Age', 'r ag']], acts: [['copy', 'Copy selected (the game’s own format)'], ['edit', 'Edit selected'], ['del', 'Delete selected']]});
+    cols: [['id', 'ID', ''], ['ty', 'Type', ''], ['pct', 'Signal', 'r'], ['f', 'Age', 'r ag']], acts: [['copy', 'Copy selected (the game’s own format)'], ['edit', 'Edit selected'], ['del', 'Delete selected']]});
 }
 function whSgCellsHtml(c, r){
   const x = r.x;
@@ -34752,6 +34851,8 @@ function whScanApply(n, text, force){
   }
   for(const id of removed){ by.delete(id); const l = whLinkBySig(n, id); if(l) whEndGone(l, n, now); }   // a connection's ID gone from the scan: the row goes, the connection stays, its end marked
   for(const id of seen){ const l = whLinkBySig(n, id); if(l) whEndGone(l, n, 0); }
+  const at = new Map(r.rows.map((x, i) => [x.id, i])), oldPos = (x) => at.has(x.id) ? at.get(x.id) : 1e6 + whSgPos(x);   // 062 S2 (Q7 "Latest paste"): this paste's order, the rest after in their old order
+  [...by.values()].sort((a, b) => oldPos(a) - oldPos(b) || a.id.localeCompare(b.id)).forEach((x, i) => { x.o = i; });
   const rows = [...by.values()].sort((a, b) => b.t - a.t || a.id.localeCompare(b.id)).slice(0, WH_SG_ROWS);
   if(rows.length) S.sg.sys[n] = {t: now, rows}; else delete S.sg.sys[n];
   whSgSave(); whEndSave(); S.drawKey = ''; whPaint(true);
@@ -34957,6 +35058,11 @@ function whPanels(){
   const t = `System${n === null ? '' : ': ' + whName(n)} (press to ${on ? 'hide' : 'show'} the panel)`;   // written only when it changes
   if(btn.title !== t){ btn.title = t; btn.setAttribute('aria-label', t); }
   if(btn.getAttribute('aria-pressed') !== String(on)) btn.setAttribute('aria-pressed', String(on));
+  const rt = has && S.open === 'rt', rp = S.el.querySelector('#whPnRt'), rb = rail.querySelector('[data-wh-rp="rt"]');   // 062 (R7): one panel open at a time
+  if(rp.hidden === rt) rp.hidden = !rt;
+  if(rb.getAttribute('aria-pressed') !== String(rt)) rb.setAttribute('aria-pressed', String(rt));
+  if(rt){ const b = rp.querySelector('[data-pnb="rt"]'), html = whRtHtml();
+    if(S.pn.rt !== html && !(b.contains(document.activeElement) && document.activeElement.matches(WH_TYPING))){ S.pn.rt = html; whRtState().hov = null; b.innerHTML = whRtHtml(); } }
   if(!on) return;   // 056: System's body is written only while it shows (LESSON #120); opening clears S.pn, so it is written then
   const b = pnl.querySelector('[data-pnb="sum"]'), html = n === null ? '' : whSumHtml(n);
   if(S.pn.sum !== html && !(b.contains(document.activeElement) && document.activeElement.matches(WH_TYPING))){ S.pn.sum = html; b.innerHTML = n === null ? '' : whSumHtml(n); }   // never under a field being typed in (a builder, for check_html_sinks)
@@ -35035,7 +35141,7 @@ function whHereAdd(f){
 }
 // ---- the system menu (051, D25): right-click a system, or press and hold on a phone. A menu, so no close button: Esc, a press outside or a pick
 // closes it; focus on its first item, the arrows move. Status (D26), a tag, Lock / Unlock (D34), Copy the name, Remove (refused while locked).
-// "Routes from here" waits for the Routes panel (part 4), so it isn't in the menu yet.
+// "Routes from here" and "Pin route" came with the Routes panel (062).
 function whStLabel(k){ const x = WH_ST.find(e => e[0] === k); return x ? x[1] : ''; }
 function whMenuStHtml(m){
   return WH_ST.map(([k, l]) => `<button type="button" class="wh-mi st-${escapeHtml(k)}" role="menuitemradio" aria-checked="${escapeHtml(String(m.st === k))}" data-wh-m="st:${escapeHtml(k)}"><i class="wh-sw" aria-hidden="true"></i>${escapeHtml(l)}</button>`).join('')
@@ -35050,6 +35156,7 @@ function whMenuHtml(n){
   return `<div class="wh-mh" role="none">${whNameHtml(n)}</div><div class="wh-mg" role="group" aria-label="Status">${whMenuStHtml(m)}</div>`
     + `<div class="wh-mtag" role="none"><input type="text" maxlength="${WH_TAG_MAX}" value="${escapeHtml(m.tag || '')}" placeholder="Tag, e.g. A1" aria-label="Tag, up to 8 letters" spellcheck="false" autocomplete="off" data-wh-mtag><button type="button" class="wh-mi" role="menuitem" data-wh-m="tag">Set tag</button></div>`
     + `<button type="button" class="wh-mi" role="menuitem" data-wh-m="lock">${escapeHtml(m.lock ? 'Unlock' : 'Lock (can’t be moved or removed)')}</button>`
+    + `<button type="button" class="wh-mi" role="menuitem" data-wh-m="pin">${escapeHtml(whRtState().pins.includes(Number(n)) ? 'Unpin route' : 'Pin route')}</button><button type="button" class="wh-mi" role="menuitem" data-wh-m="route">Routes from here</button>`   // 062 (R3, R4)
     + `<button type="button" class="wh-mi" role="menuitem" data-wh-m="copy">Copy the name</button>${whMenuRmHtml(n, m)}`;
 }
 function whMenuOpen(n, x, y){
@@ -35078,6 +35185,7 @@ function whMenuAct(act){
   const S = whS, n = S.menu; if(n === null || !S.st.sys[n]){ whMenuClose(true); return; }
   const [k, v] = act.split(':'), nm = whName(n), m = S.mk[n] || (S.mk[n] = {});
   if(k === 'copy'){ whCopyName(n); return; }
+  if(k === 'pin' || k === 'route'){ const R = whRtState(); whMenuClose(false); if(k === 'pin') whRtPin(n); else { R.from = n; R.key = ''; } R.msg = ''; whPnSet('rt'); return; }   // 062: both open Routes
   if(k === 'del'){   // 059 (P20): asks first, in the menu; a locked system keeps its refusal with no question
     if(m.lock){ whMsg(WH_LOCKED(nm)); return; }
     const it0 = S.el.querySelector('.wh-smenu [data-wh-m="del"]'); if(!it0) return;
@@ -35121,6 +35229,154 @@ function whEdit(f){
   }
   whSave(); S.pn = {}; whPaint(true);
 }
+// ---- build queue 062 (part 4; Project doc roadmap/wormholes-part4-plan.md, R1-R9; mockup Claude outputs/wh_part4_mockup.html): the Routes panel. The owner:
+// "this needs to more closely reflect the in-game routing.", "we need to be able to pin multiple systems that the page will automatically calculate the
+// route to each time we navigate another system/wormhole.", "the game's routing doesn't work inside of wormholes so it's only meant to be a point of
+// reference."; on a hole step "sig id is useful if it was recorded but not required"; "get rid of the "set destination" button and we'll just show the
+// route as it's represented in the panel." So: nothing is sent to EVE from here. One search from where you are over the stargates, the bridge
+// directions 057 lets you use and every connection of your chain both ways (R1; 047's order and cost, itRpSearch), worked out again only when its key
+// changes (R8). A hole into J-space costs as into nullsec (R2); the hole jumps count as jumps. Your statuses never change a route (Q2 "Ignore statuses").
+// Pins kept in this browser: tvWhRoutes {v: 1, pins: [system ids, as pinned], short} (an older page never reads it; R4: separate from Intel's map pins)
+const WH_RT_KEY = 'tvWhRoutes', WH_RT_MAX = 30;
+var whRt = null;   // var: whPanels may ask before this line has run
+function whRtState(){
+  if(whRt) return whRt;
+  const o = whJson(WH_RT_KEY) || {}, pins = [];
+  for(const x of Array.isArray(o.pins) ? o.pins : []) if(Number.isInteger(x) && x > 0 && !pins.includes(x) && pins.length < WH_RT_MAX) pins.push(x);
+  return (whRt = {pins, short: o.short === true, from: null, key: '', res: null, hov: null, msg: ''});
+}
+function whRtSave(){ const R = whRtState(); whPut(WH_RT_KEY, {v: 1, pins: R.pins, short: R.short}); }
+function whRtPin(id, on){
+  const R = whRtState(), k = R.pins.indexOf(id), want = on === undefined ? k < 0 : on;
+  if(want && k < 0){ if(R.pins.length >= WH_RT_MAX){ R.msg = `At most ${WH_RT_MAX} pinned systems: unpin one first.`; return false; } R.pins.push(id); }
+  else if(!want && k >= 0) R.pins.splice(k, 1);
+  whRtSave(); R.key = ''; return true;
+}
+// the graph: the map table's systems (its indexes), then your chain's J-space systems; hole edges both ways, in the chain's order
+function whRtGraph(){
+  const T = itMapTable(), g = itGraphGet(); if(!T) return null;
+  const n = T.n, st = whS.st, J = Object.keys(st.sys).map(Number).filter(whIsJ).sort((a, b) => a - b), jx = new Map(J.map((id, k) => [id, n + k]));
+  const idx = (id) => whIsJ(id) ? jx.get(id) : g.at.get(id), idOf = (x) => x < n ? g.ids[x] : J[x - n], hole = new Map();
+  const put = (a, b, l) => { const h = hole.get(a); if(h) h.push([b, l]); else hole.set(a, [[b, l]]); };
+  for(const l of st.links){ const a = idx(l.a), b = idx(l.b); if(a === undefined || b === undefined || a === b) continue; put(a, b, l); put(b, a, l); }
+  return {T, n, N: n + J.length, idx, idOf, hole};
+}
+function whRtHome(){ for(const id of Object.keys(whS.st.sys).map(Number).sort((a, b) => a - b)) if(whMk(id).st === 'home') return id; return null; }   // Q3
+function whRtFrom(){ const R = whRtState(), S = whS; return R.from !== null && (S.st.sys[R.from] || itGraphGet().at.has(R.from)) ? R.from : S.last; }
+function whRtRows(){
+  const R = whRtState(), S = whS, from = whRtFrom();
+  if(from === null) return {err: 'You aren’t on the map yet: jump into a wormhole, or turn on Intel or Use my game location.'};
+  const G = whRtGraph(); if(!G) return {err: 'The map isn’t ready yet.'};
+  const src = G.idx(from); if(src === undefined) return {err: `${whName(from)} isn’t on the map.`};
+  const s0 = itRpSet(), pref = R.short ? 'Shorter' : s0.pref, pen = pref === 'Shorter' ? 0 : s0.pen, flags = itRpFlags(), Z = itJbZones(), jo = Z.st === 'ok' && Z.out.size ? Z.out : null, home = whRtHome();
+  const key = JSON.stringify([from, R.pins, pref, pen, S.st.links.map(l => [l.a, l.b, l.life, l.mass, l.size, whEnd(l, l.a), whEnd(l, l.b)]), [...flags].map(([i, w]) => i + ':' + w.join('+')), jo ? Z.used : 0, home]);
+  if(key === R.key && R.res) return R.res;
+  const p = Math.exp(0.15 * pen), nb = (x) => { let a = x < G.n ? G.T.adj[x] : []; const e = jo && x < G.n ? jo.get(x) : null; if(e) a = a.concat(e); const h = G.hole.get(x); return h ? a.concat(h.map(q => q[0])) : a; };
+  const Q = itRpSearch(G.N, src, nb, (y) => y < G.n ? itRpCost(G.T, y, pref, p) : pref === 'Shorter' ? 1 : 2 * p, (x) => x < G.n && flags.has(x));   // R2: J-space as nullsec
+  const kindOf = (x, y) => x < G.n && y < G.n && G.T.adj[x].includes(y) ? 'gate' : jo && x < G.n && (jo.get(x) || []).includes(y) ? 'bridge' : 'hole';
+  const linkOf = (x, y) => ((G.hole.get(x) || []).find(q => q[0] === y) || [])[1] || null;
+  const mk = (kind, t, id) => {
+    if(t === undefined || t === null || t < 0 || Q.len[t] < 0) return {kind, id, none: true};
+    const path = []; for(let x = t; x >= 0 && path.length <= G.N; x = Q.par[x]){ path.push(x); if(x === src) break; } path.reverse();
+    const hops = [];
+    for(let k = 1; k < path.length; k++){ const x = path[k - 1], y = path[k], kd = kindOf(x, y);
+      hops.push({a: G.idOf(x), b: G.idOf(y), kind: kd, l: kd === 'hole' ? linkOf(x, y) : null, flag: k < path.length - 1 && y < G.n && flags.has(y) ? flags.get(y) : null}); }
+    return {kind, id: G.idOf(t), hops, holes: hops.filter(h => h.kind === 'hole').length, warn: hops.filter(h => h.flag).length};
+  };
+  const best = (band) => { let b = -1; for(let x = 0; x < G.n; x++){ if(Q.len[x] < 0 || itRpBand(G.T, x) !== band) continue;
+    if(b < 0 || Q.f[x] < Q.f[b] || (Q.f[x] === Q.f[b] && (Q.c[x] < Q.c[b] || (Q.c[x] === Q.c[b] && Q.len[x] < Q.len[b])))) b = x; } return b; };
+  const out = [];
+  if(home !== null && home !== from) out.push(mk('home', G.idx(home), home));
+  for(const [kind, band] of [['hs', 2], ['ls', 1]]){ const b = best(band); if(b !== src) out.push(b < 0 ? {kind, none: true} : mk(kind, b)); }   // no quick row for where you already are
+  for(const id of R.pins) out.push(Object.assign(id === from ? {kind: 'pin', id, hops: [], holes: 0, warn: 0, here: true} : mk('pin', G.idx(id), id), {pin: id}));
+  R.key = key; R.res = {from, out, pref};
+  return R.res;
+}
+const WH_RT_LIFE = {eol: 'end of life', lt1h: 'under 1 h left'}, WH_RT_MASS = {reduced: 'reduced mass', critical: 'critical mass'}, WH_RT_SIZE = {small: 'small ships only', medium: 'up to cruisers'};
+function whRtSecTxt(id){ if(whIsJ(id)) return whClsName(whCls(id)); const v = whSec(id); return v === null ? '' : itMapSecText(v); }
+function whRtTip(h){   // R5: one line; an ID and its type only when they were recorded (the owner: "ID not known isn't useful in this case")
+  const where = `${whRtSecTxt(h.b)} ${whName(h.b)}${whPlace(h.b) ? ' · ' + whPlace(h.b) : ''}${whIsJ(h.b) && whEff(h.b) ? ' · ' + whEff(h.b) : ''}`;
+  if(h.kind !== 'hole') return `${h.kind === 'bridge' ? 'jump bridge → ' : ''}${where}${h.flag ? ' · ⚠ ' + h.flag.join(', ') : ''}`;
+  const e = whEnd(h.l, h.a), id = e && e.sig ? ` · ${e.sig}${e.type ? ` (${e.type})` : ''}` : '', l = h.l;
+  return `${whName(h.a)} → ${whName(h.b)}${id}${[WH_RT_LIFE[l.life], WH_RT_MASS[l.mass], WH_RT_SIZE[l.size]].filter(Boolean).map(w => ' · ' + w).join('')} · ${where}`;
+}
+function whRtStripHtml(r, k){   // one square a jump in the arriving system's colour; through a hole round (not colour alone); J-space the wormhole colour
+  return `<div class="wh-rt-strip" role="list" data-wh-rt-row="${Number(k)}" aria-label="${escapeHtml(`${r.hops.length} jumps to ${whName(r.id)}`)}">${whRtSqsHtml(r)}</div>`;
+}
+function whRtSqsHtml(r){ return r.hops.map((h, i) => whRtSqHtml(h, i)).join(''); }
+function whRtSqHtml(h, i){
+  const cls = `wh-rt-q${whIsJ(h.b) ? ' j' : ' it-sn s' + Number(whSecKey(h.b))}${h.kind === 'hole' ? ' hole' : ''}${h.flag ? ' fl' : ''}`;
+  return `<span class="${escapeHtml(cls)}" role="listitem" tabindex="${Number(i ? -1 : 0)}" data-wh-rt-q="${Number(i)}" aria-label="${escapeHtml(whRtTip(h))}"></span>`;
+}
+const WH_RT_KIND = {home: 'Home', hs: 'nearest highsec', ls: 'nearest lowsec'};
+function whRtRowHtml(r, k){
+  if(r.none) return `<div class="wh-rt-row"><div class="wh-rt-l1">${whRtSecHtml(r)}${whRtNameHtml(r, true)}<span class="wh-rt-n wh-note">no route</span>${whRtRmHtml(r)}</div></div>`;
+  return `<div class="wh-rt-row"><div class="wh-rt-l1">${whRtSecHtml(r)}${whRtNameHtml(r, false)}${whRtWarnHtml(r)}<b class="wh-rt-n" title="${escapeHtml(whRtLenTxt(r))}">${escapeHtml(r.here ? 'here' : String(r.hops.length))}</b>${whRtRmHtml(r)}</div>`
+    + (r.hops.length ? whRtStripHtml(r, k) : '') + '</div>';
+}
+function whRtRowsHtml(out){ return out.map((r, k) => whRtRowHtml(r, k)).join(''); }
+function whRtLenTxt(r){ const n = r.hops.length; return r.here ? 'You’re here' : `${n} jump${n === 1 ? '' : 's'}${r.holes ? `, ${r.holes} by wormhole` : ''}`; }
+function whRtSecHtml(r){ return r.id === undefined ? '' : whIsJ(r.id) ? whTagHtml(r.id) : `<span class="wh-rt-sec it-sn s${Number(whSecKey(r.id))}">${escapeHtml(whRtSecTxt(r.id))}</span>`; }
+function whRtNameHtml(r, none){   // the name (a button when it's on your chain), then the quick row's kind
+  const kind = r.kind !== 'pin' ? `<span class="wh-note">${escapeHtml(WH_RT_KIND[r.kind])}</span>` : '';
+  if(r.id === undefined) return kind;
+  return (whS.st.sys[r.id] ? `<button type="button" class="wh-n sm" data-wh-sel="${Number(r.id)}">${whNameHtml(r.id)}</button>` : `<b>${whNameHtml(r.id)}</b>`) + kind;
+}
+function whRtWarnHtml(r){ return r.warn ? `<span class="it-warn" title="${escapeHtml(`Passes ${r.warn} flagged system${r.warn === 1 ? '' : 's'}`)}">⚠${Number(r.warn)}</span>` : ''; }
+function whRtRmHtml(r){ return r.kind === 'pin' ? `<button type="button" class="it-sigx" data-wh-rt-rm="${Number(r.pin)}" aria-label="${escapeHtml('Unpin ' + whName(r.pin))}" title="Unpin">×</button>` : ''; }
+function whRtFromHtml(from, me){ return from === undefined || from === null ? 'not known' : whNameHtml(from) + (from === me ? ' (you)' : ''); }
+function whRtAvoidTxt(s){ const a = [['camp', 'camps'], ['bub', 'bubbles'], ['host', 'hostiles'], ['kill', 'kills'], ['mine', 'your avoid list']].filter(([k]) => s[k]).map(([, w]) => w); return a.length ? `avoiding ${a.join(', ')}` : 'avoiding nothing'; }
+function whRtHtml(){
+  const R = whRtState(), res = whRtRows(), me = whS.last, s = itRpSet();
+  let o = `<div class="wh-rt-top"><span class="wh-note">From ${whRtFromHtml(res.from, me)}</span>`
+    + (R.from !== null && R.from !== me ? '<button type="button" data-wh-rt-me>From where you are</button>' : '')
+    + `<label class="mys-use" title="On: the fewest jumps for every row. Off: your preference in Intel ⚙ → Routes."><input type="checkbox" class="mys-sw" role="switch" data-wh-rt-short${itOnHtml(R.short, 'checked')}> Shortest</label></div>`
+    + `<form class="it-rp-add" data-wh-rt-pin autocomplete="off"><input type="text" name="sys" placeholder="Pin a system, e.g. Jita or J123456" aria-label="Pin a system" maxlength="40" spellcheck="false"><button type="submit">Pin</button></form>`
+    + `<div class="it-rp-msg" role="status">${escapeHtml(R.msg)}</div>`;
+  if(res.err) return o + `<div class="wh-note" role="status">${escapeHtml(res.err)}</div>`;
+  o += `<div class="wh-rt-list">${whRtRowsHtml(res.out)}<div class="it-map-tip" data-wh-rt-tip hidden></div></div>`;
+  if(!R.pins.length) o += '<div class="wh-note">Pin systems here, or right-click a system on the map → Pin route. Every route is worked out again each time you move.</div>';
+  return o + `<div class="wh-note">${escapeHtml(`${R.short ? 'Shortest' : IT_RP_PREF_NAME[s.pref]} · ${whRtAvoidTxt(s)} · change in Intel ⚙ → Routes`)}</div>`;   // R9: one set of route settings
+}
+// hovering a square (focus by keys; a finger along the strip on a phone): its line under the strip, the row's other squares dimmed, its route on the
+// chain map (R6). Nothing timed: each change draws once (LESSON #120)
+function whRtHover(q){
+  const R = whRtState(), st = q && q.closest('.wh-rt-strip'), pn = whS.el.querySelector('#whPnRt'), tip = pn && pn.querySelector('[data-wh-rt-tip]');
+  for(const x of pn ? pn.querySelectorAll('.wh-rt-strip.hov') : []) if(x !== st){ x.classList.remove('hov'); for(const y of x.children) y.classList.remove('on'); }
+  const r = st && R.res && R.res.out && R.res.out[Number(st.dataset.whRtRow)], h = r && r.hops[Number(q.dataset.whRtQ)];
+  if(!h || !tip){ if(tip) tip.hidden = true; if(R.hov){ R.hov = null; whDraw(); } return; }
+  st.classList.add('hov'); for(const y of st.children) y.classList.toggle('on', y === q);
+  tip.textContent = whRtTip(h); tip.hidden = false;
+  const lb = tip.parentNode.getBoundingClientRect(), qb = q.getBoundingClientRect();
+  tip.style.top = `${Math.round(qb.bottom - lb.top + 4)}px`; tip.style.left = `${Math.round(Math.max(0, Math.min(qb.left - lb.left - 8, lb.width - tip.offsetWidth)))}px`;
+  const hv = {row: Number(st.dataset.whRtRow), q: Number(q.dataset.whRtQ)};
+  if(!R.hov || R.hov.row !== hv.row || R.hov.q !== hv.q){ R.hov = hv; whDraw(); }
+}
+function whRtHovRow(){ const R = whRtState(); return whS.open === 'rt' && R.hov && R.res && R.res.out ? R.res.out[R.hov.row] || null : null; }
+function whRtGlow(c, ctr, C){   // under the connection lines: the hovered row's hole steps
+  const r = whRtHovRow(), M = whS.M; if(!r || r.none) return;
+  c.save(); c.strokeStyle = C.lo; c.globalAlpha = 0.35; c.lineWidth = 10; c.lineCap = 'round';
+  for(const h of r.hops){ if(h.kind !== 'hole' || !M.P.has(h.a) || !M.P.has(h.b)) continue; const a = ctr(h.a), b = ctr(h.b); c.beginPath(); c.moveTo(a.x, a.y);
+    if(Math.abs(b.y - a.y) > Math.abs(b.x - a.x)) c.bezierCurveTo(a.x, (a.y + b.y) / 2, b.x, (a.y + b.y) / 2, b.x, b.y); else c.bezierCurveTo((a.x + b.x) / 2, a.y, (a.x + b.x) / 2, b.y, b.x, b.y); c.stroke(); }
+  c.restore();
+}
+function whRtOver(c, C, font){   // over the boxes: the route's systems outlined, and at the exit "EXIT · then N j to <to>"
+  const r = whRtHovRow(), M = whS.M; if(!r || r.none || !r.hops.length) return;
+  c.save(); c.strokeStyle = C.lo; c.lineWidth = 1.6;
+  for(const id of new Set([whRtState().res.from, ...r.hops.map(h => h.b)])){ const p = M.P.get(id); if(!p) continue; c.beginPath(); c.roundRect(p.x - 10, p.y - 10, WH_NW + 20, WH_NH + 20, 9); c.stroke(); }
+  const k = r.hops.map(h => h.kind).lastIndexOf('hole'), last = k >= 0 ? r.hops[k] : null, p = last && !whIsJ(last.b) ? M.P.get(last.b) : null, rest = r.hops.length - k - 1;
+  if(p && rest > 0){ const t = `EXIT · then ${rest} j to ${whName(r.id)}`; c.font = `700 10px ${font}`; const w = c.measureText(t).width + 12, x = p.x + WH_NW + 16, y = p.y + WH_NH / 2 - 8;
+    c.globalAlpha = 0.18; c.fillStyle = C.lo; c.beginPath(); c.roundRect(x, y, w, 16, 3); c.fill(); c.globalAlpha = 1; c.fillText(t, x + 6, y + 11.5); }
+  c.restore();
+}
+function whRtPinForm(f){
+  const R = whRtState(), v = String(f.sys.value || '').trim(), id = v ? whIdOf(v) : null;
+  if(!v) return;
+  if(!id) R.msg = `“${v.slice(0, 40)}” isn’t a system the page knows.`;
+  else { R.msg = R.pins.includes(id) ? `${whName(id)} is pinned already.` : ''; if(!R.pins.includes(id) && whRtPin(id, true)) f.sys.value = ''; }
+  const a = document.activeElement; if(a && f.contains(a)) a.blur();   // whPanels never rewrites under a field being typed in: the field is done with
+  whS.pn = {}; whPanels(); const i = whS.el.querySelector('#whPnRt [data-wh-rt-pin] input'); if(i) i.focus({preventScroll: true});
+}
 function whWire(el){
   el.addEventListener('click', (ev) => {
     const b = ev.target.closest('button');
@@ -35140,6 +35396,8 @@ function whWire(el){
     if(d.whLs){ whLSort(d.whL, d.whLs); return; }
     if(b.closest('.wh-pop[data-pop="share"]') && whShareClick(b)) return;   // 059 (P14): Share's Export / Import (046's boxes)
     if(d.whM){ whMenuAct(d.whM); return; }
+    if(d.whRtRm){ const R = whRtState(); whRtPin(Number(d.whRtRm), false); R.msg = ''; whS.pn = {}; whPanels(); const i = whS.el.querySelector('#whPnRt [data-wh-rt-pin] input'); if(i) i.focus({preventScroll: true}); return; }   // 062
+    if('whRtMe' in d){ const R = whRtState(); R.from = null; R.key = ''; whS.pn = {}; whPanels(); return; }
     if(d.whPop){ whPop(d.whPop); return; }
     if('whPopx' in d){ whPopClose(); return; }
     if(d.whSel){ whSelect(Number(d.whSel)); return; }
@@ -35153,7 +35411,20 @@ function whWire(el){
     if(f.name === 'link' && f.closest('.wh-addf')){ whAddTyList(f.form); return; }   // 061 (D6)
     if(f.dataset.whSw === 'lazy'){ whS.sg.lazy = f.checked; whSgSave(); whPnRedraw('[data-wh-sw="lazy"]'); return; }   // 059 (P5): one setting for every system
     if(f.dataset.whLall){ whLAll(f.dataset.whLall, f.checked); return; }
+    if(f.dataset.whRtShort !== undefined){ const R = whRtState(); R.short = f.checked; whRtSave(); R.key = ''; whS.pn = {}; whPanels(); const e = whS.el.querySelector('[data-wh-rt-short]'); if(e) e.focus({preventScroll: true}); return; }   // 062
     if(f.dataset.whShinc !== undefined) whShareExp();   // 059 (P14): the export made again with or without notes and who's there
+  });
+  // 062 (R5): a route's squares: hover and keyboard focus show its line; a finger along the strip on a phone; the arrows step along it
+  el.addEventListener('pointerover', (ev) => { const q = ev.target.closest && ev.target.closest('.wh-rt-q'); if(q && ev.pointerType !== 'touch') whRtHover(q); });
+  el.addEventListener('pointerout', (ev) => { const q = ev.target.closest && ev.target.closest('.wh-rt-q'); if(q && ev.pointerType !== 'touch' && !(ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.wh-rt-q')) && document.activeElement !== q) whRtHover(null); });
+  el.addEventListener('pointerdown', (ev) => { const st = ev.target.closest && ev.target.closest('.wh-rt-strip'); if(st && ev.pointerType === 'touch'){ const q = ev.target.closest('.wh-rt-q') || st.firstElementChild; whRtHover(q); } });
+  el.addEventListener('pointermove', (ev) => { if(ev.pointerType !== 'touch') return; const st = ev.target.closest && ev.target.closest('.wh-rt-strip'); if(!st) return; const q = document.elementFromPoint(ev.clientX, ev.clientY); if(q && q.classList && q.classList.contains('wh-rt-q') && !q.classList.contains('on')) whRtHover(q); });
+  el.addEventListener('focusin', (ev) => { const q = ev.target.closest && ev.target.closest('.wh-rt-q'); if(q) whRtHover(q); });
+  el.addEventListener('focusout', (ev) => { const q = ev.target.closest && ev.target.closest('.wh-rt-q'); if(q && !(ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.wh-rt-q'))) whRtHover(null); });
+  el.addEventListener('keydown', (ev) => {
+    const q = ev.target.closest && ev.target.closest('.wh-rt-q'); if(!q || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(ev.key)) return;
+    const a = [...q.parentNode.children], i = a.indexOf(q), j = ev.key === 'Home' ? 0 : ev.key === 'End' ? a.length - 1 : Math.max(0, Math.min(a.length - 1, i + (ev.key === 'ArrowLeft' ? -1 : 1)));
+    ev.preventDefault(); if(j !== i){ q.tabIndex = -1; a[j].tabIndex = 0; a[j].focus({preventScroll: true}); }
   });
   el.addEventListener('keydown', (ev) => {   // 059 (P7): Space or Enter on a focused row as Ctrl-click
     if(ev.key !== ' ' && ev.key !== 'Enter') return; const r = ev.target.closest && ev.target.closest('[data-wh-lr]'); if(!r || ev.target !== r) return;
@@ -35168,7 +35439,7 @@ function whWire(el){
   });
   el.addEventListener('submit', (ev) => {
     const f = ev.target; ev.preventDefault();
-    if(f.matches('[data-wh-here]')) whHereAdd(f); else if(f.matches('.wh-addf')) whAddForm(f);
+    if(f.matches('[data-wh-here]')) whHereAdd(f); else if(f.matches('.wh-addf')) whAddForm(f); else if(f.matches('[data-wh-rt-pin]')) whRtPinForm(f);   // 062
   });
   document.addEventListener('keydown', (ev) => {
     if(ev.key !== 'Escape' || !whS.el || !whS.el.offsetParent) return;

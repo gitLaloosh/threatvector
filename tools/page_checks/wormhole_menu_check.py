@@ -6,7 +6,7 @@ tag look, and "the map should push the bottom of the page to the bottom of the s
 Made-up Intel (intel_check.py's folder and stand-ins), CCP's wormhole system names from the page's own table (INTEL_WH). Checks:
   * the empty map is as tall as the full one (to the bottom of the screen), at 1440 and 390 px; adding the first system resizes nothing;
   * the menu: a right-click on a system opens it (a menu: no close button, focus on its first item, the arrows move, Esc closes and gives the
-    focus back to the map), on empty space "Add a system here" still opens; no "Routes from here" yet;
+    focus back to the map), on empty space "Add a system here" still opens; "Pin route" and "Routes from here" (build queue 062) in the menu;
   * status: the six and No status; the box's border in the status colour (read off the canvas), its name in the System panel (the page's tag) and
     in the box's hover; kept after a reload (tvWhMarks);
   * the tag: cut to 8, shown in the System panel and kept after a reload;
@@ -110,7 +110,7 @@ def cases(b, html, parts=('empty', 'menu', 'lock', 'copy', 'store', 'all', 'phon
         else:
             if m['role'] != 'menu' or m['x']: out.append(f'the system menu is a menu, with no close button: role {m["role"]}, close button {m["x"]}')
             if m['st'] != ['Home', 'Friendly', 'Looking for', 'Warning', 'Target', 'Dangerous', 'No status']: out.append(f'the statuses: {m["st"]}')
-            if m['routes']: out.append('"Routes from here" is part 4: not in the menu yet')
+            if not m['routes']: out.append('"Pin route" and "Routes from here" (062, part 4) should be in the menu')
             if not m['focus'] or m['sel'] != j1: out.append(f'focus on the first item, the system in focus: {m["focus"]}, {m["sel"]} (want {j1})')
             pg.keyboard.press('ArrowDown'); f = pg.evaluate("document.activeElement.textContent.trim()")
             if f != 'Friendly': out.append(f'ArrowDown should move to the next item: {f!r}')

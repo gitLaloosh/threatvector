@@ -200,6 +200,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #166 Cutting stored data down for one reader breaks the others: list every reader of that store, and the fields each reads, before trimming it. See also #134.
 - #168 A check that reads the real clock (or "main") passes or fails by when it runs: move what the page does at a set time (EVE's downtime) away from the run, and pin an older page to a commit. See also #115.
 - #169 Don't measure what's hidden, and don't key a cache on an inline element's width: skip what has no size, key on a real width, measure again when it shows.
+- #175 A stored field read at start-up runs before the rest of the script: a helper further down (a const not yet set) throws only once that field is saved, so check a reload with every new stored field present. See also #12.
 - #171 A reference built for one job carries that job's stubs: pyfa_effects runs every handler with calculateRangeFactor = 1, so projected handlers ran at full strength until the check put pyfa's own back.
 
 **Intel and live data (chat logs, zKillboard's feed)**
@@ -2868,6 +2869,18 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   (temporal dead zone). That's valid syntax, but it threw at runtime.
 - **Do this instead:** run the regression suite and render one fit with
   Playwright.
+
+## 175. A stored field read at start-up runs before the rest of the script
+
+- **What happened (build queue 062, 2026-11-20):** Intel's Wormholes store gained `jw` (the J-space system a hole leads to). Its reader,
+  `itWhEntryRead`, runs when the page starts (`itWhRead` from Intel's first draw) and checked the ID with `whIsJ`, which reads `WH_LO`, a
+  `const` of the Wormholes tab's part of the script further down. With an empty store nothing called it; once a `jw` was saved, every load
+  threw "Cannot access 'WH_LO' before initialization" (#12's temporal dead zone, but only for people who had the new field).
+- **How it was caught:** a mutant run of the new check (the switch turned off and the page reloaded with a `jw` already saved) stopped with
+  that error; the normal run never reloaded with one.
+- **Do this instead:** a reader that runs at start-up uses only what is defined above it, or plain literals (the ID range written out, with a
+  comment), or waits for the flag the later part sets (`whReady`). In the check, save every new field, reload, and require no page error
+  (`wormhole_autoadd_check.py`'s reload case, with a mutant putting `whIsJ` back).
 
 ## 13. "Delivered" wasn't delivered
 

@@ -12,6 +12,9 @@ Made-up scans only (IDs and names invented; CCP's wormhole system names from the
   * Lazy update (P5, P6): off by default; off a paste only adds and updates; on it asks before every removal (Remove them / Keep them); Undo
     puts the list back (also after Remove them) and is gone after a reload; an unscanned row never overwrites a known group; a missing ID that is
     a connection's end: the row goes, the end is marked, the connection stays;
+  * Type (build queue 062, S1-S3; the owner: "unscanned items at the top, then scanned in the order provided", the game's order "unscanned, wormhole,
+    gas site, data site, relic site, asteroid belt, combat site, then the rest"): the first sort; a group not listed after Combat, A to Z; inside a group
+    the latest paste's order (`o`), rows without it after; a remembered sort switched to Type once (`sv: 2`), the next pick kept through a reload;
   * the list (P7): the game's signal bands at their edges, the game's shapes (cross at 0%, dot when partly scanned, a placeholder for a kind with
     no shape), short ages, the sort (each heading both ways, aria-sort, kept), select like the map (click, Ctrl-click, a tap, Space, the heading's
     box), Copy selected in the game's format and read back, Edit one (ID checked, a repeat refused) and several (type only), Delete asking first;
@@ -70,7 +73,7 @@ def row_click(pg, i, touch, mod=None):
     else: pg.click(sel, modifiers=[mod] if mod else [])
     pg.wait_for_timeout(80)
 
-def cases(b, html, parts=('panel', 'lazy', 'list', 'store', 'older')):
+def cases(b, html, parts=('panel', 'lazy', 'list', 'store', 'type', 'older')):
     out, errs = [], []
     for w, h, touch in ((1440, 900, False), (760, 900, False), (390, 844, True)):
         tag = f'{w}px'
@@ -109,7 +112,7 @@ def cases(b, html, parts=('panel', 'lazy', 'list', 'store', 'older')):
             ph = ev("(n) => { whS.sg.sys[n].rows.push({id: 'STR-001', sg: 'Structure', grp: 'Citadel', nm: '', pct: 100, f: Date.now(), t: Date.now()}); whPnRedraw(); const ok = !!document.querySelector('#whPnSum [data-wh-lr=\"STR-001\"] .wh-gwait'); whS.sg.sys[n].rows.pop(); whPnRedraw(); return ok; }", B)
             if not ph: out.append(f'{tag}: a kind with no shape drawn yet should show the placeholder')
             if not ev("[...document.querySelectorAll('#whPnSum [data-wh-l=\"sg\"][data-wh-lr] .ag')].every(e => /^\\d+ (s|min|h|d)$/.test(e.textContent))"): out.append(f'{tag}: ages short (s / min / h / d)')
-            if not ev("!!document.querySelector('#whPnSum .wh-lt.sg [aria-sort=\"ascending\"] [data-wh-ls=\"f\"]')"): out.append(f'{tag}: the first sort should be Age, newest first')
+            if not ev("!!document.querySelector('#whPnSum .wh-lt.sg [aria-sort=\"ascending\"] [data-wh-ls=\"ty\"]')"): out.append(f'{tag}: the first sort should be Type (062)')
             pg.click('#whPnSum .wh-lt.sg [data-wh-ls="id"]'); pg.wait_for_timeout(80)
             a = ev(ROWS)
             if a != sorted(a) or ev(G)['sort'] != {'k': 'id', 'd': 1}: out.append(f'{tag}: sort by ID A to Z, kept: {a}')
@@ -220,6 +223,7 @@ def cases(b, html, parts=('panel', 'lazy', 'list', 'store', 'older')):
             if ev("!!document.querySelector('#whPnSum .wh-acts .wh-ask')") or 'locked' not in ev("document.querySelector('.wh-msg').textContent"): out.append(f'{tag}: a locked system refuses with no question')
         if not ev("document.documentElement.scrollWidth <= innerWidth"): out.append(f'{tag}: sideways scroll')
         ctx.close()
+    if 'type' in parts: out += type_cases(b, html, errs)
     if 'older' in parts:
         old = os.path.join(os.path.dirname(HTML), '.wh_old_059.html')
         try:
@@ -238,7 +242,42 @@ def cases(b, html, parts=('panel', 'lazy', 'list', 'store', 'older')):
             if os.path.exists(old): os.unlink(old)
     return out, errs
 
+TY_ORDER = ['BHV-118', 'PLE-930', 'XYZ-789', 'RTA-610', 'KLM-402', 'WDE-071', 'JKO-554']   # unscanned (paste order), Wormhole, Gas, Data, Ore, Combat
+TY_SORT = """() => { const r = (id, grp, o) => Object.assign({id, grp, nm: '', pct: 100, f: 1, t: 1}, o === undefined ? {} : {o});
+  const rows = [r('AAA-001', 'Citadel', 0), r('AAA-002', 'Combat Site', 5), r('AAA-003', 'Wormhole', 9), r('AAA-004', 'Wormhole', 2), r('AAA-005', 'Wormhole'),
+    r('AAA-006', 'Beacon', 1), r('AAA-007', '', 4), r('AAA-008', 'Relic Site', 3), r('AAA-009', 'Gas Site', 8)];
+  return rows.sort(WH_SG_SORT.ty).map(x => x.id).join(); }"""
+def type_cases(b, html, errs):
+    out = []
+    ctx, pg = start(b, html, 1440, errs); ev = pg.evaluate
+    p = ev(SEED); B = p[1]; ev("(n) => { whPnSet('sum'); whSelect(n); }", B); pg.wait_for_timeout(120); paste(pg, SCAN1)
+    a = ev(ROWS)
+    if a != TY_ORDER: out.append(f"Type: unscanned first, then the game's group order: {a}")
+    # inside a group the latest paste's order; a group not listed after Combat Site, A to Z; a row with no `o` (an older page's) after those with it
+    srt = ev(TY_SORT)
+    if srt != 'AAA-007,AAA-004,AAA-003,AAA-005,AAA-009,AAA-008,AAA-002,AAA-006,AAA-001': out.append(f'Type: group order, paste order inside a group, others A to Z: {srt}')
+    # a second paste listing two ore sites the other way round turns them
+    paste(pg, '\n'.join([ROW('WDE-072', 'Cosmic Anomaly', 'Ore Site', 'Mk Ore Two', '100,0%'), ROW('WDE-071', 'Cosmic Anomaly', 'Ore Site', 'Mk Ore Spot', '100,0%')]))
+    a = ev(ROWS)
+    if a.index('WDE-072') > a.index('WDE-071'): out.append(f"Type: the latest paste's order inside a group: {a}")
+    if any('o' not in x for x in ev(f"{G}.sys[{B}].rows")): out.append('Type: every row should carry its place (o)')
+    # switch everyone once (Q6): a remembered Age sort without sv becomes Type; the next pick is kept through a reload
+    ev("() => { const o = " + G + "; o.sort = {k: 'f', d: 1}; delete o.sv; localStorage.setItem('tvWhSigs', JSON.stringify(o)); }")
+    pg.reload(); pg.wait_for_timeout(300); ev("(n) => { switchTab('wh'); whPnSet('sum'); whSelect(n); }", B); pg.wait_for_timeout(150)
+    if ev("whS.sg.sort.k") != 'ty': out.append('Type: a remembered sort without sv should switch to Type once')
+    pg.click('#whPnSum .wh-lt.sg [data-wh-ls="f"]'); pg.wait_for_timeout(80)
+    g = ev(G)
+    if g.get('sv') != 2 or g['sort'] != {'k': 'f', 'd': 1}: out.append(f"Type: the next pick saved with sv 2: {g.get('sv')}, {g['sort']}")
+    pg.reload(); pg.wait_for_timeout(300); ev("(n) => { switchTab('wh'); whPnSet('sum'); whSelect(n); }", B); pg.wait_for_timeout(150)
+    if ev("whS.sg.sort.k") != 'f': out.append('Type: after the switch the sort you pick is kept')
+    ctx.close()
+    return out
+
 MUTANTS = [
+    ('Type: ID order inside a group', "|| whSgPos(a) - whSgPos(b) || a.id.localeCompare(b.id)};", "|| a.id.localeCompare(b.id)};", ('type',)),
+    ('Type: unscanned last', "function whSgTyRank(x){ if(!x.grp) return 0;", "function whSgTyRank(x){ if(!x.grp) return 99;", ('type',)),
+    ('Type: a remembered sort kept (no switch)', "sort: o.sv === 2 && o.sort &&", "sort: o.sort &&", ('type',)),
+    ('Type: the paste order not kept', "[...by.values()].sort((a, b) => oldPos(a) - oldPos(b) || a.id.localeCompare(b.id)).forEach((x, i) => { x.o = i; });", "", ('type',)),
     ('anomalies dropped', "    seen.add(id); rows.push({id, sg: whTxt(c[1], 24),", "    if(/anomal/i.test(c[1] || '')) continue; seen.add(id); rows.push({id, sg: whTxt(c[1], 24),", ('panel',)),
     ('Lazy update on by default', "out = {v: 1, lazy: o.lazy === true,", "out = {v: 1, lazy: o.lazy !== false,", ('lazy',)),
     ('a lazy removal without asking', "  if(gone.length && !force){ P.lazyAsk", "  if(false){ P.lazyAsk", ('lazy',)),
