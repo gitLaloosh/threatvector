@@ -164,6 +164,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #161 "No sideways scroll" can't see a control cut off inside a box that hides its overflow, and a box placed at left:50% wraps in half its parent's width: check each control lies inside its box.
 - #162 A sandbox that sets state aside by a list of names doesn't cover state added later: new state the sandboxed builders read (a new store) joins the list in the same change.
 - #167 A press and hold that opens a menu under the finger: lifting it clicks the menu's first item. Cancel the release's default (touchend) when the hold opened something. See also #137.
+- #176 The `hidden` attribute loses to any rule that sets `display`: an element the code hid stayed drawn. Give such a class its own `[hidden]` rule (or hide through a class), and check the computed display, not the attribute. See also #45.
 
 **Checks and test machinery**
 
@@ -1261,6 +1262,18 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - **Do this instead:** for controls inside a box that hides overflow, check each control's rectangle against the box, not the page's
   scroll width. To let an absolutely placed, centred row wrap, give it both edges (`left` and `right`) rather than `left:50%`.
   `wormhole_filter_check.py` checks every filter button and the list button inside the map box at 390 px.
+
+## 176. The `hidden` attribute loses to any rule that sets `display`: an element the code hid stayed drawn
+
+- **What happened (found building build queue 064, 2026-11-21):** with your system not known (in J-space with no known way in), `itMapRefresh`
+  set `itm.cv.hidden = true` to hide the Intel map's canvas, since build queue 039. The rule `.it-map-box canvas{display:block}` beats the
+  browser's own `[hidden]{display:none}` (an author rule wins over the user-agent sheet whatever its specificity), so the canvas never hid:
+  after a pilot switch into J-space the old map, with its YOU pin on the old system, stayed under "isn't known". The same file already had the
+  fix for the Wormholes tab (`.wh-box canvas[hidden]{display:none;}`), and `.it-map-fb` (display:flex) would have done the same.
+- **How it was caught:** a screenshot of the state the check set up, not the check itself: the check read `fb.hidden`, which was true.
+- **Do this instead:** a class that sets `display` gets its own `[hidden]` rule beside it, or the state is a class on a parent (064: the map box
+  gets `nomap`, and `.it-map-box.nomap > :not(.it-map-msg)` hides everything but its message). A check asserts `getComputedStyle(e).display`
+  (or the element's box), never the attribute alone, and a screenshot of each new state is looked at before delivery.
 
 ## 160. A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it
 

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-h1D1BE+WvK8cLDKqIlXCDhd5qFs83T0nVOSeWJjSLYw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SYcGaW/h3HT9a5fp94pFNQRfSi4EUhw0VzQzvIiKl2I='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2345,6 +2345,7 @@
   .sa-pop[hidden]{display:none;} .sa-pop .it-h{display:flex; align-items:center; gap:8px; margin-bottom:10px;} .sa-pop h3{margin:0; font:600 15px var(--sans); color:var(--heading);}
   .sa-pop .sa-set-k{margin-top:12px;} .sa-pop label.sa-dis{color:var(--text-dim);} .sa-pop .c.err{color:var(--danger);}
   .sa-pop input.sa-sys-in{width:min(220px, 100%); min-height:28px; padding:0 8px;}
+  .sa-sys-row{display:flex; align-items:flex-start; gap:7px; margin:4px 0;} .sa-sys-row > label{margin:0; min-height:28px;} .sa-sys-search{display:flex; flex-direction:column; width:min(220px, 100%); min-width:0;} .sa-pop .sa-sys-search input.sa-sys-in{width:100%;}   /* 064: the map search's list (.it-rp-sug) in the flow under the box, never cut off by the panel */
   @media (max-width: 760px){
     .sa-pop{position:fixed; left:8px; right:8px; top:auto; bottom:8px; width:auto; max-height:80vh; overflow:auto;}
     a.zk-t{display:inline-flex; align-items:center; min-height:44px;} .sa-pop label{min-height:44px;} .sa-pop input.sa-sys-in, .sa-pop select{min-height:44px;}
@@ -2758,6 +2759,7 @@
   .it-rp-add{display:flex; gap:6px;} .it-rp-add input{flex:1; min-width:0;} .it-rp-msg{min-height:16px; margin:4px 0; color:var(--text-dim); font-size:12px;}
   @media (max-width: 599px){
     .it-rp-search{top:60px; right:8px; width:auto;} .it-rp-search input{height:44px; min-height:44px; font-size:16px;}
+    .it-rp-sug li{display:flex; align-items:center; gap:4px; min-height:44px; box-sizing:border-box;}   /* 064: 44 px rows on a phone (the map's search and the System Analyzer's) */
     .it-map-box button.it-map-clr{top:8px; left:8px; right:auto; min-height:44px;} .it-rp-note{bottom:8px;} .it-rp-list li{min-height:44px;} .it-rp-list li button, .it-rp-add button, .it-rp-add input{min-height:44px;}
   }
   .it-map-hint{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); padding:8px 12px; border-radius:6px; background:rgba(10,13,16,.85); color:var(--heading); font:600 13px var(--sans); opacity:0; transition:opacity .2s; pointer-events:none;}
@@ -2775,7 +2777,7 @@
   /* build queue 052: the filters a column down the map's left edge, 8 px under the search box (it keeps its place on Paths to you, where the
      search box is hidden), wrapping into a second column when the map is too short (--it-flr, itMapCtlPlace); the name line to the right of
      the panel buttons, level with the filter that is on (placed by itMapCtlPlace), hidden while a filter's panel is open (.pop) */
-  .it-map-fb{position:absolute; left:8px; top:48px; z-index:3; display:flex; flex-direction:column; align-items:flex-start; gap:4px; pointer-events:none;}
+  .it-map-fb{position:absolute; left:8px; top:48px; z-index:3; display:flex; flex-direction:column; align-items:flex-start; gap:4px; pointer-events:none;} .it-map-box.nomap > :not(.it-map-msg){display:none !important;} .it-top:has(.it-map-box.nomap) .it-nearcol{display:none !important;}   /* and Near You (no jumps to count; its panel is moved into the map's wrapper on a phone) */   /* 064: no map, only its message (no filters, search, zoom or rail over it; the canvas's [hidden] lost to display:block, so an old map stayed under the message) */
   .it-map-box.pop .it-map-fn{visibility:hidden;}
   .it-map-fb > button, .it-map-fbtns{pointer-events:auto;}
   .it-map-fn{position:absolute; left:0; top:0; width:max-content; max-width:340px; box-sizing:border-box; transform:translateY(-50%); padding:3px 8px; border:1px solid var(--line); border-left:3px solid var(--cyan); border-radius:4px; background:rgba(12,16,20,.9); font:400 11.5px/1.35 var(--sans); color:var(--text-dim); text-align:left; opacity:0; transition:opacity .3s;}
@@ -3431,7 +3433,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.21.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.21.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -27166,6 +27168,56 @@ async function itLoadNames(){
   try{ return await it.namesBusy; }finally{ it.namesBusy = null; }
 }
 function itSysName(id){ return it.names && it.names.byId.get(id) || String(id); }
+// ---- build queue 064 (roadmap/dashless-search-plan.md; the owner: "system search in intel map should be searchable without "-" and still hit.
+// test for any conflicts if done this way.", then "(should be the case in all system searches for all tabs)"): every box where a system name is
+// typed finds it with or without its "-" ("1dq1a" is 1DQ1-A). A query that has a "-" matches exactly as before; one without is compared with
+// each name's dashless form. A dashless form two systems share (none on 2026-11-20: 0 among 5,268 + 2,604 names) is never picked: the box lists
+// them. The scope: 'k' the systems with stargates (it.names), 'all' adds J-space (CCP's table, whTable), for the Wormholes tab's boxes only, so
+// J-space names never fill a stargate-only list. Pasted Sov / bridge lists and Intel's reading of chat lines don't use this (the owner: "just
+// the feed search box").
+let sysFlatMemo = null, sysFlatJMemo = null;
+function sysFlatKey(s){ return String(s).toLowerCase().replace(/-/g, ''); }
+function sysFlatAdd(m, nm, id){ const f = sysFlatKey(nm), x = m.get(f); m.set(f, x === undefined ? id : Array.isArray(x) ? [...x, id] : [x, id]); }
+// [map from dashless form to an id (or the ids sharing it), rows [lower-case name, dashless form, id] in the order the names came]
+function sysFlatK(){
+  const N = it.names; if(!N) return null;
+  if(sysFlatMemo && sysFlatMemo.N === N) return sysFlatMemo;
+  const map = new Map(), rows = [];
+  for(const [l, id] of N.byLower){ sysFlatAdd(map, l, id); rows.push([l, sysFlatKey(l), id]); }
+  return (sysFlatMemo = {N, map, rows});
+}
+function sysFlatJ(){
+  const T = whTable(); if(sysFlatJMemo && sysFlatJMemo.T === T) return sysFlatJMemo;
+  const map = new Map(), rows = [];
+  T.names.forEach((nm, i) => { if(!nm) return; const l = nm.toLowerCase(); sysFlatAdd(map, l, T.ids[i]); rows.push([l, sysFlatKey(l), T.ids[i]]); });
+  return (sysFlatJMemo = {T, map, rows});
+}
+// a typed name: its system's id, null, or an array of the ids whose dashless form it is (never picked; sysManyText says so)
+function sysFind(text, scope){
+  const t = String(text || '').trim().toLowerCase(); if(!t) return null;
+  const J = scope === 'all' ? sysFlatJ() : null, N = it.names;
+  const exact = (J && J.T.byName.get(t)) || (N && N.byLower.get(t));   // as before (whIdOf: CCP's J-space table first)
+  if(exact) return exact;
+  if(t.includes('-')) return null;
+  const f = sysFlatKey(t), K = sysFlatK(), hits = [];
+  for(const M of [J, K]){ const x = M ? M.map.get(f) : undefined; if(x !== undefined) hits.push(...(Array.isArray(x) ? x : [x])); }
+  return hits.length === 1 ? hits[0] : hits.length ? hits : null;
+}
+function sysFindId(text, scope){ const r = sysFind(text, scope); return typeof r === 'number' ? r : null; }
+function sysManyText(text, ids){ return `“${String(text).trim().slice(0, 40)}” matches ${ids.length} systems (${ids.map(id => whIsJ(id) ? whName(id) : itSysName(id)).join(', ')}): type it with its dash.`; }
+// suggestions for a query: names that start with it (in order), then names that contain it (the first n found, in order), n at most, as the map's
+// search did before 064; the query compared dashless only when it has no "-". ok(id) leaves systems out before the cap.
+function sysSuggest(text, n, scope, ok){
+  const q = String(text || '').trim().toLowerCase(), K = sysFlatK(); if(!q || !K) return [];
+  const flat = !q.includes('-'), qq = flat ? sysFlatKey(q) : q, a = [], b = [];
+  for(const M of scope === 'all' ? [K, sysFlatJ()] : [K]) for(const [l, f, id] of M.rows){
+    if(ok && !ok(id)) continue;
+    const s = flat ? f : l;
+    if(s.startsWith(qq)) a.push([l, id]); else if(b.length < n && s.includes(qq)) b.push([l, id]);
+  }
+  const by = (x, y) => x[0] < y[0] ? -1 : x[0] > y[0] ? 1 : 0;
+  return [...a.sort(by), ...b.sort(by)].slice(0, n).map(x => x[1]);
+}
 // ---- build queue 038 (Project doc roadmap/region-names-plan.md; the owner's picks from the review of the 27 places a system is named,
 // mockup Claude outputs/region_names_mockup.html: "A: own column", phones "System only", sentences "Yes, as drawn") ----
 // A system's region, from the map's table already in the page (INTEL_MAP.reg / .regions, CCP's static data by tools/jump_table_update.py),
@@ -27326,9 +27378,10 @@ function itAliases(){
   for(const raw of text.split(/\r?\n/)){
     const ln = raw.trim(); if(!ln) continue;
     const m = /^([^=]+?)\s*=\s*(.+)$/.exec(ln), key = m ? m[1].trim().toLowerCase().replace(/\s+/g, ' ') : '';
-    const id = m && N ? N.byLower.get(m[2].trim().toLowerCase()) : null;
+    const r = m && N ? sysFind(m[2], 'k') : null, id = typeof r === 'number' ? r : null;   // 064: with or without its "-"
     if(!m || !key || key.split(' ').length > 3) rows.push({ln, bad: 'write it as word = system'});
     else if(!N) rows.push({ln, key, name: m[2].trim()});
+    else if(Array.isArray(r)) rows.push({ln, bad: `${m[2].trim()} matches ${r.length} systems: type it with its dash`});
     else if(!id) rows.push({ln, bad: `no system named ${m[2].trim()}`});
     else { map.set(key, id); rows.push({ln, key, id}); }
   }
@@ -28055,7 +28108,9 @@ function itPermLostText(){ return withCode(`The page can't read “${it.dirName}
 function itMySys(){ const w = whIntelSys(); return w !== undefined ? w : itGlSys() || itLogSys(); }   // 048 (D14): in a hole, the k-space system you came in through
 // 054 (the owner at the review: "Yes, that wording"): a You with no Local log hears its system from EVE, not from a log
 function itNoSysWarnHtml(){ return it.on && it.me && !itMySys() ? `<div class="it-sub it-warn">${escapeHtml(itNoSysText())}, so no jumps and no alerts until then.</div>` : ''; }
-function itNoSysText(){ return it.me && it.me.noLog ? 'Your system isn’t known yet (it comes from EVE once it answers)' : 'Your system isn’t known yet (it’s read from your Local log when you jump)'; }
+// 064 (the owner: "With the Wormholes tab hint (Recommended)"): in J-space with no known k-space way in, where you are and what is missing
+function itNoSysJ(){ return typeof whIntelSys === 'function' && whIntelSys() === null ? `You’re in ${whName(whState().last)} and where you came in isn’t known (link it on the Wormholes tab)` : ''; }
+function itNoSysText(){ const j = itNoSysJ(); if(j) return j; return it.me && it.me.noLog ? 'Your system isn’t known yet (it comes from EVE once it answers)' : 'Your system isn’t known yet (it’s read from your Local log when you jump)'; }
 function itLogSys(){ const s = it.me && it.me.sys; return s && it.names ? it.names.byLower.get(s.toLowerCase()) || null : null; }
 
 // ---- each tick: new lines -> reports ----
@@ -29703,7 +29758,7 @@ function itFeedShown(){
   for(const c of it.fl) L = L.filter(e => itFlMatch(e, c));   // v2026.11.07.1: every chip
   const g = itGrpQ(q);   // v2026.11.01.2: [CORP] or <ALLIANCE> typed: that group's ticker exactly
   if(g) L = L.filter(e => itGrpIn(e, g));
-  else if(q) L = L.filter(e => itSearchText(e).includes(q));
+  else if(q){ const flat = !q.includes('-'); L = L.filter(e => itSearchText(e, flat).includes(q)); }   // 064: a query without a "-" also meets the dashless names
   L.sort(f.sort === 'near' ? (a, b) => ((jOf(a) ?? 999) - (jOf(b) ?? 999)) || b.t - a.t : (a, b) => b.t - a.t);
   return L.slice(0, IT_FEED_SHOWN);
 }
@@ -29714,9 +29769,9 @@ function itGrpIn(e, g){
     return !!v && v.ticker.toLowerCase() === g.tk;
   });
 }
-function itSearchText(e){
+function itSearchText(e, flat){
   const who = [...e.pilots, ...(e.kill ? [e.kill.victim] : [])], parts = [e.raw, e.who];
-  for(const s of e.p.sys) parts.push(itSysName(s.id));
+  for(const s of e.p.sys){ const nm = itSysName(s.id); parts.push(nm); if(flat && nm.includes('-')) parts.push(nm.replace(/-/g, '')); }   // 064 ([stated] "just the feed search box"): "1dq1a" finds 1DQ1-A's reports; a query with its "-" sees the text as before
   parts.push(...new Set(e.p.sys.map(s => sysRegion(s.id))));   // build queue 038 ([stated] "17. yes"): a region's name finds the reports in it
   for(const s of e.p.ships) parts.push(s.name);
   if(e.kill && e.kill.victim.ship) parts.push(e.kill.victim.ship.name);
@@ -29957,7 +30012,7 @@ function itKillStatus(){
 }
 function itStatusLine(){
   if(!it.on) return '';
-  const mid = itGlSys() || itMySys(), mnm = (itGlSys() ? itSysName(itGlSys()) : it.me && it.me.sys) || '';
+  const mid = itGlSys() || itMySys(), mnm = (itGlSys() ? whName(itGlSys()) : it.me && it.me.sys) || '';   // 064: whName knows J-space names (was "in 31001414")
   const mrg = mnm && mid && itSysName(mid) === mnm ? sysBracket(mid) : '';   // build queue 038: "… in 1DQ1-A (Delve)"
   const me = it.me ? `${it.me.name} in ${mnm ? mnm + mrg : 'an unknown system'}` : 'choose which character is you';
   // v2026.10.30.1 (the owner: "do not include the intel channel name in any of the output for now. security reasons"): the channels
@@ -30844,6 +30899,7 @@ function itMapRefresh(force){
   const home = my && T ? g.at.get(my) : undefined;
   const why = !T ? 'The map table is missing from this page.' : !my ? `${itNoSysText()}.` : home === undefined ? 'Your system has no stargates (a wormhole), so there is no map.' : '';
   msg.hidden = !why; msg.textContent = why; itm.cv.hidden = !!why;
+  if(itm.box.classList.contains('nomap') !== !!why) itm.box.classList.toggle('nomap', !!why);   // 064 (the owner's "left panel bug"): no map, only the message: no filter column (it was laid out for a map of height 0), search, zoom or rail   // LESSON #176: itm.cv.hidden alone lost to the canvas's display:block
   itm.el.querySelector('[data-im-z="me"]').hidden = !!why;   // nothing to center on
   itMapLegend();
   const mc = document.querySelector('[data-it-mapctx]'); if(mc) mc.textContent = itMapCtx();
@@ -32034,7 +32090,7 @@ function itWhAddFull(f){
   if(tc.bad) return {ok: false, msg: `“${String(f.ty.value).trim()}” isn’t a type or class the page knows: a type (Z971, K162), a class (C3, C13) or range (1-3), or HS, LS, NS, Thera, Pochven.`, field: 'ty'};
   const info = {}; for(const k of ['life', 'mass', 'size']) if(f[k].value && IT_WH_INFO_TXT[k][f[k].value]) info[k] = f[k].value;
   if(tc.cls) info.cls = tc.cls;
-  const st = itWhStore(), nm = String(f.sys.value || '').trim(), id0 = it.names && it.names.byLower.get(nm.toLowerCase());
+  const st = itWhStore(), nm = String(f.sys.value || '').trim(), id0 = it.names && sysFindId(nm, 'k');   // 064: as itWhAdd
   const old = id0 && st.rep[id0] && st.rep[id0].t >= Date.now() - st.keepH * 3600e3 ? st.rep[id0] : null;
   const r = itWhAdd(f.sys.value, false);   // 040's checks of the name; a fresh entry, kept the setting's hours from now
   if(!r.ok) return r;
@@ -32911,7 +32967,8 @@ function itWhAdd(name, drifter){
   const nm = String(name || '').trim();
   if(!nm) return {ok: false, msg: 'Type a system name.'};
   if(!it.names) return {ok: false, msg: 'System names are still loading; try again in a moment.'};
-  const id = it.names.byLower.get(nm.toLowerCase());
+  const r = sysFind(nm, 'k'), id = typeof r === 'number' ? r : null;   // 064: with or without its "-"
+  if(Array.isArray(r)) return {ok: false, msg: sysManyText(nm, r)};
   if(!id || !itGraphGet().at.has(id)) return {ok: false, msg: `“${nm}” isn’t a system on the map (wormhole systems come in a later phase).`};
   const st = itWhStore();
   st.rep[id] = {id, t: Date.now(), who: '', drifter: !!drifter, src: 'you'}; delete st.gone[id];
@@ -33247,30 +33304,46 @@ function itRpSearchShut(){
 function itRpSearchBind(){
   const f = itm.el && itm.el.querySelector('.it-rp-search'); if(!f || f.dataset.bound) return; f.dataset.bound = '1';
   const inp = f.querySelector('input'), ul = f.querySelector('ul');
+  sysComboBind(inp, ul, {
+    idp: 'itRpo',
+    opts: () => {   // 064: sysSuggest, the names with or without their "-"
+      const T = itMapTable(), g = itGraphGet();
+      if(!inp.value.trim() || !it.names || !T || !itm.D) return null;
+      return sysSuggest(inp.value, 8, 'k', id => g.at.get(id) !== undefined);
+    },
+    rowHtml: (id) => { const T = itMapTable(), i = itGraphGet().at.get(id), d = itm.D[i]; return `<span class="it-sn ${escapeHtml(itSecClass(id))}">${escapeHtml(itSysName(id))}</span> <span class="d">${escapeHtml(T.regions[T.reg[i]] || '')} · ${escapeHtml(d === 0 ? 'you' : d < 0 ? 'no gate route' : `${d} j`)}</span>`; },
+    pick: itRpPick,
+    key: (e) => { if((e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey)) && itRp.sel >= 0 && itm.Q){ e.preventDefault(); itRpMenuOpen(itRp.sel, itm.Q[2 * itRp.sel] + 10, itm.Q[2 * itRp.sel + 1] + 10, inp); } }
+  });
+}
+// 064: the map search's suggestion list, for any box that suggests systems (the map's search, System Analyzer ⚙ → Typed): a combobox over a
+// .it-rp-search list (arrows, Enter, Escape, a press). o.opts() gives the ids (null: nothing typed, the list shut), o.rowHtml(id) a row's inside (built, escaped),
+// o.pick(id) what a pick does, o.key(e) any other key, o.idp the options' id prefix (unique on the page).
+function sysComboBind(inp, ul, o){
+  const rowHtml = o.rowHtml;   // the rows' builder (each box escapes what it puts in)
   let opts = [], cur = -1;
   const close = () => { ul.hidden = true; inp.setAttribute('aria-expanded', 'false'); inp.removeAttribute('aria-activedescendant'); cur = -1; };
   const show = () => {
-    const q = inp.value.trim().toLowerCase(), T = itMapTable(), g = itGraphGet(); cur = -1;
-    if(!q || !it.names || !T || !itm.D){ opts = []; close(); return; }
-    const a = [], b = [];
-    for(const nm of it.names.list){ if(nm.startsWith(q)) a.push(nm); else if(b.length < 8 && nm.includes(q)) b.push(nm); }
-    opts = [...a.sort(), ...b.sort()].slice(0, 8).map(nm => it.names.byLower.get(nm)).filter(id => g.at.get(id) !== undefined);
-    ul.innerHTML = opts.map((id, k) => { const i = g.at.get(id), d = itm.D[i]; return `<li role="option" id="itRpo${Number(k)}" data-it-rp-pick="${Number(id)}" aria-selected="false"><span class="it-sn ${escapeHtml(itSecClass(id))}">${escapeHtml(itSysName(id))}</span> <span class="d">${escapeHtml(T.regions[T.reg[i]] || '')} · ${escapeHtml(d === 0 ? 'you' : d < 0 ? 'no gate route' : `${d} j`)}</span></li>`; }).join('')
+    cur = -1; const ids = o.opts();
+    if(!ids){ opts = []; close(); return; }
+    opts = ids;
+    ul.innerHTML = opts.map((id, k) => `<li role="option" id="${escapeHtml(o.idp)}${Number(k)}" data-sys-pick="${Number(id)}" aria-selected="false">${rowHtml(id)}</li>`).join('')
       || '<li class="d" role="option" aria-disabled="true">No system by that name</li>';
     ul.hidden = false; inp.setAttribute('aria-expanded', 'true');
   };
-  const mark = () => { [...ul.children].forEach((li, k) => { li.classList.toggle('on', k === cur); li.setAttribute('aria-selected', String(k === cur)); }); if(cur >= 0) inp.setAttribute('aria-activedescendant', `itRpo${cur}`); else inp.removeAttribute('aria-activedescendant'); };
+  const mark = () => { [...ul.children].forEach((li, k) => { li.classList.toggle('on', k === cur); li.setAttribute('aria-selected', String(k === cur)); }); if(cur >= 0) inp.setAttribute('aria-activedescendant', `${o.idp}${cur}`); else inp.removeAttribute('aria-activedescendant'); };
+  const pick = (id) => { close(); o.pick(id); };
   inp.addEventListener('input', show);
   inp.addEventListener('focus', () => { if(inp.value.trim()) show(); });
   inp.addEventListener('blur', () => setTimeout(() => { if(document.activeElement !== inp) close(); }, 150));
   inp.addEventListener('keydown', (e) => {
     if(e.key === 'ArrowDown' && opts.length){ if(ul.hidden) show(); cur = Math.min(opts.length - 1, cur + 1); mark(); e.preventDefault(); }
     else if(e.key === 'ArrowUp' && opts.length){ cur = Math.max(0, cur - 1); mark(); e.preventDefault(); }
-    else if(e.key === 'Enter'){ if(opts.length && !ul.hidden){ itRpPick(opts[Math.max(0, cur)]); close(); } e.preventDefault(); }
+    else if(e.key === 'Enter'){ if(opts.length && !ul.hidden){ pick(opts[Math.max(0, cur)]); e.preventDefault(); } else if(o.enter) o.enter(e); else e.preventDefault(); }
     else if(e.key === 'Escape' && !ul.hidden){ close(); e.preventDefault(); e.stopPropagation(); }
-    else if((e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey)) && itRp.sel >= 0 && itm.Q){ e.preventDefault(); itRpMenuOpen(itRp.sel, itm.Q[2 * itRp.sel] + 10, itm.Q[2 * itRp.sel + 1] + 10, inp); }
+    else if(o.key) o.key(e);
   });
-  ul.addEventListener('mousedown', (e) => { const li = e.target.closest('[data-it-rp-pick]'); if(li){ e.preventDefault(); itRpPick(Number(li.dataset.itRpPick)); close(); } });
+  ul.addEventListener('mousedown', (e) => { const li = e.target.closest('[data-sys-pick]'); if(li){ e.preventDefault(); pick(Number(li.dataset.sysPick)); } });
 }
 // a system picked: the map centred on it (zoomed in to a gate at least IT_RP_PICK_GATE px), its route kept, its tooltip open
 function itRpPick(id){
@@ -33317,9 +33390,10 @@ function itRpBind(el){
   el.addEventListener('input', (e) => { const t = e.target.closest && e.target.closest('[data-it-rp-set="pen"]'); if(t){ const o = t.parentNode.querySelector('output'); if(o) o.textContent = t.value; } });
   el.addEventListener('submit', (e) => {
     const f = e.target.closest && e.target.closest('.it-rp-add'); if(!f) return; e.preventDefault();
-    const v = String(f.sys.value || '').trim(), id = v && it.names ? it.names.byLower.get(v.toLowerCase()) : undefined, msg = f.parentNode.querySelector('.it-rp-msg');
+    const v = String(f.sys.value || '').trim(), r = v && it.names ? sysFind(v, 'k') : null, id = typeof r === 'number' ? r : undefined, msg = f.parentNode.querySelector('.it-rp-msg');   // 064: with or without its "-"
     if(!v){ if(msg) msg.textContent = 'Type a system name.'; return; }
     if(!it.names){ if(msg) msg.textContent = 'System names are still loading; try again in a moment.'; return; }
+    if(Array.isArray(r)){ if(msg) msg.textContent = sysManyText(v, r); f.sys.setAttribute('aria-invalid', 'true'); return; }
     if(!id || !itGraphGet().at.has(id)){ if(msg) msg.textContent = `“${v}” isn’t a system on the map.`; f.sys.setAttribute('aria-invalid', 'true'); return; }
     const s = itRpSet();
     if(!s.list.includes(id)){ if(s.list.length >= IT_RP_LIST_MAX){ if(msg) msg.textContent = `Your avoid list holds ${IT_RP_LIST_MAX} systems at most.`; return; } s.list.push(id); itRpSave(); }
@@ -33727,13 +33801,13 @@ async function saActSystem(){
   if(saSet.src === 'me'){
     if(!it.on || !it.me) return {none: 'Turn Intel on (with your character chosen) to use your location, or type a system in ⚙'};
     const id = itMySys();
-    return id ? {id, name: itSysName(id), from: 'me'} : {none: 'Your location isn’t known yet (Intel reads it from your Local log)'};
+    return id ? {id, name: itSysName(id), from: 'me'} : {none: itNoSysJ() || 'Your location isn’t known yet (Intel reads it from your Local log)'};   // 064: the J-space line too (the owner: "Yes, same wording (Recommended)")
   }
   const t = saSet.typed.trim();
   if(!t) return {none: 'Pick a system in ⚙ to see kills and losses here'};
   let N;
   try{ N = await itLoadNames(); }catch(e){ return {err: e}; }
-  const id = N.byLower.get(t.toLowerCase());
+  const id = sysFindId(t, 'k');   // 064: with or without its "-" (saSetChange stores the name itself)
   return id ? {id, name: itSysName(id), from: 'typed'} : {err: codedError('SYS-03', `“${t}” isn't a system with stargates that the page knows`)};
 }
 function saActUrl(id){ return `${ZKB}/kills/systemID/${id}/pastSeconds/${SA_ACT_PAST}/`; }
@@ -33887,8 +33961,7 @@ function saSetHtml(){
       <label>In the last <select data-sa-set="win" aria-label="Hours to count">${SA_ACT_WIN.map(h => `<option value="${h}"${h === saSet.win ? ' selected' : ''}>${h} h</option>`).join('')}</select></label>
       <div class="k sa-set-k">System</div>
       <label class="${meOk ? '' : 'sa-dis'}"><input type="radio" name="saSrc" value="me" data-sa-set="src"${sel('me')}${meOk ? '' : ' disabled'}> My location${meOk ? (itMySys() ? `: ${escapeHtml(itSysName(itMySys()))}` : ' (not known yet)') : ' (turn Intel on to use your location)'}</label>
-      <label><input type="radio" name="saSrc" value="typed" data-sa-set="src"${sel('typed')}> Typed: <input type="text" class="sa-sys-in" data-sa-set="typed" list="saSysList" value="${escapeHtml(saSet.typed)}" placeholder="System name" aria-label="System name" autocomplete="off" spellcheck="false"></label>
-      <datalist id="saSysList"></datalist>
+      <div class="sa-sys-row"><label><input type="radio" name="saSrc" value="typed" data-sa-set="src"${sel('typed')}> Typed:</label> <span class="sa-sys-search"><input type="text" class="sa-sys-in" data-sa-set="typed" value="${escapeHtml(saSet.typed)}" placeholder="System name" aria-label="System name" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="saSysSug" aria-autocomplete="list" maxlength="40"><ul id="saSysSug" class="it-rp-sug" role="listbox" aria-label="Systems" hidden></ul></span></div>
       ${sa.setMsg ? `<div class="c err">${escapeHtml(sa.setMsg)}</div>` : ''}
       <div class="c">${sa.intel ? `An Intel Assess uses its own system (now ${escapeHtml(itSysName(sa.intel.sys))}).` : 'An Intel Assess always uses the system it sends.'} Systems with stargates only.</div>
       <div class="k sa-set-k">Local's results</div>
@@ -33904,10 +33977,15 @@ function saSetRender(focusSel){
   if(!sa.setOpen){ pop.innerHTML = ''; return; }
   pop.innerHTML = saSetHtml();
   if(focusSel){ const f = pop.querySelector(focusSel); if(f) f.focus({preventScroll: true}); }
-  itLoadNames().then(N => {   // the names for the typed box's suggestions, once
-    const dl = document.getElementById('saSysList');
-    if(dl && !dl.childElementCount) dl.innerHTML = [...N.byId.values()].filter(Boolean).sort().map(n => `<option value="${escapeHtml(n)}"></option>`).join('');
-  }, () => {});
+  const inp = pop.querySelector('.sa-sys-search input'), ul = pop.querySelector('#saSysSug');
+  if(inp && ul) sysComboBind(inp, ul, {   // 064 (the owner: "your recommendation"): the map search's own list, names with or without their "-"
+    idp: 'saSyo',
+    opts: () => inp.value.trim() && it.names ? sysSuggest(inp.value, 8, 'k') : null,
+    rowHtml: (id) => `<span class="it-sn ${escapeHtml(itSecClass(id))}">${escapeHtml(itSysName(id))}</span> <span class="d">${escapeHtml(sysRegion(id) || '')}</span>`,
+    pick: (id) => { inp.value = itSysName(id); saSetChange(inp); },
+    enter: () => {}   // the list shut: Enter commits the box as before (its change event)
+  });
+  itLoadNames().then(() => { if(inp && document.activeElement === inp && inp.value.trim()) inp.dispatchEvent(new Event('focus')); }, () => {});   // the names for the suggestions
 }
 function saSetToggle(open){
   sa.setOpen = open === undefined ? !sa.setOpen : open; sa.setMsg = '';
@@ -33928,7 +34006,8 @@ async function saSetChange(t){
     const v = t.value.trim();
     if(!v){ saSet.typed = ''; saSetWrite(); sa.setMsg = ''; if(shown && saSet.src === 'typed') saActRun(false); return; }
     let N; try{ N = await itLoadNames(); }catch(e){ sa.setMsg = withCode(e.message, errorCodeOf(e)); saSetRender('[data-sa-set="typed"]'); return; }
-    const id = N.byLower.get(v.toLowerCase());
+    const r = sysFind(v, 'k'), id = typeof r === 'number' ? r : null;   // 064: with or without its "-"
+    if(Array.isArray(r)){ sa.setMsg = withCode(sysManyText(v, r), 'SYS-03'); saSetRender('[data-sa-set="typed"]'); return; }
     if(!id){ sa.setMsg = withCode(`“${v}” isn't a system with stargates that the page knows`, 'SYS-03'); saSetRender('[data-sa-set="typed"]'); return; }
     saSet.typed = itSysName(id); saSet.src = 'typed'; saSetWrite(); sa.setMsg = '';
     saSetRender('[data-sa-set="typed"]');
@@ -35118,10 +35197,11 @@ function whPop(k){
 }
 function whAddTyList(f){ const dl = f.querySelector('#whAddTyDl'); if(dl) dl.innerHTML = whTyOptsHtml(f.link.value ? Number(f.link.value) : null); }   // 061 (D6): the linked system's statics first
 function whPopClose(){ const el = whS.el; let was = false; el.querySelectorAll('.wh-pop').forEach(p => { if(!p.hidden) was = true; p.hidden = true; }); el.querySelectorAll('[data-wh-pop]').forEach(x => x.setAttribute('aria-expanded', 'false')); return was; }
-function whNameIn(raw){ const id = whIdOf(raw); return id && whKnown(id) ? id : null; }
+function whNameIn(raw){ const r = sysFind(raw, 'all'), ids = (Array.isArray(r) ? r : r ? [r] : []).filter(whKnown); return ids.length === 1 ? ids[0] : null; }   // 064: with or without its "-"
+function whNameMiss(raw){ const r = sysFind(raw, 'all'); return Array.isArray(r) ? sysManyText(raw, r) : `“${raw}” isn’t a wormhole system or a system with stargates that the page knows.`; }
 function whAddForm(f){
   const raw = f.sys.value.trim(), id = whNameIn(raw);
-  if(!id){ whMsg(`“${raw}” isn’t a wormhole system or a system with stargates that the page knows.`); f.sys.setAttribute('aria-invalid', 'true'); f.sys.focus(); return; }
+  if(!id){ whMsg(whNameMiss(raw)); f.sys.setAttribute('aria-invalid', 'true'); f.sys.focus(); return; }
   const sig = f.sig.value.trim().toUpperCase().replace(/^([A-Z]{3})(\d)/, '$1-$2');
   if(sig && !/^[A-Z]{3}(-\d{0,3})?$/.test(sig)){ whMsg('A signature ID is three letters and three digits (RZL-429), or its start.'); f.sig.setAttribute('aria-invalid', 'true'); f.sig.focus(); return; }
   const tc = itWhTyOrCls(f.ty.value);
@@ -35160,7 +35240,7 @@ function whHereClose(){ const m = whS && whS.el && whS.el.querySelector('.wh-hme
 function whHereAdd(f){
   const raw = f.sys.value.trim(); if(!raw) return;
   const id = whNameIn(raw);
-  if(!id){ whMsg(`“${raw}” isn’t a wormhole system or a system with stargates that the page knows.`); f.sys.setAttribute('aria-invalid', 'true'); f.sys.focus(); return; }   // the menu stays
+  if(!id){ whMsg(whNameMiss(raw)); f.sys.setAttribute('aria-invalid', 'true'); f.sys.focus(); return; }   // the menu stays
   whHereClose();
   if(whS.st.sys[id]){ whMsg(`${whName(id)} is already on your map.`); whSelect(id); if(!whInView(id)){ whCenter(id); whDraw(); } return; }
   if(!whAddSys(id)){ whMsg(`Your map holds ${WH_SYS_MAX} systems at most.`); return; }
@@ -35420,9 +35500,9 @@ function whRtOver(c, C, font){   // over the boxes: the route's systems outlined
   c.restore();
 }
 function whRtPinForm(f){
-  const R = whRtState(), v = String(f.sys.value || '').trim(), id = v ? whIdOf(v) : null;
+  const R = whRtState(), v = String(f.sys.value || '').trim(), r = v ? sysFind(v, 'all') : null, id = typeof r === 'number' ? r : null;   // 064: with or without its "-"
   if(!v) return;
-  if(!id) R.msg = `“${v.slice(0, 40)}” isn’t a system the page knows.`;
+  if(!id) R.msg = Array.isArray(r) ? sysManyText(v, r) : `“${v.slice(0, 40)}” isn’t a system the page knows.`;
   else { R.msg = R.pins.includes(id) ? `${whName(id)} is pinned already.` : ''; if(!R.pins.includes(id) && whRtPin(id, true)) f.sys.value = ''; }
   const a = document.activeElement; if(a && f.contains(a)) a.blur();   // whPanels never rewrites under a field being typed in: the field is done with
   whS.pn = {}; whPanels(); const i = whS.el.querySelector('#whPnRt [data-wh-rt-pin] input'); if(i) i.focus({preventScroll: true});
