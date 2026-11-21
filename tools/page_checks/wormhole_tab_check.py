@@ -189,7 +189,7 @@ def cases(b, html, parts=('table', 'path', 'loc', 'panel', 'add', 'map', 'phone'
 MUTANTS = [
     ('switching from a non-Intel tab', "  if(kind === 'j' && t === 'intel') switchTab('wh');", "  if(kind === 'j') switchTab('wh');", ('path',)),
     ('a k → k jump recorded', "  if(prev !== null && (j || jp) && !docked){", "  if(prev !== null && !docked){", ('path',)),
-    ('docked counted as a hole', "    whSeen(sys, now, !!(j.station_id || j.structure_id));", "    whSeen(sys, now, false);", ('path', 'loc')),
+    ('docked counted as a hole', "    whSeen(sys, now, !!(j.station_id || j.structure_id), id);", "    whSeen(sys, now, false, id);", ('path', 'loc')),   # 063: the reading's pilot
     ('Intel in J-space not counting from the entrance (D14)', "function whIntelSys(){ if(itWhAside || !whS || !whInJ()) return undefined;", "function whIntelSys(){ return undefined;", ('path',)),
     ('statics coloured by the system, not where they lead', "  const k = whStcKind(code), [sh, long]", "  const k = WH_BAND[whCls(whFocus())] || 'x', [sh, long]", ('path', 'panel')),
     ('location read while another tab is in front', "  const S = whState(), want = whTabNow() === 'wh' && document.visibilityState !== 'hidden';", "  const S = whState(), want = document.visibilityState !== 'hidden';", ('path', 'loc')),

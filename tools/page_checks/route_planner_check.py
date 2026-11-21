@@ -136,9 +136,9 @@ def cases(b, html, phone=True):
     m = pg.evaluate("""() => { const g = itGraphGet(), T = itMapTable(), D = itm.D; const bfs = new Int16Array(T.n).fill(-1), q = [itm.home]; bfs[itm.home] = 0;
       for(let k = 0; k < q.length; k++) for(const y of T.adj[q[k]]) if(bfs[y] < 0){ bfs[y] = bfs[q[k]] + 1; q.push(y); }
       let same = true; for(let i = 0; i < T.n; i++) if(bfs[i] !== D[i]) same = false;
-      return {same, band: !!T.band, flags: [...itRp.flags].map(([i, w]) => [g.ids[i], w])}; }""")
+      return {same, band: !!(T.band || T.secT), flags: [...itRp.flags].map(([i, w]) => [g.ids[i], w])}; }""")
     if not m['same']: out.append('jump numbers should stay the shortest by stargate (itm.D)')
-    if not m['band']: out.append("the page's map table has no band")
+    if not m['band']: out.append("the page's map table has no band (047) and no shown tenth (063)")
     # a destination 2-8 jumps away whose shortest route passes a flagged system (made here: the avoid list's first system)
     d = pg.evaluate("""() => { const T = itMapTable(), g = itGraphGet();
       for(let i = 0; i < T.n; i++){ if(itm.D[i] < 3 || itm.D[i] > 7) continue; const mid = itm.par[i]; if(itm.par[mid] < 0 || mid === itm.home) continue;
@@ -340,7 +340,7 @@ MUTANTS = [
     ('sent while known logged off (047, the hand test)', "  if(onl === false && !force){", "  if(false){"),
     ('sending with the switch off (047, the hand test)', "  if(!itRpSendOn()){ itRpNote({off: true}); return; }", "  if(false){ itRpNote({off: true}); return; }"),
     ('the search box drawn by the browser (047, the hand test)', "  input[type=text], input[type=search], select{", "  input[type=text], select{"),
-    ('the rounded number instead of the band', "function itRpBand(T, i){ if(T.band) return T.band[i];", "function itRpBand(T, i){"),
+    ('the rounded number instead of the band', "function itRpBand(T, i){ if(T.secT){ const t = itMapSecT(i); return t <= 0 ? 0 : t < 5 ? 1 : 2; } if(T.band) return T.band[i];", "function itRpBand(T, i){"),   # 063: the shown tenth's band, else 047's
     ('cost before the flagged count (no detours)', "    const fx = f[x] + (x !== src && flag(x) ? 1 : 0);   // a system counts once you go through it: the destination never does\n", "    const fx = 0;\n"),   # 062: in itRpSearch, shared with the Routes panel
     ('the destination named in the warning', "return path.slice(1, -1).filter(x => itRp.flags.has(x))", "return path.slice(1).filter(x => itRp.flags.has(x))"),
     ('every waypoint clearing the others', "clear_other_waypoints: done === 0 ? 'true' : 'false'", "clear_other_waypoints: 'true'"),

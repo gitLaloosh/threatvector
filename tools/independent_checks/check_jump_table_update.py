@@ -25,8 +25,18 @@ metres), made here from the page's own INTEL_MAP.p3 with CCP's light-year (9.46e
   * a system with no position in CCP's data: the script stops (exit not 0) and the page is untouched.
 Build queue 035 (main's CSP hash went stale after a "Game data" pull request): every page the script rewrites passes
 tools/csp_hash.py --check (the CSP names the script by hash); a copy of the script without that refresh fails here.
+Build queue 063 (roadmap/security-shown-plan.md): INTEL_MAP.secT, the tenth the game shows, in place of sec and band. The made-up
+securities are worked out from the page in either form (a page from before 063: its hundredths, nudged off a halfway point the way it
+rounded, inside 047's band), and the tenth expected from them by the plan's rule written out here (IN_GAME: the owner's two checks), so:
+  * a page from before 063 (sec + band): --check exits 1; --write puts secT in place of sec and band for every system, with the rule's
+    tenth, nothing else of the map changed; the pull request lists the systems whose shown security changes (was → now) and the systems
+    checked in game; the converted page is the base for the cases below;
+  * one system's security crosses a tenth (0.5 to 0.449): only its secT rewritten, named in the pull request;
+  * a new system on a halfway point: written with the nearest tenth, named at the top of the pull request to check in game (D4);
+  * the systems checked in game keep the owner's tenth on their halfway values, unflagged; 0.0346 shows 0.1; a copy of the script without
+    the 0.0-0.05 line is caught.
 """
-import sys, os, re, json, base64, struct, subprocess, tempfile, shutil
+import sys, os, re, json, math, base64, struct, subprocess, tempfile, shutil
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.join(HERE, '..', '..')
 HTML = next((a for a in sys.argv[1:] if not a.startswith('--')), os.path.join(ROOT, 'index.html'))
 SCRIPT = os.path.join(ROOT, 'tools', 'jump_table_update.py')
@@ -54,59 +64,102 @@ M0 = mtable(HTML)
 LY_M, P3U = 9.46e15, 0.0001   # CCP's light-year (developers.eveonline.com map-data guide), the table's unit (the plan)
 def p3_of(M):   # INTEL_MAP.p3 -> [x..., y..., z...] (int24 LE, signed), independently of the script
     b = base64.b64decode(M['p3']); return [int.from_bytes(b[i:i + 3], 'little', signed=True) for i in range(0, len(b), 3)]
-def m_rows(M, S):   # system id -> (x, y, sec100, region index, (px, py, pz) in 0.0001 LY), from the page's INTEL_MAP aligned to S
+def m_rows(M, S):   # system id -> (x, y, shown tenth, region index, (px, py, pz) in 0.0001 LY), from the page's INTEL_MAP aligned to S
     dec = lambda k, f: struct.unpack('<%d%s' % (M['systems'], f), base64.b64decode(M[k]))
     n = M['systems']; P = p3_of(M) if M.get('p3') else [0] * (3 * n)
-    bb = base64.b64decode(M['band']) if M.get('band') else None   # build queue 047: the band, 2 bits a system (decoded here, not by the script)
+    if M.get('secT'): T = dec('secT', 'b')   # build queue 063: the tenth the game shows, stored as is
+    else:   # a page from before 063: what it showed from sec (hundredths) and 047's band, worked out here (058's itMapSecT), not by the script
+        bb = base64.b64decode(M['band']) if M.get('band') else None
+        B = [(bb[k >> 2] >> ((k & 3) * 2)) & 3 for k in range(n)] if bb else [None] * n
+        T = [old_shown(s, b) for s, b in zip(dec('sec', 'b'), B)]
+    return {s: v for s, v in zip(S, zip(dec('x', 'h'), dec('y', 'h'), T, dec('reg', 'B'), ((P[k], P[n + k], P[2 * n + k]) for k in range(n))))}
+jr = lambda v: math.floor(v + 0.5)   # half up, as the page's Math.round
+def old_shown(s, b):   # 058's itMapSecT on the old columns
+    if s <= 0: return int(jr(s / 10)) + 0
+    t = max(1, min(10, jr(s / 10)))
+    return 4 if t >= 5 and b == 1 else t
+# 063: the owner's checks in game (2026-11-20), written out here, not read from the script: A2V6-6 -0.9 and A-5M31 -0.2 on a halfway point
+IN_GAME = {30004550: -9, 30004544: -2}
+def tenth(v, s=None):   # the tenth the game shows (the plan's rule), worked out here
+    if s in IN_GAME: return IN_GAME[s]
+    return 1 if 0 < v < 0.05 else int(jr(v * 10)) + 0
+def vals_of(M, S):   # a made-up unrounded security for each system that the script must show as the page shows it
+    dec = lambda k, f: struct.unpack('<%d%s' % (M['systems'], f), base64.b64decode(M[k]))
+    if M.get('secT'): return {s: t / 10 for s, t in zip(S, dec('secT', 'b'))}
+    # a page from before 063: its hundredths, nudged off a halfway point the way the old page rounded (half up), and inside 047's band: a
+    # system shown as 0.45 that is low sec is 0.449; one shown as 0.0 that is low, 0.001 (the band came from CCP's unrounded value)
+    n = M['systems']; bb = base64.b64decode(M['band']) if M.get('band') else None
     B = [(bb[k >> 2] >> ((k & 3) * 2)) & 3 for k in range(n)] if bb else [None] * n
-    return {s: v + ((P[k], P[n + k], P[2 * n + k]), B[k]) for k, (s, v) in enumerate(zip(S, zip(dec('x', 'h'), dec('y', 'h'), dec('sec', 'b'), dec('reg', 'B'))))}
-# 047: a made-up unrounded security that rounds (as the script does) to the page's hundredths and falls in the page's band: a system
-# shown as 0.45 that is low sec is 0.449; one shown as 0.0 that is low, 0.001 (the band comes from CCP's unrounded value)
-def sec_for(sec, band):
-    v = sec / 100
-    if band is None or (0 if v <= 0 else 1 if v < 0.45 else 2) == band: return v
-    if band == 1 and sec == 45: return 0.449
-    if band == 1 and sec == 0: return 0.001
-    if band == 0 and sec == 0: return -0.001
-    raise SystemExit(f'no made-up security for sec {sec} in band {band}')
-def sde(folder, conns, systems, build, rows=None, regions=None, nopos=()):
+    out = {}
+    for s, sec, band in zip(S, dec('sec', 'b'), B):
+        v = sec / 100 + (1e-4 if sec % 10 == 5 or sec % 10 == -5 else 0)
+        if band is not None and (0 if v <= 0 else 1 if v < 0.45 else 2) != band:
+            v = 0.449 if band == 1 and sec == 45 else 0.001 if band == 1 and sec == 0 else -0.001 if band == 0 and sec == 0 else None
+            if v is None: raise SystemExit(f'no made-up security for sec {sec} in band {band}')
+        out[s] = v
+    return out
+def sde(folder, conns, systems, build, rows=None, regions=None, nopos=(), vals=None):
     os.makedirs(folder, exist_ok=True); L, g = [], 50000000
     for a, c in sorted(conns):
         L.append(json.dumps({'_key': g, 'destination': {'solarSystemID': c, 'stargateID': g + 1}, 'solarSystemID': a, 'typeID': 16}))
         L.append(json.dumps({'_key': g + 1, 'destination': {'solarSystemID': a, 'stargateID': g}, 'solarSystemID': c, 'typeID': 16})); g += 2
     open(os.path.join(folder, 'mapStargates.jsonl'), 'w', encoding='utf-8').write('\r\n'.join(L) + '\r\n')   # CRLF, as CCP's latest.jsonl
-    rows = rows or {}; regions = regions or ['Region A']
+    rows = rows or {}; regions = regions or ['Region A']; vals = vals or {}
     def rec(s):
-        x, y, sec, rg, p, *bd = rows.get(s, (0, 0, 50, 0, (0, 0, 0)))
-        o = {'_key': s, 'name': {'en': f'SYS-{s - 30000000}'}, 'position2D': {'x': x * 1e14, 'y': y * 1e14}, 'securityStatus': sec_for(sec, bd[0] if bd else None), 'regionID': 10000001 + rg}
+        x, y, _t, rg, p = rows.get(s, (0, 0, 5, 0, (0, 0, 0)))
+        o = {'_key': s, 'name': {'en': f'SYS-{s - 30000000}'}, 'position2D': {'x': x * 1e14, 'y': y * 1e14}, 'securityStatus': vals.get(s, 0.5), 'regionID': 10000001 + rg}
         if s not in nopos: o['position'] = {a: v * P3U * LY_M for a, v in zip('xyz', p)}   # metres, as CCP's file
         return o
     open(os.path.join(folder, 'mapSolarSystems.jsonl'), 'w', encoding='utf-8').write('\n'.join(json.dumps(rec(s)) for s in sorted(systems)) + '\n')
     open(os.path.join(folder, 'mapRegions.jsonl'), 'w', encoding='utf-8').write('\n'.join(json.dumps({'_key': 10000001 + k, 'name': {'en': r}}) for k, r in enumerate(regions)) + '\n')
     open(os.path.join(folder, 'latest.jsonl'), 'w', encoding='utf-8').write(json.dumps({'_key': 'sde', 'buildNumber': build, 'releaseDate': '2026-10-29T11:10:30Z'}) + '\r\n')
-def run(page, folder, *extra, env=None):
+def run(page, folder, *extra, env=None, script=None):
     e = dict(os.environ); e.pop('GITHUB_OUTPUT', None); e.pop('GITHUB_STEP_SUMMARY', None); e.update(env or {})
-    r = subprocess.run([sys.executable, '-I', SCRIPT, page, '--sde', folder, *extra], capture_output=True, text=True, env=e)
+    r = subprocess.run([sys.executable, '-I', script or SCRIPT, page, '--sde', folder, *extra], capture_output=True, text=True, env=e, timeout=300)
     return r.returncode, r.stdout + r.stderr
+def put_map(path, src, M):   # a copy of the page with another INTEL_MAP
+    open(path, 'w', encoding='utf-8').write(re.sub(r'^const INTEL_MAP = .*;$', lambda m_: 'const INTEL_MAP = ' + json.dumps(M, ensure_ascii=False, separators=(',', ':')) + ';', src, count=1, flags=re.M))
 
 J0 = table(HTML); C0, S0 = conns_of(J0)
 tmp = tempfile.mkdtemp(prefix='jtu-')
 try:
-    same, changed = os.path.join(tmp, 'same'), os.path.join(tmp, 'changed')
-    R0 = m_rows(M0, S0) if M0 else {}; REG = M0['regions'] if M0 else None
+    out_f, sum_f, body = os.path.join(tmp, 'out.txt'), os.path.join(tmp, 'summary.md'), os.path.join(tmp, 'pr.md')
+    GH = {'GITHUB_OUTPUT': out_f, 'GITHUB_STEP_SUMMARY': sum_f}
+    def fresh(): open(out_f, 'w').close(); os.path.exists(body) and os.remove(body)
     check(M0 is not None and M0['jumps'] == J0['md5'] and M0['systems'] == len(S0), "the page's INTEL_MAP is aligned to its INTEL_JUMPS")
-    check(M0 is not None and M0.get('p3u') == P3U and len(p3_of(M0)) == 3 * len(S0) and max(abs(v) for v in p3_of(M0)) < 1 << 23 and len({R0[s][4] for s in S0}) > len(S0) - 5,
-          f"the page's INTEL_MAP holds every system's position in space (p3, units {M0 and M0.get('p3u')} LY, {len(p3_of(M0)) if M0 and M0.get('p3') else 0} values)")
-    sde(same, C0, S0, J0['build'] + 5063, R0, REG)
+    R0 = m_rows(M0, S0); V0 = vals_of(M0, S0); REG = M0['regions']
+    check(M0.get('p3u') == P3U and len(p3_of(M0)) == 3 * len(S0) and max(abs(v) for v in p3_of(M0)) < 1 << 23 and len({R0[s][4] for s in S0}) > len(S0) - 5,
+          f"the page's INTEL_MAP holds every system's position in space (p3, units {M0.get('p3u')} LY, {len(p3_of(M0)) if M0.get('p3') else 0} values)")
+    check(all(tenth(V0[s], s if M0.get('secT') else None) == R0[s][2] for s in S0), "the made-up securities show what the page shows (before the script runs)")
+    same = os.path.join(tmp, 'same'); sde(same, C0, S0, J0['build'] + 5063, R0, REG, vals=V0)
+    BASE_HTML = HTML
+    # build queue 063: a page from before the shown tenth (sec in hundredths + band): the first run rewrites the column for every system
+    if not M0.get('secT'):
+        old_page = os.path.join(tmp, 'old.html'); shutil.copy(HTML, old_page); before0 = open(old_page, encoding='utf-8').read(); fresh()
+        rc, o = run(old_page, same, '--check'); rcw, ow = run(old_page, same, '--write', '--body', body, env=GH)
+        Mn = mtable(old_page); Rn = m_rows(Mn, S0); txt = open(body, encoding='utf-8').read() if os.path.exists(body) else ''; outs = open(out_f).read()
+        want = {s: tenth(V0[s], s) for s in S0}; moved = sorted(s for s in S0 if want[s] != R0[s][2])
+        check(rc == 1 and rcw == 0 and 'changed=true' in outs and set(Mn) == set(M0) - {'sec', 'band'} | {'secT'},
+              f'a page from before 063: --check exits 1, --write replaces sec and band with secT ({rc}, {rcw}, {sorted(set(Mn) - set(M0))} added, {sorted(set(M0) - set(Mn))} gone)')
+        check(all(Rn[s][2] == want[s] for s in S0) and all(Rn[s][:2] + Rn[s][3:] == R0[s][:2] + R0[s][3:] for s in S0) and all(Mn[k] == M0[k] for k in ('jumps', 'systems', 'x', 'y', 'reg', 'regions', 'p3', 'p3u')),
+              f'every system\'s shown tenth is the game\'s rule on its value, nothing else of the map changed ({sum(1 for s in S0 if Rn[s][2] != want[s])} wrong)')
+        check(set(moved) == set(IN_GAME) & set(S0) and all(f'SYS-{s - 30000000} ({s}): {R0[s][2] / 10:.1f} → {want[s] / 10:.1f}' in txt for s in moved) and f'{len(moved)} system(s) show another security' in txt,
+              f"the pull request lists the systems whose shown security changes, was → now (here the two checked in game on a halfway point: {moved})")
+        check('security now stored as the tenth the game shows' in txt and '**Security the game shows**' in txt and txt.count(', in game ') >= len(set(IN_GAME) & set(S0)),
+              "the pull request says the column changed form and lists the systems checked in game with CCP's value")
+        check(csp_ok(old_page) and re.sub(r'^const INTEL_MAP = .*;$|<meta http-equiv="Content-Security-Policy" content="[^"]*">', '', open(old_page, encoding='utf-8').read(), flags=re.M)
+              == re.sub(r'^const INTEL_MAP = .*;$|<meta http-equiv="Content-Security-Policy" content="[^"]*">', '', before0, flags=re.M), 'only INTEL_MAP rewritten (and the CSP hash with it)')
+        rc2, _ = run(old_page, same, '--check'); check(rc2 == 0, f'the converted page against the same data: nothing to do ({rc2})')
+        BASE_HTML = old_page; M0 = Mn; R0 = Rn; V0 = vals_of(M0, S0); sde(same, C0, S0, J0['build'] + 5063, R0, REG, vals=V0)
+    base_src = open(BASE_HTML, encoding='utf-8').read()
     gone = sorted(C0)[0]; new_sys = 30100000; added = (S0[5], new_sys)
     C1 = (C0 - {gone}) | {added}
-    sde(changed, C1, set(S0) | {new_sys}, J0['build'] + 5100, R0, REG)
-    moved = os.path.join(tmp, 'moved'); mv = S0[7]; R2 = dict(R0); R2[mv] = (R0[mv][0] + 3, R0[mv][1] - 2, R0[mv][2], R0[mv][3], R0[mv][4]) + R0[mv][5:]
-    sde(moved, C0, S0, J0['build'] + 5200, R2, REG)
-    page = os.path.join(tmp, 'index.html'); shutil.copy(HTML, page); before = open(page, encoding='utf-8').read()
-    out_f, sum_f, body = os.path.join(tmp, 'out.txt'), os.path.join(tmp, 'summary.md'), os.path.join(tmp, 'pr.md')
+    changed = os.path.join(tmp, 'changed'); sde(changed, C1, set(S0) | {new_sys}, J0['build'] + 5100, R0, REG, vals=V0)
+    moved = os.path.join(tmp, 'moved'); mv = S0[7]; R2 = dict(R0); R2[mv] = (R0[mv][0] + 3, R0[mv][1] - 2) + R0[mv][2:]
+    sde(moved, C0, S0, J0['build'] + 5200, R2, REG, vals=V0)
+    page = os.path.join(tmp, 'index.html'); shutil.copy(BASE_HTML, page); before = open(page, encoding='utf-8').read()
 
-    rc, o = run(page, same, '--write', '--body', body, env={'GITHUB_OUTPUT': out_f, 'GITHUB_STEP_SUMMARY': sum_f})
+    fresh(); rc, o = run(page, same, '--write', '--body', body, env=GH)
     outs = open(out_f).read() if os.path.exists(out_f) else ''
     check(rc == 0 and o.strip().splitlines()[-1].startswith('jump table matches') and 'changed=false' in outs and open(page, encoding='utf-8').read() == before and not os.path.exists(body),
           f'the same gates on a newer build: matches, changed=false, the page untouched, no pull request text ({o.strip().splitlines()[-1]!r}; {outs.split()})')
@@ -115,8 +168,7 @@ try:
 
     rc3, _ = run(page, changed, '--check')
     check(rc3 == 1, f'--check with a gate changed exits 1 ({rc3})')
-    open(out_f, 'w').close()
-    rc4, o4 = run(page, changed, '--write', '--body', body, env={'GITHUB_OUTPUT': out_f, 'GITHUB_STEP_SUMMARY': sum_f})
+    fresh(); rc4, o4 = run(page, changed, '--write', '--body', body, env=GH)
     outs = open(out_f).read(); txt = open(body, encoding='utf-8').read() if os.path.exists(body) else ''
     check(rc4 == 0 and 'changed=true' in outs and f'build={J0["build"] + 5100}' in outs, f'a gate changed: changed=true and the build as step outputs {outs.split()}')
     check(f'- added: SYS-{S0[5] - 30000000} – SYS-100000' in txt and f'- removed: SYS-{gone[0] - 30000000} – SYS-{gone[1] - 30000000}' in txt and 'git pull' in txt,
@@ -128,65 +180,91 @@ try:
     strip = lambda s: re.sub(r'<meta http-equiv="Content-Security-Policy" content="[^"]*">', '', re.sub(r'^const INTEL_(JUMPS|MAP) = .*;$', '', s, flags=re.M))
     check(csp_ok(page), 'a gate changed: the rewritten page\'s CSP hash fits its script (csp_hash --check)')
     M1 = mtable(page); S1 = conns_of(J1)[1]; R1 = m_rows(M1, S1)
-    check(strip(after) == strip(before) and M1['jumps'] == J1['md5'] and M1['systems'] == J1['systems'] and R1[new_sys] == R0.get(new_sys, (0, 0, 50, 0, (0, 0, 0))) and all(R1[s] == R0[s] for s in S0 if s in R1),
+    check(strip(after) == strip(before) and M1['jumps'] == J1['md5'] and M1['systems'] == J1['systems'] and R1[new_sys] == R0.get(new_sys, (0, 0, 5, 0, (0, 0, 0))) and all(R1[s] == R0[s] for s in S0 if s in R1),
           'only INTEL_JUMPS and INTEL_MAP changed in the page; the map re-aligned to the new table (every system keeps its own place)')
     rc5, o5 = run(page, changed, '--check')
     check(rc5 == 0 and 'matches' in o5, f'the rewritten page against the same data: nothing to do ({rc5})')
     # one system moved on CCP's map, no gate changed
-    page2 = os.path.join(tmp, 'index2.html'); shutil.copy(HTML, page2)
+    page2 = os.path.join(tmp, 'index2.html'); shutil.copy(BASE_HTML, page2)
     rc6, _ = run(page2, moved, '--check')
-    open(out_f, 'w').close(); os.path.exists(body) and os.remove(body)
-    rc7, o7 = run(page2, moved, '--write', '--body', body, env={'GITHUB_OUTPUT': out_f, 'GITHUB_STEP_SUMMARY': sum_f})
+    fresh(); rc7, o7 = run(page2, moved, '--write', '--body', body, env=GH)
     outs = open(out_f).read(); txt = open(body, encoding='utf-8').read() if os.path.exists(body) else ''
     a2 = open(page2, encoding='utf-8').read(); M2 = mtable(page2); R2r = m_rows(M2, S0)
     check(rc6 == 1 and rc7 == 0 and 'changed=true' in outs and 'map table: 2 value(s) differ' in txt and 'map' in txt.splitlines()[0],
           f'a system moved on the map, no gate changed: --check exits 1, changed=true, the pull request says the map changed ({rc6}, {outs.split()}, {[l for l in txt.splitlines() if "map" in l][:2]})')
     nomap = lambda t: re.sub(r'<meta http-equiv="Content-Security-Policy" content="[^"]*">', '', re.sub(r'^const INTEL_MAP = .*;$', '', t, flags=re.M))
     check(csp_ok(page2), 'a system moved: the rewritten page\'s CSP hash fits its script (csp_hash --check)')
-    check(nomap(a2) == nomap(open(HTML, encoding='utf-8').read()) and R2r == R2,
-          'only INTEL_MAP rewritten: that system moved, nothing else')
+    check(nomap(a2) == nomap(base_src) and R2r == R2, 'only INTEL_MAP rewritten: that system moved, nothing else')
     rc8, o8 = run(page2, moved, '--check')
     check(rc8 == 0, f'the rewritten page against the same data: nothing to do ({rc8})')
     # v2026.11.04.1: one system moved in space only (its flat-map place unchanged)
-    sp = os.path.join(tmp, 'space'); sv = S0[11]; R3 = dict(R0); x3, y3, z3 = R0[sv][4]; R3[sv] = R0[sv][:4] + ((x3 + 17, y3 - 4, z3 + 250),) + R0[sv][5:]
-    sde(sp, C0, S0, J0['build'] + 5300, R3, REG)
-    page3 = os.path.join(tmp, 'index3.html'); shutil.copy(HTML, page3); open(out_f, 'w').close(); os.path.exists(body) and os.remove(body)
+    sp = os.path.join(tmp, 'space'); sv = S0[11]; R3 = dict(R0); x3, y3, z3 = R0[sv][4]; R3[sv] = R0[sv][:4] + ((x3 + 17, y3 - 4, z3 + 250),)
+    sde(sp, C0, S0, J0['build'] + 5300, R3, REG, vals=V0)
+    page3 = os.path.join(tmp, 'index3.html'); shutil.copy(BASE_HTML, page3); fresh()
     rc9, _ = run(page3, sp, '--check')
-    rc10, o10 = run(page3, sp, '--write', '--body', body, env={'GITHUB_OUTPUT': out_f, 'GITHUB_STEP_SUMMARY': sum_f})
+    rc10, o10 = run(page3, sp, '--write', '--body', body, env=GH)
     M3 = mtable(page3); R3r = m_rows(M3, S0)
-    check(rc9 == 1 and rc10 == 0 and 'map table: 3 value(s) differ' in o10 and R3r == R3 and all(M3[k] == M0[k] for k in ('x', 'y', 'sec', 'reg', 'regions', 'band')),
+    check(rc9 == 1 and rc10 == 0 and 'map table: 3 value(s) differ' in o10 and R3r == R3 and all(M3[k] == M0[k] for k in ('x', 'y', 'secT', 'reg', 'regions')),
           f'a system moved in space only: --check exits 1, its x, y, z rewritten (3 values), nothing else ({rc9}, {rc10}, {[l for l in o10.splitlines() if "map table" in l][:1]})')
-    # build queue 047: one system's unrounded security crosses 0.45 while its hundredths stay 0.45: only its band changes (1 value)
-    bv = next(x for x in S0 if R0[x][2] == 45 and R0[x][5] == 2); R4 = dict(R0); R4[bv] = R0[bv][:5] + (1,)
-    bd = os.path.join(tmp, 'band'); sde(bd, C0, S0, J0['build'] + 5400, R4, REG)
-    page4 = os.path.join(tmp, 'index4.html'); shutil.copy(HTML, page4); open(out_f, 'w').close(); os.path.exists(body) and os.remove(body)
+    # 063: one system's security crosses a tenth (0.5 to 0.449, high sec to low): only its secT changes (1 value), listed in the pull request
+    bv = next(x for x in S0 if R0[x][2] == 5 and x not in IN_GAME); V4 = dict(V0); V4[bv] = 0.449; R4 = dict(R0); R4[bv] = R0[bv][:2] + (4,) + R0[bv][3:]
+    bd = os.path.join(tmp, 'tenth'); sde(bd, C0, S0, J0['build'] + 5400, R0, REG, vals=V4)
+    page4 = os.path.join(tmp, 'index4.html'); shutil.copy(BASE_HTML, page4); fresh()
     rc11, _ = run(page4, bd, '--check')
-    rc12, o12 = run(page4, bd, '--write', '--body', body, env={'GITHUB_OUTPUT': out_f, 'GITHUB_STEP_SUMMARY': sum_f})
-    M4 = mtable(page4); R4r = m_rows(M4, S0)
-    check(rc11 == 1 and rc12 == 0 and 'map table: 1 value(s) differ' in o12 and R4r == R4 and all(M4[k] == M0[k] for k in ('x', 'y', 'sec', 'reg', 'regions', 'p3')),
-          f'a band change only (0.45 shown, low sec in CCP\'s data): --check exits 1, only its band rewritten ({rc11}, {rc12}, {[l for l in o12.splitlines() if "map table" in l][:1]})')
+    rc12, o12 = run(page4, bd, '--write', '--body', body, env=GH)
+    M4 = mtable(page4); R4r = m_rows(M4, S0); txt = open(body, encoding='utf-8').read() if os.path.exists(body) else ''
+    check(rc11 == 1 and rc12 == 0 and 'map table: 1 value(s) differ' in o12 and R4r == R4 and all(M4[k] == M0[k] for k in ('x', 'y', 'reg', 'regions', 'p3'))
+          and f'SYS-{bv - 30000000} ({bv}): 0.5 → 0.4' in txt and '1 system(s) show another security' in txt,
+          f'a security change across a tenth: --check exits 1, only its secT rewritten, named in the pull request ({rc11}, {rc12}, {[l for l in o12.splitlines() if "map table" in l][:1]})')
+    # 063 D4: a new system on a halfway point (not checked in game): the nearest tenth, still written, named first in the pull request
+    hv = next(x for x in S0 if R0[x][2] == 3 and x not in IN_GAME); V5 = dict(V0); V5[hv] = 0.35000002; R5 = dict(R0); R5[hv] = R0[hv][:2] + (4,) + R0[hv][3:]
+    hd = os.path.join(tmp, 'half'); sde(hd, C0, S0, J0['build'] + 5500, R0, REG, vals=V5)
+    page5 = os.path.join(tmp, 'index5h.html'); shutil.copy(BASE_HTML, page5); fresh()
+    rc13, o13 = run(page5, hd, '--write', '--body', body, env=GH)
+    txt = open(body, encoding='utf-8').read() if os.path.exists(body) else ''; outs = open(out_f).read()
+    check(rc13 == 0 and 'changed=true' in outs and m_rows(mtable(page5), S0) == R5 and txt.startswith(f'- **to check in game:** SYS-{hv - 30000000} ({hv})') and 'shown as 0.4' in txt,
+          f'a new system on a halfway point: written with the nearest tenth, named at the top of the pull request to check in game ({rc13}, {txt.splitlines()[:1]})')
+    # 063: a system checked in game keeps the owner's tenth on its halfway value, and isn't flagged
+    ck = [s for s in IN_GAME if s in R0]
+    if ck:
+        V6 = dict(V0); V6[30004550] = -0.85000008; V6[30004544] = -0.15000151
+        V6[hv] = 0.0346   # and a value above 0.0 and below 0.05: 0.1
+        R6 = dict(R0); R6[hv] = R0[hv][:2] + (1,) + R0[hv][3:]
+        cd = os.path.join(tmp, 'checked'); sde(cd, C0, S0, J0['build'] + 5600, R0, REG, vals=V6)
+        page6c = os.path.join(tmp, 'index6c.html'); shutil.copy(BASE_HTML, page6c); fresh()
+        rc14, o14 = run(page6c, cd, '--write', '--body', body, env=GH); txt = open(body, encoding='utf-8').read() if os.path.exists(body) else ''
+        R6r = m_rows(mtable(page6c), S0)
+        check(rc14 == 0 and R6r == R6 and all(R6r[s][2] == IN_GAME[s] for s in ck) and 'to check in game' not in txt,
+              f'the systems checked in game keep the owner\'s tenth on their halfway values, unflagged; 0.0346 shows 0.1 ({rc14}, {[R6r[s][2] for s in ck]})')
+        # the mutant: the script without the "above 0.0 and below 0.05 shows 0.1" line
+        mdir2 = os.path.join(tmp, 'mut2'); os.makedirs(mdir2); shutil.copy(CSP, mdir2)
+        msrc = open(SCRIPT, encoding='utf-8').read(); A2 = '    if 0.0 < v < 0.05: return 1\n'
+        check(A2 in msrc, 'mutant: the 0.0-0.05 line is in the script (if not, update the mutant)')
+        open(os.path.join(mdir2, 'jump_table_update.py'), 'w', encoding='utf-8').write(msrc.replace(A2, ''))
+        page6m = os.path.join(tmp, 'index6m.html'); shutil.copy(BASE_HTML, page6m)
+        rcm, om = run(page6m, cd, '--write', script=os.path.join(mdir2, 'jump_table_update.py'))   # its band assert stops it (0.0 is null, 0.0346 low)
+        check((rcm != 0 and 'in another band' in om) or m_rows(mtable(page6m), S0)[hv][2] != 1, f'mutant without the 0.0-0.05 line: caught (rc {rcm})')
     # a page from before v2026.11.04.1: no positions yet
-    page4 = os.path.join(tmp, 'index4.html'); old = dict(M0); old.pop('p3'); old.pop('p3u')
-    open(page4, 'w', encoding='utf-8').write(re.sub(r'^const INTEL_MAP = .*;$', lambda m_: 'const INTEL_MAP = ' + json.dumps(old, ensure_ascii=False, separators=(',', ':')) + ';', open(HTML, encoding='utf-8').read(), count=1, flags=re.M))
-    rc11, _ = run(page4, same, '--check'); rc12, _ = run(page4, same, '--write'); M4 = mtable(page4)
-    check(rc11 == 1 and rc12 == 0 and M4.get('p3') == M0['p3'] and M4.get('p3u') == P3U and all(M4[k] == M0[k] for k in ('x', 'y', 'sec', 'reg', 'regions', 'jumps', 'systems')),
-          f'a page without positions: --check exits 1, --write adds them (equal to the page\'s own), nothing else changes ({rc11}, {rc12})')
+    page7 = os.path.join(tmp, 'index7.html'); old = dict(M0); old.pop('p3'); old.pop('p3u'); put_map(page7, base_src, old)
+    rc15, _ = run(page7, same, '--check'); rc16, _ = run(page7, same, '--write'); M7 = mtable(page7)
+    check(rc15 == 1 and rc16 == 0 and M7.get('p3') == M0['p3'] and M7.get('p3u') == P3U and all(M7[k] == M0[k] for k in ('x', 'y', 'secT', 'reg', 'regions', 'jumps', 'systems')),
+          f'a page without positions: --check exits 1, --write adds them (equal to the page\'s own), nothing else changes ({rc15}, {rc16})')
     # a system with no position in CCP's data: stop, the page untouched
-    nop = os.path.join(tmp, 'nopos'); sde(nop, C0, S0, J0['build'] + 5400, R0, REG, nopos={S0[3]})
-    page5 = os.path.join(tmp, 'index5.html'); shutil.copy(HTML, page5)
-    rc13, o13 = run(page5, nop, '--write')
-    check(rc13 != 0 and 'without a position' in o13 and open(page5, encoding='utf-8').read() == open(HTML, encoding='utf-8').read(),
-          f'a system without a position in CCP\'s data: the script stops, the page untouched ({rc13})')
+    nop = os.path.join(tmp, 'nopos'); sde(nop, C0, S0, J0['build'] + 5700, R0, REG, nopos={S0[3]}, vals=V0)
+    page8 = os.path.join(tmp, 'index8.html'); shutil.copy(BASE_HTML, page8)
+    rc17, o17 = run(page8, nop, '--write')
+    check(rc17 != 0 and 'without a position' in o17 and open(page8, encoding='utf-8').read() == base_src,
+          f'a system without a position in CCP\'s data: the script stops, the page untouched ({rc17})')
     # the mutant: the script without the CSP refresh (the code before 035), run from a copy beside csp_hash.py
     mdir = os.path.join(tmp, 'mut'); os.makedirs(mdir); shutil.copy(CSP, mdir)
     msrc = open(SCRIPT, encoding='utf-8').read(); A = 'write(csp_write(out_src)[0])'   # 048: the page is built in out_src (the wormhole table's block too)
     check(A in msrc, 'mutant: the CSP refresh line is in the script (if not, update the mutant)')
     open(os.path.join(mdir, 'jump_table_update.py'), 'w', encoding='utf-8').write(msrc.replace(A, 'write(out_src)'))
-    page6 = os.path.join(tmp, 'index6.html'); shutil.copy(HTML, page6)
-    p = subprocess.run([sys.executable, '-I', os.path.join(mdir, 'jump_table_update.py'), page6, '--sde', changed, '--write'], capture_output=True, text=True, timeout=300,
+    page9 = os.path.join(tmp, 'index9.html'); shutil.copy(BASE_HTML, page9)
+    p = subprocess.run([sys.executable, '-I', os.path.join(mdir, 'jump_table_update.py'), page9, '--sde', changed, '--write'], capture_output=True, text=True, timeout=300,
                        env={k: v for k, v in os.environ.items() if k not in ('GITHUB_OUTPUT', 'GITHUB_STEP_SUMMARY')})
-    check(p.returncode == 0 and table(page6)['build'] == J0['build'] + 5100 and not csp_ok(page6),
-          f'mutant without the CSP refresh: caught (rc {p.returncode}, hash fits: {csp_ok(page6)})')
+    check(p.returncode == 0 and table(page9)['build'] == J0['build'] + 5100 and not csp_ok(page9),
+          f'mutant without the CSP refresh: caught (rc {p.returncode}, hash fits: {csp_ok(page9)})')
 finally:
     shutil.rmtree(tmp, ignore_errors=True)
 print(f'JUMP TABLE UPDATE: {len(problems)} problems')

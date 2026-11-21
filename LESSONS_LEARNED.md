@@ -1142,6 +1142,11 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   it, and a check (`tools/check_sec_shown.py`) refuses any other reader of the stored field and runs the page's own function on every system
   against the band. When a table stores a rounded value, say so beside it, and prefer storing the value people see (the generator has the
   unrounded one). The 582 systems on an x.x5 edge stay a backlog item: only the data can settle them.
+- **Fixed at the source (build queue 063, 2026-11-21):** measured against ESI's unrounded values, 333 systems showed a tenth the game
+  doesn't (Jita 1.0 for 0.9). The generator now stores the tenth the game shows (`INTEL_MAP.secT`, by the rule checked in game on 10
+  systems), `sec` and `band` are gone, and the page never rounds security: `itMapSecT` returns the table's tenth, and k-space system names
+  read it too (`itSecTab`) instead of rounding ESI's value. A value on a halfway point takes the tenth the owner saw in game
+  (`SEC_CHECKED_IN_GAME`), else the nearest, named in the data pull request to check. The lesson stands: store the value people see.
 
 ## 169. Don't measure what's hidden, and don't key a cache on an inline element's width
 

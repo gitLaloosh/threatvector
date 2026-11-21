@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-oQpAaSi1AoalNb9bbq29XihI7ytBzX5VJSl5CrPVIc4='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-h1D1BE+WvK8cLDKqIlXCDhd5qFs83T0nVOSeWJjSLYw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3431,7 +3431,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.20.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.21.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3850,7 +3850,7 @@ const CARD_INFO = {
   "[Kills under a row] The chevron on a row opens their kills in that hull (in the switch's gang size), newest first. The fleet icon beside a kill opens it in the {card:fleet} tab: everyone on that kill in a ship, with their fits."
  ],
  "whmap": [
-  "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. A change of system that lands you docked (a jump clone, a pod death) adds no connection.",
+  "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. Landing docked (a jump clone, a pod death) or switching pilots adds no connection.",
   "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move together; right-click empty space for Select all. The overview in the corner shows where everything is. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
   "[Focus and adding] Click a system for the System panel (its button, top left): class, effect and its numbers, statics (a community list's until you type your own; hover one for its lifetime and mass), notes, connections, signatures. Right-click it (press and hold on a phone) for its menu: status, tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one there.",
   "[Connections] Each side of a hole has its own signature ID: hover the mark at its end, or see that side's list.",
@@ -28007,7 +28007,7 @@ async function itScan(){
   }
   for(const ch of [...it.files.keys()]) if(!want.has(ch)) it.files.delete(ch);
   itMeSync(true);   // 054: who You is (the login's character while Use my game location is on); a change resets once
-  if(it.me && it.me.sys) whSeen(it.me.sys, it.me.logAt || it.me.sysT || 0, false);   // 048: where the log says you are now
+  if(it.me && it.me.sys) whSeen(it.me.sys, it.me.logAt || it.me.sysT || 0, false, it.me.id);   // 048; 063: whose reading: where the log says you are now
   it.read = true; it.perm = 'granted';   // v2026.11.08.2 (025): the folder was actually read (step 3's "nothing found" needs this)
 }
 // v2026.11.08.2 (build queue 025; Project doc roadmap/intel-folder-permission-plan.md): the chat-logs folder after a reload. Chrome 122+
@@ -28074,7 +28074,7 @@ async function itTick(){
       try{
         for(const l of await itReadFile(it.me.st, false)){
           const m = /Channel changed to Local\s*:\s*(.+?)\s*$/.exec(l.msg);
-          if(l.who === 'EVE System' && m){ const s = m[1].replace(/\*$/, ''); if(s !== it.me.sys) it.me.sysAt = itShown() ? Date.now() : 0; it.me.sys = s; it.me.logAt = l.t; whSeen(s, l.t, false); }   // sysAt: a jump read while Intel was in front, for the map's beacon (v2026.11.04.1); 0 = seen by nobody, no beacon later
+          if(l.who === 'EVE System' && m){ const s = m[1].replace(/\*$/, ''); if(s !== it.me.sys) it.me.sysAt = itShown() ? Date.now() : 0; it.me.sys = s; it.me.logAt = l.t; whSeen(s, l.t, false, it.me.id); }   // sysAt: a jump read while Intel was in front, for the map's beacon (v2026.11.04.1); 0 = seen by nobody, no beacon later
         }
       }catch(e){ /* the file went away: the next scan finds the new one */ }
     }
@@ -28708,9 +28708,11 @@ async function itGateDest(id){
   try{ return await q; }finally{ it.gateAsk.delete(id); }
 }
 function itIsk(v){ return v >= 1e9 ? `${(v / 1e9).toFixed(2)}B` : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${Math.round(v / 1e3)}k` : String(Math.round(v)); }
-// System security, for the colour of a system's name (ESI /universe/systems/{id}/, asked once per system shown, kept)
+// System security, for the colour of a system's name (ESI /universe/systems/{id}/, asked once per system shown, kept). Build queue 063 (the
+// owner: "Read the table (Recommended)"): a k-space system the map's table holds takes the tenth from there (itSecTab), at once and without a
+// request; ESI is asked only for the rest (J-space, or a system newer than the table), and while the table has no secT (063's fallback)
 async function itSecFetch(ids){
-  const ask = [...new Set(ids)].filter(id => id && !it.sec.has(id) && !it.secAsk.has(id)).slice(0, 12);
+  const ask = [...new Set(ids)].filter(id => id && itSecTab(id) === undefined && !it.sec.has(id) && !it.secAsk.has(id)).slice(0, 12);
   if(!ask.length) return;
   for(const id of ask) it.secAsk.add(id);
   let any = false;
@@ -28725,15 +28727,20 @@ async function itSecFetch(ids){
 }
 // v.100: the tenth EVE shows (0.0 < sec < 0.05 shows as 0.1, low-sec), for the colour of each tenth (the owner: "should match the
 // security level of the actual system"); hs / ls / ns as before
-function itSecKey(id){ const v = it.sec.get(id); if(v === undefined) return null; return v > 0 && v < 0.05 ? 1 : Math.max(0, Math.round(v * 10)); }
-function itSecText(id){ const v = it.sec.get(id); return v === undefined ? '' : (v > 0 && v < 0.05 ? 0.1 : Math.round(v * 10) / 10).toFixed(1); }
+// 063: the tenth the game shows for a k-space system the table holds (itMapSecT), else undefined (ask ESI)
+function itSecTab(id){
+  const T = itMapTable(); if(!T || !T.secT) return undefined;
+  const i = itGraphGet().at.get(Number(id)); return i === undefined ? undefined : itMapSecT(i);
+}
+function itSecKey(id){ const t = itSecTab(id); if(t !== undefined) return Math.max(0, t); const v = it.sec.get(id); if(v === undefined) return null; return v > 0 && v < 0.05 ? 1 : Math.max(0, Math.round(v * 10)); }
+function itSecText(id){ const t = itSecTab(id); if(t !== undefined) return (t / 10).toFixed(1); const v = it.sec.get(id); return v === undefined ? '' : (v > 0 && v < 0.05 ? 0.1 : Math.round(v * 10) / 10).toFixed(1); }
 function itSecClass(id){ const k = itSecKey(id); return k === null ? '' : `${k >= 5 ? 'hs' : k > 0 ? 'ls' : 'ns'} s${k}`; }
 // v2026.10.31.3 (the owner: "system names should use the coloring rules we came up with"): a system's name anywhere on the page in its
 // security colour (Intel's v.100 rule: itSecClass), asked for once (itSecFetch) and painted when known (secPaint)
 function sysNameHtml(id, name){
   id = Number(id) || 0; const n = name || (id ? itSysName(id) : '');
   if(!id) return escapeHtml(n);
-  if(!it.sec.has(id)){ try{ const q = itSecFetch([id]); if(q && q.catch) q.catch(() => {}); }catch(e){ /* the suites' stub page */ } }
+  if(!it.sec.has(id) && itSecTab(id) === undefined){ try{ const q = itSecFetch([id]); if(q && q.catch) q.catch(() => {}); }catch(e){ /* the suites' stub page */ } }
   const t = itSecText(id);
   return `<span class="it-sn sec-sys ${itSecClass(id)}" data-sec-sys="${id}" title="${escapeHtml(`${n}${t ? ` (security ${t})` : ''}`)}">${escapeHtml(n)}</span>`;
 }
@@ -29101,6 +29108,7 @@ function itMeSync(scan){
   const me = itMeResolve(), k = me ? `${Number(me.id)}${me.noLog ? '~' : ''}` : '';
   it.me = me;
   if(k === itMeK) return false;
+  if(k.replace('~', '') !== itMeK.replace('~', '') && typeof whYouNew === 'function') whYouNew();   // 063: another character, not its log ↔ stand-in
   itMeK = k;
   if(!scan) it.lastScan = 0;
   it.alerted = new Map(); itGlReset();
@@ -29143,7 +29151,7 @@ async function itGameLoc(){
     itGl.next = Math.min(next, now + IT_GL_MAX_MS);
     const sys = Number(j && j.solar_system_id);
     if(!(sys > 0)) return;
-    whSeen(sys, now, !!(j.station_id || j.structure_id));   // 048: docked (a jump clone, a pod death) isn't a hole (the owner: "yes, skip system changes that land you docked")
+    whSeen(sys, now, !!(j.station_id || j.structure_id), id);   // 063: the login's pilot (sso.who.id, checked above); 048: docked (a jump clone, a pod death) isn't a hole (the owner: "yes, skip system changes that land you docked")
     const was = itMySys();
     itGl.sys = sys; itGl.at = now; if(itGl.msg && !itGl.msg.again) itGl.msg = null;
     if(itMySys() !== was && it.me) it.me.sysAt = itShown() ? now : 0;   // a jump seen through the game: the map's beacon, as from the log
@@ -30473,10 +30481,12 @@ function itMapTable(){
   itMapTab = null;
   if(typeof INTEL_MAP === 'undefined' || !INTEL_MAP || INTEL_MAP.jumps !== INTEL_JUMPS.md5 || INTEL_MAP.systems !== INTEL_JUMPS.systems) return null;
   const raw = (t) => { const b = atob(t), u = new Uint8Array(b.length); for(let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; };
-  const xs = new Int16Array(raw(INTEL_MAP.x).buffer), ys = new Int16Array(raw(INTEL_MAP.y).buffer), sec = new Int8Array(raw(INTEL_MAP.sec).buffer), reg = raw(INTEL_MAP.reg);
-  if(xs.length !== INTEL_MAP.systems || ys.length !== xs.length || sec.length !== xs.length || reg.length !== xs.length) return null;
+  // build queue 063: secT, the tenth the game shows (tools/jump_table_update.py); a table from before it has sec (hundredths) + band instead
+  const xs = new Int16Array(raw(INTEL_MAP.x).buffer), ys = new Int16Array(raw(INTEL_MAP.y).buffer), reg = raw(INTEL_MAP.reg);
+  const secT = INTEL_MAP.secT ? new Int8Array(raw(INTEL_MAP.secT).buffer) : null, sec = secT ? null : new Int8Array(raw(INTEL_MAP.sec).buffer);
+  if(xs.length !== INTEL_MAP.systems || ys.length !== xs.length || (secT || sec).length !== xs.length || reg.length !== xs.length) return null;
   const g = itGraphGet(), adj = g.adj.map(a => a.slice().sort((p, q) => p - q));   // neighbours in index order: one route per system, always the same
-  itMapTab = {xs, ys, sec, reg, regions: INTEL_MAP.regions, adj, n: xs.length, p3: itMapP3(raw, xs.length), band: itMapBand(raw, xs.length)};
+  itMapTab = {xs, ys, secT, sec, reg, regions: INTEL_MAP.regions, adj, n: xs.length, p3: itMapP3(raw, xs.length), band: secT ? null : itMapBand(raw, xs.length)};
   return itMapTab;
 }
 // v2026.11.04.1: each system's place in space (CCP's geographic position, not the flat map's), x then y then z for every system, 3 bytes
@@ -30504,13 +30514,15 @@ function itMapLy(i, j){
 }
 // to 2 decimals, rounded up (the owner: "Round up to 0.01"): 7.004 shows 7.01, so a system that reads within a jump range always is
 function itMapLyText(d){ return (Math.ceil(d * 100 - 1e-9) / 100).toFixed(2); }   // 1e-9: float noise on an exact value doesn't push it up a step
-// build queue 058 (the owner at its review, "yes": one place works out the security the game shows, and a check keeps it so): INTEL_MAP.sec
-// holds CCP's security rounded to hundredths, so rounding it again to tenths can land on the wrong side: 19 low-sec systems (just under 0.45,
-// stored as 45) read 0.5 and took the high-sec colour. 047's INTEL_MAP.band, from CCP's unrounded value, settles the 0.45 line. Every map
-// reader of T.sec goes through itMapSecT, in tenths (tools/check_sec_shown.py; LESSON #170); the other edge values wait for the table to carry
-// the value the game shows (backlog)
+// build queue 058 (the owner at its review, "yes": one place works out the security the game shows, and a check keeps it so): every map
+// reader of the security goes through itMapSecT, in tenths (tools/check_sec_shown.py; LESSON #170). Build queue 063 (roadmap/security-shown-plan.md):
+// the table carries the tenth the game shows (secT, from CCP's unrounded value by tools/jump_table_update.py), so nothing here rounds it.
+// Until the "Jump table" workflow's data pull request brings secT, the table has 058's sec (hundredths, rounded twice: 333 systems a tenth
+// off) and 047's band, read as before; the next page delivery after that pull request takes this fallback out.
 function itMapSecT(i){
-  const T = itMapTable(), s = T.sec[i];
+  const T = itMapTable();
+  if(T.secT) return T.secT[i];
+  const s = T.sec[i];   // the fallback (a table from before 063)
   if(s <= 0){ const t = Math.round(s / 10); return t === 0 ? 0 : t; }   // -0 reads as 0
   const t = Math.max(1, Math.min(10, Math.round(s / 10)));   // a system above 0.0 never shows 0.0
   return t >= 5 && T.band && T.band[i] === 1 ? 4 : t;   // under 0.45 before rounding: low-sec
@@ -32979,8 +32991,9 @@ function itRpSave(){ try{ localStorage.setItem(IT_RP_KEY, JSON.stringify(itRpSet
 // the EVE tab's switch (read from storage each time: ssoWant may ask before this part of the script has run)
 function itRpSendOn(){ try{ return localStorage.getItem(IT_RP_SEND) === 'true'; }catch(e){ return false; } }
 function itRpSendSave(on){ try{ localStorage.setItem(IT_RP_SEND, on ? 'true' : 'false'); }catch(e){ } }
-// a system's band: 0 null, 1 low, 2 high (the table's band; a page whose table has none falls back to the rounded number)
-function itRpBand(T, i){ if(T.band) return T.band[i]; const s = T.sec[i]; return s <= 0 ? 0 : s < 45 ? 1 : 2; }
+// a system's band: 0 null, 1 low, 2 high. 063: from the tenth the game shows (0.0 or less null, 0.1-0.4 low, 0.5 up high: CCP's unrounded 0.45
+// line, the generator checks it for every system); a table from before 063 has 047's band, and one with neither the rounded number
+function itRpBand(T, i){ if(T.secT){ const t = itMapSecT(i); return t <= 0 ? 0 : t < 5 ? 1 : 2; } if(T.band) return T.band[i]; const s = T.sec[i]; return s <= 0 ? 0 : s < 45 ? 1 : 2; }
 function itRpCost(T, y, pref, p){
   if(pref === 'Shorter') return 1;
   const b = itRpBand(T, y);
@@ -34215,19 +34228,28 @@ function whRemoveAsk(n){
   whMsg(`Removed ${nm} and its connections.`); whS.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true); return true;
 }
 // ---- tracking: each reading of your system (the Local log, EVE location); the newer wins, as Intel's own (itMySys)
-function whSeen(id, t, docked){
+// 063 (the owner: "logging into a new pilot via eve results in their current system automatically being mapped to another system in the existing
+// tree", then "Fresh start (Recommended)"): who is the pilot the reading is for (Intel's You's id for the Local log, the login's for EVE location).
+// A reading for another pilot than the last one's, or the first after You became another character (whYouNew), is a first reading: no connection,
+// no Intel entry, taken whatever its time ("Take it anyway (Recommended)"); the same pilot's readings link as before
+function whSeen(id, t, docked, who){
   if(typeof id === 'string'){   // a name from the Local log: a k-space one waits for the page's system names
     const r = whIdOf(id);
-    if(!r){ if(!it.names && typeof itLoadNames === 'function') itLoadNames().then(() => { if(it.names) whSeen(id, t, docked); }).catch(() => {}); return; }
+    if(!r){ if(!it.names && typeof itLoadNames === 'function') itLoadNames().then(() => { if(it.names) whSeen(id, t, docked, who); }).catch(() => {}); return; }
     id = r;
   }
-  const S = whState(); if(!id || !whKnown(id) || !(t >= S.lastT)) return;
-  if(id === S.last){ S.lastT = t; return; }
-  const prev = S.last; S.last = id; S.lastT = t;
+  const S = whState(); who = Number(who) || 0;
+  if(!id || !whKnown(id)) return;
+  const fresh = S.youNew || !!(who && S.who && who !== S.who);
+  if(!fresh && !(t >= S.lastT)) return;
+  if(who) S.who = who;
+  if(!fresh && id === S.last){ S.lastT = t; return; }
+  const prev = fresh ? null : S.last; S.last = id; S.lastT = t; S.youNew = false;
   const j = whIsJ(id), jp = prev !== null && whIsJ(prev);
   if(prev !== null && (j || jp) && !docked){ whAddSys(prev, t); whAddSys(id, t); whAddLink(prev, id, t); whSave(); if(j !== jp) itWhJumpAdd(j ? prev : id, j ? id : prev, t, !j); }   // a hole: from where you were last; 062 (A1) k ↔ J also Intel's list
   else if(j && whAddSys(id, t)) whSave();   // into a hole docked (a clone jump into your own structure, say), or the first reading: the system, no connection
   if(j) S.sel = id;
+  const hm = whHomeOne(); if(hm) whMsg(hm, true);   // 063: two Homes saved before: settled once where you are is known
   const kind = j ? 'j' : 'k', was = S.kind; S.kind = kind;
   if(was !== null && was !== kind) whSpace(kind);
   whMark(); whPaint();
@@ -34240,6 +34262,7 @@ function whSpace(kind){
   else if(kind === 'k' && t === 'wh') switchTab('intel');
 }
 function whTabNow(){ return TAB_PANELS.find(k => { const e = document.getElementById('tab' + k.charAt(0).toUpperCase() + k.slice(1)); return e && e.style.display !== 'none'; }); }
+function whYouNew(){ if(whS) whS.youNew = true; }   // 063: You became another character (itMeSync): the next reading starts fresh
 function whInJ(){ const S = whState(); return S.last !== null && whIsJ(S.last); }
 // D14: in a hole Intel counts from the k-space system you came in through (the nearest k-space system on your chain); undefined outside J-space
 function whEntry(){
@@ -34323,12 +34346,14 @@ function whMake(){
   S.M = {cam: null, P: new Map(), group: new Set(), drag: null, band: null, ptrs: new Map(), pinch: null, selMode: false, phone: false, mini: null, miniDrag: false, lp: 0, viewFor: null};
   S.open = whPnRead();
   whWire(el);
+  if(S.msgWait) whMsg(S.msgWait);   // 063: a line made before the tab was drawn
   return el;
 }
 function whFocus(){ const S = whState(), st = S.st; return S.sel !== null && st.sys[S.sel] ? S.sel : S.last !== null && st.sys[S.last] ? S.last : Number(Object.keys(st.sys)[0]) || null; }
 function whSelect(id){ const S = whState(); S.sel = id; S.pn = {}; whPaint(true); }
-function whMsg(t){
-  const S = whState(), m = S.el && S.el.querySelector('.wh-msg'); if(!m) return;
+function whMsg(t, keep){
+  const S = whState(), m = S.el && S.el.querySelector('.wh-msg'); if(!m){ if(keep) S.msgWait = t; return; }   // 063 (keep): shown once the tab is drawn (whMake)
+  S.msgWait = '';
   m.textContent = t; clearTimeout(S.msgT); S.msgT = setTimeout(() => { if(m.textContent === t) m.textContent = ''; }, 6000);   // D30: a toast that fades
 }
 // ---- the map: a tree from your k-space entry (left to right; top to bottom on a phone); where you moved a system is kept (tvWhChain.pos)
@@ -34931,8 +34956,9 @@ function whChainRead(text){
 // link added if new, its life / mass / size / Drifter only when theirs is newer, each end's ID only where yours is empty or theirs is newer; per
 // signature ID the row last seen later wins, keeping the earlier first-seen. Nothing of yours is removed or moved.
 function whChainMerge(rd, apply){
-  const S = whState(), st = S.st, r = {add: 0, upd: 0, keep: 0, lk: 0, sigs: 0, over: 0};
-  for(const x of rd.sys){
+  const S = whState(), st = S.st, r = {add: 0, upd: 0, keep: 0, lk: 0, sigs: 0, over: 0}, mine = whHomes().length > 0;
+  for(const x0 of rd.sys){
+    const x = mine && x0.st === 'home' ? {...x0, st: ''} : x0;   // 063 (the owner: "do not overwrite the existing home."): theirs arrives without Home
     const m = st.sys[x.id];
     if(!m){ if(Object.keys(st.sys).length + (apply ? 0 : r.add) >= WH_SYS_MAX){ r.over++; continue; } r.add++;
       if(apply){ st.sys[x.id] = {cls: x.cls, statics: x.statics, who: x.who, notes: x.notes, t: x.t, u: x.u, src: 'shared'}; if(x.st || x.tag) S.mk[x.id] = {...(x.st ? {st: x.st} : {}), ...(x.tag ? {tag: x.tag} : {})}; }
@@ -35021,7 +35047,8 @@ function whShareClick(b){
     const r = whChainMerge(rd, true), S = whS;
     whSave(); whMkSave(); whSgSave(); whEndSave(); S.drawKey = ''; S.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true);
     ta.value = ''; box.querySelector('.it-whp-prev').hidden = true; whPopClose();
-    whMsg(`Added ${r.add} system${r.add === 1 ? '' : 's'} and ${r.lk} connection${r.lk === 1 ? '' : 's'}; updated ${r.upd}; ${r.sigs} signature${r.sigs === 1 ? '' : 's'}.`);
+    const hm = whHomeOne();   // 063: a chain carrying several Homes, taken while you had none: the closest keeps it
+    whMsg(`Added ${r.add} system${r.add === 1 ? '' : 's'} and ${r.lk} connection${r.lk === 1 ? '' : 's'}; updated ${r.upd}; ${r.sigs} signature${r.sigs === 1 ? '' : 's'}.${hm ? ' ' + hm : ''}`);
     return true;
   }
   if(d.itWhcancel !== undefined){ const box = p.querySelector('#whShImp'); box.querySelector('.it-whp-prev').hidden = true; box.querySelector('textarea').focus({preventScroll: true}); return true; }
@@ -35191,7 +35218,7 @@ function whMenuAct(act){
     const it0 = S.el.querySelector('.wh-smenu [data-wh-m="del"]'); if(!it0) return;
     it0.outerHTML = whAskHtml(`Remove ${nm} and its connections?`, [['m-yes', 'Remove'], ['m-no', 'Cancel']]); whAskFocus(S.el.querySelector('.wh-smenu')); return;
   }
-  if(k === 'st'){ if(WH_ST.some(e => e[0] === v)) m.st = v; else delete m.st; whMsg(m.st ? `${nm}: ${whStLabel(m.st)}.` : `${nm}: no status.`); }
+  if(k === 'st'){ if(WH_ST.some(e => e[0] === v)) m.st = v; else delete m.st; const off = m.st === 'home' ? whHomeOthersOff(n) : []; whMsg((m.st ? `${nm}: ${whStLabel(m.st)}.` : `${nm}: no status.`) + whHomeLine(off)); }   // 063: one Home
   if(k === 'tag'){ const t = whTagClean(S.el.querySelector('.wh-smenu [data-wh-mtag]').value); if(t) m.tag = t; else delete m.tag; whMsg(t ? `${nm} tagged ${t}.` : `${nm}: no tag.`); }
   if(k === 'lock'){
     if(m.lock){ delete m.lock; if(m.at) S.st.pos[n] = m.at; delete m.at; whMsg(`${nm} can be moved and removed again.`); }
@@ -35261,7 +35288,30 @@ function whRtGraph(){
   for(const l of st.links){ const a = idx(l.a), b = idx(l.b); if(a === undefined || b === undefined || a === b) continue; put(a, b, l); put(b, a, l); }
   return {T, n, N: n + J.length, idx, idOf, hole};
 }
-function whRtHome(){ for(const id of Object.keys(whS.st.sys).map(Number).sort((a, b) => a - b)) if(whMk(id).st === 'home') return id; return null; }   // Q3
+function whRtHome(){ const hs = whHomes(); return hs.length ? hs[0] : null; }   // Q3; one Home since 063 (two saved before then: the lowest ID until whHomeOne settles it)
+// build queue 063 (the owner: "Only one Home: setting Home on a system clears it from the other, with a line saying so."): the systems with Home,
+// lowest ID first; setting Home clears the rest (whMenuAct) and an import never adds a second (whChainMerge)
+function whHomes(){ const S = whState(); return Object.keys(S.mk).map(Number).filter(n => S.st.sys[n] && S.mk[n].st === 'home').sort((a, b) => a - b); }
+function whHomeOthersOff(keep){ const S = whState(), off = whHomes().filter(n => n !== keep); for(const n of off) delete S.mk[n].st; return off; }
+function whHomeLine(off){ const n = off.map(whName); return n.length ? ` ${n.length < 3 ? n.join(' and ') : `${n.slice(0, -1).join(', ')} and ${n[n.length - 1]}`} ${n.length === 1 ? 'is' : 'are'} no longer Home.` : ''; }
+// two or more already saved (an older page), or a shared chain's Homes taken while you had none (the owner: "pick the closest one and remove the
+// other(s)", "2. yes to both"): the one with the fewest jumps from where you are, by the Routes panel's own neighbours (gates, your holes, the
+// bridges in use) keeps it; while where you are isn't known, nothing changes ("3. sure"; Routes shows the lowest ID); a tie or none reachable,
+// the lowest system ID ("4. sure"). Returns the line saying so ('' when nothing changed)
+function whHomeOne(){
+  const S = whState(), hs = whHomes(); if(hs.length < 2 || S.last === null) return '';
+  const G = whRtGraph(); if(!G) return '';
+  let keep = hs[0]; const src = G.idx(S.last);
+  if(src !== undefined){
+    const Z = itJbZones(), Q = itRpSearch(G.N, src, whRtNb(G, Z.st === 'ok' && Z.out.size ? Z.out : null), () => 1, () => false);
+    let best = -1;
+    for(const n of hs){ const x = G.idx(n), d = x === undefined ? -1 : Q.len[x]; if(d >= 0 && (best < 0 || d < best)){ best = d; keep = n; } }   // hs by ID: a tie keeps the lowest
+  }
+  const off = whHomeOthersOff(keep); whMkSave(); S.drawKey = '';
+  return `${whName(keep)} is your Home (the closest to you).${whHomeLine(off)}`;
+}
+// 062's neighbours for the Routes search: stargates, the jump bridges in use (jo) and your chain's holes, in that order
+function whRtNb(G, jo){ return (x) => { let a = x < G.n ? G.T.adj[x] : []; const e = jo && x < G.n ? jo.get(x) : null; if(e) a = a.concat(e); const h = G.hole.get(x); return h ? a.concat(h.map(q => q[0])) : a; }; }
 function whRtFrom(){ const R = whRtState(), S = whS; return R.from !== null && (S.st.sys[R.from] || itGraphGet().at.has(R.from)) ? R.from : S.last; }
 function whRtRows(){
   const R = whRtState(), S = whS, from = whRtFrom();
@@ -35271,7 +35321,7 @@ function whRtRows(){
   const s0 = itRpSet(), pref = R.short ? 'Shorter' : s0.pref, pen = pref === 'Shorter' ? 0 : s0.pen, flags = itRpFlags(), Z = itJbZones(), jo = Z.st === 'ok' && Z.out.size ? Z.out : null, home = whRtHome();
   const key = JSON.stringify([from, R.pins, pref, pen, S.st.links.map(l => [l.a, l.b, l.life, l.mass, l.size, whEnd(l, l.a), whEnd(l, l.b)]), [...flags].map(([i, w]) => i + ':' + w.join('+')), jo ? Z.used : 0, home]);
   if(key === R.key && R.res) return R.res;
-  const p = Math.exp(0.15 * pen), nb = (x) => { let a = x < G.n ? G.T.adj[x] : []; const e = jo && x < G.n ? jo.get(x) : null; if(e) a = a.concat(e); const h = G.hole.get(x); return h ? a.concat(h.map(q => q[0])) : a; };
+  const p = Math.exp(0.15 * pen), nb = whRtNb(G, jo);
   const Q = itRpSearch(G.N, src, nb, (y) => y < G.n ? itRpCost(G.T, y, pref, p) : pref === 'Shorter' ? 1 : 2 * p, (x) => x < G.n && flags.has(x));   // R2: J-space as nullsec
   const kindOf = (x, y) => x < G.n && y < G.n && G.T.adj[x].includes(y) ? 'gate' : jo && x < G.n && (jo.get(x) || []).includes(y) ? 'bridge' : 'hole';
   const linkOf = (x, y) => ((G.hole.get(x) || []).find(q => q[0] === y) || [])[1] || null;

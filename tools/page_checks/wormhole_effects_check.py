@@ -6,7 +6,8 @@ CCP's wormhole systems from the page's own table (INTEL_WH); the numbers from IT
     of the 36 beacons "Class 1-6 <effect> Effects" gives the same percent changes (operation 4: (v - 1) x 100; operation 6: v);
   * every effect at every class: whEffLines of a system with that effect and class is the table's row;
   * the System panel: a C1-C6 system's Effect line has one row a line under it (the words and "+58%" / "−29%");
-  * a shattered and a Drifter system: the effect's name, no numbers, "not in the page's data yet" (until INTEL_WH.effc arrives);
+  * a shattered and a Drifter system: with the page's own INTEL_WH.effc (since #72, build 3720952) its beacon's class's numbers; on a table
+    without effc (an older page) the effect's name, no numbers, "not in the page's data yet";
   * INTEL_WH.effc (tools/jump_table_update.py): the beacon's own class wins (a shattered system at its beacon's class; a C3 system whose
     beacon says 2 shows class 2); an effc of the wrong length is not used;
   * whEffTxt (the hovers): "Pulsar: Shield HP +58% · …";
@@ -88,12 +89,21 @@ def cases(b, html, parts=('table', 'panel', 'none', 'effc')):
         ev(OPEN, S['none']); pg.wait_for_timeout(100)
         if ev(ROWS) is not None: out.append('no effect: no rows')
     if 'none' in parts:
+        # 063: the page's INTEL_WH has effc since the Jump table data pull request of build 3720952 (#72): with it, a shattered or Drifter
+        # system shows its beacon's own class's numbers (CCP's data, nothing guessed); a table without it (an older page) shows the name alone
+        real = ev("""(ks) => { const T = whTable(); if(!T.effc) return null; return ks.map(n => { const i = T.at.get(n), c = T.effc[i], e = IT_WH_EFF_MOD[T.eff[i]];
+          return [c, JSON.stringify(whEffLines(n).map(x => x[1])), /^[1-6]$/.test(c) && e && e.c[c] ? JSON.stringify(e.c[c]) : '[]']; }); }""", [S['sh'], S['dr']])
+        if real is not None:
+            for k, (c, got, want) in zip(('sh', 'dr'), real):
+                if got != want: out.append(f'{k}: the page\'s own effc ({c!r}): the beacon\'s class sets the numbers: {got} (want {want})')
+        ev("() => { window.__effc = INTEL_WH.effc; delete INTEL_WH.effc; whT = null; whS.pn = {}; }")   # an older table: no effc yet
         for k in ('sh', 'dr'):
             ev(OPEN, S[k]); pg.wait_for_timeout(100)
             rows = ev(ROWS)
             if ev("(n) => whEffLines(n).length", S[k]) or not rows or rows[0][0] != 'Its numbers' or 'not in the page’s data yet' not in rows[0][1]:
                 out.append(f'{k}: the name, no numbers until INTEL_WH.effc (the owner: "no guessed numbers"): {rows}')
             if ev("(n) => whEffTxt(n) === whEff(n) && !!whEff(n)", S[k]) is not True: out.append(f'{k}: the hover text is the name alone')
+        ev("() => { if(window.__effc !== undefined) INTEL_WH.effc = window.__effc; whT = null; whS.pn = {}; }")
     if 'effc' in parts:
         n = ev(SETC, {str(S['sh']): '6', str(S['c3p']): '2'})
         if n != ev("whTable().ids.length"): out.append('the made-up effc should be one character a system')

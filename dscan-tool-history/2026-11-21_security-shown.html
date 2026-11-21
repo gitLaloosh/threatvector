@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-21 — The security the game shows, stored by the generator; one Home on the Wormholes tab</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>The security the game shows, stored by the generator; one Home on the Wormholes tab</h1>
+<p><span class="tag">Page</span><span class="tag">Tools</span> 2026-11-21 &middot; <code>v2026.11.21.1</code> &middot; build queue 063 &middot; plan <code>roadmap/security-shown-plan.md</code> (no mockup, the owner's choice)</p>
+<h2>Why</h2>
+<ul>
+<li>The map's table stored each system's security rounded to 3 decimals, then to hundredths, and the page rounded that again to tenths. Measured 2026-11-20 against ESI's unrounded values, 333 systems showed a tenth the game doesn't (Jita 1.0 for 0.9, Juddi 0.7 for 0.6, XQS-GZ −0.5 for −0.6). 058 had fixed only the 0.45 line (LESSON #170).</li>
+<li>The rule the game uses was checked in game by the owner on 10 systems: the nearest tenth of CCP's unrounded value, and anything above 0.0 and below 0.05 shows 0.1. The two systems on a halfway point (A2V6-6, A-5M31) show the nearest too.</li>
+<li>The owner's picks: system names coloured from the table, "Read the table (Recommended)"; "Two PRs (Recommended)"; "No mockup (Recommended)"; at the build review, an unchecked halfway value flagged rather than failing the run ("yes, the second.").</li>
+<li>Also in this delivery, flagged by the owner for the next one: "wormholes tab, setting two systems as "Home" results in odd behavior. particularly related to the routes." His fix: "Only one Home: setting Home on a system clears it from the other, with a line saying so.", "do not overwrite the existing home.", "pick the closest one and remove the other(s)", and at the review "2. yes to both, 3. sure, 4. sure."</li>
+</ul>
+<h2>What changed</h2>
+<ul>
+<li><b>The generator</b> (<code>tools/jump_table_update.py</code>): <code>INTEL_MAP.secT</code>, int8 tenths, the tenth the game shows (<code>shown_tenth</code>), in place of <code>sec</code> and <code>band</code>; it asserts for every system that the shown tenth's band is the unrounded value's. A value on a halfway point (within 5e-6, so it reads x.x5000 at five decimals) takes <code>SEC_CHECKED_IN_GAME</code> (A2V6-6 −0.9, A-5M31 −0.2), else the nearest tenth, named at the top of the pull request to check in game. The pull request lists the systems checked in game with CCP's value, and every system whose shown security changes. <code>--self-test</code> runs the rule's cases.</li>
+<li><b>Two pull requests.</b> This one leaves the page's table as it is, so the page looks the same: <code>itMapSecT</code> returns <code>secT</code> when the table has it, and otherwise reads <code>sec</code> + <code>band</code> as 058 did (the fallback). After the merge the "Jump table" workflow (twice a day, or by hand from Actions) opens the data pull request; the next page delivery after that one removes the fallback.</li>
+<li><b>The page:</b> <code>itMapTable</code> decodes <code>secT</code>; <code>itRpBand</code> takes the band from the shown tenth; k-space system names take their tenth from the table (<code>itSecTab</code>), at once and with no ESI request, and ESI is asked only for J-space and systems the table doesn't hold. Nothing on the page rounds security any more once the data is in.</li>
+<li><b>One Home:</b> setting Home clears it from every other system, with the line "&lt;new&gt;: Home. &lt;old&gt; is no longer Home."; an import never replaces your Home; with none of yours, a shared chain's Homes are taken and the closest kept; two or more already saved (an older page) are settled once where you are is known: the fewest jumps by the Routes panel's own neighbours (gates, your holes, the bridges in use) keeps it, a tie or none reachable the lowest system ID, with a line (shown when the tab is next drawn if it isn't now). Only <code>st</code> is cleared in <code>tvWhMarks</code>, in the same form.</li>
+<li><b>Pilot switches</b> (the owner: "logging into a new pilot via eve results in their current system automatically being mapped to another system in the existing tree.", then "Fresh start (Recommended)", "Take it anyway (Recommended)", "A different character (Recommended)"): the Wormholes tab kept one last system with no pilot on it, so a new pilot's system was taken as a jump from the old pilot's. Each reading now carries its pilot (Intel's You's for the Local log, the login's for EVE location); a reading for another pilot, or the first after You becomes another character, is a first reading whatever its time: no connection and no Intel entry. The same pilot's jumps link as before. Connections the bug already made aren't touched (they can't be told from real ones). The Wormholes info panel's line on what adds no connection now says so.</li>
+<li><b>Checks:</b> <code>check_sec_shown.py</code> for both forms (10 systems pinned with <code>secT</code>; mutants on a copy given a made-up <code>secT</code>); <code>check_jump_table_update.py</code> converts a page from before 063 first and runs its cases on the converted copy; <code>intel_map_look_check</code>, <code>intel_map_stack_check</code> and <code>route_planner_check</code> read either form; the four security-reading page checks also run on a made-up <code>secT</code> copy. New: <code>wormhole_home_check.py</code> (one Home, pilot switches, and names from the table), with ten mutants. <code>wormhole_effects_check</code>: its no-numbers case for shattered and Drifter systems now runs on a table without <code>effc</code> (an older page), since the page's own table has it since #72; a new case checks the real <code>effc</code> gives CCP's numbers.</li>
+<li>Info text: checked; changed: <code>whmap</code> (what adds no connection: "Landing docked (a jump clone, a pod death) or switching pilots adds no connection."). Stored browser data: <code>tvWhMarks</code> keeps its form (only a second Home's <code>st</code> is removed): safe both ways. Page size: source 1,019,668 bytes gzipped, served 646,766 (main: 1,017,726 / 645,967).</li>
+</ul>
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #170 holds, and this is its root fix: store the value people see, worked out once from the unrounded source, rather than a rounded value every reader rounds again. Where a rule can't settle a case from the data (a value on a halfway point), keep what was seen in the game beside the rule, and make anything new in that case visible to the owner rather than guessed silently.</li>
+<li>When a plan gives one threshold in two forms, check both against the cases it names before choosing: here one form missed a system the plan relied on and the other caught two it meant to leave alone.</li>
+</ul>
+</body>
+</html>
