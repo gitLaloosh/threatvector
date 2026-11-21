@@ -47,14 +47,17 @@ PAGE = open(HTML, encoding='utf-8').read()
 # ---- CCP's flat map, decoded here from the page's own table ----
 MAP = json.loads(re.search(r'^const INTEL_MAP = (.*);$', PAGE, re.M).group(1))
 def i16(b64): b = base64.b64decode(b64); return struct.unpack('<%dh' % (len(b) // 2), b)
-XS, YS, SEC = i16(MAP['x']), i16(MAP['y']), struct.unpack('<%db' % MAP['systems'], base64.b64decode(MAP['sec']))
+XS, YS = i16(MAP['x']), i16(MAP['y'])
+SECT = struct.unpack('<%db' % MAP['systems'], base64.b64decode(MAP['secT'])) if MAP.get('secT') else None   # 063: the tenth the game shows
+SEC = None if SECT else struct.unpack('<%db' % MAP['systems'], base64.b64decode(MAP['sec']))
 REG = base64.b64decode(MAP['reg'])
 IDX = {sid: k for k, sid in enumerate(ids)}
 HOME = SYSID['1DQ1-A']
 SECCOL = ['#8f2f69', '#6d221d', '#bb1014', '#ce4611', '#de6a0c', '#eeff83', '#71e452', '#62daa6', '#4acff3', '#389cf6', '#2e74df']
 JUMPCOL = ['#ffffff', '#4acff3', '#62daa6', '#71e452', '#eeff83', '#de6a0c', '#ce4611', '#bb1014', '#8f2f69', '#7a4a6e', '#6a5a78']
-_BB = base64.b64decode(MAP['band']); BAND = [(_BB[i >> 2] >> ((i & 3) * 2)) & 3 for i in range(MAP['systems'])]   # 047: CCP's band, from the unrounded value
-def secclass(k):   # by index: 058, the shown value (a system stored at 0.45 that is low-sec shows 0.4, LESSON #170)
+_BB = None if SECT else base64.b64decode(MAP['band']); BAND = None if SECT else [(_BB[i >> 2] >> ((i & 3) * 2)) & 3 for i in range(MAP['systems'])]   # 047: CCP's band, from the unrounded value
+def secclass(k):   # by index: 058, the shown value (a system stored at 0.45 that is low-sec shows 0.4, LESSON #170); 063: the table's tenth
+    if SECT: return max(0, SECT[k])
     s = SEC[k]; c = 0 if s <= 0 else max(1, min(10, int((s / 10) + 0.5)))
     return 4 if c >= 5 and BAND[k] == 1 else c
 def soft(hexc, keep):   # 058 (Q15): a colour mixed toward the map's background #0c1014

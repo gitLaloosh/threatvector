@@ -379,7 +379,9 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
 - **Links out of the site** (v2026.10.31.3, the owner): a zKillboard link is `zkLinkHtml` (a "zK" icon in cyan, the colour of
   leaving the site), never "zKillboard ↗" text or a hand-written `target="_blank"`; every link that leaves the page asks first
   (`leaveAsk`), with "Don't ask again" per site and "Ask again" under Intel's gear. `outside_links_check.py` counts them.
-- **Names in colour** (v2026.10.31.3, the owner): a system's name in its security colour (`sysNameHtml`, Intel's rule); a person's
+- **Names in colour** (v2026.10.31.3, the owner): a system's name in its security colour (`sysNameHtml`, Intel's rule; since 063 a k-space system's
+  tenth from the map's table at once, `itSecTab`, the owner: "Read the table (Recommended)"; ESI's `itSecFetch` only for J-space and systems the
+  table doesn't hold); a person's
   name in its standing's colour with its icon (`standNameHtml` / `std-n`), victims included. A dossier kill from the past 4 hours has
   its time in amber (`PD_RECENT_MS`).
 - **What was asked for stays on screen** (v2026.11.01.5, LESSON #121): the Pilot Dossier draws the hull asked for (a pilot opened
@@ -446,14 +448,15 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   Sov panel sits beside Near You only with `SOV_PANEL_MIN` (420 px) of room ("420 px, one column below"; its picks one column under about 560 px).
   System names loaded before a paste is checked (`sovNames`, INTEL-03); a full storage is INTEL-11 in the panel, the lists kept for the visit. The
   Jump bridge kind reads `sovBridgeEnds()`, which build queue 041 fills in. `sov_upgrades_check.py`.
-- **Intel map** (v2026.11.02.4, Project doc roadmap/intel-map-plan.md): was layout B, the map beside Near You (052 above). `INTEL_MAP` (CCP position2D /1e14, security in hundredths, region)
+- **Intel map** (v2026.11.02.4, Project doc roadmap/intel-map-plan.md): was layout B, the map beside Near You (052 above). `INTEL_MAP` (CCP position2D /1e14, security, region; the security is `secT`, the tenth the game shows, since build queue 063: until its data pull request the table still has hundredths `sec` and 047's `band`, read by a fallback the next page delivery removes)
   comes only from `tools/jump_table_update.py`, aligned to `INTEL_JUMPS` (its `jumps` = the jump table's md5; `gen_intel_tables.py`
   keeps it and says when it no longer fits). One canvas (`itm`), made once and moved into each card (`#itMapSlot`); drawn only when
   what it shows changed (`itMapRefresh`'s key), never while hidden. Reach ("Map: within" since 039): from Near You's reach to `IT_MAP_MAX` (the
   Feed's largest), following the Feed until set; Near You's reach is a setting (`nearRange`, alert range to the Feed's, default
   alert + 5). Rings: standing colour, gang size (1 / 2–10 / 11+). Routes: one per system (BFS, neighbours in index order), hover
   dashed, press kept. One stepper for every range (`RS`, `rsHtml`, `rsPaint`). `intel_map_check.py`.
-  047: `INTEL_MAP.band`, each system's security band from CCP's unrounded value (2 bits; `itMapBand`), for the route planner.
+  047: `INTEL_MAP.band`, each system's security band from CCP's unrounded value (2 bits; `itMapBand`), for the route planner; since 063 `itRpBand`
+  takes the band from the shown tenth (0.0 or less null, 0.1-0.4 low, 0.5 up high; the generator asserts it for every system) and `band` goes.
   v2026.11.04.1 (roadmap/map-ly-hover-plan.md): `INTEL_MAP.p3` holds CCP's 3D positions (0.0001 LY, int24) for the hover's
   "N.NN LY from <you>" (`itMapLy`, `itMapLyText`: rounded UP to 0.01, the owner). Your system: a pin drawn last
   (`itMapPinDraw`), the only filled label (YOU · name), a 1.6 s beacon on its own canvas (`itMapBeacon`; first draw and a jump
@@ -540,8 +543,10 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   Kills and Wormholes don't); soft colour (`itMapMix`: 45% toward the background zoomed out, a 38% tinted disc zoomed in), a match in full
   (`itMapColRaw`); hostile and neutral rings, the alert glow (half size zoomed out) and your pin never fade (Q7). The legend's second line
   (`itMapOnlyHtml`: "Only N match · …", the count first); the match chip (`button.it-map-mt`, `itMapMtPaint` / `itMapMtNext`, rule A) steps
-  nearest first in the part no panel covers. Security everywhere on the map from one function, `itMapSecT` (tenths; CCP's band at the 0.45
-  line, LESSON #170; `tools/check_sec_shown.py`). Region's colours leave out cyan, amber and the lilacs (Q13). `intel_map_stack_check.py`.
+  nearest first in the part no panel covers. Security everywhere on the map from one function, `itMapSecT` (tenths; LESSON #170; `tools/check_sec_shown.py`):
+  since build queue 063 (roadmap/security-shown-plan.md) the table's own tenth, `INTEL_MAP.secT`, which `tools/jump_table_update.py` works out from
+  CCP's unrounded value (nearest tenth, above 0.0 and below 0.05 shows 0.1; a halfway value from `SEC_CHECKED_IN_GAME`, else the nearest and named
+  in its pull request to check in game); nothing on the page rounds security. Region's colours leave out cyan, amber and the lilacs (Q13). `intel_map_stack_check.py`.
 - **Jump bridges** (v2026.11.16.5, build queue 041; roadmap/jump-bridges-plan.md, mockup `Claude outputs/jump_bridges_mockup.html`; the owner: "add
   jump bridges to the map (as a setting that can be toggled off and on). when turned on, jump ranges will be calculated using bridges. default
   setting will be off.", "ideally i'd like to only have near you not use bridges", at the re-plan "Both count bridges", "Switch governs both; gates
@@ -619,6 +624,11 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   (`IT_WH_EFF_MOD` from `tools/gen_wh_table.py`, the beacon's class `INTEL_WH.effc` from `tools/jump_table_update.py`; `whEffLines`, none guessed for
   shattered and Drifter systems); k ↔ J jumps add Intel's hole (`itWhJumpAdd`, `jw`, `tvWormholes.auto`; LESSON #175); the chain's k-space ends ringed
   on Intel's map (`itMapWh`, src 'chain'). `wormhole_routes_check.py`, `wormhole_effects_check.py`, `wormhole_autoadd_check.py`.
+  Build queue 063 (the owner: "Only one Home: setting Home on a system clears it from the other, with a line saying so."): one Home (`whHomes`). Setting
+  it clears the rest (`whHomeOthersOff`, `whHomeLine`); an import never replaces yours (`whChainMerge`: "do not overwrite the existing home."); two or
+  more (saved by an older page, or a shared chain's taken while you had none) are settled by `whHomeOne`: the fewest jumps from where you are by the
+  Routes panel's neighbours (`whRtNb`) keeps it, nothing changes while where you are isn't known, a tie or none reachable the lowest ID; its line waits
+  for the tab (`whMsg(t, true)`). `wormhole_home_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a
