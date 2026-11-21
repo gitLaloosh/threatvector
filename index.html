@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-QM43v1Qaj4S80C4wyVguBkA6GfkecpnHelzq/mPWr18='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-h1D1BE+WvK8cLDKqIlXCDhd5qFs83T0nVOSeWJjSLYw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3850,7 +3850,7 @@ const CARD_INFO = {
   "[Kills under a row] The chevron on a row opens their kills in that hull (in the switch's gang size), newest first. The fleet icon beside a kill opens it in the {card:fleet} tab: everyone on that kill in a ship, with their fits."
  ],
  "whmap": [
-  "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. A change of system that lands you docked (a jump clone, a pod death) adds no connection.",
+  "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. Landing docked (a jump clone, a pod death) or switching pilots adds no connection.",
   "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move together; right-click empty space for Select all. The overview in the corner shows where everything is. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
   "[Focus and adding] Click a system for the System panel (its button, top left): class, effect and its numbers, statics (a community list's until you type your own; hover one for its lifetime and mass), notes, connections, signatures. Right-click it (press and hold on a phone) for its menu: status, tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one there.",
   "[Connections] Each side of a hole has its own signature ID: hover the mark at its end, or see that side's list.",
@@ -28007,7 +28007,7 @@ async function itScan(){
   }
   for(const ch of [...it.files.keys()]) if(!want.has(ch)) it.files.delete(ch);
   itMeSync(true);   // 054: who You is (the login's character while Use my game location is on); a change resets once
-  if(it.me && it.me.sys) whSeen(it.me.sys, it.me.logAt || it.me.sysT || 0, false);   // 048: where the log says you are now
+  if(it.me && it.me.sys) whSeen(it.me.sys, it.me.logAt || it.me.sysT || 0, false, it.me.id);   // 048; 063: whose reading: where the log says you are now
   it.read = true; it.perm = 'granted';   // v2026.11.08.2 (025): the folder was actually read (step 3's "nothing found" needs this)
 }
 // v2026.11.08.2 (build queue 025; Project doc roadmap/intel-folder-permission-plan.md): the chat-logs folder after a reload. Chrome 122+
@@ -28074,7 +28074,7 @@ async function itTick(){
       try{
         for(const l of await itReadFile(it.me.st, false)){
           const m = /Channel changed to Local\s*:\s*(.+?)\s*$/.exec(l.msg);
-          if(l.who === 'EVE System' && m){ const s = m[1].replace(/\*$/, ''); if(s !== it.me.sys) it.me.sysAt = itShown() ? Date.now() : 0; it.me.sys = s; it.me.logAt = l.t; whSeen(s, l.t, false); }   // sysAt: a jump read while Intel was in front, for the map's beacon (v2026.11.04.1); 0 = seen by nobody, no beacon later
+          if(l.who === 'EVE System' && m){ const s = m[1].replace(/\*$/, ''); if(s !== it.me.sys) it.me.sysAt = itShown() ? Date.now() : 0; it.me.sys = s; it.me.logAt = l.t; whSeen(s, l.t, false, it.me.id); }   // sysAt: a jump read while Intel was in front, for the map's beacon (v2026.11.04.1); 0 = seen by nobody, no beacon later
         }
       }catch(e){ /* the file went away: the next scan finds the new one */ }
     }
@@ -29108,6 +29108,7 @@ function itMeSync(scan){
   const me = itMeResolve(), k = me ? `${Number(me.id)}${me.noLog ? '~' : ''}` : '';
   it.me = me;
   if(k === itMeK) return false;
+  if(k.replace('~', '') !== itMeK.replace('~', '') && typeof whYouNew === 'function') whYouNew();   // 063: another character, not its log ↔ stand-in
   itMeK = k;
   if(!scan) it.lastScan = 0;
   it.alerted = new Map(); itGlReset();
@@ -29150,7 +29151,7 @@ async function itGameLoc(){
     itGl.next = Math.min(next, now + IT_GL_MAX_MS);
     const sys = Number(j && j.solar_system_id);
     if(!(sys > 0)) return;
-    whSeen(sys, now, !!(j.station_id || j.structure_id));   // 048: docked (a jump clone, a pod death) isn't a hole (the owner: "yes, skip system changes that land you docked")
+    whSeen(sys, now, !!(j.station_id || j.structure_id), id);   // 063: the login's pilot (sso.who.id, checked above); 048: docked (a jump clone, a pod death) isn't a hole (the owner: "yes, skip system changes that land you docked")
     const was = itMySys();
     itGl.sys = sys; itGl.at = now; if(itGl.msg && !itGl.msg.again) itGl.msg = null;
     if(itMySys() !== was && it.me) it.me.sysAt = itShown() ? now : 0;   // a jump seen through the game: the map's beacon, as from the log
@@ -34227,15 +34228,23 @@ function whRemoveAsk(n){
   whMsg(`Removed ${nm} and its connections.`); whS.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true); return true;
 }
 // ---- tracking: each reading of your system (the Local log, EVE location); the newer wins, as Intel's own (itMySys)
-function whSeen(id, t, docked){
+// 063 (the owner: "logging into a new pilot via eve results in their current system automatically being mapped to another system in the existing
+// tree", then "Fresh start (Recommended)"): who is the pilot the reading is for (Intel's You's id for the Local log, the login's for EVE location).
+// A reading for another pilot than the last one's, or the first after You became another character (whYouNew), is a first reading: no connection,
+// no Intel entry, taken whatever its time ("Take it anyway (Recommended)"); the same pilot's readings link as before
+function whSeen(id, t, docked, who){
   if(typeof id === 'string'){   // a name from the Local log: a k-space one waits for the page's system names
     const r = whIdOf(id);
-    if(!r){ if(!it.names && typeof itLoadNames === 'function') itLoadNames().then(() => { if(it.names) whSeen(id, t, docked); }).catch(() => {}); return; }
+    if(!r){ if(!it.names && typeof itLoadNames === 'function') itLoadNames().then(() => { if(it.names) whSeen(id, t, docked, who); }).catch(() => {}); return; }
     id = r;
   }
-  const S = whState(); if(!id || !whKnown(id) || !(t >= S.lastT)) return;
-  if(id === S.last){ S.lastT = t; return; }
-  const prev = S.last; S.last = id; S.lastT = t;
+  const S = whState(); who = Number(who) || 0;
+  if(!id || !whKnown(id)) return;
+  const fresh = S.youNew || !!(who && S.who && who !== S.who);
+  if(!fresh && !(t >= S.lastT)) return;
+  if(who) S.who = who;
+  if(!fresh && id === S.last){ S.lastT = t; return; }
+  const prev = fresh ? null : S.last; S.last = id; S.lastT = t; S.youNew = false;
   const j = whIsJ(id), jp = prev !== null && whIsJ(prev);
   if(prev !== null && (j || jp) && !docked){ whAddSys(prev, t); whAddSys(id, t); whAddLink(prev, id, t); whSave(); if(j !== jp) itWhJumpAdd(j ? prev : id, j ? id : prev, t, !j); }   // a hole: from where you were last; 062 (A1) k ↔ J also Intel's list
   else if(j && whAddSys(id, t)) whSave();   // into a hole docked (a clone jump into your own structure, say), or the first reading: the system, no connection
@@ -34253,6 +34262,7 @@ function whSpace(kind){
   else if(kind === 'k' && t === 'wh') switchTab('intel');
 }
 function whTabNow(){ return TAB_PANELS.find(k => { const e = document.getElementById('tab' + k.charAt(0).toUpperCase() + k.slice(1)); return e && e.style.display !== 'none'; }); }
+function whYouNew(){ if(whS) whS.youNew = true; }   // 063: You became another character (itMeSync): the next reading starts fresh
 function whInJ(){ const S = whState(); return S.last !== null && whIsJ(S.last); }
 // D14: in a hole Intel counts from the k-space system you came in through (the nearest k-space system on your chain); undefined outside J-space
 function whEntry(){

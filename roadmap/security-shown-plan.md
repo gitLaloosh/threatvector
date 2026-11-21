@@ -137,6 +137,12 @@ Pull request 1 of the two (section 4). Where the build differs from the plan, or
   `whHomeOthersOff`, `whHomeLine`, `whHomeOne`; `whRtNb` (062's Routes neighbours, taken out of `whRtRows` so both use one); `whChainMerge`
   drops a shared Home when you have one; `whMsg(t, true)` keeps a line made before the tab is drawn. `wormhole_home_check.py` (new; also the
   names-from-the-table cases).
+- **Also in this pull request, the second bug** (the queue file's block, added 22:25 PT; the owner: [stated] "Fresh start (Recommended)", at the
+  review [stated] "Take it anyway (Recommended)" and "A different character (Recommended)"): `whSeen(id, t, docked, who)`, `S.who`, `S.youNew`,
+  `whYouNew` (from `itMeSync` when the character's id changes); the three callers pass the pilot. `whmap`'s info line now says switching pilots adds
+  no connection (reworded shorter to stay under the panel's 400 words). Cases and four mutants in `wormhole_home_check.py`.
+- **wormhole_effects_check** (not 063's change): since #72 brought `INTEL_WH.effc` the page shows CCP's numbers for shattered and Drifter systems
+  by their beacon's class, so the check's "no numbers" case now removes `effc` first (an older table) and a new case checks the real one.
 - **Still to do:** after the data pull request merges, the next page delivery removes the fallback (`itMapSecT`'s `sec` branch, `itRpBand`'s
   band and rounded-number branches, `itMapBand`, the fallback cases in the checks); a flag line goes into that delivery's queue file.
 

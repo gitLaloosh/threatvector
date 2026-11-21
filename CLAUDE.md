@@ -628,7 +628,10 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   it clears the rest (`whHomeOthersOff`, `whHomeLine`); an import never replaces yours (`whChainMerge`: "do not overwrite the existing home."); two or
   more (saved by an older page, or a shared chain's taken while you had none) are settled by `whHomeOne`: the fewest jumps from where you are by the
   Routes panel's neighbours (`whRtNb`) keeps it, nothing changes while where you are isn't known, a tie or none reachable the lowest ID; its line waits
-  for the tab (`whMsg(t, true)`). `wormhole_home_check.py`.
+  for the tab (`whMsg(t, true)`). Also 063 (the owner: "Fresh start (Recommended)"): `whSeen(id, t, docked, who)` carries the reading's pilot (`it.me.id`
+  for the Local log, the login's id for EVE location); a reading for another pilot, or the first after You becomes another character (`whYouNew` from
+  `itMeSync`, by id: a character's log ↔ the login's stand-in isn't a change), is a first reading, whatever its time: no connection, no Intel entry.
+  `wormhole_home_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a

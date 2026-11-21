@@ -9,6 +9,9 @@ A made-up chain of CCP's own wormhole systems (the page's tables; names from INT
   * with no Home of yours, a shared chain carrying two Homes: the closest to where you are keeps it, the other loses it, said in Add's line;
   * two Homes already saved (an older page): nothing changes while where you are isn't known (Routes shows the lowest ID); once it is, the one
     with the fewest jumps keeps Home (the higher ID here, so not by ID), with a line; a tie keeps the lowest ID; none reachable, the lowest ID;
+  * pilot switches (the second bug, "Fresh start (Recommended)"): a reading for another pilot, or the first after You becomes another character,
+    adds no connection and no Intel entry (k → J, J → J, J → k), taken whatever its time; the same pilot's k → J still links and adds; A → B → A
+    starts fresh on the return; the same character between its Local log and the login's stand-in is one pilot;
   * names coloured from the table (the owner: "Read the table (Recommended)"): on a copy of the page given a made-up INTEL_MAP.secT, a k-space
     name (Juddi, checked in game: 0.6) takes its tenth from the table at once, with no ESI request; a J-space name still asks ESI; on the page as it is (no secT yet) a
     k-space name asks ESI as before;
@@ -57,8 +60,51 @@ def import_(pg, text):
     pg.fill('#whShImp textarea', text); pg.click('#whShImp [data-it-whimp]'); pg.wait_for_timeout(250)
     if pg.query_selector('#whShImp [data-it-whadd]'): pg.click('#whShImp [data-it-whadd]'); pg.wait_for_timeout(200)
 
-def cases(b, html, parts=('set', 'import', 'saved', 'names')):
+# 063, the second bug: switching pilots maps a false jump (the owner: "Fresh start (Recommended)", "Take it anyway (Recommended)", "A different
+# character (Recommended)"). k: a k-space system next to nothing in particular; j1, j2 J-space systems; A, B made-up pilot ids
+PSEED = """() => { const T = whTable(), g = itGraphGet(), J = T.ids.filter((id, i) => /^J\\d{6}$/.test(T.names[i]) && T.cls[i] === '4').slice(0, 2);
+  const st = itWhStore(); st.auto = true; return {k: g.ids[100], k2: g.ids[200], j1: J[0], j2: J[1], A: 2100000001, B: 2100000002}; }"""
+LINKS = "() => whS.st.links.map(l => [l.a, l.b].sort((p, q) => p - q).join('-'))"
+AUTO = "() => Object.keys(itWhStore().rep).map(Number)"
+
+def cases(b, html, parts=('set', 'import', 'saved', 'names', 'pilot')):
     out, errs, reqs = [], [], []
+    if 'pilot' in parts:
+        def fresh_pg():
+            ctx, pg = start(b, html, errs, reqs); return ctx, pg, pg.evaluate, pg.evaluate(PSEED)
+        t0 = 'Date.now() - 600e3'
+        # a k-space pilot, then a J-space pilot: no connection, no Intel entry; the J system added (a first reading)
+        ctx, pg, ev, P = fresh_pg()
+        ev(f"(P) => {{ whSeen(P.k, {t0}, false, P.A); whSeen(P.j1, {t0} + 60e3, false, P.B); }}", P)
+        r = [ev(LINKS), ev(AUTO), ev("(n) => !!whS.st.sys[n]", P['j1']), ev("() => whS.last")]
+        if r[0] or r[1] or not r[2] or r[3] != P['j1']: out.append(f'k-space pilot, then a J-space pilot: no connection, no Intel entry, the J system added, last = it: {r}')
+        # J -> J and J -> k pilot switches
+        ev(f"(P) => {{ whSeen(P.j2, {t0} + 120e3, false, P.A); whSeen(P.k2, {t0} + 180e3, false, P.B); }}", P)
+        if ev(LINKS) or ev(AUTO): out.append(f'J → J and J → k pilot switches: no connection, no Intel entry: {ev(LINKS)} {ev(AUTO)}')
+        ctx.close()
+        # the same pilot k -> J still links and adds Intel's hole
+        ctx, pg, ev, P = fresh_pg()
+        ev(f"(P) => {{ whSeen(P.k, {t0}, false, P.A); whSeen(P.j1, {t0} + 60e3, false, P.A); }}", P)
+        want = '-'.join(str(x) for x in sorted([P['k'], P['j1']]))
+        if ev(LINKS) != [want] or ev(AUTO) != [P['k']]: out.append(f'the same pilot k → J: linked and Intel\'s hole added: {ev(LINKS)} {ev(AUTO)}')
+        ctx.close()
+        # a different pilot's first reading with an older time is taken (not dropped), and the next of the old pilot's isn't linked to it
+        ctx, pg, ev, P = fresh_pg()
+        ev("(P) => { whSeen(P.k, Date.now() - 1000, false, P.A); whSeen(P.j1, Date.now() - 60e3, false, P.B); }", P)
+        if ev("() => whS.last") != P['j1'] or ev(LINKS): out.append(f'a new pilot\'s older reading taken as a fresh start: last {ev("() => whS.last")}, links {ev(LINKS)}')
+        ctx.close()
+        # You becomes another character and back (A -> B -> A, no reading of B): the return to A starts fresh
+        ctx, pg, ev, P = fresh_pg()
+        ev("""(P) => { const c = (id) => ({id, name: 'Pilot ' + id, sys: ''}); it.chars = new Map([[P.A, c(P.A)], [P.B, c(P.B)]]);
+          it.set.me = P.A; itMeSync(true); whSeen(P.k, Date.now() - 600e3, false, P.A);
+          it.set.me = P.B; itMeSync(true); it.set.me = P.A; itMeSync(true); whSeen(P.j1, Date.now() - 500e3, false, P.A); }""", P)
+        if ev(LINKS) or ev(AUTO): out.append(f'A → B → A with no reading of B: the return to A starts fresh: {ev(LINKS)} {ev(AUTO)}')
+        # the same character between its Local log and the login's stand-in isn't a change: its jump still links
+        ev("""(P) => { whSeen(P.k2, Date.now() - 400e3, false, P.A); const o = itMeResolve; itMeResolve = () => ({id: P.A, name: 'Pilot', sys: '', noLog: true});
+          itMeSync(true); itMeResolve = o; whSeen(P.j2, Date.now() - 300e3, false, P.A); }""", P)
+        want = '-'.join(str(x) for x in sorted([P['k2'], P['j2']]))
+        if want not in ev(LINKS): out.append(f'the same character, its log ↔ the login\'s stand-in: still one pilot, its jump links: {ev(LINKS)}')
+        ctx.close()
     if {'set', 'import', 'saved'} & set(parts):
         ctx, pg = start(b, html, errs, reqs); ev = pg.evaluate
         S = ev(SEED)
@@ -127,6 +173,10 @@ def cases(b, html, parts=('set', 'import', 'saved', 'names')):
     return out, errs
 
 MUTANTS = [
+    ('a reading for another pilot linked (the pilot check removed)', "  const fresh = S.youNew || !!(who && S.who && who !== S.who);", "  const fresh = S.youNew;", ('pilot',)),
+    ('a new pilot\'s older reading dropped', "  if(!fresh && !(t >= S.lastT)) return;", "  if(!(t >= S.lastT)) return;", ('pilot',)),
+    ('You changing not starting fresh', "  if(k.replace('~', '') !== itMeK.replace('~', '') && typeof whYouNew === 'function') whYouNew();", "", ('pilot',)),
+    ('the stand-in counted as another character', "  if(k.replace('~', '') !== itMeK.replace('~', '') && typeof whYouNew === 'function') whYouNew();", "  if(typeof whYouNew === 'function') whYouNew();", ('pilot',)),
     ('two Homes left after a set', "const off = m.st === 'home' ? whHomeOthersOff(n) : [];", "const off = [];", ('set',)),
     ('an imported Home over yours', "const x = mine && x0.st === 'home' ? {...x0, st: ''} : x0;", "const x = x0;", ('import',)),
     ('a chain\'s Homes not settled after Add', "const hm = whHomeOne();   // 063: a chain", "const hm = '';   // 063: a chain", ('import',)),
@@ -139,7 +189,7 @@ with sync_playwright() as p:
     b = p.chromium.launch()
     out, errs = cases(b, HTML)
     for o in out: check(False, o)
-    check(not out, 'one Home: set, import, two saved (closest, wait, tie, none reachable); names from the table')
+    check(not out, 'one Home: set, import, two saved (closest, wait, tie, none reachable); names from the table; pilot switches start fresh')
     check(not errs, f'no page errors {errs[:3]}')
     for name, old, new, parts in MUTANTS:
         if PAGE.count(old) != 1: check(False, f'mutant "{name}": its line isn\'t in the page once ({PAGE.count(old)})'); continue
