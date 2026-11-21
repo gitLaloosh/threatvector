@@ -559,7 +559,7 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   `--side-friendly`, `#f08b7e`, `#b9c3ca`), none for a standing with no deaths; `itMapReports` counts `kb` from `st.kills`' `v` (unknown: neutral);
   the hover `itMapKbTipHtml`, the legend "✕ kills by who died", both `.it-mkb`; `itMapKey` carries the three counts. `map_kill_counts_check.py`.
   Also 066: every box where one system is typed and added is a `.sys-cb` (`SYS_CB_ATTRS`, `SYS_CB_UL`) with the map search's list, bound on first
-  focus (`sysCbBind`, its `data-scope`); a pick fills the box (the owner: "Fill the box (Recommended)"); the shorthand box, paste boxes and the Feed
+  focus (`sysCbBind`, its `data-scope`); a pick fills the box (the owner: "Fill the box (Recommended)"), a name typed in full acts on its first Enter; the shorthand box, paste boxes and the Feed
   search have none. `system_boxes_check.py`.
 - **Jump bridges** (v2026.11.16.5, build queue 041; roadmap/jump-bridges-plan.md, mockup `Claude outputs/jump_bridges_mockup.html`; the owner: "add
   jump bridges to the map (as a setting that can be toggled off and on). when turned on, jump ranges will be calculated using bridges. default

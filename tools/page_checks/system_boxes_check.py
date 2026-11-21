@@ -11,6 +11,7 @@ Routes -> Pin (J-space too). Each:
   * a name typed without its "-" ("qxli") lists QX-LIJ first, in the map search's list (.it-rp-sug, a combobox: aria-expanded, aria-controls);
     on the Wormholes tab a J-space name lists J-space rows with their class;
   * Enter (or a press on a row) fills the box with the name and shuts the list, and adds nothing yet; Enter again does the box's action;
+    a name typed in full acts on its first Enter, as before 066;
   * an unknown name still gets the box's own refusal;
   * the list is on top (the row under its own centre is the row) and inside the window; 44 px rows at 390 px;
   * the shorthand box, the paste boxes and the Feed search have no list (the owner: left out);
@@ -77,7 +78,7 @@ def box(pg, w, label, sel, did, want=('QX-LIJ', QX), unknown=None):
         if not t or msg not in t: out.append(f'{w}: {label}: an unknown name refused: {t!r} (want {msg!r})')
     return out
 
-def cases(b, html, parts=('whl', 'avoid', 'add', 'here', 'pin', 'left', 'phone')):
+def cases(b, html, parts=('whl', 'avoid', 'whole', 'add', 'here', 'pin', 'left', 'phone')):
     out, errs = [], []
     ctx, pg = start(b, html, 1440, errs)
     if not pg.evaluate("typeof sysCbBind === 'function'"): out.append('no sysCbBind on the page'); ctx.close(); return out, errs
@@ -92,6 +93,11 @@ def cases(b, html, parts=('whl', 'avoid', 'add', 'here', 'pin', 'left', 'phone')
         out += box(pg, 1440, 'Routes -> Avoid', '[data-it-rp-box] .it-rp-add input[name=sys]', lambda pg: QX in (pg.evaluate("JSON.parse(localStorage.getItem('tvRoute') || '{}').list") or []),
                    unknown=('[data-it-rp-box] .it-rp-msg', 'nowhere special'))
         pg.evaluate("() => { it.pop = false; itRender(true); }"); pg.wait_for_timeout(150)
+    if 'whole' in parts:   # a name typed in full: the first Enter acts, as before 066 (wormhole_tab_check's way)
+        pg.evaluate("() => { delete itWhStore().rep[%d]; delete itWhStore().gone[%d]; itWhSave(); itWhListOpen(true); }" % (QX, QX)); pg.wait_for_timeout(250)
+        L = typed(pg, '.it-whp-add input[name=sys]', 'qx-lij'); pg.keyboard.press('Enter'); pg.wait_for_timeout(300)
+        if not pg.evaluate("(q) => !!itWhStore().rep[q]", QX): out.append(f'a name typed in full ("qx-lij") is added on the first Enter (list: {L and L.get("names")})')
+        pg.evaluate("itWhListOpen(false, false)")
     if any(x in parts for x in ('add', 'here', 'pin')):
         pg.evaluate("switchTab('wh')"); pg.wait_for_timeout(300)
     if 'add' in parts:
@@ -132,7 +138,8 @@ MUTANTS = [
     ('Pin left without the list', '<form class="it-rp-add" data-wh-rt-pin autocomplete="off"><span class="sys-cb" data-scope="all">', '<form class="it-rp-add" data-wh-rt-pin autocomplete="off"><span data-scope="all">', ('pin',)),
     ('the Wormholes tab\'s boxes stargate-only', "const scope = box.dataset.scope === 'all' ? 'all' : 'k'", "const scope = 'k'", ('add',)),
     ('Enter with the list shut no longer sends the form', "    enter: () => {}});   // the list shut", "    });   // the list shut", ('whl',)),
-    ('a pick acts at once', "    pick: (id) => { inp.value = whIsJ(id) ? whName(id) : itSysName(id); inp.focus(); },", "    pick: (id) => { inp.value = whIsJ(id) ? whName(id) : itSysName(id); inp.form.requestSubmit(); },", ('here',)),
+    ('a pick acts at once', "inp.value = nm; inp.focus(); if(whole && inp.form) inp.form.requestSubmit(); },", "inp.value = nm; inp.focus(); if(inp.form) inp.form.requestSubmit(); },", ('here',)),
+    ('a name typed in full needs a second Enter', "inp.value = nm; inp.focus(); if(whole && inp.form) inp.form.requestSubmit(); },", "inp.value = nm; inp.focus(); },", ('whole',)),
     ('the list under what follows it', "  .sys-cb > .it-rp-sug{position:absolute; left:0; right:0; top:100%; z-index:8; min-width:200px;}", "  .sys-cb > .it-rp-sug{position:absolute; left:0; right:0; top:100%; z-index:-1; min-width:200px;}", ('add',)),
     ('never bound', "if(t && t.matches && t.matches('.sys-cb > input') && sysCbBind(t)", "if(false && sysCbBind(t)", ('whl',)),
 ]

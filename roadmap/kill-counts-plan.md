@@ -94,7 +94,7 @@ As planned (C1-C5), with these differences found at the build review (the owner'
 - **Delivered with it** (the two "ALSO WITH THE NEXT DELIVERY AFTER 064" blocks): the removed-hole map bug, fixed as option B ([stated] "B: chains
   off Intel's map (Recommended)": 062's K1 loop in `itMapWh` is gone, so only Intel's own entries are drawn; your own k-space <-> J-space jumps still
   add one through `itWhJumpAdd`, which the list removes; `itWhByTxt` lost its chain branch), and the map search's list in five system boxes
-  (`.sys-cb`, `sysCbBind` on first focus, `sysCbRowHtml`; a pick fills the box, [stated] "Fill the box (Recommended)"; the shorthand box left out,
+  (`.sys-cb`, `sysCbBind` on first focus, `sysCbRowHtml`, which the System Analyzer's typed box now uses too; a pick fills the box, [stated] "Fill the box (Recommended)", and a name already typed in full acts on its first Enter as before (wormhole_tab_check caught the second Enter that filling alone needed); the shorthand box left out,
   [stated] "Leave it out (Recommended)"; [stated] "No mockup (Recommended)").
 - **Checks:** `tools/page_checks/map_kill_counts_check.py` (new; plan section 9 and 9 mutants), `tools/page_checks/system_boxes_check.py` (new; 7
   mutants), `wormhole_filter_check.py`'s chain case rewritten for option B (its mutant puts the K1 loop back).

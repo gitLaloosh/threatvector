@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sj8ag7DhLaoiHs6ovfiCBXdmg4qMU0XMLRs4rFoVD10='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1YniaEUgUgbpZdh7WXjryfbaMF4chziPO0szmkRb1ZM='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -33358,7 +33358,7 @@ function sysComboBind(inp, ul, o){
 // added (Intel's Wormholes list and Routes → Avoid; the Wormholes tab's + Add, "Add a system here" and Routes → Pin) are a .sys-cb: the box and
 // the map search's own list (.it-rp-sug), bound by sysComboBind the first time the box takes focus (so a panel's redraw needs nothing more).
 // The scope is the box's data-scope ('all' on the Wormholes tab, else 'k', as each box's sysFind). A pick fills the box; Add / Pin or Enter
-// again does what it did before
+// again does what it did before; a name already typed in full acts on its first Enter, as before 066 (the build's hand: wormhole_tab_check)
 const SYS_CB_ATTRS = ' role="combobox" aria-expanded="false" aria-autocomplete="list"';
 const SYS_CB_UL = '<ul class="it-rp-sug" role="listbox" aria-label="Systems" hidden></ul>';
 let sysCbN = 0;
@@ -33369,10 +33369,13 @@ function sysCbRowHtml(id){
 function sysCbBind(inp){
   const box = inp.closest('.sys-cb'), ul = box && box.querySelector(':scope > .it-rp-sug'); if(!ul || box.dataset.bound) return false; box.dataset.bound = '1';
   const scope = box.dataset.scope === 'all' ? 'all' : 'k', idp = `sysCb${++sysCbN}o`; ul.id = `${idp}l`; inp.setAttribute('aria-controls', ul.id);
+  let byEnter = false;   // a name typed in full, then Enter, acts at once as before 066; a part of one is filled in first
+  inp.addEventListener('keydown', (e) => { byEnter = e.key === 'Enter'; });   // added before sysComboBind's own, so it runs first
   sysComboBind(inp, ul, {idp,
     opts: () => inp.value.trim() && it.names ? sysSuggest(inp.value, 8, scope) : null,
     rowHtml: sysCbRowHtml,
-    pick: (id) => { inp.value = whIsJ(id) ? whName(id) : itSysName(id); inp.focus(); },
+    pick: (id) => { const nm = whIsJ(id) ? whName(id) : itSysName(id), whole = byEnter && inp.value.trim().toLowerCase() === nm.toLowerCase(); byEnter = false;
+      inp.value = nm; inp.focus(); if(whole && inp.form) inp.form.requestSubmit(); },
     enter: () => {}});   // the list shut: Enter sends the form as before
   itLoadNames().then(() => { if(document.activeElement === inp && inp.value.trim()) inp.dispatchEvent(new Event('focus')); }, () => {});   // the names for the suggestions
   return true;
