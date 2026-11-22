@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ar/D7HgiURdwoo5yrWLzbSN6W9217MKQPJTxmUAUFSw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-n8yT018n6L3sA6rJ4XZFRg2BLKck7tSVq/TZRkxQBHU='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3436,7 +3436,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.21.3</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.22.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3856,7 +3856,7 @@ const CARD_INFO = {
  ],
  "whmap": [
   "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. Landing docked (a jump clone, a pod death) or switching pilots adds no connection.",
-  "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move together; right-click empty space for Select all. The overview in the corner shows where everything is. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
+  "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move or remove together (Delete); right-click empty space for Select all. The overview in the corner shows where everything is. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
   "[Focus and adding] Click a system for the System panel (its button, top left): class, effect and its numbers, statics (a community list's until you type your own; hover one for its lifetime and mass), notes, connections, signatures. Right-click it (press and hold on a phone) for its menu: status, tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one there.",
   "[Connections] Each side of a hole has its own signature ID: hover the mark at its end, or see that side's list.",
   "[Signatures] Paste the Probe Scanner's list (Ctrl+A, Ctrl+C) for the system in focus: signatures and anomalies. Colours follow the game's signal; Type sorts as the game does. Select rows (Ctrl-click adds) to copy, edit or delete. With Lazy update on, a paste is the whole list: signatures missing from it go, after you confirm. Undo takes back the last paste.",
@@ -28768,7 +28768,7 @@ async function itGateDest(id){
 function itIsk(v){ return v >= 1e9 ? `${(v / 1e9).toFixed(2)}B` : v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${Math.round(v / 1e3)}k` : String(Math.round(v)); }
 // System security, for the colour of a system's name (ESI /universe/systems/{id}/, asked once per system shown, kept). Build queue 063 (the
 // owner: "Read the table (Recommended)"): a k-space system the map's table holds takes the tenth from there (itSecTab), at once and without a
-// request; ESI is asked only for the rest (J-space, or a system newer than the table), and while the table has no secT (063's fallback)
+// request; ESI is asked only for the rest (J-space, or a system newer than the table)
 async function itSecFetch(ids){
   const ask = [...new Set(ids)].filter(id => id && itSecTab(id) === undefined && !it.sec.has(id) && !it.secAsk.has(id)).slice(0, 12);
   if(!ask.length) return;
@@ -28787,7 +28787,7 @@ async function itSecFetch(ids){
 // security level of the actual system"); hs / ls / ns as before
 // 063: the tenth the game shows for a k-space system the table holds (itMapSecT), else undefined (ask ESI)
 function itSecTab(id){
-  const T = itMapTable(); if(!T || !T.secT) return undefined;
+  const T = itMapTable(); if(!T) return undefined;
   const i = itGraphGet().at.get(Number(id)); return i === undefined ? undefined : itMapSecT(i);
 }
 function itSecKey(id){ const t = itSecTab(id); if(t !== undefined) return Math.max(0, t); const v = it.sec.get(id); if(v === undefined) return null; return v > 0 && v < 0.05 ? 1 : Math.max(0, Math.round(v * 10)); }
@@ -30539,12 +30539,13 @@ function itMapTable(){
   itMapTab = null;
   if(typeof INTEL_MAP === 'undefined' || !INTEL_MAP || INTEL_MAP.jumps !== INTEL_JUMPS.md5 || INTEL_MAP.systems !== INTEL_JUMPS.systems) return null;
   const raw = (t) => { const b = atob(t), u = new Uint8Array(b.length); for(let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; };
-  // build queue 063: secT, the tenth the game shows (tools/jump_table_update.py); a table from before it has sec (hundredths) + band instead
-  const xs = new Int16Array(raw(INTEL_MAP.x).buffer), ys = new Int16Array(raw(INTEL_MAP.y).buffer), reg = raw(INTEL_MAP.reg);
-  const secT = INTEL_MAP.secT ? new Int8Array(raw(INTEL_MAP.secT).buffer) : null, sec = secT ? null : new Int8Array(raw(INTEL_MAP.sec).buffer);
-  if(xs.length !== INTEL_MAP.systems || ys.length !== xs.length || (secT || sec).length !== xs.length || reg.length !== xs.length) return null;
+  // build queue 063: secT, the tenth the game shows (tools/jump_table_update.py); a table without it is no table (065a: 063's fallback for
+  // 058's sec + 047's band went once the data pull request, #77, brought secT)
+  if(!INTEL_MAP.secT) return null;
+  const xs = new Int16Array(raw(INTEL_MAP.x).buffer), ys = new Int16Array(raw(INTEL_MAP.y).buffer), reg = raw(INTEL_MAP.reg), secT = new Int8Array(raw(INTEL_MAP.secT).buffer);
+  if(xs.length !== INTEL_MAP.systems || ys.length !== xs.length || secT.length !== xs.length || reg.length !== xs.length) return null;
   const g = itGraphGet(), adj = g.adj.map(a => a.slice().sort((p, q) => p - q));   // neighbours in index order: one route per system, always the same
-  itMapTab = {xs, ys, secT, sec, reg, regions: INTEL_MAP.regions, adj, n: xs.length, p3: itMapP3(raw, xs.length), band: secT ? null : itMapBand(raw, xs.length)};
+  itMapTab = {xs, ys, secT, reg, regions: INTEL_MAP.regions, adj, n: xs.length, p3: itMapP3(raw, xs.length)};
   return itMapTab;
 }
 // v2026.11.04.1: each system's place in space (CCP's geographic position, not the flat map's), x then y then z for every system, 3 bytes
@@ -30554,14 +30555,6 @@ function itMapP3(raw, n){
   const b = raw(INTEL_MAP.p3); if(b.length !== n * 9) return null;
   const v = new Int32Array(n * 3);
   for(let k = 0; k < n * 3; k++){ const x = b[3 * k] | b[3 * k + 1] << 8 | b[3 * k + 2] << 16; v[k] = x & 0x800000 ? x - 0x1000000 : x; }
-  return v;
-}
-// build queue 047: each system's security band from CCP's unrounded security (0 null, 1 low, 2 high; tools/jump_table_update.py), 2 bits a
-// system, four to a byte, the first in the lowest bits; null when missing (the route planner then uses the rounded sec)
-function itMapBand(raw, n){
-  if(!INTEL_MAP.band) return null;
-  const b = raw(INTEL_MAP.band); if(b.length !== Math.ceil(n / 4)) return null;
-  const v = new Uint8Array(n); for(let i = 0; i < n; i++) v[i] = (b[i >> 2] >> ((i & 3) * 2)) & 3;
   return v;
 }
 // light-years between two systems (CCP's light-year, 9.46e15 m: the table's units are made from it), or null without the table
@@ -30574,17 +30567,9 @@ function itMapLy(i, j){
 function itMapLyText(d){ return (Math.ceil(d * 100 - 1e-9) / 100).toFixed(2); }   // 1e-9: float noise on an exact value doesn't push it up a step
 // build queue 058 (the owner at its review, "yes": one place works out the security the game shows, and a check keeps it so): every map
 // reader of the security goes through itMapSecT, in tenths (tools/check_sec_shown.py; LESSON #170). Build queue 063 (roadmap/security-shown-plan.md):
-// the table carries the tenth the game shows (secT, from CCP's unrounded value by tools/jump_table_update.py), so nothing here rounds it.
-// Until the "Jump table" workflow's data pull request brings secT, the table has 058's sec (hundredths, rounded twice: 333 systems a tenth
-// off) and 047's band, read as before; the next page delivery after that pull request takes this fallback out.
-function itMapSecT(i){
-  const T = itMapTable();
-  if(T.secT) return T.secT[i];
-  const s = T.sec[i];   // the fallback (a table from before 063)
-  if(s <= 0){ const t = Math.round(s / 10); return t === 0 ? 0 : t; }   // -0 reads as 0
-  const t = Math.max(1, Math.min(10, Math.round(s / 10)));   // a system above 0.0 never shows 0.0
-  return t >= 5 && T.band && T.band[i] === 1 ? 4 : t;   // under 0.45 before rounding: low-sec
-}
+// the table carries the tenth the game shows (secT, from CCP's unrounded value by tools/jump_table_update.py), so nothing here rounds it
+// (065a: the fallback for a table from before 063 is gone)
+function itMapSecT(i){ return itMapTable().secT[i]; }
 function itMapSecClass(i){ return Math.max(0, itMapSecT(i)); }
 function itMapTier(n){ return n <= 1 ? 'solo' : n <= 10 ? 'small' : 'fleet'; }
 const itm = {el: null, home: -1, reach: 0, W: 0, H: 0, P: null, Q: null, vis: [], D: null, G: 1, kMin: 1, kMax: 12, st: null, par: null, view: {k: 1, tx: 0, ty: 0}, hover: -1, hoverJb: -1, rowHover: -1,
@@ -33020,8 +33005,8 @@ function itMapPinTag(id){ return itm.pinned.has(id) ? '<span class="it-map-rtag"
 //    owner: "keep my rule. they just have to turn off a setting for what to avoid if they want a shorter route"); then EVE's own cost; then
 //    fewest jumps. The cost (CCP's route guide, developers.eveonline.com/docs/guides/route-calculation/, matched against ESI's POST /route on
 //    40 sample routes at the build review, 2026-11-13): Shorter 1 a jump; Safer / Less Secure with p = exp(0.15 x penalty): into null 2p,
-//    into low p (Safer) or 0.90 (Less Secure), into high 0.90 or p. Null, low and high by the map table's band (CCP's unrounded security:
-//    tools/jump_table_update.py), never its rounded sec. The destination and your own system never count as flagged.
+//    into low p (Safer) or 0.90 (Less Secure), into high 0.90 or p. Null, low and high by the band of the tenth the game shows (063:
+//    itRpBand; tools/jump_table_update.py checks it against CCP's unrounded security). The destination and your own system never count as flagged.
 //  * the map's drawn route and the tooltip's route list follow it (itMapRoute); every jump number stays the shortest by stargate (itm.D).
 //  * a search box on the map, a right-click menu on any system (on a phone, the same buttons in a pressed system's tooltip), and the
 //    destination set in EVE: one waypoint (EVE's route, the game's own settings) or every system of Threat Vector's route, one request at a
@@ -33057,8 +33042,8 @@ function itRpSave(){ try{ localStorage.setItem(IT_RP_KEY, JSON.stringify(itRpSet
 function itRpSendOn(){ try{ return localStorage.getItem(IT_RP_SEND) === 'true'; }catch(e){ return false; } }
 function itRpSendSave(on){ try{ localStorage.setItem(IT_RP_SEND, on ? 'true' : 'false'); }catch(e){ } }
 // a system's band: 0 null, 1 low, 2 high. 063: from the tenth the game shows (0.0 or less null, 0.1-0.4 low, 0.5 up high: CCP's unrounded 0.45
-// line, the generator checks it for every system); a table from before 063 has 047's band, and one with neither the rounded number
-function itRpBand(T, i){ if(T.secT){ const t = itMapSecT(i); return t <= 0 ? 0 : t < 5 ? 1 : 2; } if(T.band) return T.band[i]; const s = T.sec[i]; return s <= 0 ? 0 : s < 45 ? 1 : 2; }
+// line, the generator checks it for every system; 065a: no fallback for a table from before 063)
+function itRpBand(T, i){ const t = itMapSecT(i); return t <= 0 ? 0 : t < 5 ? 1 : 2; }
 function itRpCost(T, y, pref, p){
   if(pref === 'Shorter') return 1;
   const b = itRpBand(T, y);
@@ -34331,15 +34316,18 @@ function whRemoveSys(id){   // false while locked (the owner: "locked systems ca
   delete st.sys[id]; delete st.pos[id]; delete whS.mk[id]; delete whS.sg.sys[id]; st.links = st.links.filter(l => l.a !== id && l.b !== id); if(whS.sel === id) whS.sel = null;
   whSave(); whMkSave(); whSgSave(); whEndSave(); return true;   // 059: its signatures and its connections' ends go with it
 }
-// 059 (P13): every system not locked, with its connections, marks, signatures and ends; one save, one repaint, one Intel map refresh
-function whRemoveAll(){
-  const S = whState(), st = S.st, ids = Object.keys(st.sys).map(Number), keep = ids.filter(whLocked), go = ids.filter(n => !whLocked(n));
+// 059 (P13): every system not locked, with its connections, marks, signatures and ends; one save, one repaint, one Intel map refresh.
+// 065a (the owner: "when multiple are selected, right click > delete (can we have this work with the delete key?) should delete everything
+// that's selected"): the same for any list of systems (whRemoveIds); the selection is cleared after
+function whRemoveIds(ids, what){
+  const S = whState(), st = S.st, have = [...new Set(ids.map(Number))].filter(n => st.sys[n]), keep = have.filter(whLocked), go = have.filter(n => !whLocked(n));
   for(const n of go){ delete st.sys[n]; delete st.pos[n]; delete S.mk[n]; delete S.sg.sys[n]; }
   st.links = st.links.filter(l => st.sys[l.a] && st.sys[l.b]);
   if(S.sel !== null && !st.sys[S.sel]) S.sel = null; if(S.M) S.M.group.clear();
   whSave(); whMkSave(); whSgSave(); whEndSave(); S.pn = {}; S.drawKey = ''; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true);
-  whMsg(`Removed ${go.length} system${go.length === 1 ? '' : 's'}${keep.length ? `; ${keep.length} locked kept` : ''}.`);
+  whMsg(`Removed ${go.length} ${what ? `${what} ` : ''}system${go.length === 1 ? '' : 's'}${keep.length ? `; ${keep.length} locked kept` : ''}.`);
 }
+function whRemoveAll(){ whRemoveIds(Object.keys(whState().st.sys)); }
 function whRemoveAsk(n){
   const nm = whName(n); if(!whRemoveSys(n)){ whMsg(WH_LOCKED(nm)); return false; }
   whMsg(`Removed ${nm} and its connections.`); whS.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true); return true;
@@ -34467,7 +34455,7 @@ function whMake(){
   return el;
 }
 function whFocus(){ const S = whState(), st = S.st; return S.sel !== null && st.sys[S.sel] ? S.sel : S.last !== null && st.sys[S.last] ? S.last : Number(Object.keys(st.sys)[0]) || null; }
-function whSelect(id){ const S = whState(); S.sel = id; S.pn = {}; whPaint(true); }
+function whSelect(id){ const S = whState(); S.sel = id; if(S.M) S.M.last = id; S.pn = {}; whPaint(true); }   // 065a: last, the system picked last (the Delete key's menu)
 function whMsg(t, keep){
   const S = whState(), m = S.el && S.el.querySelector('.wh-msg'); if(!m){ if(keep) S.msgWait = t; return; }   // 063 (keep): shown once the tab is drawn (whMake)
   S.msgWait = '';
@@ -34949,6 +34937,7 @@ function whAskAct(a){
   const S = whS, n = whFocus(), P = n === null ? null : whP3(n);
   if(a === 'm-yes' || a === 'm-no'){ const m = S.menu; whMenuClose(true); if(a === 'm-yes' && m !== null) whRemoveAsk(m); return; }
   if(a === 'all-yes' || a === 'all-no'){ whHereClose(); if(a === 'all-yes') whRemoveAll(); return; }
+  if(a === 'g-yes' || a === 'g-no'){ const ids = S.menuIds; S.menuIds = null; whMenuClose(true); if(a === 'g-yes' && ids) whRemoveIds(ids, 'selected'); return; }   // 065a
   if(!P) return;
   if(a === 'lazy-rm' || a === 'lazy-keep'){ const q = P.lazyAsk; if(q) whScanApply(n, q.text, a === 'lazy-rm' ? 'rm' : 'keep'); whPnRedraw('[data-wh-paste]'); return; }
   if(a === 'del-yes'){ P.ask = null; whRemoveAsk(n); return; }
@@ -34968,7 +34957,7 @@ function whAskAct(a){
 function whAllAct(a){
   const S = whS, m = S.el.querySelector('.wh-hmenu');
   if(a === 'sel'){ whHereClose(); for(const id of Object.keys(S.st.sys)) S.M.group.add(Number(id)); whDraw(); return; }   // a drag moves them all; locked ones stay put
-  if(a === 'rm'){ m.innerHTML = whHereAskHtml(); whAskFocus(m); }
+  if(a === 'rm'){ m.innerHTML = whHereAskHtml(); whAskFocus(m); whMenuReplace(m); }   // 065a: placed again, so its buttons stay inside the map
 }
 // P4-P6: a paste read into the system in focus. Lazy update off: adds and updates, never removes. On: the paste is the whole list, and it asks every
 // time it would remove any (the owner: "let's have the lazy update ask for verification every time."); Keep them applies it without removing.
@@ -35258,9 +35247,7 @@ function whHereOpen(x, y){
   S.here = [Math.round(w.x - WH_NW / 2), Math.round(w.y - WH_NH / 2)];
   m.innerHTML = whHereAllHtml() + `<div class="wh-mh">Add a system here</div><form class="wh-here" data-wh-here autocomplete="off"><span class="sys-cb" data-scope="all"><input type="text" name="sys" maxlength="40" spellcheck="false" placeholder="J123456, Thera or Amamake" aria-label="System to add here"${SYS_CB_ATTRS}>${SYS_CB_UL}</span><button type="submit">Add</button></form>`
     + '<div class="wh-note wh-hn">Not linked to anything. Link it later with + Add.</div>';
-  m.hidden = false;
-  const bx = S.el.querySelector('.wh-box'), br = bx.getBoundingClientRect(), bh = Math.min(bx.clientHeight, innerHeight - br.top - 8);   // inside the map and on the screen
-  m.style.left = Math.max(4, Math.min(x, bx.clientWidth - m.offsetWidth - 4)) + 'px'; m.style.top = Math.max(4, Math.min(y, bh - m.offsetHeight - 4)) + 'px';
+  m.hidden = false; m.scrollTop = 0; whMenuPlace(m, x, y);
   m.querySelector('input').focus();
 }
 // 059 (P13; the owner: "add a right click > remove all option that deletes any system not locked. add a verify step to this. also add a select all."):
@@ -35292,7 +35279,16 @@ function whMenuStHtml(m){
   return WH_ST.map(([k, l]) => `<button type="button" class="wh-mi st-${escapeHtml(k)}" role="menuitemradio" aria-checked="${escapeHtml(String(m.st === k))}" data-wh-m="st:${escapeHtml(k)}"><i class="wh-sw" aria-hidden="true"></i>${escapeHtml(l)}</button>`).join('')
     + `<button type="button" class="wh-mi" role="menuitemradio" aria-checked="${escapeHtml(String(!m.st))}" data-wh-m="st:"><i class="wh-sw" aria-hidden="true"></i>No status</button>`;
 }
+// 065a: a right-click on a system inside a selection of 2 or more: Remove takes the selection (the owner: "The one right-clicked (Recommended)":
+// the menu's other items stay the right-clicked system's)
+function whGroupOf(n){ const S = whS, M = S.M; if(!M || M.group.size < 2 || !M.group.has(Number(n))) return null; const g = [...M.group].filter(id => S.st.sys[id]); return g.length >= 2 ? g : null; }
+function whGroupAskHtml(ids){
+  const keep = ids.filter(whLocked), go = ids.length - keep.length, nm = keep.slice(0, 3).map(whName).join(', ') + (keep.length > 3 ? ` and ${keep.length - 3} more` : '');
+  if(!go) return `<div class="wh-note wh-hn">Nothing to remove: the ${ids.length} selected systems are locked.</div>`;
+  return whAskHtml(`Remove ${go} selected system${go === 1 ? '' : 's'} and their connections?${keep.length ? ` Locked, staying: ${nm}.` : ''}`, [['g-yes', 'Remove'], ['g-no', 'Cancel']]);
+}
 function whMenuRmHtml(n, m){
+  const g = whGroupOf(n); if(g) return `<button type="button" class="wh-mi wh-mdel" role="menuitem" data-wh-m="gdel">Remove ${Number(g.length)} selected…</button>`;
   return m.lock ? `<button type="button" class="wh-mi" role="menuitem" data-wh-m="del" aria-disabled="true" title="${escapeHtml(WH_LOCKED(whName(n)))}">Remove from the map <span class="wh-mnote">(unlock first)</span></button>`
     : '<button type="button" class="wh-mi wh-mdel" role="menuitem" data-wh-m="del">Remove from the map</button>';
 }
@@ -35309,10 +35305,22 @@ function whMenuOpen(n, x, y){
   whHereClose(); whPopClose();
   if(S.sel !== n) whSelect(n);
   const m = S.el.querySelector('.wh-smenu'); S.menu = n;
-  m.innerHTML = whMenuHtml(n); m.setAttribute('aria-label', `${whName(n)}: status, tag, lock`); m.hidden = false; m.scrollTop = 0;
-  const bx = S.el.querySelector('.wh-box'), br = bx.getBoundingClientRect(), bh = Math.min(bx.clientHeight, innerHeight - br.top - 8);   // inside the map and on the screen (LESSON #46)
-  m.style.left = Math.max(4, Math.min(x, bx.clientWidth - m.offsetWidth - 4)) + 'px'; m.style.top = Math.max(4, Math.min(y, bh - m.offsetHeight - 4)) + 'px';
+  m.innerHTML = whMenuHtml(n); m.setAttribute('aria-label', `${whName(n)}: status, tag, lock`); m.hidden = false; m.scrollTop = 0; S.menuIds = null;
+  whMenuPlace(m, x, y);
   const f = m.querySelector('[data-wh-m]'); if(f) f.focus({preventScroll: true});
+}
+// both menus inside the map and on the screen (LESSON #46): no taller than the room there (it scrolls), moved up to fit. 065a (the owner: "content
+// hidden by bottom of the map."): placed again whenever its content changes (whMenuReplace), from where it was opened, and the question scrolled into view
+function whMenuPlace(m, x, y){
+  const bx = whS.el.querySelector('.wh-box'), br = bx.getBoundingClientRect(), bh = Math.min(bx.clientHeight, innerHeight - br.top - 8);
+  m.style.maxHeight = Math.max(80, bh - 8) + 'px'; m.dataset.ax = String(Math.round(x)); m.dataset.ay = String(Math.round(y));
+  m.style.left = Math.max(4, Math.min(x, bx.clientWidth - m.offsetWidth - 4)) + 'px'; m.style.top = Math.max(4, Math.min(y, bh - m.offsetHeight - 4)) + 'px';
+}
+function whMenuReplace(m){
+  if(!m || m.hidden) return;
+  whMenuPlace(m, Number(m.dataset.ax) || 0, Number(m.dataset.ay) || 0);
+  const a = document.activeElement, q = (a && m.contains(a) && a.closest('.wh-ask')) || m.querySelector('.wh-ask') || (a && m.contains(a) ? a : null); if(!q) return;
+  const b = q.offsetTop + q.offsetHeight + 6; if(b > m.scrollTop + m.clientHeight) m.scrollTop = b - m.clientHeight; if(q.offsetTop < m.scrollTop) m.scrollTop = Math.max(0, q.offsetTop - 6);
 }
 function whMenuClose(back){
   const m = whS && whS.el && whS.el.querySelector('.wh-smenu'); if(!m || m.hidden) return false;
@@ -35334,7 +35342,11 @@ function whMenuAct(act){
   if(k === 'del'){   // 059 (P20): asks first, in the menu; a locked system keeps its refusal with no question
     if(m.lock){ whMsg(WH_LOCKED(nm)); return; }
     const it0 = S.el.querySelector('.wh-smenu [data-wh-m="del"]'); if(!it0) return;
-    it0.outerHTML = whAskHtml(`Remove ${nm} and its connections?`, [['m-yes', 'Remove'], ['m-no', 'Cancel']]); whAskFocus(S.el.querySelector('.wh-smenu')); return;
+    it0.outerHTML = whAskHtml(`Remove ${nm} and its connections?`, [['m-yes', 'Remove'], ['m-no', 'Cancel']]); const sm = S.el.querySelector('.wh-smenu'); whAskFocus(sm); whMenuReplace(sm); return;
+  }
+  if(k === 'gdel'){   // 065a: the selection, with Remove all's question; locked ones stay, named
+    const g = whGroupOf(n), it0 = S.el.querySelector('.wh-smenu [data-wh-m="gdel"]'); if(!g || !it0) return;
+    S.menuIds = g; it0.outerHTML = whGroupAskHtml(g); const sm = S.el.querySelector('.wh-smenu'); whAskFocus(sm); whMenuReplace(sm); return;
   }
   if(k === 'st'){ if(WH_ST.some(e => e[0] === v)) m.st = v; else delete m.st; const off = m.st === 'home' ? whHomeOthersOff(n) : []; whMsg((m.st ? `${nm}: ${whStLabel(m.st)}.` : `${nm}: no status.`) + whHomeLine(off)); }   // 063: one Home
   if(k === 'tag'){ const t = whTagClean(S.el.querySelector('.wh-smenu [data-wh-mtag]').value); if(t) m.tag = t; else delete m.tag; whMsg(t ? `${nm} tagged ${t}.` : `${nm}: no tag.`); }
@@ -35346,12 +35358,20 @@ function whMenuAct(act){
   if(!m.st && !m.tag && !m.lock) delete S.mk[n];
   whMkSave(); whMenuClose(true); S.pn = {}; whPaint(true);
 }
+function whDelKey(){
+  const S = whS, M = S.M; if(!M) return false;
+  const ids = M.group.size ? [...M.group].filter(n => S.st.sys[n]) : S.sel !== null && S.st.sys[S.sel] ? [S.sel] : [];
+  if(!ids.length) return false;
+  const n = ids.includes(M.last) ? M.last : ids.includes(S.sel) ? S.sel : ids[ids.length - 1], p = M.P.get(n); if(!p) return false;
+  whMenuOpen(n, (p.x - M.cam.x) * M.cam.s, (p.y + WH_NH - M.cam.y) * M.cam.s + 2);   // under the system's box
+  whMenuAct(ids.length >= 2 ? 'gdel' : 'del'); return true;
+}
 function whCopyName(n){   // to the clipboard; when the browser refuses, the name stays in the menu, selected, to copy by hand
   const nm = whName(n), m = whS.el.querySelector('.wh-smenu');
   const hand = () => {
     const r = m.querySelector('[data-wh-m="copy"]'); if(!r || m.hidden) return;
     const f = document.createElement('input'); f.type = 'text'; f.readOnly = true; f.value = nm; f.className = 'wh-mcopy'; f.setAttribute('aria-label', `${nm}, selected: press Ctrl+C to copy it`);
-    r.replaceWith(f); f.focus({preventScroll: true}); f.select(); whMsg('The browser didn’t let the page copy: the name is selected, press Ctrl+C (Cmd+C on a Mac).');
+    r.replaceWith(f); f.focus({preventScroll: true}); f.select(); whMenuReplace(m); whMsg('The browser didn’t let the page copy: the name is selected, press Ctrl+C (Cmd+C on a Mac).');
   };
   let p = null; try{ p = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(nm) : null; }catch(e){ p = null; }
   if(!p){ hand(); return; }
@@ -35617,6 +35637,15 @@ function whWire(el){
     if(p){ ev.preventDefault(); whPopClose(); const o = [...whS.el.querySelectorAll('[data-wh-pop]')].find(x => x.dataset.whPop === p.dataset.pop); if(o) o.focus(); return; }
     if(whS.M.group.size){ whS.M.group.clear(); whDraw(); }
   }, true);
+  // 065a (the owner: "can we have this work with the delete key?", then "Beside last-picked system (Recommended)"): Delete or Backspace while the
+  // map has the focus and no text field or menu does: the selection's question (one system: its own) in the system menu, opened at the system
+  // picked last; nothing is removed before Remove is pressed
+  document.addEventListener('keydown', (ev) => {
+    if((ev.key !== 'Delete' && ev.key !== 'Backspace') || ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat || !whS.el || !whS.el.offsetParent) return;
+    const a = document.activeElement, box = whS.el.querySelector('.wh-box');
+    if(!box || !a || !box.contains(a) || a.matches('input, textarea, select, [contenteditable], [contenteditable] *') || a.closest('.wh-menu, .wh-pop, .wh-pnl')) return;
+    if(whDelKey()) ev.preventDefault();
+  });
   document.addEventListener('pointerdown', (ev) => {
     if(!whS.el) return; const m = whS.el.querySelector('.wh-hmenu'); if(!m.hidden && !m.contains(ev.target) && ev.button !== 2) whHereClose();
     const sm = whS.el.querySelector('.wh-smenu'); if(!sm.hidden && !sm.contains(ev.target) && !(ev.button === 2 && ev.target === whCv())) whMenuClose(false);   // a right-click on the map opens the next one
@@ -35672,7 +35701,7 @@ function whWireMap(el){
     const d = M.drag; M.drag = null; if(!d) return;
     if(d.kind === 'move'){
       if(d.moved){ for(const n of d.from.keys()){ const p = M.P.get(n); whS.st.pos[n] = [Math.round(p.x), Math.round(p.y)]; } whSave(); whS.drawKey = ''; if(d.locked) whMsg(WH_LOCKED(whName(d.hit))); }   // this browser only
-      else if(d.shift){ if(M.group.has(d.hit)) M.group.delete(d.hit); else M.group.add(d.hit); whDraw(); }
+      else if(d.shift){ if(M.group.has(d.hit)) M.group.delete(d.hit); else { M.group.add(d.hit); M.last = d.hit; } whDraw(); }
       else{ if(!M.selMode && whS.open !== 'sum') whPnSet('sum', true); whSelect(d.hit); }   // 056: a click on a system opens System (the owner: "Yes, a click opens it"); a drag, Shift or the menu doesn't
     }
     if(d.kind === 'band'){

@@ -302,9 +302,9 @@ MUTANTS = [
     ('the marks of a removed system kept', "delete st.sys[id]; delete st.pos[id]; delete whS.mk[id];", "delete st.sys[id]; delete st.pos[id];", ('lock',)),
     ('the empty map at its old height', "  if(box.style.getPropertyValue('--whH') !== H + 'px') box.style.setProperty('--whH', H + 'px');", "  if(n && box.style.getPropertyValue('--whH') !== H + 'px') box.style.setProperty('--whH', H + 'px');", ('empty',)),
     ('the release after a press and hold clicks the menu (LESSON #167)', "if(M.lpOpen){ M.lpOpen = false; ev.preventDefault(); }", "if(M.lpOpen){ M.lpOpen = false; }", ('phone',)),
-    ('Remove all without its verify step (059)', "  if(a === 'rm'){ m.innerHTML = whHereAskHtml(); whAskFocus(m); }", "  if(a === 'rm'){ whHereClose(); whRemoveAll(); }", ('all',)),
-    ('Remove all takes a locked system (059)', "const S = whState(), st = S.st, ids = Object.keys(st.sys).map(Number), keep = ids.filter(whLocked), go = ids.filter(n => !whLocked(n));", "const S = whState(), st = S.st, ids = Object.keys(st.sys).map(Number), keep = [], go = ids;", ('all',)),
-    ('the menu\'s Remove without asking (059)', "    it0.outerHTML = whAskHtml(`Remove ${nm} and its connections?`, [['m-yes', 'Remove'], ['m-no', 'Cancel']]); whAskFocus(S.el.querySelector('.wh-smenu')); return;", "    whMenuClose(true); whRemoveAsk(n); return;", ('lock',)),
+    ('Remove all without its verify step (059)', "  if(a === 'rm'){ m.innerHTML = whHereAskHtml(); whAskFocus(m); whMenuReplace(m); }", "  if(a === 'rm'){ whHereClose(); whRemoveAll(); }", ('all',)),
+    ('Remove all takes a locked system (059)', "keep = have.filter(whLocked), go = have.filter(n => !whLocked(n));", "keep = [], go = have;", ('all',)),   # 065a: in whRemoveIds, which Remove all calls
+    ('the menu\'s Remove without asking (059)', "    it0.outerHTML = whAskHtml(`Remove ${nm} and its connections?`, [['m-yes', 'Remove'], ['m-no', 'Cancel']]); const sm = S.el.querySelector('.wh-smenu'); whAskFocus(sm); whMenuReplace(sm); return;", "    whMenuClose(true); whRemoveAsk(n); return;", ('lock',)),
     ('the status drawn on no border', "c.strokeStyle = sc || C.line; c.lineWidth = sc ? 2.2 : 1.2;", "c.strokeStyle = C.line; c.lineWidth = 1.2;", ('menu',)),
 ]
 

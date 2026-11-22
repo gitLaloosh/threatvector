@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-22 — Wormholes: removing systems (the question in view, the selection, the Delete key); 063's security fallback taken out</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Wormholes: removing systems (the question in view, the selection, the Delete key); 063's security fallback taken out</h1>
+<p><span class="tag">Page</span><span class="tag">Wormholes</span><span class="tag">Intel map</span> 2026-11-22 &middot; <code>v2026.11.22.1</code> &middot; branch <code>065a-extras</code>: the three "with the next delivery" blocks of build queue 065, delivered on their own before 065 (the owner at 065's review: "Extras first, separately (Recommended)")</p>
+
+<h2>Why</h2>
+<ul>
+<li>A bug the owner recorded 2026-11-21: "record the following bug related to removing a system from the wormhole tab: content hidden by bottom of the map." The system menu was placed once when it opened; its Remove question made it taller and nothing placed it again, so Remove and Cancel went under the map's bottom edge.</li>
+<li>A request the same day: "ability to select a group of systems exists but not the ability to remove all selected systems. when multiple are selected, right click &gt; delete (can we have this work with the delete key?) should delete everything that's selected (with verification prompt of course)." At the review: the group menu's other items act on "The one right-clicked (Recommended)", the Delete key's question shows "Beside last-picked system (Recommended)", "No mockup (Recommended)".</li>
+<li>063's data pull request (#77) brought <code>INTEL_MAP.secT</code> and took out <code>sec</code> and <code>band</code>, so the page's fallback for a table from before 063 went with the next page delivery (the owner, 2026-11-21: "that delivery removes 063's fallback").</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Both Wormholes menus are placed by one helper</b> (<code>whMenuPlace</code>): no taller than the room inside the map and on the screen (they scroll), moved up to fit. <code>whMenuReplace</code> places a menu again from where it was opened whenever its content changes (the Remove question, the group's question, Remove all's question, Copy the name's fallback field) and scrolls the question into view.</li>
+<li><b>Removing the selection:</b> a right-click (or press and hold) on a system inside a selection of 2 or more makes the menu's Remove "Remove N selected…" (<code>whGroupOf</code>); it asks Remove all's kind of question for the selection, naming locked systems that stay (<code>whGroupAskHtml</code>). The menu's other items still act on the system right-clicked. Outside the selection the menu is as before. One remover for any list of systems, <code>whRemoveIds</code> (one save, one repaint, one Intel map refresh); Remove all now calls it. The selection is cleared after.</li>
+<li><b>The Delete key</b> (and Backspace): with the map focused and no text field, menu, pop-up or panel in use, the selection's question (or a single selected system's own) opens in the system menu under the system picked last (<code>M.last</code>, set by a click or Shift-click; <code>whDelKey</code>). Nothing is removed until Remove is pressed.</li>
+<li><b>063's fallback taken out:</b> <code>itMapTable</code> needs <code>secT</code> (a table without it is no map), <code>itMapSecT</code> returns the table's tenth, <code>itRpBand</code> reads only the shown tenth's band, <code>itMapBand</code> and <code>itSecTab</code>'s <code>secT</code> test are gone. The checks: <code>check_sec_shown.py</code> refuses a page without <code>secT</code> and any read of the old columns (new mutants: the old <code>sec</code> read again, <code>itMapBand</code> brought back); <code>check_jump_table_update.py</code> drops its case of a page from before 063; <code>intel_map_look_check</code>, <code>intel_map_stack_check</code> and <code>route_planner_check</code> drop their fallback cases (the route check's made-up graph now carries tenths; a new mutant moves the band's 0.5 line).</li>
+<li><b>Info text:</b> <code>whmap</code> [Moving around] now says a box-selected group can be moved or removed together (Delete); 400 of its 400 words.</li>
+<li><b>Checks:</b> new <code>tools/page_checks/wormhole_remove_check.py</code> (the question inside the map at 1440 x 700 and 390 px, opened low and at the top; Remove all's question; the System panel's own; the selection's Remove with a locked system; the tag on the right-clicked system only; Delete and Backspace; Delete typed in the Add box or the tag field; 8 mutants). <code>wormhole_menu_check</code>'s three mutants on lines this change moved point at the new lines.</li>
+</ul>
+
+<h2>Stored data</h2>
+<ul>
+<li>No new key and no change of form: removing systems writes <code>tvWhChain</code>, <code>tvWhMarks</code>, <code>tvWhSigs</code> and <code>tvWhEnds</code> exactly as Remove all did.</li>
+</ul>
+</body>
+</html>
