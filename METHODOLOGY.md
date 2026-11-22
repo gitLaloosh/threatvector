@@ -429,7 +429,9 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   (below), where no Only filter applies. A filter's settings button shows while you hover it, on or off (on a phone, beside a filter that is on). What you pick is kept in this
   browser (localStorage `tvMapStack`); a first visit opens on Security status. A ring marks a system with a report: its colour is
   the standing (hostile red, neutral grey, friendly blue), its size the gang (solo, 2–10, 11 or more); ✕ counts its
-  kills. Hover a system, or a row in Near You or the Feed, for its route to you; press it to keep the route (past the
+  kills by who died (build queue 066): after the amber ✕, friendlies lost (blue), hostiles killed (red) and neutrals killed (grey), in
+  that order, a standing with none left out, within "forget reports after" (a victim whose side isn't known counts as neutral, as in
+  Near You's badges); the hover says it in words. Hover a system, or a row in Near You or the Feed, for its route to you; press it to keep the route (past the
   map's reach too). Drag or two
   fingers move it, the wheel or a pinch zooms it (over the map the wheel zooms instead of scrolling the page). The filters
   are a column down the map's left side; a filter with a panel (Wormholes' list, Sov upgrades) has its own button beside it, and one such panel is open at a time. Near You
@@ -646,5 +648,6 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   hole in Intel's Wormholes list with the J-space system it leads to and its class, merged into a report already there (its IDs and lines
   kept); leaving a chain adds the exit the same way. A setting in Intel settings, on unless you turn it off (kept in tvWormholes). The k-space
   side's ID typed later on the Wormholes tab fills it in; removing either never removes the other.
-- **Your chain's k-space ends on Intel's map** (062): a k-space system on your chain whose connection was seen within "keep wormhole reports for"
-  gets the wormhole ring, like a live report.
+- **Your chain stays on the Wormholes tab** (build queue 066; 062 had marked your chain's k-space ends on Intel's map): only Intel's own
+  entries are drawn there, so a hole removed from Intel's Wormholes list is gone from the map even while an old chain still names that
+  system; your own jumps between k-space and J-space still add an Intel entry (above), which the list can remove.

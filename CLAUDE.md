@@ -554,6 +554,13 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   since build queue 063 (roadmap/security-shown-plan.md) the table's own tenth, `INTEL_MAP.secT`, which `tools/jump_table_update.py` works out from
   CCP's unrounded value (nearest tenth, above 0.0 and below 0.05 shows 0.1; a halfway value from `SEC_CHECKED_IN_GAME`, else the nearest and named
   in its pull request to check in game); nothing on the page rounds security. Region's colours leave out cyan, amber and the lilacs (Q13). `intel_map_stack_check.py`.
+- **Kill counts by who died** (v2026.11.21.3, build queue 066; roadmap/kill-counts-plan.md, mockup `Claude outputs/kill_counts_mockup.html`; the owner:
+  "amber X [N] [N] [N]", "go with A"): a map label's kill tag is the amber ✕, then the counts by who died, friendly, hostile, neutral (`C.kill`:
+  `--side-friendly`, `#f08b7e`, `#b9c3ca`), none for a standing with no deaths; `itMapReports` counts `kb` from `st.kills`' `v` (unknown: neutral);
+  the hover `itMapKbTipHtml`, the legend "✕ kills by who died", both `.it-mkb`; `itMapKey` carries the three counts. `map_kill_counts_check.py`.
+  Also 066: every box where one system is typed and added is a `.sys-cb` (`SYS_CB_ATTRS`, `SYS_CB_UL`) with the map search's list, bound on first
+  focus (`sysCbBind`, its `data-scope`); a pick fills the box (the owner: "Fill the box (Recommended)"), a name typed in full acts on its first Enter; the shorthand box, paste boxes and the Feed
+  search have none. `system_boxes_check.py`.
 - **Jump bridges** (v2026.11.16.5, build queue 041; roadmap/jump-bridges-plan.md, mockup `Claude outputs/jump_bridges_mockup.html`; the owner: "add
   jump bridges to the map (as a setting that can be toggled off and on). when turned on, jump ranges will be calculated using bridges. default
   setting will be off.", "ideally i'd like to only have near you not use bridges", at the re-plan "Both count bridges", "Switch governs both; gates
@@ -629,8 +636,8 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   line (`whRtTip`: a hole's ID and type only when recorded, never "ID not known") and glows the route on the chain map (`whRtGlow`, `whRtOver`, the EXIT
   pill). No Set destination: nothing goes to EVE (the owner). Signatures' Type sort (`WH_SG_TY_ORDER`, `o`, `sv: 2`); effects with CCP's numbers
   (`IT_WH_EFF_MOD` from `tools/gen_wh_table.py`, the beacon's class `INTEL_WH.effc` from `tools/jump_table_update.py`; `whEffLines`, none guessed for
-  shattered and Drifter systems); k ↔ J jumps add Intel's hole (`itWhJumpAdd`, `jw`, `tvWormholes.auto`; LESSON #175); the chain's k-space ends ringed
-  on Intel's map (`itMapWh`, src 'chain'). `wormhole_routes_check.py`, `wormhole_effects_check.py`, `wormhole_autoadd_check.py`.
+  shattered and Drifter systems); k ↔ J jumps add Intel's hole (`itWhJumpAdd`, `jw`, `tvWormholes.auto`; LESSON #175); the chain's k-space ends no
+  longer go on Intel's map (build queue 066, the owner: "B: chains off Intel's map (Recommended)"; `itMapWh` draws Intel's own entries only). `wormhole_routes_check.py`, `wormhole_effects_check.py`, `wormhole_autoadd_check.py`.
   Build queue 063 (the owner: "Only one Home: setting Home on a system clears it from the other, with a line saying so."): one Home (`whHomes`). Setting
   it clears the rest (`whHomeOthersOff`, `whHomeLine`); an import never replaces yours (`whChainMerge`: "do not overwrite the existing home."); two or
   more (saved by an older page, or a shared chain's taken while you had none) are settled by `whHomeOne`: the fewest jumps from where you are by the

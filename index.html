@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SYcGaW/h3HT9a5fp94pFNQRfSi4EUhw0VzQzvIiKl2I='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-1YniaEUgUgbpZdh7WXjryfbaMF4chziPO0szmkRb1ZM='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2729,6 +2729,7 @@
   .it-map-zoom button:hover, button.it-map-clr:hover{border-color:color-mix(in srgb, var(--cyan) 55%, transparent);}
   .it-map-tip{position:absolute; pointer-events:none; z-index:3; min-width:150px; max-width:280px; padding:7px 9px; border:1px solid #2c3842; border-radius:6px; background:var(--panel-2); box-shadow:0 8px 22px rgba(0,0,0,.5); font:400 12px/1.4 var(--sans); color:var(--text); overflow-wrap:anywhere;}
   .it-map-tip[hidden]{display:none;} .it-map-tip b{color:var(--heading);} .it-map-tip .d{color:var(--text-dim);}
+  .it-mkb{font-style:normal;} .it-mkb.f{color:var(--side-friendly);} .it-mkb.h{color:#f08b7e;} .it-mkb.n{color:#b9c3ca;}   /* build queue 066: kill counts by who died, the label's colours, in the map's hover and legend */
   .it-map-tip .hostile{color:#f08b7e; font-weight:600;} .it-map-tip .neutral{color:#c3ccd2; font-weight:600;} .it-map-tip .friendly{color:#8fb6ee; font-weight:600;}
   /* build queue 047: the route planner (roadmap/route-planner-plan.md; mockup Claude outputs/route_planner_mockup.html): the search box top
      left of the map ("Hide all routes" below it), the right-click menu, the phone tooltip's buttons, the note after a press, the Routes box */
@@ -2736,6 +2737,8 @@
   .it-rp-search input{width:100%; min-width:0; box-sizing:border-box; height:32px; min-height:32px; padding:0 9px; font-size:12px;}
   .it-rp-sug{list-style:none; margin:2px 0 0; padding:3px 0; border:1px solid #2c3842; border-radius:6px; background:var(--panel-2); box-shadow:0 8px 22px rgba(0,0,0,.5); max-height:260px; overflow:auto;}
   .it-rp-sug[hidden]{display:none;}
+  .sys-cb{position:relative; display:block; flex:1 1 140px; min-width:0;} .sys-cb > input{width:100%; min-width:0; box-sizing:border-box;}   /* build queue 066: a system box with the map search's list */
+  .sys-cb > .it-rp-sug{position:absolute; left:0; right:0; top:100%; z-index:8; min-width:200px;}   /* laid over what's below, so the form keeps its shape */
   .it-rp-sug li{padding:5px 9px; font:400 12px/1.3 var(--sans); cursor:pointer; color:var(--text);} .it-rp-sug li.on, .it-rp-sug li:hover{background:#1d2731;}
   .it-rp-sug li .d, .it-rp-menu .d, .it-rp-note .d, .it-rp-box .d{color:var(--text-dim);}
   .it-map-box button.it-map-clr{top:8px; left:auto; right:148px;}   /* 052: left of the zoom buttons (the filter column is under the search box) */
@@ -3320,7 +3323,7 @@
     border:1px solid var(--line); border-radius:8px; background:var(--panel-2); box-shadow:0 10px 30px rgba(0,0,0,.55);}
   .wh-pop[hidden]{display:none;} .wh-poph{display:flex; align-items:center; justify-content:space-between; font:700 13px var(--sans); color:var(--heading);}
   .wh-pop [data-wh-z="arr"]{align-self:flex-start;}
-  .wh-pop .wh-addf{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; margin:0;} .wh-pop .wh-addf > *{min-width:0;} .wh-pop .wh-addf input[name="sys"]{grid-column:1/-1;}
+  .wh-pop .wh-addf{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; margin:0;} .wh-pop .wh-addf > *{min-width:0;} .wh-pop .wh-addf .sys-cb{grid-column:1/-1;}
   .wh-lnk{display:flex; flex-direction:column; gap:3px; font:12px var(--sans); color:var(--text-dim);} .wh-lnk select{width:100%;}
   .wh-ty{display:flex; flex-direction:column; gap:2px;} .wh-ty input{width:100%; box-sizing:border-box;} .wh-ty output{font:12px var(--sans); color:var(--it-wh); min-height:15px;}
   .wh-dr{display:inline-flex; gap:8px; align-items:center; font:600 13px var(--sans); color:var(--it-wh-drifter);} .wh-dr input{width:auto; min-height:0; margin:0;}
@@ -3433,7 +3436,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.21.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.21.3</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3814,7 +3817,7 @@ const CARD_INFO = {
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills. Filters (left): one colour (press it again for none); Only filters, any number, all must match (their settings beside them); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h (your chain's k-space ends too), edited and shared in its list (a name there shows it on the map). With no Only filter on, systems past {card:itnear}'s range are faded.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none); Only filters, any number, all must match (their settings beside them); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter on, systems past {card:itnear}'s range fade.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus jump bridges you can use with Use jump bridges on the map (green curves, the bridge button hides them; the alert glow and Paths to you stay by stargate).",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list. With Use jump bridges on, routes take only bridge jumps arriving in the ticked zones (zone 1 free by default).",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
@@ -30599,8 +30602,11 @@ function itMapReports(){
     const hostile = L.pilots.some(x => x.side === 'h') || (!L.pilots.length && !(L.count && L.countKind === 'neut'));
     const side = st.kind === 'clear' ? 'clear' : L.friendlyOnly ? 'friendly' : hostile ? 'hostile' : 'neutral';
     const n = side === 'friendly' ? L.pilots.length : itCount(st);
-    const kills = st.kind === 'clear' ? 0 : (st.kills || []).filter(x => x.t >= keep).length;
-    out.set(i, {st, side, n, kills, t: st.t});
+    // build queue 066 (roadmap/kill-counts-plan.md; the owner: "maybe instead of changing rings, we just represent the death count by standing?
+    // amber X [N] [N] [N]"): the kills by who died, counted here with the reports (never per draw: LESSON #120), itKillBadges' rule (unknown: neutral)
+    const kb = {f: 0, h: 0, n: 0};
+    if(st.kind !== 'clear') for(const x of st.kills || []) if(x.t >= keep) kb[IT_KILL_WORD[x.v] ? x.v : 'n']++;
+    out.set(i, {st, side, n, kills: kb.f + kb.h + kb.n, kb, t: st.t});
   }
   return out;
 }
@@ -30937,7 +30943,8 @@ function itMapRefresh(force){
 // their labels' ages, so a label that ages or a wormhole whose time is up redraws the map through the refreshes it already has (no timer)
 function itMapKey(){
   const fq = itFlSys();
-  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}`;   // 058: the stack   // 047: Threat Vector's route   // 041: the bridges counted
+  // 066: who died, not only the total (a re-work of sides, itSidesRework, can change it with the same total)
+  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kb ? `${r.kb.f}.${r.kb.h}.${r.kb.n}` : r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}`;   // 058: the stack   // 047: Threat Vector's route   // 041: the bridges counted
 }
 // slide the map so your system is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
 function itMapCenter(draw = true){
@@ -31218,6 +31225,7 @@ function itMapDraw(){
   const T = itMapTable(), n = T.n, c = itm.cv.getContext('2d'), dpr = window.devicePixelRatio || 1, W = itm.W, H = itm.H, v = itm.view, P = itm.P, Q = itm.Q, D = itm.D, R = itm.reach, near = itNearReach();
   const Dg = itm.Dg || D;   // 041: the alert glow and the Near You fade stay by stargate (hostiles can't use your bridges)
   const C = {hostile: itMapCol('--danger', '#c65b4e'), neutral: '#b9c3ca', friendly: itMapCol('--side-friendly', '#4f8fe0'), cyan: itMapCol('--cyan', '#4fc3d9'), amber: itMapCol('--amber', '#d99a3c'), clear: itMapCol('--it-clear', '#3fb950'), gate: '#26303b', gateX: '#3a4753'};
+  C.kill = {f: C.friendly, h: '#f08b7e', n: C.neutral};   // 066 (the owner: "go with A"): the label's kill counts by who died: the friendly ring's blue, .it-kl.kh's red, the neutral ring's grey
   c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
   for(let i = 0; i < n; i++){ Q[2 * i] = P[2 * i] * v.k + v.tx; Q[2 * i + 1] = P[2 * i + 1] * v.k + v.ty; }
   const on = (i) => D[i] >= 0 && D[i] <= R, X = (i) => Q[2 * i], Y = (i) => Q[2 * i + 1], m = 30;
@@ -31413,7 +31421,10 @@ function itMapLabels(c, focus, onRoute, C, cr = 0){   // cr: the circles' radius
     const pcs = [];
     if(r.side === 'clear') pcs.push({t: 'CLEAR', bg: 'rgba(63,185,80,.18)', col: C.clear, font: TAG});
     else if(r.n) pcs.push({t: String(r.n), bg: r.side === 'hostile' ? 'rgba(198,91,78,.85)' : r.side === 'friendly' ? 'rgba(79,143,224,.3)' : 'rgba(185,195,202,.25)', col: '#fff', font: TAG});
-    if(r.kills) pcs.push({t: '✕' + r.kills, col: C.amber, font: '700 11px system-ui, sans-serif'});
+    if(r.kills){   // 066: the amber ✕, then one count per who died in its standing's colour, Near You's order; none for a standing with no deaths
+      const KF = '700 11px system-ui, sans-serif'; pcs.push({t: '✕', col: C.amber, font: KF});
+      for(const v of ['f', 'h', 'n']) if(r.kb[v]) pcs.push({t: String(r.kb[v]), col: C.kill[v], font: KF});
+    }
     return pcs;
   };
   const whTag = (i) => { const w = WH.mark.get(i); return w ? [itMapWhBoldAt(i) ? {t: itMapWhLabel(w), bg: itMapWhCol(w), col: '#0c1014', font: TAG} : {t: itMapWhLabel(w), bg: 'rgba(12,16,20,.85)', col: itMapWhCol(w), font: TAG}] : []; };   // 045: a filled pill for a bold hole (058: one that matches)   // 040: WH and its age
@@ -31462,7 +31473,7 @@ function itMapOnlyHtml(){
 function itMapLegend(){
   const leg = itm.el.querySelector('.it-map-leg'), ring = (col, r) => `<i class="ring" style="width:${r * 2}px;height:${r * 2}px;border-color:${col}"></i>`;
   const h = `<div class="it-map-fl" title="${escapeHtml(itMapFLegTitle())}">${itMapFLegHtml()}</div>${itMapOnlyLineHtml()}<span><svg class="pin" width="11" height="15" viewBox="-1 -1 16 22" aria-hidden="true"><path d="M7 20C5.5 16 0 12 0 7a7 7 0 0 1 14 0c0 5-5.5 9-7 13z" fill="#fff" stroke="#0c1014" stroke-width="2"/><circle cx="7" cy="7" r="2.6" fill="#0c1014"/></svg>you</span><span>${ring('var(--danger)', 6)}hostile</span><span>${ring('#b9c3ca', 6)}neutral</span><span>${ring('var(--side-friendly)', 6)}friendly</span><span class="sz">${ring('#9aa6ae', 4)}solo ${ring('#9aa6ae', 6)}2–10 ${ring('#9aa6ae', 8.5)}11+</span>${IT_WH_LEG_HTML}`
-    + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span><span><i class="dot"></i>within your alert range (${it.set.range})</span><span>faded: past ${escapeHtml(cardName('itnear'))} (${itNearReach()})</span><span>faint: past ${escapeHtml(cardName('itmap'))}: within (${Number(itMapReach())})</span><span>✕ kills</span>`;
+    + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span><span><i class="dot"></i>within your alert range (${it.set.range})</span><span>faded: past ${escapeHtml(cardName('itnear'))} (${itNearReach()})</span><span>faint: past ${escapeHtml(cardName('itmap'))}: within (${Number(itMapReach())})</span><span title="${escapeHtml(`Kills here within "forget reports after" (${Number(it.set.forget)} min), by who died: friendlies lost, hostiles killed, neutrals killed`)}">✕ kills by who died: <i class="it-mkb f">friendly</i> <i class="it-mkb h">hostile</i> <i class="it-mkb n">neutral</i></span>`;   // 066
   if(leg._h !== h){ leg.innerHTML = h; leg._h = h; }
 }
 // ---- build queue 043: "Paths to you" (Project doc roadmap/paths-to-you-plan.md, mockup Claude outputs/paths_to_you_mockup.html; the owner:
@@ -31694,6 +31705,9 @@ function itMapJbTipHtml(i){
   const gj = itm.Dg[i], a = `${n} of the ${itm.D[i]} jump${itm.D[i] === 1 ? '' : 's'} by jump bridge`, b = `by stargate only ${gj < 0 ? 'no route' : `${gj} jump${gj === 1 ? '' : 's'}`}`;
   return `<br><span class="jb">${escapeHtml(a)}</span> <span class="d">· ${escapeHtml(b)}</span>`;
 }
+// build queue 066: the hover's kill line, by who died, each part in the label's colour (the words carry it, not only colour)
+function itMapKbTipHtml(r){ return `<span class="d">${escapeHtml(`✕ ${r.kills} kill${r.kills === 1 ? '' : 's'} here:`)}</span> ${itMapKbPartsHtml(r)}`; }
+function itMapKbPartsHtml(r){ return ['f', 'h', 'n'].filter(v => r.kb[v]).map(v => `<span class="it-mkb ${escapeHtml(v)}">${escapeHtml(`${r.kb[v]} ${IT_KILL_WORD[v][r.kb[v] === 1 ? 2 : 3]}`)}</span>`).join('<span class="d">, </span>'); }
 function itMapTip(i, x, y){
   const tip = itm.tip;
   if(i < 0){ tip.hidden = true; return; }
@@ -31708,7 +31722,7 @@ function itMapTip(i, x, y){
   if(r){
     const word = r.side === 'clear' ? 'reported clear' : `<span class="${r.side}">${r.n ? r.n + ' ' : ''}${r.side}</span> · ${{solo: 'solo', small: 'small gang', fleet: 'fleet'}[itMapTier(Math.max(1, r.n))]}`;
     h += `<br>${word} <span class="d">· ${itAgo(r.t)} ago</span>`;
-    if(r.kills) h += `<br><span class="d">✕ ${r.kills} kill${r.kills === 1 ? '' : 's'} here</span>`;
+    if(r.kills) h += `<br>${itMapKbTipHtml(r)}`;   // 066: by who died
   } else if(wh){   // 040: a wormhole shown here is its line below (the Wormholes filter shows every kept one, wherever it is)
   } else if(d > itm.reach || d < 0) h += `<br><span class="d">past ${escapeHtml(cardName('itmap'))}: within (${Number(itm.reach)}): reports aren’t shown here</span>`;
   else if(i !== itm.home) h += `<br><span class="d">nothing reported in the last ${it.set.forget} min</span>`;
@@ -32454,7 +32468,7 @@ function itWhNear(sys, now = Date.now()){
 function itWhBadgeHtml(drifter, title, short = false){ return `<span class="it-gtag it-wh${escapeHtml(drifter ? ' dr' : '')}" title="${escapeHtml(title)}">${escapeHtml(short ? (drifter ? 'DRIFTER' : 'WH') : drifter ? 'Drifter WH' : 'Wormhole')}</span>`; }   // short: the Paths to you tree (045)
 function itWhBadgeTitle(w){ const st = itWhStore(); return `${w.drifter ? 'A Drifter wormhole' : 'A wormhole'}: ${itWhByTxt(w)}, ${itAgo(w.t)} ago. The map’s Wormholes filter keeps it ${st.keepH} h`; }
 // who it's from: added by you, reported by someone, or (046) from a shared list (the owner: "I agree" to saying so)
-function itWhByTxt(w){ return w.src === 'chain' ? `on your chain → ${whName(w.chain)} (${[whClsName(whCls(w.chain)), whEff(w.chain)].filter(Boolean).join(' · ')})` : w.jw && whReady ? itWhJwTxt(w.jw) : w.src === 'you' ? 'added by you' : `${w.via ? 'from a shared list, ' : ''}reported by ${w.who}`; }
+function itWhByTxt(w){ return w.jw && whReady ? itWhJwTxt(w.jw) : w.src === 'you' ? 'added by you' : `${w.via ? 'from a shared list, ' : ''}reported by ${w.who}`; }
 function itWhJwTitleHtml(w){ return w.jw && whReady && whEff(w.jw.j) ? ` title="${escapeHtml(whEffTxt(w.jw.j))}"` : ''; }   // 062 (A3): the effect's numbers on hover
 function itWhJwTxt(jw){   // 062 (A3): "you jumped in → J123456 (C3 · Pulsar · statics D845 N968)"
   const j = jw.j, e = whEff(j), stc = whStcSort(whStcOf(j).codes || '');
@@ -32470,16 +32484,10 @@ function itMapWh(){
     kept.set(i, w);
     if(w.src === 'intel' && w.t >= fresh && D && D[i] >= 0 && D[i] <= itm.reach) live.set(i, w);
   }
-  // 062 (K1, the mapping plan's D14; Q13 "Seen recently"): your chain's k-space ends whose connection was seen within "keep wormhole reports for"
-  // are marked like a live report (thin rings on every filter; 045's bold mark with Wormholes on); one mark a system, an Intel entry kept as it is.
-  // Never in the Intel example (itWhAside)
-  if(!itWhAside && whReady && whS) for(const l of whS.st.links){
-    const k = whIsJ(l.a) ? (whIsJ(l.b) ? null : l.b) : whIsJ(l.b) ? l.a : null; if(k === null || !(l.seen >= cut)) continue;
-    const i = g.at.get(k); if(i === undefined) continue;
-    const w = kept.get(i) || {id: k, t: l.seen, who: '', drifter: false, src: 'chain', sigs: [], chain: k === l.a ? l.b : l.a};
-    if(w.src === 'chain' && l.seen > w.t){ w.t = l.seen; w.chain = k === l.a ? l.b : l.a; }
-    kept.set(i, w); if(D && D[i] >= 0 && D[i] <= itm.reach) live.set(i, w);
-  }
+  // 062's K1 (your chain's k-space ends marked like a live report) went with build queue 066 (the owner: "the wormhole tab chains should not force a
+  // hole to remain on the intel map. when it's gone, it's gone from the intel side. wormhole tabs will retain old chains at times. this should
+  // not affect live intel.", then "B: chains off Intel's map (Recommended)"): only Intel's own entries are drawn; your own k-space <-> J-space
+  // jumps still add one (itWhJumpAdd), which its list can remove
   // 058 (Q21): with Wormholes on, the kept holes that match every Only filter that is on join the live ones; a kept hole that doesn't match
   // keeps only the off-filter rule (live: thin rings, as a report; else no wormhole mark). The owner: "045's bold + pulse", "Off-filter rule"
   const out = {kept, live, mark: live};
@@ -32594,7 +32602,7 @@ function itWhListOpen(open, back = true){
     const p = document.createElement('div');
     p.className = 'it-whp'; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Wormhole list'); p.hidden = true;
     p.innerHTML = '<div class="it-whp-h"><h4>Wormholes</h4><span class="it-whp-keep"></span><button type="button" class="x-close" data-it-whx aria-label="Close" title="Close (Esc)">×</button></div>'
-      + '<form class="it-whp-add" autocomplete="off"><input type="text" name="sys" placeholder="System, e.g. Tama" aria-label="System with a wormhole" maxlength="40" spellcheck="false"><label><input type="checkbox" name="dr"> Drifter</label><button type="submit">Add</button>' + itWhAddMoreHtml() + '</form>'
+      + '<form class="it-whp-add" autocomplete="off"><span class="sys-cb"><input type="text" name="sys" placeholder="System, e.g. Tama" aria-label="System with a wormhole" maxlength="40" spellcheck="false"' + SYS_CB_ATTRS + '>' + SYS_CB_UL + '</span><label><input type="checkbox" name="dr"> Drifter</label><button type="submit">Add</button>' + itWhAddMoreHtml() + '</form>'
       + itWhShareHtml() + '<div class="it-whp-msg" role="status"></div><div class="it-whp-rows"></div>';   // 046: Export and Import
     p.addEventListener('click', (e) => {
       if(e.target.closest('[data-it-whx]')){ itWhListOpen(false); return; }
@@ -33345,6 +33353,36 @@ function sysComboBind(inp, ul, o){
   });
   ul.addEventListener('mousedown', (e) => { const li = e.target.closest('[data-sys-pick]'); if(li){ e.preventDefault(); pick(Number(li.dataset.sysPick)); } });
 }
+// build queue 066 (the owner: "all input fields that allow the entry of a system name should use the helper to identify real systems like the
+// intel map does", then "Fill the box (Recommended)", "Leave it out (Recommended)" for the shorthands): the boxes where one system is typed and
+// added (Intel's Wormholes list and Routes → Avoid; the Wormholes tab's + Add, "Add a system here" and Routes → Pin) are a .sys-cb: the box and
+// the map search's own list (.it-rp-sug), bound by sysComboBind the first time the box takes focus (so a panel's redraw needs nothing more).
+// The scope is the box's data-scope ('all' on the Wormholes tab, else 'k', as each box's sysFind). A pick fills the box; Add / Pin or Enter
+// again does what it did before; a name already typed in full acts on its first Enter, as before 066 (the build's hand: wormhole_tab_check)
+const SYS_CB_ATTRS = ' role="combobox" aria-expanded="false" aria-autocomplete="list"';
+const SYS_CB_UL = '<ul class="it-rp-sug" role="listbox" aria-label="Systems" hidden></ul>';
+let sysCbN = 0;
+function sysCbRowHtml(id){
+  if(whIsJ(id)) return `${whNameHtml(id)} <span class="d">${escapeHtml(whClsName(whCls(id)))}</span>`;   // a J-space row: its class
+  return `<span class="it-sn ${escapeHtml(itSecClass(id))}">${escapeHtml(itSysName(id))}</span> <span class="d">${escapeHtml(sysRegion(id) || '')}</span>`;
+}
+function sysCbBind(inp){
+  const box = inp.closest('.sys-cb'), ul = box && box.querySelector(':scope > .it-rp-sug'); if(!ul || box.dataset.bound) return false; box.dataset.bound = '1';
+  const scope = box.dataset.scope === 'all' ? 'all' : 'k', idp = `sysCb${++sysCbN}o`; ul.id = `${idp}l`; inp.setAttribute('aria-controls', ul.id);
+  let byEnter = false;   // a name typed in full, then Enter, acts at once as before 066; a part of one is filled in first
+  inp.addEventListener('keydown', (e) => { byEnter = e.key === 'Enter'; });   // added before sysComboBind's own, so it runs first
+  sysComboBind(inp, ul, {idp,
+    opts: () => inp.value.trim() && it.names ? sysSuggest(inp.value, 8, scope) : null,
+    rowHtml: sysCbRowHtml,
+    pick: (id) => { const nm = whIsJ(id) ? whName(id) : itSysName(id), whole = byEnter && inp.value.trim().toLowerCase() === nm.toLowerCase(); byEnter = false;
+      inp.value = nm; inp.focus(); if(whole && inp.form) inp.form.requestSubmit(); },
+    enter: () => {}});   // the list shut: Enter sends the form as before
+  itLoadNames().then(() => { if(document.activeElement === inp && inp.value.trim()) inp.dispatchEvent(new Event('focus')); }, () => {});   // the names for the suggestions
+  return true;
+}
+if(typeof document !== 'undefined' && typeof document.addEventListener === 'function') document.addEventListener('focusin', (e) => {
+  const t = e.target; if(t && t.matches && t.matches('.sys-cb > input') && sysCbBind(t) && t.value.trim()) t.dispatchEvent(new Event('focus'));   // bound now: the focus it missed
+});
 // a system picked: the map centred on it (zoomed in to a gate at least IT_RP_PICK_GATE px), its route kept, its tooltip open
 function itRpPick(id){
   const i = itGraphGet().at.get(id); if(i === undefined || !itm.P) return;
@@ -33365,7 +33403,7 @@ function itRpBoxHtml(numbered){
     + `<label class="it-rp-pen">security penalty <input type="range" min="0" max="100" step="1" value="${Number(s.pen)}" data-it-rp-set="pen" aria-label="Security penalty"${itOnHtml(s.pref === 'Shorter', 'disabled')}> <output>${Number(s.pen)}</output></label>`
     + `<div class="it-rp-avk">avoid</div>${itRpCkHtml(s, 'camp', 'gate camps')}${itRpCkHtml(s, 'bub', 'bubbles')}${itRpCkHtml(s, 'host', 'systems with reported hostiles, neutrals or ESS')}${itRpCkHtml(s, 'kill', 'systems with kills')}${itRpCkHtml(s, 'mine', 'systems on my avoid list')}`
     + `<ul class="it-rp-list">${itRpListHtml(s)}</ul>`
-    + `<form class="it-rp-add" autocomplete="off"><input type="text" name="sys" placeholder="System, e.g. 8BA-RA" aria-label="System to avoid" maxlength="40" spellcheck="false"><button type="submit">Avoid</button></form><div class="it-rp-msg" role="status"></div>`
+    + `<form class="it-rp-add" autocomplete="off"><span class="sys-cb"><input type="text" name="sys" placeholder="System, e.g. 8BA-RA" aria-label="System to avoid" maxlength="40" spellcheck="false"${SYS_CB_ATTRS}>${SYS_CB_UL}</span><button type="submit">Avoid</button></form><div class="it-rp-msg" role="status"></div>`
     + itRpJbBoxHtml()   // build queue 057: the zones a bridge jump may arrive in, and what they're measured from
     + `<div class="c">For the map's routes and “Send destination to EVE (Threat Vector's route)”. EVE's route uses your game settings; Threat Vector's can't read your game's avoidance list, so add those systems here too.</div></div>`;
 }
@@ -33981,7 +34019,7 @@ function saSetRender(focusSel){
   if(inp && ul) sysComboBind(inp, ul, {   // 064 (the owner: "your recommendation"): the map search's own list, names with or without their "-"
     idp: 'saSyo',
     opts: () => inp.value.trim() && it.names ? sysSuggest(inp.value, 8, 'k') : null,
-    rowHtml: (id) => `<span class="it-sn ${escapeHtml(itSecClass(id))}">${escapeHtml(itSysName(id))}</span> <span class="d">${escapeHtml(sysRegion(id) || '')}</span>`,
+    rowHtml: sysCbRowHtml,   // 066: the same row as the system boxes'
     pick: (id) => { inp.value = itSysName(id); saSetChange(inp); },
     enter: () => {}   // the list shut: Enter commits the box as before (its change event)
   });
@@ -34389,7 +34427,7 @@ function whShellHtml(){
     + `<button type="button" class="it-map-clr wh-tb" data-wh-pop="share" aria-expanded="false" title="Share your chain, or import someone’s" aria-label="Share">${WH_SHARE_SVG}<span>Share</span></button>`
     + `<button type="button" class="it-gear wh-gear" data-wh-pop="set" aria-expanded="false" aria-label="Wormholes settings" title="Wormholes settings">${IT_GEAR}</button>${infoBtnHtml('whmap')}</div>`
     + `<div class="wh-pop" data-pop="add" role="dialog" aria-label="Add by hand" hidden><div class="wh-poph">Add by hand<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
-    + `<form class="wh-addf" autocomplete="off"><input type="text" name="sys" placeholder="System, e.g. J123456, Thera or Amamake" aria-label="System" maxlength="40" spellcheck="false">`
+    + `<form class="wh-addf" autocomplete="off"><span class="sys-cb" data-scope="all"><input type="text" name="sys" placeholder="System, e.g. J123456, Thera or Amamake" aria-label="System" maxlength="40" spellcheck="false"${SYS_CB_ATTRS}>${SYS_CB_UL}</span>`
     + `<label class="wh-lnk">Linked to <select name="link" aria-label="Linked to"></select></label>`
     + `<input type="text" name="sig" placeholder="Sig ID, e.g. RZL-429" aria-label="Signature ID of the connection, in the linked system (optional)" title="The signature ID in the linked system (where you scanned it)" maxlength="7" spellcheck="false" autocapitalize="characters">`
     + `<span class="wh-ty"><input type="text" name="ty" placeholder="Type or class: Z971, C3, HS" aria-label="Type or class (optional)" maxlength="7" spellcheck="false" autocapitalize="characters" list="whAddTyDl"><datalist id="whAddTyDl"></datalist><output name="dest"></output></span>`
@@ -35218,7 +35256,7 @@ function whHereOpen(x, y){
   whMenuClose(false);
   const S = whS, m = S.el.querySelector('.wh-hmenu'), w = whToWorld(x, y);
   S.here = [Math.round(w.x - WH_NW / 2), Math.round(w.y - WH_NH / 2)];
-  m.innerHTML = whHereAllHtml() + `<div class="wh-mh">Add a system here</div><form class="wh-here" data-wh-here autocomplete="off"><input type="text" name="sys" maxlength="40" spellcheck="false" placeholder="J123456, Thera or Amamake" aria-label="System to add here"><button type="submit">Add</button></form>`
+  m.innerHTML = whHereAllHtml() + `<div class="wh-mh">Add a system here</div><form class="wh-here" data-wh-here autocomplete="off"><span class="sys-cb" data-scope="all"><input type="text" name="sys" maxlength="40" spellcheck="false" placeholder="J123456, Thera or Amamake" aria-label="System to add here"${SYS_CB_ATTRS}>${SYS_CB_UL}</span><button type="submit">Add</button></form>`
     + '<div class="wh-note wh-hn">Not linked to anything. Link it later with + Add.</div>';
   m.hidden = false;
   const bx = S.el.querySelector('.wh-box'), br = bx.getBoundingClientRect(), bh = Math.min(bx.clientHeight, innerHeight - br.top - 8);   // inside the map and on the screen
@@ -35461,7 +35499,7 @@ function whRtHtml(){
   let o = `<div class="wh-rt-top"><span class="wh-note">From ${whRtFromHtml(res.from, me)}</span>`
     + (R.from !== null && R.from !== me ? '<button type="button" data-wh-rt-me>From where you are</button>' : '')
     + `<label class="mys-use" title="On: the fewest jumps for every row. Off: your preference in Intel ⚙ → Routes."><input type="checkbox" class="mys-sw" role="switch" data-wh-rt-short${itOnHtml(R.short, 'checked')}> Shortest</label></div>`
-    + `<form class="it-rp-add" data-wh-rt-pin autocomplete="off"><input type="text" name="sys" placeholder="Pin a system, e.g. Jita or J123456" aria-label="Pin a system" maxlength="40" spellcheck="false"><button type="submit">Pin</button></form>`
+    + `<form class="it-rp-add" data-wh-rt-pin autocomplete="off"><span class="sys-cb" data-scope="all"><input type="text" name="sys" placeholder="Pin a system, e.g. Jita or J123456" aria-label="Pin a system" maxlength="40" spellcheck="false"${SYS_CB_ATTRS}>${SYS_CB_UL}</span><button type="submit">Pin</button></form>`
     + `<div class="it-rp-msg" role="status">${escapeHtml(R.msg)}</div>`;
   if(res.err) return o + `<div class="wh-note" role="status">${escapeHtml(res.err)}</div>`;
   o += `<div class="wh-rt-list">${whRtRowsHtml(res.out)}<div class="it-map-tip" data-wh-rt-tip hidden></div></div>`;

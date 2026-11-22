@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-21 — Kill counts by who died on the Intel map; chains off Intel's map; suggestions in every system box</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Kill counts by who died on the Intel map; chains off Intel's map; suggestions in every system box</h1>
+<p><span class="tag">Page</span><span class="tag">Intel</span><span class="tag">Wormholes</span> 2026-11-21 &middot; <code>v2026.11.21.3</code> &middot; build queue 066 (plan <code>roadmap/kill-counts-plan.md</code>, mockup <code>Claude outputs/kill_counts_mockup.html</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-20, after the first draft's kill rings: "maybe instead of changing rings, we just represent the death count by standing? amber X [N] [N] [N]", then "Yes, counts by who died (Recommended)", "Friendly, hostile, neutral (Recommended)" and, for the colours, "go with A".</li>
+<li>Two items flagged for the delivery after 064: a hole removed from Intel's Wormholes list came back on the map because a Wormholes tab chain still named that system ("the wormhole tab chains should not force a hole to remain on the intel map. when it's gone, it's gone from the intel side."), and "all input fields that allow the entry of a system name should use the helper to identify real systems like the intel map does."</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The map label's kill tag:</b> the amber ✕, then one count per who died in its standing's colour, friendly, hostile, neutral (<code>#4f8fe0</code> <code>--side-friendly</code>, <code>#f08b7e</code>, <code>#b9c3ca</code>), a standing with none left out ("✕ 3 5 2"). <code>itMapReports</code> counts <code>kb: {f, h, n}</code> from the kept kills' victim side (<code>itKillBadges</code>' rule: an unknown side is neutral), within "forget reports after"; the draw only writes the pieces (LESSON #120). The hover says it in words ("✕ 10 kills here: 3 friendlies lost, 5 hostiles killed, 2 neutrals killed", <code>itMapKbTipHtml</code>), the legend "✕ kills by who died: friendly hostile neutral". Rings, Near You's badges and Paths to you's tags unchanged.</li>
+<li><b>The map's redraw key</b> carries the three counts, not only the total (found at the build review: a re-work of sides can change who died without changing the total).</li>
+<li><b>Your chain stays on the Wormholes tab</b> (the owner: "B: chains off Intel's map (Recommended)"): 062's loop that marked your chain's k-space ends on Intel's map is gone; only Intel's own entries are drawn, so Remove in Intel's Wormholes list is final. Your own jumps between k-space and J-space still add an Intel entry (<code>itWhJumpAdd</code>), which the list removes.</li>
+<li><b>Suggestions in five system boxes</b> (Intel's Wormholes list &rarr; Add, Routes &rarr; Avoid; the Wormholes tab's + Add, "Add a system here" and Routes &rarr; Pin): each box is a <code>.sys-cb</code> with the map search's own list, laid over what's below it, bound by 064's <code>sysComboBind</code> the first time the box takes focus (<code>sysCbBind</code>, one <code>focusin</code> listener), so a redraw of their panels needs nothing more. J-space rows show the class. A pick fills the box; Add, Pin or Enter again acts as before (the owner: "Fill the box (Recommended)"); a name already typed in full acts on its first Enter, as it did before (the full run's <code>wormhole_tab_check</code> caught the extra Enter). The System Analyzer's typed box uses the same row builder (<code>sysCbRowHtml</code>). The "word = system" shorthand box, the paste boxes and the Feed search keep 064's reading (the owner: "Leave it out (Recommended)").</li>
+<li><b>Info text:</b> <code>intel</code> [Map]: "✕ counts kills by who died (friendly, hostile, neutral)", "(your chain's k-space ends too)" out, "are faded" to "fade": 675 of 675 words. METHODOLOGY.md's Intel map and chain paragraphs.</li>
+<li><b>Checks:</b> <code>tools/page_checks/map_kill_counts_check.py</code> (made-up kills through <code>itNearAdd</code>; every <code>fillText</code> on the map read back for the label's pieces and colours; the hover, the legend, Near You agreeing, the key; 9 mutants), <code>tools/page_checks/system_boxes_check.py</code> (each box: the list for "qxli", Enter fills and adds nothing, Enter again acts, an unknown name refused, the list on top and inside the window, 44 px rows at 390 px; 7 mutants), <code>wormhole_filter_check.py</code>'s chain case rewritten (its mutant puts 062's loop back).</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>A redraw key has to carry what the drawing shows, not a summary of it: the map's key held each system's kill total, which stayed the same while the label's per-standing counts changed. LESSON #120's compare is only as good as its key.</li>
+<li>A fix that keeps something "until it is seen again" needs a way to remove what has no row: the chain's marks had no line in Intel's list, so Remove could never reach them. Ask which side owns the data before patching the order of events.</li>
+</ul>
+</body>
+</html>

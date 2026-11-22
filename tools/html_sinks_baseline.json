@@ -453,8 +453,6 @@
   "itMapTip␟itKillRange()": 1,
   "itMapTip␟itMapLyText(ly)": 1,
   "itMapTip␟itm.pinned.has(ids[i]) ? 'hide' : 'keep'": 1,
-  "itMapTip␟r.kills": 1,
-  "itMapTip␟r.kills === 1 ? '' : 's'": 1,
   "itMapTip␟r.n ? r.n + ' ' : ''": 1,
   "itMapTip␟r.side": 2,
   "itMapTip␟word": 1,
