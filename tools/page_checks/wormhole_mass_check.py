@@ -314,7 +314,7 @@ MUTANTS = [
     ('Start over without its question', "else if(d.hm === 'reset'){ if(H.pl && H.pl.hist.length && !H.pl.done) H.rs = true; else hmReset(); }", "else if(d.hm === 'reset') hmReset();", ('ui',)),
     ('the rows not kept', "function hmSave(){ try{ localStorage.setItem(WH_MASS_KEY,", "function hmSave(){ try{ if(0) localStorage.setItem(WH_MASS_KEY,", ('ui',)),
     ('+ Add\'s Linked to not built after an Add', "  whSelect(id); whAddLinkList(f);   // 070", "  whSelect(id);   // 070", ('link',)),
-    ('the phone toolbar not wrapping', ".wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px; flex-wrap:wrap;} .wh-ctl > *{flex:none;}", ".wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px;}", ('phone',)),
+    ('the phone toolbar not wrapping', ".wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px; flex-wrap:wrap; pointer-events:none;} .wh-ctl > *{flex:none; pointer-events:auto;}", ".wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px;}", ('phone',)),
 ]
 
 if __name__ == '__main__':

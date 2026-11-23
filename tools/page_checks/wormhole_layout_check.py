@@ -187,7 +187,8 @@ MUTANTS = [
     ('not remembered', "S.open = open; try{ localStorage.setItem(WH_PN_KEY, JSON.stringify({v: 1, open})); }catch(e){ }", "S.open = open;", (1440,)),
     ('a click not opening it', "else{ if(!M.selMode && whS.open !== 'sum') whPnSet('sum', true); whSelect(d.hit); }", "else{ whSelect(d.hit); }", (1440,)),
     ('the menu opening it', "  if(S.sel !== n) whSelect(n);\n  const m = S.el.querySelector('.wh-smenu');", "  if(S.sel !== n){ whPnSet('sum', true); whSelect(n); }\n  const m = S.el.querySelector('.wh-smenu');", (1440, 390)),
-    ('the phone sheet over the rail', ".wh-pnl{top:60px; left:60px; right:8px;", ".wh-pnl{top:60px; left:0px; right:8px;", (390,)),
+    ('the phone sheet over the rail', ".wh-pnl{top:var(--whCtlB, 60px); left:60px; right:8px;", ".wh-pnl{top:var(--whCtlB, 60px); left:0px; right:8px;", (390,)),   # 070: the sheet starts below the wrapped toolbar
+    ('the phone sheet over the toolbar\'s second row (070)', ".wh-pnl{top:var(--whCtlB, 60px); left:60px;", ".wh-pnl{top:60px; left:60px;", (390,)),
     ('a phone shutting what was remembered open', "  S.drawKey = key; M.phone = phone;", "  S.drawKey = key; M.phone = phone; if(phone && !M.pi){ M.pi = 1; whS.open = ''; }", (390,)),
     ('the rail on an empty map', "  if(rail.hidden === has) rail.hidden = !has;", "  if(rail.hidden) rail.hidden = false;", (1440,)),
 ]

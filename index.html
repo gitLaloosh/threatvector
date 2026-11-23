@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-H2B8/86pecngXLM7UrwbktvFitS2hnPreZkyqToYGEk='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xg0orSkkzYGtV11pUkc80wrQPSKzjDBEdMdbJqXV74M='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3434,15 +3434,15 @@
   @media (max-width:899px){ .wh-topl{right:8px; top:52px;} .wh-box .wh-rail, .wh-pnl, .wh-gsel{top:90px;} }
   @media (max-width:599px){
     .wh-panel{padding:4px;} .wh-topl{top:auto; bottom:8px; right:150px; justify-content:flex-start;} .wh-topl .wh-ctx{font-size:11px;}
-    .wh-box .wh-rail{top:60px; left:8px;} .wh-pnl{top:60px; left:60px; right:8px; bottom:8px; width:auto; padding:8px 10px 10px;}   /* 056: the sheet beside the rail (the owner: "Sheet beside the rail") */
+    .wh-box .wh-rail{top:60px; left:8px;} .wh-pnl{top:var(--whCtlB, 60px); left:60px; right:8px; bottom:8px; width:auto; padding:8px 10px 10px;}   /* 056: the sheet beside the rail (the owner: "Sheet beside the rail") */
     .wh-box:has(.wh-pnl:not([hidden])) .wh-mini, .wh-box:has(.wh-pnl:not([hidden])) .wh-topl{display:none;}
-    .wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px; flex-wrap:wrap;} .wh-ctl > *{flex:none;}   /* 070 (Q11, the owner: "Wrap to two rows (Recommended)"): every control 44 x 44, two rows when they don't fit one */
+    .wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px; flex-wrap:wrap; pointer-events:none;} .wh-ctl > *{flex:none; pointer-events:auto;}   /* 070 (Q11, the owner: "Wrap to two rows (Recommended)"): every control 44 x 44, two rows when they don't fit one */
     .hm-pop .hm-f{grid-template-columns:minmax(0, 1fr);} .hm-ans button, .hm-sum button, .hm-pop .wh-acts button{min-height:44px;}
     .wh-ctl .wh-zoom [data-wh-z="in"], .wh-ctl .wh-zoom [data-wh-z="out"]{display:none;}   /* a phone zooms by pinching, as the Intel map */
     .wh-ctl button.wh-tb{width:44px; height:44px; min-height:44px; padding:0; justify-content:center;} .wh-ctl button.wh-tb span{display:none;} .wh-ctl button.it-gear, .wh-ctl summary.info-btn{width:44px; height:44px;}
     .wh-pop{top:auto; bottom:0; right:0; left:0; width:auto; max-height:72%; border-radius:12px 12px 0 0;}
     .wh-menu{width:min(260px, calc(100% - 16px));} .wh-smenu button.wh-mi, .wh-smenu .wh-mtag input{min-height:44px;}
-    .wh-msg, .wh-gsel, .wh-box:has(.wh-pnl:not([hidden])) .wh-gsel{bottom:auto; top:60px; left:60px; transform:none; max-width:calc(100% - 128px);}
+    .wh-msg, .wh-gsel, .wh-box:has(.wh-pnl:not([hidden])) .wh-gsel{bottom:auto; top:var(--whCtlB, 60px); left:60px; transform:none; max-width:calc(100% - 128px);}
     .wh-acts button{min-height:44px;} button.wh-n{min-height:44px;}
     .wh-menu button.wh-mi, .wh-ask button, .wh-sec button, .wh-cnw button, .wh-lz, button.wh-lib, button.it-whp-xb.wh-sect{min-height:44px;} button.wh-lib{width:44px;}   /* 059 */
     .wh-lr{grid-template-columns:18px 62px minmax(0, 1fr) 34px 38px; gap:5px;} .wh-lr[data-wh-lr]{min-height:44px; box-sizing:border-box;} .wh-lh button{min-height:44px;} .wh-lh input{width:20px; height:20px;}
@@ -34957,6 +34957,9 @@ function whPaint(force){
   const box = S.el.querySelector('.wh-box'), cv = box.querySelector('canvas'), n = Object.keys(S.st.sys).length, M = S.M;
   const ctx = box.querySelector('.wh-ctx'), ch = whCtxHtml(); if(S.ctx !== ch){ S.ctx = ch; ctx.innerHTML = whCtxHtml(); }   // written only when it changed
   box.querySelector('.wh-empty').hidden = n > 0; cv.hidden = !n;
+  // 070: on a phone the toolbar can wrap to two rows; what opens under it (the panels' sheet, the message and selection lines) starts below it
+  const ctl = box.querySelector('.wh-ctl'), ctlB = ctl && box.clientWidth < 600 ? Math.max(60, Math.round(ctl.getBoundingClientRect().bottom - box.getBoundingClientRect().top + 8)) + 'px' : '';
+  if(box.style.getPropertyValue('--whCtlB') !== ctlB){ if(ctlB) box.style.setProperty('--whCtlB', ctlB); else box.style.removeProperty('--whCtlB'); }
   whPanels();
   // D22: the map is the tab, as tall from where it starts to the bottom of the screen; worked out before the empty map returns, so the empty map is
   // as tall as the full one and the first system resizes nothing (051, the owner: "the map should push the bottom of the page to the bottom of the
