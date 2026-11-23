@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-yRgb6y/NBu/BCdOdje8niPj/fIu4r5fTXU87mJMEOos='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Vdh3RWuUMRfVkrP/CL0FJz4wRs6qpAqZJhoQvMwYcNI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -33762,14 +33762,15 @@ function itHoTipHtml(i){
 // the right-click menu's (and a phone tooltip's) Home items, after Avoid: Set as Home anywhere else; on Home its route and Remove Home
 function itHoBtnsHtml(i, inTip){
   if(itHoAside) return '';
-  const gid = itGraphGet().ids[i], role = itRpRoleHtml(inTip);
+  const gid = itGraphGet().ids[i];
   if(gid === itHo.id && itHoIdx() >= 0){
     const here = i === itm.home;
-    return `<button type="button"${role} class="it-rp-av" data-it-ho="rt"${itOnHtml(here, 'disabled')}>${escapeHtml(`${itHo.route ? 'Hide' : 'Show'} the route to Home`)}${here ? ' <span>(you are here)</span>' : ''}</button>`
-      + `<button type="button"${role} class="it-rp-av" data-it-ho="off">Remove Home</button>`;
+    return `<button type="button"${itRpRoleHtml(inTip)} class="it-rp-av" data-it-ho="rt"${itOnHtml(here, 'disabled')}>${escapeHtml(`${itHo.route ? 'Hide' : 'Show'} the route to Home`)}${itHoSubHtml(here ? '(you are here)' : '')}</button>`
+      + `<button type="button"${itRpRoleHtml(inTip)} class="it-rp-av" data-it-ho="off">Remove Home</button>`;
   }
-  return `<button type="button"${role} class="it-rp-av" data-it-ho="set" data-it-ho-id="${Number(gid)}">Set as Home${itHo.id ? ` <span>${escapeHtml(`(instead of ${itHoName()})`)}</span>` : ''}</button>`;
+  return `<button type="button"${itRpRoleHtml(inTip)} class="it-rp-av" data-it-ho="set" data-it-ho-id="${Number(gid)}">Set as Home${itHoSubHtml(itHo.id ? `(instead of ${itHoName()})` : '')}</button>`;
 }
+function itHoSubHtml(t){ return t ? ` <span>${escapeHtml(t)}</span>` : ''; }   // an item's dim second part, as the menu's other items have
 // the top bar's house: shown while a Home is on the map (and there is a map)
 function itHoBtnPaint(){
   const b = itm.el && itm.el.querySelector('[data-im-z="home"]'); if(!b) return;
