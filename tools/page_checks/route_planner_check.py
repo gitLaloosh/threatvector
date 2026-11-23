@@ -9,7 +9,7 @@ stand-in POST /ui/autopilot/waypoint that records each request and answers 204 (
 address (http://localhost:8000/) with intel_check.py's made-up folder and Intel. Made-up characters and tokens only. Checks:
   * Threat Vector's route on a made-up graph (the page's own search, the table swapped for one made here): Prefer shorter = fewest jumps;
     Prefer safer goes round low and null sec, Prefer less secure round high sec, at penalty 50; at penalty 0 Prefer safer takes the shorter
-    way again; the band decides null / low / high, never the rounded number (a system shown as 0.45 that is low sec); a flagged system is gone
+    way again; the band of the tenth the game shows decides null / low / high (063; 065a: the table has only secT); a flagged system is gone
     round however long the detour (the owner: "keep my rule"); with no clean route the fewest flagged, named in the warning; the destination
     and your own system never count;
   * on the real map: jump numbers stay the shortest by stargate (itm.D), the drawn route follows Threat Vector's route, the tooltip says
@@ -59,15 +59,15 @@ INFLIGHT = r"""(() => { const f0 = window.fetch; window.__wpIn = 0; window.__wpM
     return new Promise((res) => setTimeout(res, 60)).then(() => f0.call(this, u, i)).finally(() => { window.__wpIn--; }); }; })();"""
 
 # ---- a made-up graph for the search (the page's own itRpUpdate, its table swapped for this one) ----
-# 0 = you. Short way 0-1-2-3 through 1 (sec 0.3, low) and 2 (null); long way 0-4-5-6-7-3 all high. 9 (low) is 0-8-9 through 8, shown as
-# 0.45 but low sec by its band, or 0-1-10-9 through two more low systems: Prefer less secure takes 8 only while its band says low.
-GRAPH = """([edges, sec, band, flags, home, pref, pen]) => {
-  const n = sec.length, adj = Array.from({length: n}, () => []);
+# 0 = you. Short way 0-1-2-3 through 1 (0.3, low) and 2 (null); long way 0-4-5-6-7-3 all high. 9 (low) is 0-8-9 through 8 (0.4 as the game
+# shows it: CCP's 0.449), or 0-1-10-9 through two more low systems: Prefer less secure takes 8 only while it shows as low (0.4, not 0.5).
+GRAPH = """([edges, secT, flags, home, pref, pen]) => {
+  const n = secT.length, adj = Array.from({length: n}, () => []);
   for(const [a, b] of edges){ adj[a].push(b); adj[b].push(a); }
   adj.forEach(a => a.sort((p, q) => p - q));
   const keep = {tab: itMapTab, home: itm.home, P: itm.P, rp: {...itRp}, set: itRp.set, fl: itRpFlags};
   try{
-    itMapTab = {n, adj, sec: Int8Array.from(sec), band: band ? Uint8Array.from(band) : null};
+    itMapTab = {n, adj, secT: Int8Array.from(secT)};   // 063: tenths, the only form (065a)
     itm.home = home; itm.P = itm.P || new Float64Array(2); itRp.key = ''; itRp.par = null;
     itRp.set = {...itRpSet(), pref, pen, list: []};
     window.itRpFlags = () => new Map(flags.map(([i, w]) => [i, [w]]));
@@ -81,8 +81,7 @@ GRAPH = """([edges, sec, band, flags, home, pref, pen]) => {
   }
 }"""
 EDGES = [[0, 1], [1, 2], [2, 3], [0, 4], [4, 5], [5, 6], [6, 7], [7, 3], [0, 8], [8, 9], [1, 10], [10, 9]]
-SEC = [50, 30, -20, 50, 50, 50, 50, 50, 45, 30, 30]
-BAND = [2, 1, 0, 2, 2, 2, 2, 2, 1, 1, 1]   # 8: shown as 0.45, really just under it: low sec
+SECT = [5, 3, -2, 5, 5, 5, 5, 5, 4, 3, 3]   # tenths; 8: CCP's 0.449, shown 0.4: low sec
 
 def cases(b, html, phone=True):
     out, errs = [], []
@@ -111,7 +110,7 @@ def cases(b, html, phone=True):
                     " ssoSet(SSO_REFRESH, 'madeUpRefreshToken0047'); ssoSet(SSO_WHO, JSON.stringify(sso.who)); ssoSet(SSO_TAB, 'madeUpTab0047'); renderSidePanel(); }", [MAIN, list(scp)])
     # ---- A: the search on a made-up graph
     c = ctx(); pg = start(c)
-    g = lambda pref, pen, flags=(), band=BAND, home=0: pg.evaluate(GRAPH, [EDGES, SEC, band, [list(f) for f in flags], home, pref, pen])
+    g = lambda pref, pen, flags=(), sect=SECT, home=0: pg.evaluate(GRAPH, [EDGES, sect, [list(f) for f in flags], home, pref, pen])
     r = g('Shorter', 50)
     if r['3'] != '0-1-2-3': out.append(f'Prefer shorter should take the fewest jumps: {r["3"]}')
     r = g('Safer', 50)
@@ -120,9 +119,9 @@ def cases(b, html, phone=True):
     if r['3'] != '0-1-2-3': out.append(f'Prefer safer at penalty 0 should take the shorter way: {r["3"]}')
     r = g('LessSecure', 50)
     if r['3'] != '0-1-2-3' or r['9'] != '0-8-9': out.append(f'Prefer less secure should keep to low and null: 3 {r["3"]}, 9 {r["9"]}')
-    # the band, not the rounded number: 8 is shown as 0.45 but is low, so Prefer less secure goes 0-8-9 (into low twice) rather than 0-1-2-3-9
-    r2 = g('LessSecure', 50, band=[2, 1, 0, 2, 2, 2, 2, 2, 2, 1, 1])
-    if r['9'] != '0-8-9' or r2['9'] != '0-1-10-9': out.append(f'the band should decide low sec (a system shown as 0.45): low {r["9"]}, high {r2["9"]}')
+    # the band of the tenth shown: 8 at 0.4 is low, so Prefer less secure goes 0-8-9 (into low twice); at 0.5 it is high, so 0-1-10-9
+    r2 = g('LessSecure', 50, sect=[5, 3, -2, 5, 5, 5, 5, 5, 5, 3, 3])
+    if r['9'] != '0-8-9' or r2['9'] != '0-1-10-9': out.append(f'the shown tenth should decide low sec (0.4 low, 0.5 high): low {r["9"]}, high {r2["9"]}')
     # the owner's rule: a flagged system gone round however long the detour; no clean route: the fewest, named; the destination never counts
     r = g('Shorter', 50, [(1, 'camp')])
     if r['3'] != '0-4-5-6-7-3' or r['warn3']: out.append(f'a flagged system should be gone round: {r["3"]} {r["warn3"]}')
@@ -136,9 +135,9 @@ def cases(b, html, phone=True):
     m = pg.evaluate("""() => { const g = itGraphGet(), T = itMapTable(), D = itm.D; const bfs = new Int16Array(T.n).fill(-1), q = [itm.home]; bfs[itm.home] = 0;
       for(let k = 0; k < q.length; k++) for(const y of T.adj[q[k]]) if(bfs[y] < 0){ bfs[y] = bfs[q[k]] + 1; q.push(y); }
       let same = true; for(let i = 0; i < T.n; i++) if(bfs[i] !== D[i]) same = false;
-      return {same, band: !!(T.band || T.secT), flags: [...itRp.flags].map(([i, w]) => [g.ids[i], w])}; }""")
+      return {same, band: !!T.secT, flags: [...itRp.flags].map(([i, w]) => [g.ids[i], w])}; }""")
     if not m['same']: out.append('jump numbers should stay the shortest by stargate (itm.D)')
-    if not m['band']: out.append("the page's map table has no band (047) and no shown tenth (063)")
+    if not m['band']: out.append("the page's map table has no shown tenth (063)")
     # a destination 2-8 jumps away whose shortest route passes a flagged system (made here: the avoid list's first system)
     d = pg.evaluate("""() => { const T = itMapTable(), g = itGraphGet();
       for(let i = 0; i < T.n; i++){ if(itm.D[i] < 3 || itm.D[i] > 7) continue; const mid = itm.par[i]; if(itm.par[mid] < 0 || mid === itm.home) continue;
@@ -340,7 +339,7 @@ MUTANTS = [
     ('sent while known logged off (047, the hand test)', "  if(onl === false && !force){", "  if(false){"),
     ('sending with the switch off (047, the hand test)', "  if(!itRpSendOn()){ itRpNote({off: true}); return; }", "  if(false){ itRpNote({off: true}); return; }"),
     ('the search box drawn by the browser (047, the hand test)', "  input[type=text], input[type=search], select{", "  input[type=text], select{"),
-    ('the rounded number instead of the band', "function itRpBand(T, i){ if(T.secT){ const t = itMapSecT(i); return t <= 0 ? 0 : t < 5 ? 1 : 2; } if(T.band) return T.band[i];", "function itRpBand(T, i){"),   # 063: the shown tenth's band, else 047's
+    ('the band\'s 0.5 line moved (0.5 read as low-sec)', "function itRpBand(T, i){ const t = itMapSecT(i); return t <= 0 ? 0 : t < 5 ? 1 : 2; }", "function itRpBand(T, i){ const t = itMapSecT(i); return t <= 0 ? 0 : t < 6 ? 1 : 2; }"),   # 063: the shown tenth's band (065a: no fallback)
     ('cost before the flagged count (no detours)', "    const fx = f[x] + (x !== src && flag(x) ? 1 : 0);   // a system counts once you go through it: the destination never does\n", "    const fx = 0;\n"),   # 062: in itRpSearch, shared with the Routes panel
     ('the destination named in the warning', "return path.slice(1, -1).filter(x => itRp.flags.has(x))", "return path.slice(1).filter(x => itRp.flags.has(x))"),
     ('every waypoint clearing the others', "clear_other_waypoints: done === 0 ? 'true' : 'false'", "clear_other_waypoints: 'true'"),

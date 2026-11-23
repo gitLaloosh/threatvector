@@ -19,18 +19,15 @@ region names, made from the page's own INTEL_MAP, so:
 v2026.11.04.1 (light-years in the map's hover): mapSolarSystems.jsonl also carries each system's geographic position (3D,
 metres), made here from the page's own INTEL_MAP.p3 with CCP's light-year (9.46e15 m) written out in this check, so:
   * the same data still matches (a script using another light-year, or another unit, fails here);
-  * build queue 047: one system's band changed (its security just under 0.45, still shown as 0.45): changed, only its band rewritten;
   * one system moved in space only (position2D unchanged): changed=true, only that system's x, y, z rewritten (3 values);
   * a page from before (INTEL_MAP without p3): changed=true, the positions added, every other value of INTEL_MAP unchanged;
   * a system with no position in CCP's data: the script stops (exit not 0) and the page is untouched.
 Build queue 035 (main's CSP hash went stale after a "Game data" pull request): every page the script rewrites passes
 tools/csp_hash.py --check (the CSP names the script by hash); a copy of the script without that refresh fails here.
 Build queue 063 (roadmap/security-shown-plan.md): INTEL_MAP.secT, the tenth the game shows, in place of sec and band. The made-up
-securities are worked out from the page in either form (a page from before 063: its hundredths, nudged off a halfway point the way it
-rounded, inside 047's band), and the tenth expected from them by the plan's rule written out here (IN_GAME: the owner's two checks), so:
-  * a page from before 063 (sec + band): --check exits 1; --write puts secT in place of sec and band for every system, with the rule's
-    tenth, nothing else of the map changed; the pull request lists the systems whose shown security changes (was → now) and the systems
-    checked in game; the converted page is the base for the cases below;
+securities are worked out from the page's secT, and the tenth expected from them by the plan's rule written out here (IN_GAME: the owner's
+two checks). 065a: the page has had secT since the data pull request (#77), so the case of a page from before 063 (sec + band, converted by
+the first run) is gone with the page's own fallback; a page without secT is refused here. So:
   * one system's security crosses a tenth (0.5 to 0.449): only its secT rewritten, named in the pull request;
   * a new system on a halfway point: written with the nearest tenth, named at the top of the pull request to check in game (D4);
   * the systems checked in game keep the owner's tenth on their halfway values, unflagged; 0.0346 shows 0.1; a copy of the script without
@@ -67,17 +64,9 @@ def p3_of(M):   # INTEL_MAP.p3 -> [x..., y..., z...] (int24 LE, signed), indepen
 def m_rows(M, S):   # system id -> (x, y, shown tenth, region index, (px, py, pz) in 0.0001 LY), from the page's INTEL_MAP aligned to S
     dec = lambda k, f: struct.unpack('<%d%s' % (M['systems'], f), base64.b64decode(M[k]))
     n = M['systems']; P = p3_of(M) if M.get('p3') else [0] * (3 * n)
-    if M.get('secT'): T = dec('secT', 'b')   # build queue 063: the tenth the game shows, stored as is
-    else:   # a page from before 063: what it showed from sec (hundredths) and 047's band, worked out here (058's itMapSecT), not by the script
-        bb = base64.b64decode(M['band']) if M.get('band') else None
-        B = [(bb[k >> 2] >> ((k & 3) * 2)) & 3 for k in range(n)] if bb else [None] * n
-        T = [old_shown(s, b) for s, b in zip(dec('sec', 'b'), B)]
+    T = dec('secT', 'b')   # build queue 063: the tenth the game shows, stored as is
     return {s: v for s, v in zip(S, zip(dec('x', 'h'), dec('y', 'h'), T, dec('reg', 'B'), ((P[k], P[n + k], P[2 * n + k]) for k in range(n))))}
 jr = lambda v: math.floor(v + 0.5)   # half up, as the page's Math.round
-def old_shown(s, b):   # 058's itMapSecT on the old columns
-    if s <= 0: return int(jr(s / 10)) + 0
-    t = max(1, min(10, jr(s / 10)))
-    return 4 if t >= 5 and b == 1 else t
 # 063: the owner's checks in game (2026-11-20), written out here, not read from the script: A2V6-6 -0.9 and A-5M31 -0.2 on a halfway point
 IN_GAME = {30004550: -9, 30004544: -2}
 def tenth(v, s=None):   # the tenth the game shows (the plan's rule), worked out here
@@ -85,19 +74,7 @@ def tenth(v, s=None):   # the tenth the game shows (the plan's rule), worked out
     return 1 if 0 < v < 0.05 else int(jr(v * 10)) + 0
 def vals_of(M, S):   # a made-up unrounded security for each system that the script must show as the page shows it
     dec = lambda k, f: struct.unpack('<%d%s' % (M['systems'], f), base64.b64decode(M[k]))
-    if M.get('secT'): return {s: t / 10 for s, t in zip(S, dec('secT', 'b'))}
-    # a page from before 063: its hundredths, nudged off a halfway point the way the old page rounded (half up), and inside 047's band: a
-    # system shown as 0.45 that is low sec is 0.449; one shown as 0.0 that is low, 0.001 (the band came from CCP's unrounded value)
-    n = M['systems']; bb = base64.b64decode(M['band']) if M.get('band') else None
-    B = [(bb[k >> 2] >> ((k & 3) * 2)) & 3 for k in range(n)] if bb else [None] * n
-    out = {}
-    for s, sec, band in zip(S, dec('sec', 'b'), B):
-        v = sec / 100 + (1e-4 if sec % 10 == 5 or sec % 10 == -5 else 0)
-        if band is not None and (0 if v <= 0 else 1 if v < 0.45 else 2) != band:
-            v = 0.449 if band == 1 and sec == 45 else 0.001 if band == 1 and sec == 0 else -0.001 if band == 0 and sec == 0 else None
-            if v is None: raise SystemExit(f'no made-up security for sec {sec} in band {band}')
-        out[s] = v
-    return out
+    return {s: t / 10 for s, t in zip(S, dec('secT', 'b'))}
 def sde(folder, conns, systems, build, rows=None, regions=None, nopos=(), vals=None):
     os.makedirs(folder, exist_ok=True); L, g = [], 50000000
     for a, c in sorted(conns):
@@ -127,30 +104,14 @@ try:
     GH = {'GITHUB_OUTPUT': out_f, 'GITHUB_STEP_SUMMARY': sum_f}
     def fresh(): open(out_f, 'w').close(); os.path.exists(body) and os.remove(body)
     check(M0 is not None and M0['jumps'] == J0['md5'] and M0['systems'] == len(S0), "the page's INTEL_MAP is aligned to its INTEL_JUMPS")
+    check(bool(M0 and M0.get('secT')) and not ({'sec', 'band'} & set(M0 or {})), "the page's INTEL_MAP holds secT only (063), no sec or band (065a: the fallback is gone)")
+    if not (M0 and M0.get('secT')): raise SystemExit(1)
     R0 = m_rows(M0, S0); V0 = vals_of(M0, S0); REG = M0['regions']
     check(M0.get('p3u') == P3U and len(p3_of(M0)) == 3 * len(S0) and max(abs(v) for v in p3_of(M0)) < 1 << 23 and len({R0[s][4] for s in S0}) > len(S0) - 5,
           f"the page's INTEL_MAP holds every system's position in space (p3, units {M0.get('p3u')} LY, {len(p3_of(M0)) if M0.get('p3') else 0} values)")
-    check(all(tenth(V0[s], s if M0.get('secT') else None) == R0[s][2] for s in S0), "the made-up securities show what the page shows (before the script runs)")
+    check(all(tenth(V0[s], s) == R0[s][2] for s in S0), "the made-up securities show what the page shows (before the script runs)")
     same = os.path.join(tmp, 'same'); sde(same, C0, S0, J0['build'] + 5063, R0, REG, vals=V0)
     BASE_HTML = HTML
-    # build queue 063: a page from before the shown tenth (sec in hundredths + band): the first run rewrites the column for every system
-    if not M0.get('secT'):
-        old_page = os.path.join(tmp, 'old.html'); shutil.copy(HTML, old_page); before0 = open(old_page, encoding='utf-8').read(); fresh()
-        rc, o = run(old_page, same, '--check'); rcw, ow = run(old_page, same, '--write', '--body', body, env=GH)
-        Mn = mtable(old_page); Rn = m_rows(Mn, S0); txt = open(body, encoding='utf-8').read() if os.path.exists(body) else ''; outs = open(out_f).read()
-        want = {s: tenth(V0[s], s) for s in S0}; moved = sorted(s for s in S0 if want[s] != R0[s][2])
-        check(rc == 1 and rcw == 0 and 'changed=true' in outs and set(Mn) == set(M0) - {'sec', 'band'} | {'secT'},
-              f'a page from before 063: --check exits 1, --write replaces sec and band with secT ({rc}, {rcw}, {sorted(set(Mn) - set(M0))} added, {sorted(set(M0) - set(Mn))} gone)')
-        check(all(Rn[s][2] == want[s] for s in S0) and all(Rn[s][:2] + Rn[s][3:] == R0[s][:2] + R0[s][3:] for s in S0) and all(Mn[k] == M0[k] for k in ('jumps', 'systems', 'x', 'y', 'reg', 'regions', 'p3', 'p3u')),
-              f'every system\'s shown tenth is the game\'s rule on its value, nothing else of the map changed ({sum(1 for s in S0 if Rn[s][2] != want[s])} wrong)')
-        check(set(moved) == set(IN_GAME) & set(S0) and all(f'SYS-{s - 30000000} ({s}): {R0[s][2] / 10:.1f} → {want[s] / 10:.1f}' in txt for s in moved) and f'{len(moved)} system(s) show another security' in txt,
-              f"the pull request lists the systems whose shown security changes, was → now (here the two checked in game on a halfway point: {moved})")
-        check('security now stored as the tenth the game shows' in txt and '**Security the game shows**' in txt and txt.count(', in game ') >= len(set(IN_GAME) & set(S0)),
-              "the pull request says the column changed form and lists the systems checked in game with CCP's value")
-        check(csp_ok(old_page) and re.sub(r'^const INTEL_MAP = .*;$|<meta http-equiv="Content-Security-Policy" content="[^"]*">', '', open(old_page, encoding='utf-8').read(), flags=re.M)
-              == re.sub(r'^const INTEL_MAP = .*;$|<meta http-equiv="Content-Security-Policy" content="[^"]*">', '', before0, flags=re.M), 'only INTEL_MAP rewritten (and the CSP hash with it)')
-        rc2, _ = run(old_page, same, '--check'); check(rc2 == 0, f'the converted page against the same data: nothing to do ({rc2})')
-        BASE_HTML = old_page; M0 = Mn; R0 = Rn; V0 = vals_of(M0, S0); sde(same, C0, S0, J0['build'] + 5063, R0, REG, vals=V0)
     base_src = open(BASE_HTML, encoding='utf-8').read()
     gone = sorted(C0)[0]; new_sys = 30100000; added = (S0[5], new_sys)
     C1 = (C0 - {gone}) | {added}

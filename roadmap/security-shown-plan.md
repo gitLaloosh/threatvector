@@ -145,4 +145,7 @@ Pull request 1 of the two (section 4). Where the build differs from the plan, or
   by their beacon's class, so the check's "no numbers" case now removes `effc` first (an older table) and a new case checks the real one.
 - **Still to do:** after the data pull request merges, the next page delivery removes the fallback (`itMapSecT`'s `sec` branch, `itRpBand`'s
   band and rounded-number branches, `itMapBand`, the fallback cases in the checks); a flag line goes into that delivery's queue file.
+- **Done (2026-11-22, v2026.11.22.1, branch `065a-extras`):** the data pull request (#77) merged 2026-11-22; the fallback is out of the page
+  (`itMapTable` needs `secT`, `itMapSecT` one line, `itRpBand` the shown tenth's band only, `itMapBand` gone) and out of `check_sec_shown`,
+  `check_jump_table_update`, `intel_map_look_check`, `intel_map_stack_check` and `route_planner_check`; CLAUDE.md's wording follows.
 

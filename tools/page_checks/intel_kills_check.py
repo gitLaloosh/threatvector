@@ -220,7 +220,11 @@ with sync_playwright() as p:
       const c = [...r.querySelectorAll('.it-chip.p')].find(x => x.querySelector('.nm').textContent === 'Marrek Ketter'), v = r.querySelector('.it-chip.p');
       return [c.className, c.querySelector('svg.it-st').getAttribute('class'), c.querySelectorAll('.it-lg').length, [...c.querySelectorAll('.it-seg.grp .tk')].map(t => t.textContent).join(''), v.className.includes(' f'), v.querySelector('svg.it-st').getAttribute('class'), r.querySelector('.it-sn').className, r.querySelector('.it-chip.sys').title, r.querySelector('a.zk-ic').href]; }""")
     # v2026.10.30.4: one set of standing icons site-wide (standIcon); they also carry sa-mark h / n / f
-    check(look == ['it-chip p h', 'it-st bad sa-mark h', 2, '[RLH]<CRTS>', True, 'it-st corp sa-mark f', 'it-sn ns s0', 'Show only 8WA-Z6 in the Feed (8WA-Z6 (security -0.3))', 'https://zkillboard.com/kill/9200010/'],
+    # 063 (the owner: "Read the table (Recommended)"): a k-space name takes the map table's tenth, not the stand-in ESI's (-0.31); since #77 the
+    # table has secT, so the title's number is CCP's, read here from the table (065a)
+    tsec = pg.evaluate("() => { const T = itMapTable(), i = itGraphGet().at.get(30004760); return T && T.secT && i !== undefined ? (T.secT[i] / 10).toFixed(1) : null; }")
+    check(tsec is not None and float(tsec) <= 0, f"8WA-Z6's tenth from the map table (secT), null-sec: {tsec}")
+    check(look == ['it-chip p h', 'it-st bad sa-mark h', 2, '[RLH]<CRTS>', True, 'it-st corp sa-mark f', 'it-sn ns s0', f'Show only 8WA-Z6 in the Feed (8WA-Z6 (security {tsec}))', 'https://zkillboard.com/kill/9200010/'],
           f"who's who: standing icons (hostile -, your corporation's star), logos, name coloured, tickers; the system's security tenth and title; the zKillboard link {look}")
     tenths = pg.evaluate("() => [1.0, 0.96, 0.946, 0.5, 0.45, 0.449, 0.15, 0.04, 0.0, -0.31].map((v, i) => { it.sec.set(-1 - i, v); const r = [itSecClass(-1 - i), itSecText(-1 - i)]; it.sec.delete(-1 - i); return r; })")
     check(tenths == [['hs s10', '1.0'], ['hs s10', '1.0'], ['hs s9', '0.9'], ['hs s5', '0.5'], ['hs s5', '0.5'], ['ls s4', '0.4'], ['ls s2', '0.2'], ['ls s1', '0.1'], ['ns s0', '0.0'], ['ns s0', '-0.3']],

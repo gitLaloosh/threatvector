@@ -455,15 +455,15 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   Sov panel sits beside Near You only with `SOV_PANEL_MIN` (420 px) of room ("420 px, one column below"; its picks one column under about 560 px).
   System names loaded before a paste is checked (`sovNames`, INTEL-03); a full storage is INTEL-11 in the panel, the lists kept for the visit. The
   Jump bridge kind reads `sovBridgeEnds()`, which build queue 041 fills in. `sov_upgrades_check.py`.
-- **Intel map** (v2026.11.02.4, Project doc roadmap/intel-map-plan.md): was layout B, the map beside Near You (052 above). `INTEL_MAP` (CCP position2D /1e14, security, region; the security is `secT`, the tenth the game shows, since build queue 063: until its data pull request the table still has hundredths `sec` and 047's `band`, read by a fallback the next page delivery removes)
+- **Intel map** (v2026.11.02.4, Project doc roadmap/intel-map-plan.md): was layout B, the map beside Near You (052 above). `INTEL_MAP` (CCP position2D /1e14, security, region; the security is `secT`, the tenth the game shows, since build queue 063; its data pull request, #77, took out 058's hundredths `sec` and 047's `band`, and 065a the page's fallback for them)
   comes only from `tools/jump_table_update.py`, aligned to `INTEL_JUMPS` (its `jumps` = the jump table's md5; `gen_intel_tables.py`
   keeps it and says when it no longer fits). One canvas (`itm`), made once and moved into each card (`#itMapSlot`); drawn only when
   what it shows changed (`itMapRefresh`'s key), never while hidden. Reach ("Map: within" since 039): from Near You's reach to `IT_MAP_MAX` (the
   Feed's largest), following the Feed until set; Near You's reach is a setting (`nearRange`, alert range to the Feed's, default
   alert + 5). Rings: standing colour, gang size (1 / 2–10 / 11+). Routes: one per system (BFS, neighbours in index order), hover
   dashed, press kept. One stepper for every range (`RS`, `rsHtml`, `rsPaint`). `intel_map_check.py`.
-  047: `INTEL_MAP.band`, each system's security band from CCP's unrounded value (2 bits; `itMapBand`), for the route planner; since 063 `itRpBand`
-  takes the band from the shown tenth (0.0 or less null, 0.1-0.4 low, 0.5 up high; the generator asserts it for every system) and `band` goes.
+  047 gave the route planner `INTEL_MAP.band` (CCP's unrounded value, `itMapBand`); since 063 `itRpBand` takes the band from the shown tenth (0.0
+  or less null, 0.1-0.4 low, 0.5 up high; the generator asserts it for every system), and since 065a `band` and `itMapBand` are gone.
   v2026.11.04.1 (roadmap/map-ly-hover-plan.md): `INTEL_MAP.p3` holds CCP's 3D positions (0.0001 LY, int24) for the hover's
   "N.NN LY from <you>" (`itMapLy`, `itMapLyText`: rounded UP to 0.01, the owner). Your system: a pin drawn last
   (`itMapPinDraw`), the only filled label (YOU · name), a 1.6 s beacon on its own canvas (`itMapBeacon`; first draw and a jump
@@ -528,8 +528,8 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   EVE's cost, jumps), again only when `itRp.key` changes: your system, Intel settings → Routes (`tvRoute`), the flags; in `itMapKey`).
   Fewest flagged systems first, however long (the owner: "keep my rule"); the destination and you never count; flags (`itRpFlags`) from every
   system Intel holds within "forget reports after": camps, bubbles, hostiles / neutrals (the map ring's side), kills, ESS, your avoid list.
-  The cost is CCP's route guide's (exp(0.15 x penalty), into null 2p, low p or 0.90, high 0.90 or p) by `INTEL_MAP.band` (CCP's unrounded
-  security, `tools/jump_table_update.py`; never the rounded sec: 19 systems show 0.45 and are low), matched against ESI's POST /route on 40
+  The cost is CCP's route guide's (exp(0.15 x penalty), into null 2p, low p or 0.90, high 0.90 or p) by the band of the tenth shown
+  (`itRpBand`, 063 above; 047 read `INTEL_MAP.band`, never the hundredths: 19 systems showed 0.45 and are low), matched against ESI's POST /route on 40
   routes at the build review. Only the drawn route and the tooltip's route list follow it (`itMapRoute` via `itRpParNow`); every jump number
   stays `itm.D`; the Intel example keeps the shortest (`itRpAside`). The map's search box (`.it-rp-search`, a combobox), a right-click menu
   (`itRpMenuOpen`: no close button, Esc / outside / pick), on a phone the pressed system's tooltip carries the buttons (`it-rp-act`, 44 px).

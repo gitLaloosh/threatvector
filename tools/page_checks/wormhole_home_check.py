@@ -12,16 +12,14 @@ A made-up chain of CCP's own wormhole systems (the page's tables; names from INT
   * pilot switches (the second bug, "Fresh start (Recommended)"): a reading for another pilot, or the first after You becomes another character,
     adds no connection and no Intel entry (k → J, J → J, J → k), taken whatever its time; the same pilot's k → J still links and adds; A → B → A
     starts fresh on the return; the same character between its Local log and the login's stand-in is one pilot;
-  * names coloured from the table (the owner: "Read the table (Recommended)"): on a copy of the page given a made-up INTEL_MAP.secT, a k-space
-    name (Juddi, checked in game: 0.6) takes its tenth from the table at once, with no ESI request; a J-space name still asks ESI; on the page as it is (no secT yet) a
-    k-space name asks ESI as before;
+  * names coloured from the table (the owner: "Read the table (Recommended)"): a k-space name (Juddi, checked in game: 0.6) takes its tenth from
+    the page's table (secT since #77; 065a dropped the made-up copy and the no-secT case) at once, with no ESI request; a J-space name still asks ESI;
   * mutants; no page errors.
 """
 import sys, os, re, json, tempfile
 from playwright.sync_api import sync_playwright
 HERE = os.path.dirname(os.path.abspath(__file__)); REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, os.path.join(REPO, 'tools'))
-from check_sec_shown import with_secT
 HTML = os.path.abspath(next((a for a in sys.argv[1:] if not a.startswith('--')), os.path.join(REPO, 'index.html')))
 PAGE = open(HTML, encoding='utf-8').read()
 fails = 0
@@ -150,12 +148,9 @@ def cases(b, html, parts=('set', 'import', 'saved', 'names', 'pilot')):
         if after != [S['b']]: out.append(f'a tie keeps the lowest ID: {after} (want {S["b"]})')
         S, _, after, _, _ = saved(('lone', 'lone2'), 'c')   # none reachable
         if after != [min(S['lone'], S['lone2'])]: out.append(f'none reachable keeps the lowest ID: {after}')
-    if 'names' in parts:
-        src2, _ = with_secT(PAGE)
-        with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8', dir=os.path.dirname(html)) as f:
-            f.write(src2 if html == HTML else with_secT(open(html, encoding='utf-8').read())[0]); sp = f.name
-        try:
-            r2 = []; ctx, pg = start(b, sp, errs, r2); ev = pg.evaluate
+    if 'names' in parts:   # 065a: the page's table has secT since #77 (with_secT, a made-up one, is gone with 063's fallback)
+        if True:
+            r2 = []; ctx, pg = start(b, html, errs, r2); ev = pg.evaluate
             jid = ev("() => whTable().ids[5]")
             got = ev("(j) => { const a = document.createElement('div'); a.innerHTML = sysNameHtml(30000051, 'Juddi') + sysNameHtml(j, 'J'); document.body.appendChild(a); return [...a.children].map(e => e.className); }", jid)
             pg.wait_for_timeout(300)
@@ -163,12 +158,6 @@ def cases(b, html, parts=('set', 'import', 'saved', 'names', 'pilot')):
             if 's6' not in got[0].split() or 'hs' not in got[0].split() or any('/systems/30000051/' in u for u in asked): out.append(f'a k-space name from the table: {got[0]!r}, asked {asked[:3]}')
             if not any(f'/systems/{jid}/' in u for u in asked): out.append(f'a J-space name still asks ESI: {asked[:3]}')
             if ev("() => [itSecText(30000051), itSecKey(30000051), itSysTitle(30000051).endsWith('(security 0.6)')]") != ['0.6', 6, True]: out.append('Juddi\'s text, key and title from the table (0.6: CCP 0.649, 0.7 from the old double rounding)')
-            ctx.close()
-        finally: os.unlink(sp)
-        if '"secT"' not in re.search(r'^const INTEL_MAP = (.*);$', open(html, encoding='utf-8').read(), re.M).group(1):
-            r3 = []; ctx, pg = start(b, html, errs, r3); ev = pg.evaluate
-            ev("() => { const a = document.createElement('div'); a.innerHTML = sysNameHtml(30000142, 'Jita'); document.body.appendChild(a); }"); pg.wait_for_timeout(300)
-            if not any('/systems/30000142/' in u for u in r3): out.append('the page as it is (no secT yet): a k-space name asks ESI as before')
             ctx.close()
     return out, errs
 
@@ -182,7 +171,7 @@ MUTANTS = [
     ('a chain\'s Homes not settled after Add', "const hm = whHomeOne();   // 063: a chain", "const hm = '';   // 063: a chain", ('import',)),
     ('two saved settled by ID, not by distance', "if(d >= 0 && (best < 0 || d < best)){ best = d; keep = n; }", "if(false){ }", ('saved',)),
     ('two saved never settled', "  const hm = whHomeOne(); if(hm) whMsg(hm, true);", "  const hm = '';", ('saved',)),
-    ('names never from the table', "  const T = itMapTable(); if(!T || !T.secT) return undefined;", "  return undefined;", ('names',)),
+    ('names never from the table', "  const T = itMapTable(); if(!T) return undefined;", "  return undefined;", ('names',)),   # 065a: itSecTab no longer tests secT
 ]
 
 with sync_playwright() as p:

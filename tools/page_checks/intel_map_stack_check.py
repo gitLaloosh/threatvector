@@ -41,7 +41,6 @@ globals().update({k: v for k, v in NS.items() if not k.startswith('__') and k no
 from playwright.sync_api import sync_playwright
 check = NS['check']
 PAGE = open(HTML, encoding='utf-8').read()
-SECT_FORM = '"secT":' in re.search(r'^const INTEL_MAP = (.*);$', PAGE, re.M).group(1)   # 063: the table's own tenth, else the fallback (sec + band)
 
 HOME = SYSID['1DQ1-A']
 D0 = bfs(HOME)
@@ -295,16 +294,11 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
     if 'sec' in parts or 'store' in parts or 'example' in parts:
         ctx, pg = start(b, html, 1440, errs)
         if 'sec' in parts:
-            if SECT_FORM:   # 063: the table holds the tenth the game shows; Juddi (CCP 0.649, 0.7 from the old double rounding; 0.6 in game) is 0.6, outside 0.7-0.7
-                r = pg.evaluate("""() => { const T = itMapTable(), i = itGraphGet().at.get(30000051); if(i === undefined || !T.secT) return null;
-                  const s = itMapSt(); for(const k of IT_MAP_ONLY) s.only[k] = false; s.only.secr = true; s.secr = {lo: 7, hi: 7}; itMt.key = null;
-                  itm.wh = itMapWh(); const mt = itMapMatch(itm.wh); return [itMapSecText(i), itMapSecClass(i), IT_MAP_SEC[itMapSecClass(i)] === IT_MAP_SEC[6], !!mt.m[i]]; }""")
-                if r != ['0.6', 6, True, False]: out.append(f'Juddi from the table\'s shown tenth: {r} (want 0.6, the 0.6 colour, outside Security range 0.7-0.7)')
-            else:   # the fallback (a table from before 063): 058's 0.45 line
-                r = pg.evaluate("""() => { const T = itMapTable(), L = []; for(let i = 0; i < T.n; i++) if(T.sec[i] === 45 && T.band[i] === 1) L.push(i);
-                  const i = L[0]; if(i === undefined) return null; const s = itMapSt(); for(const k of IT_MAP_ONLY) s.only[k] = false; s.only.secr = true; s.secr = {lo: 5, hi: 10}; itMt.key = null;
-                  itm.wh = itMapWh(); const mt = itMapMatch(itm.wh); return [L.length, itMapSecText(i), itMapSecClass(i), IT_MAP_SEC[itMapSecClass(i)] === IT_MAP_SEC[4], !!mt.m[i]]; }""")
-                if r != [19, '0.4', 4, True, False]: out.append(f'the 0.45 systems that are low-sec: {r} (want 19 of them showing 0.4, the 0.4 colour, outside quick High)')
+            # 063: the table holds the tenth the game shows; Juddi (CCP 0.649, 0.7 from the old double rounding; 0.6 in game) is 0.6, outside 0.7-0.7
+            r = pg.evaluate("""() => { const T = itMapTable(), i = itGraphGet().at.get(30000051); if(i === undefined || !T.secT) return null;
+              const s = itMapSt(); for(const k of IT_MAP_ONLY) s.only[k] = false; s.only.secr = true; s.secr = {lo: 7, hi: 7}; itMt.key = null;
+              itm.wh = itMapWh(); const mt = itMapMatch(itm.wh); return [itMapSecText(i), itMapSecClass(i), IT_MAP_SEC[itMapSecClass(i)] === IT_MAP_SEC[6], !!mt.m[i]]; }""")
+            if r != ['0.6', 6, True, False]: out.append(f'Juddi from the table\'s shown tenth: {r} (want 0.6, the 0.6 colour, outside Security range 0.7-0.7)')
             pg.evaluate("() => { const s = itMapSt(); s.only.secr = false; s.secr = {lo: -5, hi: -3}; itMapRefresh(true); }")
         if 'store' in parts:
             pg.evaluate(EXAMPLE); pg.evaluate("() => { itMapFilterSet('jumps'); const s = itMapSt(); s.near.n = 7; itMapStackSave(); }")
@@ -356,8 +350,7 @@ MUTANTS = [
     ('the alert glow at today\'s size zoomed out', "big ? r + 9 : 11 * Math.min(1.4", "big ? r + 9 : 22 * Math.min(1.4", ('glow',)),
     ('no soft colour (Q15)', "function itMapFcol(i){ const c = itMapColRaw(i); return i === itm.home || itMapMatched(i) ? c : itMapMix(c, 0.55); }", "function itMapFcol(i){ return itMapColRaw(i); }", ('soft',)),
     ('a match not bigger (Q8)', "hit === '1' ? dotR + 1.6 : dotR;", "dotR;", ('ex',)),
-    ('the table\'s tenth rounded again (063: Juddi 0.7)', "  if(T.secT) return T.secT[i];", "  if(T.secT) return T.secT[i] === 6 ? 7 : T.secT[i];", ('sec',)) if SECT_FORM else
-    ('the 0.45 line ignored', "return t >= 5 && T.band && T.band[i] === 1 ? 4 : t;", "return t;", ('sec',)),
+    ('the table\'s tenth rounded again (063: Juddi 0.7)', "function itMapSecT(i){ return itMapTable().secT[i]; }", "function itMapSecT(i){ const t = itMapTable().secT[i]; return t === 6 ? 7 : t; }", ('sec',)),
     ('a number in the circles with no colour', "const col = itMapSt().colour; if(col) c.fillText(", "const col = itMapSt().colour || 'sec'; if(col) c.fillText(", ('colour',)),
     ('the settings only open with the filter on (060\'s bug)', "  if(!itm.box || (k !== 'secr' && k !== 'near')) return;", "  if(!itm.box || !itMapSt().only[k] || (k !== 'secr' && k !== 'near')) return;", ('panel',)),
     ('the panel\'s numbers cut off (the hand test)', ".it-mpp .rs-v{width:5.2ch;}", ".it-mpp .rs-v{}", ('panel',)),
