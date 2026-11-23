@@ -165,6 +165,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #162 A sandbox that sets state aside by a list of names doesn't cover state added later: new state the sandboxed builders read (a new store) joins the list in the same change.
 - #167 A press and hold that opens a menu under the finger: lifting it clicks the menu's first item. Cancel the release's default (touchend) when the hold opened something. See also #137.
 - #176 The `hidden` attribute loses to any rule that sets `display`: an element the code hid stayed drawn. Give such a class its own `[hidden]` rule (or hide through a class), and check the computed display, not the attribute. See also #45.
+- #179 A control placed against a row of others is covered when the row grows: list what is placed against it, and measure the phone with everything showing (a fixed `right:` offset beside a row of buttons, every optional control on).
 
 **Checks and test machinery**
 
@@ -1303,6 +1304,16 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   step plus the polarization waits, counted from each jump) and show it. When it is costly, offer the cheaper choice beside it with its odds and
   its own cost, and leave the pick to the user (`hmSlowHtml`, `WH_MASS_SLOW_MS`; the owner agreed to "offer both choices" with the time). A
   preview that strands someone isn't a step count: leave such runs out and show the odds instead.
+## 179. A control placed against a row of others is covered when the row grows: list what is placed against it, and measure the phone with everything showing
+
+- **What happened (build queue 071, at the review, 2026-11-23):** the Home plan added a house button to the Intel map's top row of zoom
+  buttons. "Hide all routes" sits a fixed distance from the map's right edge (`right:148px`, 182 with the bridge lines button), so a wider
+  row would have gone under it; the plan didn't mention it, and the mockup's checks never showed it. Measured on main at 390 px, the map is
+  310 px wide and "Hide all routes" (115 px, top left) already covered the + button with the four buttons, and 59 px of the row with the
+  bridge lines button: a phone bug since 059, behind a kept route.
+- **Do this instead:** before adding to a row of absolutely placed controls, search the CSS for what is placed against it (`right:`, `left:`,
+  `:has(...)` offsets) and say in the plan where each goes. Measure the real page at 390 px with every optional control showing (the bridge
+  lines, a kept route, Home), not the new one alone; a check asserts no overlap (`intel_home_check.py`'s `over`), with a mutant per placement.
 ## 160. A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it
 
 - **What happened (build queue 039, v2026.11.12.3):** the map-look plan gave its new layout as "7 ms". That was the layout without its
