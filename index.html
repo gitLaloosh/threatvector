@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-DLJf/40axuBQtaKIvx3rMq4VrvmyUo3tpXA9JQtcmF0='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-kNj1IIbuDD0ZnFptXTYxQC7+AxATlvCSDeHwH9BIWso='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -30861,7 +30861,7 @@ function itMpBodyHtml(k){
   // (Q5: a box per region with a search; Select all, [stated] "can we add a checkbox to select all regions in the region picker?")
   if(k === 'sovh') return '<div class="it-mp-note">Colour each system by:</div>' + itMpRadHtml('itMpSovBy', 'standing', s.sovBy !== 'alliance', 'Your standings') + itMpRadHtml('itMpSovBy', 'alliance', s.sovBy === 'alliance', 'One colour per alliance')
     + '<div class="it-mp-note">Standings: your corporation’s and alliance’s EVE contacts, else your typed lists (the profile’s Pilot tab). Zoomed in, the holder’s logo fills each system’s circle. The hover names the holder.</div>';
-  if(k === 'killh') return '<div class="it-mp-note">Count:</div>' + itMpRadHtml('itMpKill', 'ship', !s.killNpc, 'Ships and pods (players)') + itMpRadHtml('itMpKill', 'npc', s.killNpc, 'NPC kills (ratting)') + '<div class="it-mp-note">From ESI, once an hour. Not the same as “Kills from Intel”, which counts the kills Intel saw.</div>';
+  if(k === 'killh') return '<div class="it-mp-note">Count:</div>' + itMpRadHtml('itMpKill', 'ship', !s.killNpc, 'Ships and pods (players)') + itMpRadHtml('itMpKill', 'npc', s.killNpc, 'NPC kills (ratting)') + '<div class="it-mp-note">From ESI, once an hour. Not the same as “Kills from ' + escapeHtml(cardName('intel')) + '”, which counts the kills ' + escapeHtml(cardName('intel')) + ' saw.</div>';
   if(k === 'regpick') return itMpRegHtml();
   if(k === 'secr') return `<div class="it-mp-row">${rsHtml('mapSecLo')}${rsHtml('mapSecHi')}</div><div class="it-mp-q"><span>Quick:</span><button type="button" data-it-mpq="hi">High</button><button type="button" data-it-mpq="low">Low</button><button type="button" data-it-mpq="null">Null</button></div>`
     + '<div class="it-mp-note">Both ends count, in either order. It compares the number the map shows (one decimal).</div><div class="it-mp-cnt" role="status"></div>';
