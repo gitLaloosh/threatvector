@@ -112,21 +112,21 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
         out.append('no stacked filters on the page (itMapSt, itMapMatch, Security range)'); ctx.close(); return out, errs
     if 'col' in parts:
         ks = pg.evaluate("() => [...document.querySelectorAll('.it-map-fbtns [data-im-f]')].map(b => b.dataset.imF)")
-        if ks != ['sec', 'jumps', 'region', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'paths']: out.append(f'the column: {ks}')
-        sp = pg.evaluate("() => [...document.querySelector('.it-map-fbtns').children].map(c => c.classList.contains('it-map-fsep') ? '|' : (c.querySelector('[data-im-f]') || c).dataset.imF).join(' ')")
-        if sp != 'sec jumps region | secr near reports kills wh sov | paths': out.append(f'the groups: {sp}')
+        if ks != ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'regpick', 'paths']: out.append(f'the column: {ks}')   # 065: three ESI colours, Region pick
+        sp = pg.evaluate("() => [...document.querySelectorAll('.it-map-fbtns .it-map-fg > *, .it-map-fbtns > .it-map-fsep')].map(c => c.classList.contains('it-map-fsep') ? '|' : (c.querySelector('[data-im-f]') || c).dataset.imF).join(' ')")   # 065: inside the group wrappers
+        if sp != 'sec jumps region sovh jumph killh | secr near reports kills wh sov regpick | paths': out.append(f'the groups: {sp}')
         if pg.evaluate("() => itMapOnlyOn() || !!itm.mt || (() => { const T = itMapTable(); for(let i = 0; i < T.n; i++) if(itMapDimmed(i)) return true; return false; })()"): out.append('something dims with no Only filter on')
         if pg.evaluate("() => !!document.querySelector('.it-map-leg .it-map-only')"): out.append('an "Only" legend line with no Only filter on')
         if pg.evaluate("() => !!document.querySelector('.it-map-whn') || !document.querySelector('.it-map-mt').hidden"): out.append('the wormholes chip is still there, or the match chip shows with nothing on')
         if pg.evaluate("() => document.querySelector('.it-map-fbtns [aria-pressed=true]').dataset.imF") != 'sec': out.append('Security is not the colour on a first visit (Q16)')
     if 'soft' in parts:
         r = pg.evaluate("""() => { const T = itMapTable(); let soft = 0, bad = 0; for(let i = 0; i < T.n; i += 7){ const raw = itMapColRaw(i), c = itMapFcol(i);
-          if(i === itm.home ? c !== raw : c !== itMapMix(raw, 0.55)) bad++; else soft++; } return [soft, bad, itMapFcol(itm.home) === itMapColRaw(itm.home)]; }""")
+          if(i === itm.home ? c !== raw : c !== itMapMix(raw, IT_MAP_SOFT)) bad++; else soft++; } return [soft, bad, itMapFcol(itm.home) === itMapColRaw(itm.home)]; }""")
         if r[1] or not r[2]: out.append(f'soft colour with nothing on: {r[1]} systems not softened (or yours softened: {not r[2]})')
         pg.evaluate(ZOOM_IN); s0 = near[1]
         a = pg.evaluate(ARCS, [pg.evaluate(f"() => itGraphGet().at.get({s0})")])
         disc = [x for x in list(a['arcs'].values())[0] if x[4].startswith('#')]
-        want = pg.evaluate(f"() => {{ const i = itGraphGet().at.get({s0}); return [itMapMix(itMapColRaw(i), 0.38), Math.max(9, Math.min(15, itMapGatePx() * 0.2))]; }}")
+        want = pg.evaluate(f"() => {{ const i = itGraphGet().at.get({s0}); return [itMapMix(itMapColRaw(i), IT_MAP_SOFT_IN), Math.max(9, Math.min(15, itMapGatePx() * 0.2))]; }}")
         if not disc or disc[0][4] != want[0] or abs(disc[0][2] - want[1]) > 0.01: out.append(f'zoomed in with nothing on: the disc {disc[:1]} (want the tinted {want[0]} at r {want[1]:.2f})')
         pg.evaluate(ZOOM_OUT)
     if 'ex' in parts or 'rings' in parts or 'kills' in parts or 'colour' in parts:
@@ -340,7 +340,7 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
 
 MUTANTS = [
     ('a non-matching kept hole still bold (Q21b)', "itm.wh.kept.has(i) && itm.mt.m[i]); }", "itm.wh.kept.has(i)); }", ('wh',)),
-    ('Kills still amber (Q3)', "  const T = itMapTable(), c = itMapSt().colour;\n  if(c === 'jumps')", "  const T = itMapTable(), c = itMapSt().colour;\n  if((itm.rep.get(i) || {}).kills) return IT_MAP_KILL;\n  if(c === 'jumps')", ('kills',)),
+    ('Kills still amber (Q3)', "  if(c === 'jumps') return itm.D[i] < 0", "  if((itm.rep.get(i) || {}).kills) return IT_MAP_KILL;\n  if(c === 'jumps') return itm.D[i] < 0", ('kills',)),
     ('OR instead of AND (Q2)', "    if(ok && o.near) ok = D[i] >= 0 && D[i] <= s.near.n;", "    if(o.near) ok = ok || (D[i] >= 0 && D[i] <= s.near.n);", ('wh',)),
     ('the distance fade kept while filtering (Q6)', "alpha = (i) => mt ? (mt.m[i] ? 1 : IT_MAP_DIM)", "alpha = (i) => mt ? (mt.m[i] ? (!on(i) ? IT_MAP_FAINT : 1) : IT_MAP_DIM)", ('ex',)),
     ('no settings button on hover (057)', ".it-map-fw:hover > button.it-map-pb, .it-map-fw:has(", ".it-map-fw:has(", ('panel',)),
@@ -348,11 +348,11 @@ MUTANTS = [
     ('the stack not kept (Q11)', "function itMapStackSave(){ try{ localStorage.setItem(MAP_STACK_KEY, JSON.stringify(itMapSt())); }", "function itMapStackSave(){ try{ }", ('store',)),
     ('a ring faded off the matches (Q7)', "c.lineWidth = big ? 2.5 : 2.2; c.globalAlpha = 0.95;", "c.lineWidth = big ? 2.5 : 2.2; c.globalAlpha = itMapDimmed(i) ? 0.2 : 0.95;", ('rings',)),
     ('the alert glow at today\'s size zoomed out', "big ? r + 9 : 11 * Math.min(1.4", "big ? r + 9 : 22 * Math.min(1.4", ('glow',)),
-    ('no soft colour (Q15)', "function itMapFcol(i){ const c = itMapColRaw(i); return i === itm.home || itMapMatched(i) ? c : itMapMix(c, 0.55); }", "function itMapFcol(i){ return itMapColRaw(i); }", ('soft',)),
+    ('no soft colour (Q15)', "function itMapFcol(i){ const c = itMapColRaw(i); return i === itm.home || itMapMatched(i) ? c : itMapMix(c, IT_MAP_SOFT); }", "function itMapFcol(i){ return itMapColRaw(i); }", ('soft',)),
     ('a match not bigger (Q8)', "hit === '1' ? dotR + 1.6 : dotR;", "dotR;", ('ex',)),
     ('the table\'s tenth rounded again (063: Juddi 0.7)', "function itMapSecT(i){ return itMapTable().secT[i]; }", "function itMapSecT(i){ const t = itMapTable().secT[i]; return t === 6 ? 7 : t; }", ('sec',)),
-    ('a number in the circles with no colour', "const col = itMapSt().colour; if(col) c.fillText(", "const col = itMapSt().colour || 'sec'; if(col) c.fillText(", ('colour',)),
-    ('the settings only open with the filter on (060\'s bug)', "  if(!itm.box || (k !== 'secr' && k !== 'near')) return;", "  if(!itm.box || !itMapSt().only[k] || (k !== 'secr' && k !== 'near')) return;", ('panel',)),
+    ('a number in the circles with no colour', "const col = itMapSt().colour, ln = col ? itMapLvNum(i) : null; if(col) c.fillText(", "const col = itMapSt().colour || 'sec', ln = col ? itMapLvNum(i) : null; if(col) c.fillText(", ('colour',)),
+    ('the settings only open with the filter on (060\'s bug)', "  if(!itm.box || !IT_MP_KEYS.includes(k)) return;", "  if(!itm.box || !itMapSt().only[k] || !IT_MP_KEYS.includes(k)) return;", ('panel',)),
     ('the panel\'s numbers cut off (the hand test)', ".it-mpp .rs-v{width:5.2ch;}", ".it-mpp .rs-v{}", ('panel',)),
     # 055: the example's stack is set aside for everything it draws, in itExSandbox (it was set only for the picture, in itExMapPic)
     ('the example writing the user\'s stack', "itm.st = itMapStackBlank(); itm.mt = null;", "itMapSt().colour = 'region'; itMapStackSave(); itm.mt = null;", ('example',)),

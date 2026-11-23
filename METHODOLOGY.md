@@ -419,10 +419,23 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   shows, in tenths; the map's table holds CCP's value to two decimals, so a system just under 0.45 would round to 0.5: CCP's
   band, from the unrounded value, keeps those 19 at 0.4), Jumps from you (0 to 10 or more; grey with no gate route) or Region
   (two regions joined by a gate never share a colour; no cyan, amber or lilac, which mean focus, alerts and wormholes);
-  pressing the one that is on turns colour off (every system plain grey, no number). The colour is soft: mixed toward the
-  map's background, zoomed in a dark disc tinted with it. Only, any number, every one that is on must match and any pick
+  three more from ESI's live data (build queue 065): Sov holder (who holds each system, from /sovereignty/systems, read at
+  most once per its 5-minute Expires while it's on: by your standings, the holding alliance's side as a pilot of it would get
+  it, your own alliance blue, NPC faction space khaki, unclaimed plain grey; or one colour per alliance, Region's palette and
+  method; zoomed in, the alliance's logo in each system's circle, ringed in its colour, a capital with a ★; the gates between
+  two systems of one holder drawn in its colour; the hover gives the holding corporation, since when, the development levels,
+  ADM and the vulnerability window in EVE time; a line under the legend lists the five holders with the most systems in
+  view), Jumps (past hour) (ship jumps, 0 / 1–9 / 10–49 / 50–149 / 150–499 / 500+) and Kills (past hour) (ships and pods,
+  0 / 1 / 2–4 / 5–19 / 20+, or NPC kills in its settings, 0 / 1–49 / 50–199 / 200–499 / 500+), the last two from ESI's
+  /universe/system_jumps/ and /universe/system_kills/, read at most once an hour. A system missing from those lists had
+  none that hour. Before a read, or after one that failed (asked again after 60 s, 120 s, then 5 minutes, and only while
+  the map shows that colour), every system is plain grey and the legend says "no data yet", never 0. Nothing of it is kept
+  after the page closes. These three never fade with distance (only Only filters dim).
+  Pressing the one that is on turns colour off (every system plain grey, no number). The colour is soft: mixed toward the
+  map's background (80% of the colour zoomed out, 62% in a zoomed-in disc since build queue 065). Only, any number, every one that is on must match and any pick
   inside one counts: Security range (two ends, 0.1 steps, either order, comparing the number the map shows), Within N jumps
-  (1 to 30, counted as Jumps from you counts: by stargate, plus your jump bridges while they're on), Intel reports, Kills from Intel, Wormholes and Sov upgrades (below). While one is on, the systems
+  (1 to 30, counted as Jumps from you counts: by stargate, plus your jump bridges while they're on), Intel reports, Kills from Intel, Wormholes, Sov upgrades (below) and Region pick (the regions you tick in its list, with a search
+  and Select all; none ticked matches nothing but you). While one is on, the systems
   that match are bright anywhere on the map, a little bigger and in full colour, the rest dim, and no system fades with
   distance; hostile and neutral rings, the alert range's glow and your pin never fade; the legend's second line says what
   is on and how many match, and "N match ›" at the bottom left moves the view to each, nearest first. View: Paths to you
