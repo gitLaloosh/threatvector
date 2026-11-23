@@ -203,6 +203,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #169 Don't measure what's hidden, and don't key a cache on an inline element's width: skip what has no size, key on a real width, measure again when it shows.
 - #175 A stored field read at start-up runs before the rest of the script: a helper further down (a const not yet set) throws only once that field is saved, so check a reload with every new stored field present. See also #12.
 - #171 A reference built for one job carries that job's stubs: pyfa_effects runs every handler with calculateRangeFactor = 1, so projected handlers ran at full strength until the check put pyfa's own back.
+- #177 Points standing in for a continuous range can't back a "safe" claim: the real value falls between them. Track boxes that cover the range (kept while any part fits) and test the claim against the exact range; check that a made-up fit's modules all arrived.
 
 **Intel and live data (chat logs, zKillboard's feed)**
 
@@ -1274,6 +1275,21 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - **Do this instead:** a class that sets `display` gets its own `[hidden]` rule beside it, or the state is a class on a parent (064: the map box
   gets `nomap`, and `.it-map-box.nomap > :not(.it-map-msg)` hides everything but its message). A check asserts `getComputedStyle(e).display`
   (or the element's box), never the attribute alone, and a screenshot of each new state is looked at before delivery.
+
+## 177. Points standing in for a continuous range can't back a "safe" claim: the real value falls between them
+
+- **What happened (found building build queue 070, 2026-11-23):** the Mass panel's mockup (and the plan, section 4) tracked the holes still
+  possible as points: 161 totals across the ±10% range, each with all of it left, cut down by every Show Info answer. A step was "safe" when no
+  point could be closed by it. The build's replay (each ship of a step jumping against one real hole) used totals between the points: a B274 of
+  2,037,288 t had 988 t left when the smallest point said 1,200 t, so a Heron trip (1,150 t) marked safe closed the hole with it on the far
+  side. The mockup's own checks passed because their holes were the points.
+- **Do this instead:** keep boxes that cover the whole range (a total and an amount left, each with its half-width), keep a box while any hole
+  in it fits every answer (`hmBoxSays`), and count a jump safe only when no hole in any box could be closed. Test the promise against the exact
+  range, not a sample: for a fresh hole the answers pin the total to an interval the check works out itself (`wormhole_mass_check`'s REPLAY),
+  and every step marked safe must need less than the least any of those holes has left; holes at a box's edge as well as its middle.
+- **Also (the same build):** a made-up fit with a module whose name the game doesn't have ("100MN Microwarpdrive II"; a battleship's is the
+  500MN) is built without it and no error is shown, so a check built on it tests a different fit. Read back what the page built (the
+  module-state list) before trusting a number from it.
 
 ## 160. A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it
 

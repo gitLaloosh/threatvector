@@ -664,3 +664,23 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
 - **Your chain stays on the Wormholes tab** (build queue 066; 062 had marked your chain's k-space ends on Intel's map): only Intel's own
   entries are drawn there, so a hole removed from Intel's Wormholes list is gone from the map even while an old chain still names that
   system; your own jumps between k-space and J-space still add an Intel entry (above), which the list can remove.
+- **Mass: crit or roll a hole** (v2026.11.23.2, build queue 070; Project doc roadmap/hole-mass-plan.md): the Mass button works out steps, never
+  sends anything to EVE.
+  - **The hole's numbers** are CCP's for its type (total mass, mass per jump; `IT_WH_LIFE`). A new hole's total is taken as anywhere within
+    ±10% of the type's, and Show Info's words as more than 50% / less than 50% / less than 10% left (both secondary sources, checked in the
+    owner's hand test). The 8 small holes that regain their mass get no steps.
+  - **A ship's masses** come from the fit's own calculation (the same as align time: plates, rigs, a Higgs Anchor, modes): prop module off
+    ("cold"), the fitted prop module running ("hot"; the hole takes the mass you have when you press jump), and with a Zero-Point Mass
+    Entangler the fit worked out again with it running and the prop modules only online. A typed hull is its mass, plus a MWD of its size for
+    hot, and says it counts no plates, Higgs Anchor or ZPME.
+  - **What could be left:** the totals and amounts left that every answer so far allows, as small boxes covering the whole range; a box stays
+    while any hole in it fits every answer, so the real hole is always in one (LESSON #177). The odds shown are the share of boxes that could
+    have that little left.
+  - **A step** is a group of ships jumping the same way, then one Show Info. With everyone on your side, the heaviest group that can't close
+    the hole goes out, and only if it can also come back (cold, lightest first; for Roll it only the last one back may close it). Ships on the
+    far side come back, the heaviest last. A jump that could close the hole is shown as safe only when everyone then ends on your side; for
+    Crit it never. A finisher waits until the hole says less than 10% (or is offered when only it has a safe trip). Polarization: no ship
+    jumps the same way through the hole twice within 5 minutes (a nearly as heavy group that is free goes instead of a wait).
+  - **When nothing is fully safe** the step shows the least risky jump, its odds and how light a ship would have to be ("a ship under N t",
+    rounded down to 100 t). The step count beside the heading is a quick run against three holes the answers still allow (the least, middle and
+    most left); a run still going after 80 steps shows as "80+".

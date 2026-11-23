@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-r2dDIbp0s8k+3gQX88VTksqyFhLOd3h3aiuQuyj8weY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-H2B8/86pecngXLM7UrwbktvFitS2hnPreZkyqToYGEk='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3337,7 +3337,7 @@
   .it-gtag.whk{color:var(--text); background:var(--tag-fill);} .it-gtag.whk.it-sn{background:color-mix(in srgb, currentColor 14%, transparent);}
   .wh-ed{display:grid; grid-template-columns:minmax(0, 1fr); gap:8px 12px; padding:10px 0 0; border-top:1px solid var(--line);}
   .wh-ed label{display:flex; flex-direction:column; gap:4px; font:12px var(--sans); color:var(--text-dim); min-width:0;} .wh-ed label > input, .wh-ed label > select, .wh-ed label > textarea{width:100%; box-sizing:border-box; min-width:0;}
-  .wh-ed textarea{font-family:var(--sans); height:56px; min-height:0; resize:vertical;} .wh-ed .wide{grid-column:1/-1;}
+  .wh-ed textarea{font-family:var(--sans); height:56px; min-height:0; resize:vertical;} .wh-ed .wide, .wh-pop .wh-addf .wide{grid-column:1/-1;}   /* 070: the Mass panel's wide fields too */
   .wh-pop{position:absolute; top:52px; right:8px; z-index:6; width:min(480px, calc(100% - 16px)); max-height:calc(100% - 64px); overflow:auto; box-sizing:border-box; padding:10px 12px 12px; display:flex; flex-direction:column; gap:8px;
     border:1px solid var(--line); border-radius:8px; background:var(--panel-2); box-shadow:0 10px 30px rgba(0,0,0,.55);}
   .wh-pop[hidden]{display:none;} .wh-poph{display:flex; align-items:center; justify-content:space-between; font:700 13px var(--sans); color:var(--heading);}
@@ -3347,6 +3347,19 @@
   .wh-ty{display:flex; flex-direction:column; gap:2px;} .wh-ty input{width:100%; box-sizing:border-box;} .wh-ty output{font:12px var(--sans); color:var(--it-wh); min-height:15px;}
   .wh-dr{display:inline-flex; gap:8px; align-items:center; font:600 13px var(--sans); color:var(--it-wh-drifter);} .wh-dr input{width:auto; min-height:0; margin:0;}
   .wh-pop .wh-addf button[type="submit"]{grid-column:1/-1; min-height:36px; font-weight:700;}
+  /* 070: the Mass panel (crit or roll a hole) */
+  .hm-pop .hm-hr{display:inline-flex; gap:6px; align-items:center;} .hm-pop .hm-hl{line-height:1.45;} .hm-pop .hm-hl b{color:var(--amber);}
+  .hm-ship{display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) auto; gap:6px 8px; align-items:center;} .hm-ship .hm-w2{grid-column:1/3;} .hm-ship .x-close{grid-column:3; position:static;}
+  .hm-ship .hm-m, .hm-ship .hm-fk{grid-column:1/-1;} .hm-ship .hm-fk{display:inline-flex; gap:6px; align-items:center;}
+  .hm-sum{position:sticky; top:-10px; z-index:1; box-shadow:0 -10px 0 var(--panel-2); display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; padding:6px 8px; background:var(--panel); border:1px solid var(--line); border-radius:6px;}
+  .hm-sum > span:first-child{flex:1 1 200px; min-width:0;} .hm-sum .hm-sb{display:inline-flex; flex-wrap:wrap; gap:6px; flex:none;}
+  .hm-steps{display:flex; flex-direction:column; gap:8px;}
+  .hm-done{margin:0; padding-left:22px; font:12px var(--sans); color:var(--text-dim);} .hm-done li{margin:2px 0;} .hm-done .hm-old{list-style:none; margin-left:-22px;}
+  span.hm-c{color:var(--lc); font-weight:600;}
+  .hm-now{font:14px/1.45 var(--sans); color:var(--heading); padding:8px 10px; background:var(--panel); border:1px solid var(--line); border-radius:6px;}
+  .hm-now .hm-n{color:var(--cyan); font-weight:700;} .hm-now .d{color:var(--text-dim);} .hm-now .hm-how{font-size:12px;} .hm-now.hm-end{color:var(--cyan); font-weight:600;}
+  .hm-ans{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:6px;} .hm-ans button{display:inline-flex; gap:8px; align-items:center; justify-content:flex-start; min-height:36px;} .hm-ans i{width:8px; height:8px; border-radius:2px; flex:none; background:var(--lc);}
+  .hm-br{margin:0; padding:0 0 0 18px; font:12px/1.6 var(--sans); color:var(--text);} .hm-br[hidden]{display:none;} .hm-pop button.it-whp-xb{align-self:flex-start;} .hm-f select{min-width:0; max-width:100%;}
   /* 056: the panels behind a rail of map controls at the map's top left (Intel's model, 052: rule A by reuse of .it-map-rail, rule B); System for now,
      Signatures, Routes and Local add their buttons in their parts (the owner: "Top left, where panels are now", "Only working panels") */
   .wh-box .wh-rail{top:46px; left:8px; right:auto;} .wh-box .wh-rail[hidden]{display:none;}
@@ -3407,7 +3420,7 @@
   .wh-lr[data-wh-lr]{background:var(--panel-2); border-radius:3px; cursor:pointer; outline-offset:-1px;} .wh-lr[data-wh-lr]:hover{background:color-mix(in srgb, var(--cyan) 7%, var(--panel-2));}
   .wh-lr[aria-selected="true"]{background:color-mix(in srgb, var(--cyan) 18%, var(--panel-2)); box-shadow:inset 2px 0 0 var(--cyan);}
   .wh-lr.b0{--lc:var(--danger);} .wh-lr.b1{--lc:var(--amber);} .wh-lr.b2{--lc:var(--exp);} .wh-lr.b3{--lc:var(--it-clear);}   /* the game's signal colours */
-  .wh-lr.cm0{--lc:var(--text);} .wh-lr.cm1{--lc:var(--amber);} .wh-lr.cm2{--lc:var(--danger);}   /* a connection by mass */
+  .wh-lr.cm0, .hm-c.cm0{--lc:var(--text);} .wh-lr.cm1, .hm-c.cm1{--lc:var(--amber);} .wh-lr.cm2, .hm-c.cm2{--lc:var(--danger);} .hm-c.cmx{--lc:var(--text-dim);}   /* a connection by mass; 070: the Mass panel's answers in the same colours */
   .wh-lr .ic{display:grid; place-items:center; color:var(--lc);} .wh-lr .id{font:600 12px var(--mono, monospace); color:var(--lc);} .wh-lr.b0 .r:not(.ag), .wh-lr.b1 .r:not(.ag), .wh-lr.b2 .r:not(.ag), .wh-lr.b3 .r:not(.ag){color:var(--lc); font:11px var(--mono, monospace);}
   .wh-lr .nm{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text);} .wh-lt.cn .nm{display:flex; align-items:center; gap:4px;} .wh-lnm{min-width:0; overflow:hidden; text-overflow:ellipsis;}
   .wh-lty{color:var(--text-dim); font:11px var(--mono, monospace);} .wh-lr .id.wh-lnone{color:var(--text-dim);} .wh-llf{font:600 10px var(--sans); color:var(--drain); white-space:nowrap;}
@@ -3423,7 +3436,9 @@
     .wh-panel{padding:4px;} .wh-topl{top:auto; bottom:8px; right:150px; justify-content:flex-start;} .wh-topl .wh-ctx{font-size:11px;}
     .wh-box .wh-rail{top:60px; left:8px;} .wh-pnl{top:60px; left:60px; right:8px; bottom:8px; width:auto; padding:8px 10px 10px;}   /* 056: the sheet beside the rail (the owner: "Sheet beside the rail") */
     .wh-box:has(.wh-pnl:not([hidden])) .wh-mini, .wh-box:has(.wh-pnl:not([hidden])) .wh-topl{display:none;}
-    .wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px;} .wh-ctl .wh-zoom [data-wh-z="in"], .wh-ctl .wh-zoom [data-wh-z="out"]{display:none;}   /* a phone zooms by pinching, as the Intel map */
+    .wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px; flex-wrap:wrap;} .wh-ctl > *{flex:none;}   /* 070 (Q11, the owner: "Wrap to two rows (Recommended)"): every control 44 x 44, two rows when they don't fit one */
+    .hm-pop .hm-f{grid-template-columns:minmax(0, 1fr);} .hm-ans button, .hm-sum button, .hm-pop .wh-acts button{min-height:44px;}
+    .wh-ctl .wh-zoom [data-wh-z="in"], .wh-ctl .wh-zoom [data-wh-z="out"]{display:none;}   /* a phone zooms by pinching, as the Intel map */
     .wh-ctl button.wh-tb{width:44px; height:44px; min-height:44px; padding:0; justify-content:center;} .wh-ctl button.wh-tb span{display:none;} .wh-ctl button.it-gear, .wh-ctl summary.info-btn{width:44px; height:44px;}
     .wh-pop{top:auto; bottom:0; right:0; left:0; width:auto; max-height:72%; border-radius:12px 12px 0 0;}
     .wh-menu{width:min(260px, calc(100% - 16px));} .wh-smenu button.wh-mi, .wh-smenu .wh-mtag input{min-height:44px;}
@@ -3455,7 +3470,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.23.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.23.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3876,12 +3891,19 @@ const CARD_INFO = {
  "whmap": [
   "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. Landing docked (a jump clone, a pod death) or switching pilots adds no connection.",
   "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move or remove together (Delete); right-click empty space for Select all. The overview in the corner shows where everything is. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
-  "[Focus and adding] Click a system for the System panel (its button, top left): class, effect and its numbers, statics (a community list's until you type your own; hover one for its lifetime and mass), notes, connections, signatures. Right-click it (press and hold on a phone) for its menu: status, tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; right-click empty space adds one there.",
+  "[Focus and adding] Click a system for the System panel (its button, top left): class, effect and its numbers, statics (a community list's until you type your own; hover one for its lifetime and mass), notes, connections, signatures. Right-click it (press and hold on a phone) for its menu: status, tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; Mass works out how to crit or roll a hole; right-click empty space adds one there.",
   "[Connections] Each side of a hole has its own signature ID: hover the mark at its end, or see that side's list.",
   "[Signatures] Paste the Probe Scanner's list (Ctrl+A, Ctrl+C) for the system in focus: signatures and anomalies. Colours follow the game's signal; Type sorts as the game does. Select rows (Ctrl-click adds) to copy, edit or delete. With Lazy update on, a paste is the whole list: signatures missing from it go, after you confirm. Undo takes back the last paste.",
   "[Routes] Its panel (the button under System's) shows the way to Home, the nearest highsec and lowsec and the systems you pin (type one, or right-click → Pin route or Routes from here), again each time you move. One square a jump, round through a hole; hover one for its system. For reference only: nothing is sent to EVE.",
   "[Sharing] Share copies your chain as text or a link: positions and locks stay with you, notes and who's there only if ticked. Import shows what it adds first; the newer edit wins and nothing of yours is removed.",
   "[Kept] In this browser only, until you remove it: nothing expires. Lock a system (your home, say) so it can't be moved or removed; Remove all leaves locked ones. In a wormhole, Intel counts jumps from where you came into the chain."
+ ],
+ "whmap#mass": [
+  "Works out, step by step, how to bring a hole under 10% (crit) or close it (roll) with the ships you pick, leaving everyone on the side you choose.",
+  "[The numbers] Each type’s total mass and mass per jump are CCP’s. A new hole’s total is within ±10% of it, so the steps keep every total that fits what Show Info has said.",
+  "[In, out, hot, cold] Out is a jump to the side you don’t want to finish on; in, to the side you do. The hole takes your ship’s mass as you press jump: hot is the MWD (or AB) running, cold is off. Ships that can jump together are one step, then one look at Show Info; a finisher waits until the hole says less than 10%. A typed hull counts no plates, Higgs Anchor or ZPME.",
+  "[Safety] A jump that could close the hole is shown only when everyone then ends on your side; if no safe one is left, you see the odds and how light a ship must be. Polarization: no ship jumps the same way twice within 5 minutes.",
+  "[For reference] Nothing is sent to EVE. Picking a connection keeps its Mass up to date."
  ]
 };
 const CTX_MAX = 40;
@@ -3955,7 +3977,7 @@ function numBoxStyle(widest){ return `min-width:${String(widest).length}ch;`; }
 const INFO_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6"></path><path d="M12 7.5v.5"></path></svg>';
 // v2026.10.14.49: a key may name a variant of a card's text, "<card key>#<variant>" (the Anhinga's Mode text is
 // "tdmode#primary"), and the text names other cards as {card:key} (filled from CARD_NAMES, like ERROR_CODES).
-const INFO_TITLE = {'whmap': 'How the Wormholes tab works', 'fit#charges': 'How the Charges list works', 'side#sso': 'How logging in with EVE works', 'intel#game': 'How Use my game location works', 'side#online': 'How online status works', 'side#eve': 'How EVE standings work'};   // v2026.10.14.77: a panel about part of a card
+const INFO_TITLE = {'whmap': 'How the Wormholes tab works', 'whmap#mass': 'How the crit and roll steps work', 'fit#charges': 'How the Charges list works', 'side#sso': 'How logging in with EVE works', 'intel#game': 'How Use my game location works', 'side#online': 'How online status works', 'side#eve': 'How EVE standings work'};   // v2026.10.14.77: a panel about part of a card
 // v2026.10.30.2 (a user: "Bro you gotta find a way to condense this"): a paragraph "**Lead:** text" starts with its lead in bold; a
 // paragraph "[Heading] text" is folded under its heading (Intel's few lines on top, the rest a click away). Plain text otherwise.
 // Build queue 036: a paragraph may hold several leads ("**Edge:** … **Faster:** …"); every **…** pair is bold, escaped first. LESSON #156
@@ -18078,13 +18100,13 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
     * applyStackingBonus(velocityPenalizedBonusFractions) * applyStacking(velocityPenalizedReductionFractions);
 
   let baseAlignTimeSec = -Math.log(0.25) * baseAgility * baseMass / 1000000;
-  let boostedSpeed = null, boostedAlignTimeSec = null;
+  let boostedSpeed = null, boostedAlignTimeSec = null, boostedMass = null;   // 070: boostedMass, the mass with the prop module running (kg)
   if((hasMWD || hasAfterburner) && propModSpeedFactor > 0){
     const boostedSpeedFactor = propModSpeedFactor * MAX_ACCEL_CONTROL_MULT;
     const massWithPropMod = (unmultipliedBaseMass + propModMassAddition) * massMult;
     const boostPct = (boostedSpeedFactor * propModThrust) / massWithPropMod / 100;
     boostedSpeed = cruisingSpeed * (1 + boostPct);
-    boostedAlignTimeSec = -Math.log(0.25) * baseAgility * massWithPropMod / 1000000;
+    boostedAlignTimeSec = -Math.log(0.25) * baseAgility * massWithPropMod / 1000000; boostedMass = massWithPropMod;
   }
   // DUAL-PROP-MOD FIX (2026-10-11) -- when BOTH an AB and MWD are fitted,
   // propModSpeedFactor/propModType above only ever capture the winner
@@ -18097,7 +18119,7 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
   // whichever prop mod did NOT win, only when both are actually fitted --
   // null in every other case (single prop mod or none), so this is purely
   // additive and doesn't change the primary figure's behavior at all.
-  let secondaryPropModType = null, secondaryBoostedSpeed = null, secondaryBoostedAlignTimeSec = null;
+  let secondaryPropModType = null, secondaryBoostedSpeed = null, secondaryBoostedAlignTimeSec = null, secondaryBoostedMass = null;
   if(hasMWD && hasAfterburner){
     const isAbPrimary = propModType === 'afterburner';
     const altSpeedFactor = isAbPrimary ? mwdSpeedFactor : abSpeedFactor;
@@ -18109,7 +18131,7 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
       const altMassWithPropMod = (unmultipliedBaseMass + altMassAddition) * massMult;
       const altBoostPct = (altBoostedSpeedFactor * altThrust) / altMassWithPropMod / 100;
       secondaryBoostedSpeed = cruisingSpeed * (1 + altBoostPct);
-      secondaryBoostedAlignTimeSec = -Math.log(0.25) * baseAgility * altMassWithPropMod / 1000000;
+      secondaryBoostedAlignTimeSec = -Math.log(0.25) * baseAgility * altMassWithPropMod / 1000000; secondaryBoostedMass = altMassWithPropMod;
     }
   }
 
@@ -18135,9 +18157,9 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
       return (running.length ? running : c).reduce((a, b) => b.speed > a.speed ? b : a);
     };
     const prim = propModType ? propFor(propModType) : null;
-    boostedSpeed = prim ? prim.speed : null; boostedAlignTimeSec = prim ? prim.align : null;
+    boostedSpeed = prim ? prim.speed : null; boostedAlignTimeSec = prim ? prim.align : null; boostedMass = prim ? prim.mass : null;
     const sec = secondaryPropModType ? propFor(secondaryPropModType) : null;
-    secondaryBoostedSpeed = sec ? sec.speed : null; secondaryBoostedAlignTimeSec = sec ? sec.align : null;
+    secondaryBoostedSpeed = sec ? sec.speed : null; secondaryBoostedAlignTimeSec = sec ? sec.align : null; secondaryBoostedMass = sec ? sec.mass : null;
   }
 
   let projectedSrc = null, projectedTarget = null;   // v2026.10.14.35 PYFA CORE projected (set below, hulls with effects)
@@ -18914,6 +18936,9 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
       secondaryBoosted: secondaryBoostedAlignTimeSec !== null ? pyRound(secondaryBoostedAlignTimeSec, 1) : null,
       secondaryPropModType
     },
+    // 070 (Project doc roadmap/hole-mass-plan.md): the masses a wormhole takes when this ship jumps (kg, unrounded), from the same
+    // calculation as alignTime: no prop module running, the primary one running, the other one running (the Wormholes tab's Mass panel)
+    mass: {base: baseMass, boosted: boostedMass, propModType, secondaryBoosted: secondaryBoostedMass, secondaryPropModType},
     // Navigation & targeting, Phase 4 (F3) -- see CAPACITOR_CAPACITY_ATTR
     // comment block above. capacity is the max-skill-boosted capacitor pool;
     // peakRechargeRate/activeDrainPerSec/netRate are the net-sustained-rate
@@ -34568,10 +34593,10 @@ function whStcPaint(f){   // the chips and their note while typing in the Static
   if(o) o.innerHTML = whStcsHtml(so.codes); if(nt){ nt.textContent = so.src ? WH_STC_NOTE[so.src] : ''; nt.hidden = !so.src; }
 }
 // 061 (D6): a type field's suggestions (the browser's own list): the system's statics first, then K162, then every other code
-function whTyOptsHtml(n){
+function whTyOptsHtml(n, noK162){   // 070: noK162 for a K162's far side (the Mass panel asks for its real type)
   const mine = n === null || n === undefined ? [] : whStcSort(whStcOf(n).codes).split(' ').filter(Boolean), rest = Object.keys(IT_WH_TYPE).filter(c => c !== 'K162' && !mine.includes(c)).sort();
   const o = (c, lab) => `<option value="${escapeHtml(c)}" label="${escapeHtml(lab)}"></option>`;
-  return mine.map(c => o(c, `static → ${itWhDestTxt(c)[0]}`)).join('') + o('K162', 'exit (the far end of a hole)') + rest.map(c => o(c, `→ ${itWhDestTxt(c)[0]}`)).join('');
+  return mine.map(c => o(c, `static → ${itWhDestTxt(c)[0]}`)).join('') + (noK162 ? '' : o('K162', 'exit (the far end of a hole)')) + rest.map(c => o(c, `→ ${itWhDestTxt(c)[0]}`)).join('');
 }
 
 function whStatics(v){ const t = String(v || '').toUpperCase().split(/[\s,/]+/).filter(Boolean); return {ok: t.filter(x => /^[A-Z]\d{3}$/.test(x)).slice(0, 4).join(' '), bad: t.some(x => !/^[A-Z]\d{3}$/.test(x))}; }
@@ -34814,6 +34839,7 @@ function whShellHtml(){
     + `<div class="wh-topl"><span class="wh-ctx"></span></div>`
     + `<div class="wh-ctl"><div class="it-map-zoom wh-zoom"><button type="button" data-wh-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-wh-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-wh-z="fit" title="Fit the whole chain in view" aria-label="Fit the chain">⤢</button><button type="button" data-wh-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button><button type="button" data-wh-z="sel" aria-pressed="false" title="Select a group: drag on empty space (or hold Shift)" aria-label="Select a group">${WH_SEL_SVG}</button></div>`
     + `<button type="button" class="it-map-clr wh-tb" data-wh-pop="add" aria-expanded="false" title="Add a system or a connection by hand" aria-label="Add a system">${WH_ADD_SVG}<span>Add</span></button>`
+    + `<button type="button" class="it-map-clr wh-tb" data-wh-pop="mass" aria-expanded="false" title="Work out how to crit or roll a hole" aria-label="Crit or roll a hole">${WH_MASS_SVG}<span>Mass</span></button>`   // 070
     + `<button type="button" class="it-map-clr wh-tb" data-wh-pop="share" aria-expanded="false" title="Share your chain, or import someone’s" aria-label="Share">${WH_SHARE_SVG}<span>Share</span></button>`
     + `<button type="button" class="it-gear wh-gear" data-wh-pop="set" aria-expanded="false" aria-label="Wormholes settings" title="Wormholes settings">${IT_GEAR}</button>${infoBtnHtml('whmap')}</div>`
     + `<div class="wh-pop" data-pop="add" role="dialog" aria-label="Add by hand" hidden><div class="wh-poph">Add by hand<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
@@ -34822,6 +34848,7 @@ function whShellHtml(){
     + `<input type="text" name="sig" placeholder="Sig ID, e.g. RZL-429" aria-label="Signature ID of the connection, in the linked system (optional)" title="The signature ID in the linked system (where you scanned it)" maxlength="7" spellcheck="false" autocapitalize="characters">`
     + `<span class="wh-ty"><input type="text" name="ty" placeholder="Type or class: Z971, C3, HS" aria-label="Type or class (optional)" maxlength="7" spellcheck="false" autocapitalize="characters" list="whAddTyDl"><datalist id="whAddTyDl"></datalist><output name="dest"></output></span>`
     + `${whAddSelHtml('life')}${whAddSelHtml('mass')}${whAddSelHtml('size')}<label class="wh-dr"><input type="checkbox" name="dr"> Drifter</label><button type="submit">Add</button></form></div>`
+    + `<div class="wh-pop hm-pop" data-pop="mass" role="dialog" aria-label="Crit or roll a hole" hidden></div>`   // 070: drawn by hmPaint while open
     + `<div class="wh-pop" data-pop="set" role="dialog" aria-label="Wormholes settings" hidden><div class="wh-poph">Wormholes settings<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
     + `<div class="wh-sub">Map</div><button type="button" data-wh-z="arr">Rearrange as a tree</button><div class="wh-note">Puts every system back in the tree layout, dropping where you moved them; locked systems stay where they are.</div></div>`
     + `<div class="wh-pop" data-pop="share" role="dialog" aria-label="Share your chain" hidden><div class="wh-poph">Share your chain<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
@@ -35349,12 +35376,14 @@ function whAskAct(a){
     if(s){ s.rows = s.rows.filter(x => !gone.includes(x.id)); if(!s.rows.length) delete S.sg.sys[n]; whSgSave(); }
     whMsg(`Deleted ${gone.length} signature${gone.length === 1 ? '' : 's'}: ${gone.join(', ')}.`); whPnRedraw(); return;
   }
-  if(a === 'cn-yes'){
-    const ks = new Set(P.sel.cn), names = S.st.links.filter(l => ks.has(whLinkKey(l.a, l.b))).map(l => whName(l.a === n ? l.b : l.a));
-    P.ask = null; P.sel.cn.clear(); S.st.links = S.st.links.filter(l => !ks.has(whLinkKey(l.a, l.b))); for(const k of ks) delete S.ends[k];
-    whSave(); whEndSave(); whMsg(`Deleted ${names.length} connection${names.length === 1 ? '' : 's'}: to ${names.join(', ')}.`);
-    S.drawKey = ''; S.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true);
-  }
+  if(a === 'cn-yes'){ const ks = new Set(P.sel.cn); P.ask = null; P.sel.cn.clear(); whLinksDel(ks, n); }
+}
+// connections deleted by key (a Set of whLinkKey), named from system n in the message: the System panel's list and the Mass panel (070) both
+function whLinksDel(ks, n){
+  const S = whS, names = S.st.links.filter(l => ks.has(whLinkKey(l.a, l.b))).map(l => whName(l.a === n ? l.b : l.a));
+  S.st.links = S.st.links.filter(l => !ks.has(whLinkKey(l.a, l.b))); for(const k of ks) delete S.ends[k];
+  whSave(); whEndSave(); whMsg(`Deleted ${names.length} connection${names.length === 1 ? '' : 's'}: to ${names.join(', ')}.`);
+  S.drawKey = ''; S.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true);
 }
 function whAllAct(a){
   const S = whS, m = S.el.querySelector('.wh-hmenu');
@@ -35615,17 +35644,22 @@ function whPop(k){
   el.querySelectorAll('.wh-pop').forEach(p => { p.hidden = p.dataset.pop !== k || !p.hidden; });
   const open = [...el.querySelectorAll('.wh-pop')].find(p => p.dataset.pop === k && !p.hidden);
   el.querySelectorAll('[data-wh-pop]').forEach(b => b.setAttribute('aria-expanded', String(b.dataset.whPop === k && !!open)));
-  if(k === 'add' && open){
-    const f = el.querySelector('.wh-addf'), me = whS.last, fo = whFocus(), o = [];
-    if(me !== null && whS.st.sys[me]) o.push([me, `${whName(me)} (where you are)`]);
-    if(fo !== null && fo !== me) o.push([fo, `${whName(fo)} (in focus)`]);
-    o.push(['', 'nothing (a loose system)']);
-    f.link.innerHTML = whOptsHtml(o, o[0][0]); whAddTyList(f); f.sys.focus();   // (built with escapeHtml)
-  }
+  if(k === 'add' && open){ const f = el.querySelector('.wh-addf'); whAddLinkList(f); f.sys.focus(); }
   if(k === 'share' && open) whShareOpen();
+  if(k === 'mass' && open) hmOpen();   // 070
+}
+// + Add's Linked to: where you are, then the system in focus, then nothing, the first picked. Built on opening and after every Add (070, the
+// owner's bug: "\"add\" system button in map defaults to no connection.": the form stays open after an Add, so from an empty map the second system
+// went in loose too; then "go with option A": the same rule after an Add, where the system just added is the one in focus)
+function whAddLinkList(f){
+  const me = whS.last, fo = whFocus(), o = [];
+  if(me !== null && whS.st.sys[me]) o.push([me, `${whName(me)} (where you are)`]);
+  if(fo !== null && fo !== me) o.push([fo, `${whName(fo)} (in focus)`]);
+  o.push(['', 'nothing (a loose system)']);
+  f.link.innerHTML = whOptsHtml(o, o[0][0]); whAddTyList(f);   // (built with escapeHtml)
 }
 function whAddTyList(f){ const dl = f.querySelector('#whAddTyDl'); if(dl) dl.innerHTML = whTyOptsHtml(f.link.value ? Number(f.link.value) : null); }   // 061 (D6): the linked system's statics first
-function whPopClose(){ const el = whS.el; let was = false; el.querySelectorAll('.wh-pop').forEach(p => { if(!p.hidden) was = true; p.hidden = true; }); el.querySelectorAll('[data-wh-pop]').forEach(x => x.setAttribute('aria-expanded', 'false')); return was; }
+function whPopClose(){ const el = whS.el; let was = false; if(whS.hm){ clearTimeout(whS.hm.timer); whS.hm.timer = 0; } /* 070: the Mass panel's one wait timer */ el.querySelectorAll('.wh-pop').forEach(p => { if(!p.hidden) was = true; p.hidden = true; }); el.querySelectorAll('[data-wh-pop]').forEach(x => x.setAttribute('aria-expanded', 'false')); return was; }
 function whNameIn(raw){ const r = sysFind(raw, 'all'), ids = (Array.isArray(r) ? r : r ? [r] : []).filter(whKnown); return ids.length === 1 ? ids[0] : null; }   // 064: with or without its "-"
 function whNameMiss(raw){ const r = sysFind(raw, 'all'); return Array.isArray(r) ? sysManyText(raw, r) : `“${raw}” isn’t a wormhole system or a system with stargates that the page knows.`; }
 function whAddForm(f){
@@ -35641,7 +35675,7 @@ function whAddForm(f){
   if(tc.cls && whIsJ(id)){ const m = /^C(13|[1-6])$/.exec(tc.cls), key = m ? (m[1] === '13' ? 'c13' : 'c' + m[1]) : tc.cls === 'Thera' ? 'th' : null; if(key && key !== whClsData(id)) whS.st.sys[id].cls = key; }
   whSave(); whEndSave(); whMsg(`Added ${whName(id)}${to !== null && to !== id ? `, linked to ${whName(to)}` : ''}${sig ? ` through ${sig}` : ''}.`);
   for(const k of ['sys', 'sig', 'ty']){ f[k].value = ''; f[k].removeAttribute('aria-invalid'); } for(const k of ['life', 'mass', 'size']) f[k].value = ''; f.dr.checked = false; f.dest.value = '';
-  whSelect(id);
+  whSelect(id); whAddLinkList(f);   // 070: the list follows the map (the system just added is in focus now)
 }
 function whHereOpen(x, y){
   whMenuClose(false);
@@ -35967,6 +36001,380 @@ function whRtPinForm(f){
   const a = document.activeElement; if(a && f.contains(a)) a.blur();   // whPanels never rewrites under a field being typed in: the field is done with
   whS.pn = {}; whPanels(); const i = whS.el.querySelector('#whPnRt [data-wh-rt-pin] input'); if(i) i.focus({preventScroll: true});
 }
+// ==== 070: Mass, crit or roll a hole (Project doc roadmap/hole-mass-plan.md, mockup Claude outputs/hole_mass_mockup.html) ====
+// The owner, 2026-11-22: "build a button into the wormhole map that lets you calculate how to crit or roll a hole. ... we want simple, clear
+// steps that will allow you to quickly identify how best to reach the hole state that is desired." A toolbar button opens a .wh-pop: the hole
+// (a connection of the system in focus, or a type), what Show Info says now, the goal and the side to finish on, up to 4 ships (a saved fit or a
+// typed hull); then one step at a time (a group of ships, in / out, hot / cold), answered with what Show Info says next. Nothing goes to EVE.
+// What it knows is a list of the holes still possible (hmPoss): small boxes of totals and amounts left, [total, left, half the box's width in
+// total, half its width in left], sorted by the least each could have left. A box is kept while any hole in it fits every answer (hmApply,
+// hmBoxSays), so the real hole is always in one of them, and a jump is safe only when no hole in any box could be closed by it (found at
+// the build: with the mockup's points instead of boxes, a real total between two points had 988 t left where the points said 1,200 t, and a
+// Heron "safe" trip closed the hole on it). All in memory while the page is open; only the ship rows are kept (tvWhMass, WH_MASS_KEY).
+const WH_MASS_KEY = 'tvWhMass';   // {v: 1, ships: [{fit: <saved fit id>, fin?} | {hull: <name>, fin?}]} (Q8; new key, safe both ways)
+const WH_MASS_MAX = 4;   // Q2: "Up to 4 (Recommended)"
+const WH_MASS_POL_MS = 5 * 60e3;   // polarization: no second jump the same way through the same hole within 5 minutes (UNVERIFIED, hand test)
+const WH_MASS_PROP = {1: 500, 2: 5000, 3: 50000, 4: 500000};   // a MWD of the hull's rig size adds this (t; massAddition, CCP's SDE)
+const WH_MASS_ZPME_EFFECT = 7142;   // the Zero-Point Mass Entangler's effect (pyfa Effect7142: mass x0.2 while it runs; MWD blocked)
+const WH_MASS_SAYS = {stable: 'More than 50%', reduced: 'Less than 50%', critical: 'Less than 10%', gone: 'It’s gone'};
+const WH_MASS_CM = {stable: 'cm0', reduced: 'cm1', critical: 'cm2', gone: 'cmx'};   // the connection list's mass colours
+const WH_MASS_SVG = '<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="8" cy="10.5" rx="6" ry="3.5"/><path d="M8 1.5v6M5.5 5L8 7.5 10.5 5"/></svg>';
+function hmState(){
+  const S = whS;
+  if(!S.hm){ S.hm = {ships: hmRead(), link: null, ty: '', st: 'stable', goal: 'roll', fin: 'this', pl: null, back: [], prev: null, open: true, rs: false, ask: null, pv: null, step: null, sm: new Map(), timer: 0}; }
+  return S.hm;
+}
+function hmRead(){ try{ const o = JSON.parse(localStorage.getItem(WH_MASS_KEY) || 'null'); if(o && o.v === 1 && Array.isArray(o.ships)) return o.ships.filter(r => r && typeof r === 'object' && (typeof r.fit === 'string' || typeof r.hull === 'string')).slice(0, WH_MASS_MAX).map(r => r.fit ? {fit: r.fit, ...(r.fin ? {fin: true} : {})} : {hull: r.hull.slice(0, 40), ...(r.fin ? {fin: true} : {})}); }catch(e){ } return []; }
+function hmSave(){ try{ localStorage.setItem(WH_MASS_KEY, JSON.stringify({v: 1, ships: hmState().ships})); }catch(e){ } }
+const hmT = (m) => Math.round(m).toLocaleString('en-US') + ' t';
+function hmSt(M, R){ return R <= 0 ? 'gone' : R / M > 0.5 ? 'stable' : R / M > 0.1 ? 'reduced' : 'critical'; }   // Show Info's three words (UNVERIFIED thresholds, hand test)
+// how many of the possible holes (sorted by the least each could have left) could have at most v left: a binary search, so a step can try
+// every group quickly
+function hmLo(c){ return c[1] - c[3]; }
+function hmLe(P, v){ let lo = 0, hi = P.length; while(lo < hi){ const mid = (lo + hi) >> 1; if(hmLo(P[mid]) <= v) lo = mid + 1; else hi = mid; } return lo; }
+function hmShare(P, m){ return P.length ? hmLe(P, m) / P.length : 0; }
+// what the hole could be: fresh, every total within ±10% of the type's (UNVERIFIED, hand test), all of it left; otherwise every share that
+// fits what it says. The range is cut into boxes that cover it whole
+const HM_BANDS = {stable: [0.5, 1], reduced: [0.1, 0.5], critical: [0, 0.1]};
+function hmPoss(M0, st){
+  const P = [];
+  if(st === 'fresh'){ const n = 400, h = 0.1 * M0 / n; for(let i = 0; i < n; i++){ const M = M0 * 0.9 + (2 * i + 1) * h; P.push([M, M, h, h]); } return P; }
+  const b = HM_BANDS[st] || HM_BANDS.stable, n = 80, hM = 0.1 * M0 / n;
+  for(let i = 0; i < n; i++){ const M = M0 * 0.9 + (2 * i + 1) * hM, lo = b[0] * (M - hM), hi = b[1] * (M + hM), hR = (hi - lo) / (2 * n); for(let j = 0; j < n; j++) P.push([M, lo + (2 * j + 1) * hR, hM, hR]); }
+  return P.sort((x, y) => hmLo(x) - hmLo(y));
+}
+// can a hole in box c show k (Show Info's words) once m more has gone through? Some total and amount left in the box must fit the words (LESSON #177)
+function hmBoxSays(c, m, k){
+  const Ml = c[0] - c[2], Mh = c[0] + c[2], Rl = c[1] - c[3] - m, Rh = c[1] + c[3] - m;
+  if(k === 'gone') return Rl <= 0;
+  const b = HM_BANDS[k]; return Rh > 0 && Rh > b[0] * Ml && Rl <= b[1] * Mh;
+}
+function hmHole(code){ const L = IT_WH_LIFE[code]; return L ? {code, M0: L[1], J: L[2], regen: L[3], to: itWhDestTxt(code)[0]} : null; }
+// a connection's hole, seen from system n: either side's own type that isn't K162
+function hmLinkType(l, n){ const o = l.a === n ? l.b : l.a, me = whSide(l, n), ot = whSide(l, o), t = [me && me.type, ot && ot.type].find(x => x && x !== 'K162'); return {code: t || '', k162: !t && !!((me && me.type === 'K162') || (ot && ot.type === 'K162'))}; }
+// ---- the ships' masses (t): a saved fit's from the page's fit maths (the fit's mass field; the ZPME mode by recomputing with it running), a
+// typed hull's from CCP's data through getType (its mass, plus a MWD of its rig size: an estimate, said so on its row)
+function hmKey(r){ if(r.fit){ const rec = myShipById(r.fit); return rec ? `f:${r.fit}:${rec.eft}` : `f:${r.fit}:gone`; } return `h:${(r.hull || '').toLowerCase()}`; }   // a saved fit edited is worked out again
+function hmShipId(name){ const t = String(name || '').trim(), v = itShips().get(t.toLowerCase()) || itShips().get(t); return v ? [v.id, v.name] : null; }   // Intel's ship names (English or Chinese)
+const HM_PROP_LAB = {mwd: 'MWD on', afterburner: 'AB on'};
+async function hmFitModes(rec){
+  const {f} = await myShipBuild(rec), x = f.input, e0 = f.estimate, items = (e0.moduleStates && e0.moduleStates.items) || [];
+  const fx = await Promise.all(items.map(async it => { try{ const t = await getType(it.typeId); return (t.dogma_effects || []).some(d => d.effect_id === WH_MASS_ZPME_EFFECT) ? it : null; }catch(e){ return null; } }));
+  const zp = fx.filter(Boolean), states = {...(f.moduleStates || {})};
+  const run = async (st) => { const e = await estimateHpAndDps(x.shipTypeId, x.tally, x.cargoItemIds, x.highSlotByFlag, f.activeMode || 'sharpshooter', x.midSlotByFlag, st, f.droneStates || null, chgEngineOptions(f, x)); return e.mass; };
+  const off = {...states}; for(const it of zp) off[it.typeId] = 'online';
+  const m = zp.length ? await run(off) : e0.mass;   // hot and cold with the ZPME off, whatever the saved fit has
+  const modes = [];
+  if(m.boosted !== null) modes.push({k: 'hot', lab: HM_PROP_LAB[m.propModType] || 'prop on', m: m.boosted / 1000});
+  modes.push({k: 'cold', lab: 'prop off', m: m.base / 1000});
+  if(zp.length){   // the ZPME running, every prop module only online (CCP's data blocks a MWD while it runs)
+    const on = {...off}; for(const it of items) if(it.groupName === 'Propulsion Module') on[it.typeId] = 'online';
+    for(const it of zp) on[it.typeId] = 'active';
+    const z = await run(on); modes.push({k: 'zpme', lab: 'ZPME on', m: z.base / 1000});
+  }
+  return {name: rec.shipName, label: rec.fitName ? `${rec.shipName} — ${rec.fitName}` : rec.shipName, est: false, modes};
+}
+async function hmHullModes(name){
+  const h = hmShipId(name); if(!h) return {bad: true};
+  const t = await getType(h[0]), rs = attrVal(t.dogma_attributes || [], 1547, 0), m = (t.mass || 0) / 1000, modes = [];
+  if(WH_MASS_PROP[rs]) modes.push({k: 'hot', lab: 'MWD on', m: m + WH_MASS_PROP[rs]});
+  modes.push({k: 'cold', lab: 'prop off', m});
+  return {name: h[1], label: h[1], est: true, modes};
+}
+// a row's ship, once its masses are known (null while they're worked out; {bad} for a name the page doesn't know)
+function hmShipOf(r){
+  const H = hmState(), k = hmKey(r), c = H.sm.get(k);
+  if(c) return c.v ? {...c.v, fin: !!r.fin} : c.err ? {bad: true, err: c.err} : null;
+  if(r.fit && !myShipById(r.fit)) return {bad: true, err: 'that saved fit is gone'};
+  if(!r.fit && !String(r.hull || '').trim()) return null;
+  const e = {v: null, err: ''}; H.sm.set(k, e);
+  (r.fit ? hmFitModes(myShipById(r.fit)) : hmHullModes(r.hull)).then(v => { if(v.bad) e.err = 'not a ship the page knows'; else e.v = v; }, () => { e.err = 'its masses couldn’t be worked out'; }).then(() => { if(!hmState().pl) hmPaint(); });
+  return null;
+}
+// ---- the steps
+function hmNew(H, ships){
+  const n = whFocus(), l = H.link, o = l ? (l.a === n ? l.b : l.a) : null, h = hmHole(H.ty);
+  const S = ships.map(s => ({...s, modes: s.modes.filter(m => m.m <= h.J), at: 'this', last: {out: 0, back: 0}})).filter(s => s.modes.length);
+  return {H: h, M0: h.M0, goal: H.goal, fin: H.fin, here: whName(n), there: o !== null ? whName(o) : 'the other side', ships: S, P: hmPoss(h.M0, H.st), obs: H.st, hist: [], done: '', reset: false, finOk: false};
+}
+const hmCmp = (a, b) => { for(let k = 0; k < a.length; k++) if(a[k] !== b[k]) return a[k] - b[k]; return 0; };
+// the next step: {g: [{i, mo}] lightest first, dir, m, risk, need, wait, safe, finAlt}; {none} when no ship can jump; null once done
+function hmNext(pl, now){
+  if(pl.done) return null;
+  const D = pl.fin, P = pl.P, S = pl.ships, Rmin = P.length ? hmLo(P[0]) : 0, offs = S.map((s, i) => i).filter(i => S[i].at !== D);
+  if(!S.length) return {none: true};
+  if(pl.goal === 'crit' && pl.obs === 'critical' && !offs.length){ pl.done = 'crit'; return null; }
+  const lightest = (s) => Math.min(...s.modes.map(m => m.m)), light = Math.min(...S.map(lightest));
+  const toward = D === 'this' ? 'back' : 'out', away = D === 'this' ? 'out' : 'back';
+  const pol = (g, d) => Math.max(0, ...g.map(x => { const t = S[x.i].last[d]; return t && now - t < WH_MASS_POL_MS ? t + WH_MASS_POL_MS : 0; }));
+  const combos = (idx) => idx.reduce((acc, i) => acc.flatMap(c => S[i].modes.map(mo => c.concat([{i, mo}]))), [[]]);   // a mode for each ship (3^4 at most)
+  const sum = (g) => g.reduce((a, x) => a + x.mo.m, 0);
+  const fin = (g) => g.some(x => S[x.i].fin) ? 1 : 0;   // the owner: "i'd like to protect the hic until it's needed. allow a ship to be marked as the finisher."
+  const out = (b, dir) => { const g = b.g.slice().sort((x, y) => x.mo.m - y.mo.m); return {g, dir, m: sum(g), risk: b.risk, need: b.need, wait: pol(g, dir), safe: b.risk > 0 ? Math.max(0, Math.floor((Rmin - (b.need - sum(g))) / 100) * 100) : 0}; };   // safe: rounded down to 100 t
+  if(offs.length){   // ships off the finish side come over: a part of them can't close the hole; all of them may (roll), the heaviest last
+    let best = null;
+    for(let mask = 1; mask < (1 << offs.length); mask++){
+      const idx = offs.filter((i, k) => mask & (1 << k)), all = idx.length === offs.length;
+      for(const g of combos(idx)){
+        const m = sum(g), pre = m - Math.max(...g.map(x => x.mo.m)), close = all && pl.goal === 'roll';
+        const risk = hmShare(P, close ? pre : m), keep = close ? hmLe(P, m) + (P.length - hmLe(P, m + light)) : 0;   // after it: closed, or the next trip over still safe
+        const k = [risk > 0 ? 1 : 0, risk, fin(g), all ? 0 : 1, -keep, -m]; if(!best || hmCmp(k, best.k) < 0) best = {g, k, risk, need: close ? pre : m};
+      }
+    }
+    return out(best, toward);
+  }
+  // everyone on the finish side: the heaviest group that can't close the hole goes over, and must be able to come back (cold, lightest first;
+  // for Roll it only the last one back may close it; found in the mockup: two Megathrons out together at less than 10% had no safe way home)
+  const C = [];
+  for(let mask = 1; mask < (1 << S.length); mask++){
+    const idx = S.map((s, i) => i).filter(i => mask & (1 << i));
+    for(const g of combos(idx)){ const back = g.map(x => lightest(S[x.i])), m = sum(g), need = m + back.reduce((a, b) => a + b, 0) - (pl.goal === 'roll' ? Math.max(...back) : 0); C.push({g, m, need, risk: hmShare(P, need), wait: pol(g, away), fin: fin(g)}); }
+  }
+  // the finisher waits for the end: once the hole says less than 10%, when nothing else can jump, or when you send it (finOk);
+  // the owner: "shouldn't the heron be saved until the end in this case?"
+  const finOk = pl.obs === 'critical' || pl.finOk, nf = C.filter(c => !c.fin), pool = finOk || !nf.length ? C : nf;
+  pool.sort((a, b) => (a.risk > 0) - (b.risk > 0) || (a.risk > 0 ? a.risk - b.risk || a.m - b.m : a.fin - b.fin || b.m - a.m) || a.g.length - b.g.length);   // safe: no finisher first, then heaviest; risky: least risk first
+  const best = pool[0], free = best.wait ? pool.find(c => c.risk === best.risk && c.fin <= best.fin && !c.wait && c.m >= best.m * 0.75) : null;   // a free group nearly as heavy beats a wait
+  const st = out(free || best, away);
+  if(pool !== C && st.risk > 0 && C.some(c => c.fin && c.risk === 0)) st.finAlt = true;   // the finisher could go safely instead: offered, not chosen
+  return st;
+}
+function hmApply(pl, st, obs, now){
+  for(const x of st.g){ const s = pl.ships[x.i]; s.at = s.at === 'this' ? 'other' : 'this'; s.last[st.dir] = now; }
+  let P = pl.P.filter(c => hmBoxSays(c, st.m, obs)).map(c => [c[0], c[1] - st.m, c[2], c[3]]); pl.reset = false;   // still sorted
+  if(!P.length && obs !== 'gone'){ P = hmPoss(pl.M0, obs); pl.reset = true; }   // doesn't fit the numbers: start over from what it says now
+  pl.P = P.length ? P : pl.P; pl.obs = obs; pl.hist.push({short: hmShortTxt(pl, st), obs});
+  const offs = pl.ships.filter(x => x.at !== pl.fin);
+  if(obs === 'gone') pl.done = offs.length ? 'stranded' : pl.goal === 'roll' ? 'rolled' : 'closed';
+}
+function hmClone(pl){ return {...pl, ships: pl.ships.map(s => ({...s, last: {...s.last}})), P: pl.P, hist: pl.hist.slice()}; }   // the possible holes are shared, not copied
+function hmPossibleSays(pl, st){ return ['stable', 'reduced', 'critical', 'gone'].filter(k => pl.P.some(c => hmBoxSays(c, st.m, k))); }
+// a quick run against three holes the answers still allow (the least, middle and most left), answering truthfully: how many steps, and
+// whether a risky trip may come
+function hmPreview(pl){
+  const P = pl.P, picks = [P[0], P[P.length >> 1], P[P.length - 1]], runs = [];
+  for(const t of picks){
+    const q = hmClone(pl); let R = t[1], k = 0, risky = false, now = Date.now();
+    for(; k < 80; k++){ const st = hmNext(q, now); if(!st || st.none) break; if(st.risk > 0) risky = true; R -= st.m; now = Math.max(now, st.wait) + 60e3; hmApply(q, st, hmSt(t[0], R), now); if(q.done) break; }
+    runs.push({k: k + 1, risky});
+  }
+  const ks = runs.map(r => r.k);
+  return {lo: Math.min(...ks), hi: Math.max(...ks), risky: runs.some(r => r.risky)};
+}
+// ---- words (the owner: "can we modify verbiage to say \"in hot\", \"in cold\", \"out hot\", \"out cold\" etc?", then "\"out\" would be the
+// side you dont want to end up on."): out = a jump to the side you don't finish on, in = to the side you do; hot = the prop module running
+// when you press jump, cold = off. Ships by name, the same mode counted ("Megathron ×2"; the owner: "any way to condense it to \"2 megathrons
+// hot\" or \"1 hot one cold\" etc?")
+function hmDirWord(pl, st){ return st.dir === (pl.fin === 'this' ? 'back' : 'out') ? 'in' : 'out'; }
+function hmModeWord(mo){ return mo.k === 'hot' ? 'hot' : mo.k === 'zpme' ? 'cold, ZPME on' : 'cold'; }
+function hmModeHow(mo){ return mo.k === 'hot' ? `hot: ${mo.lab} when you press jump` : mo.k === 'zpme' ? 'ZPME on, prop module off' : 'cold: prop module off'; }
+function hmGroups(pl, st){
+  const m = new Map();
+  for(const x of st.g.slice().reverse()){ const nm = pl.ships[x.i].name; if(!m.has(nm)) m.set(nm, {nm, n: 0, modes: new Map()}); const e = m.get(nm); e.n++; const w = hmModeWord(x.mo); e.modes.set(w, (e.modes.get(w) || 0) + 1); }
+  return [...m.values()];
+}
+function hmOneMode(st){ return new Set(st.g.map(x => x.mo.k)).size === 1; }
+function hmNm(e){ return e.n > 1 ? `${e.nm} ×${e.n}` : e.nm; }
+function hmWho(pl, st){ return hmGroups(pl, st).map(hmNm).join(', '); }
+function hmModesOf(e){ return e.modes.size === 1 ? (e.n > 1 ? `all ${[...e.modes.keys()][0]}` : [...e.modes.keys()][0]) : [...e.modes].map(([k, n]) => `${n} ${k}`).join(', '); }
+function hmStepHtml(pl, st){
+  const G = hmGroups(pl, st), one = hmOneMode(st), n = st.g.length, d = hmDirWord(pl, st);
+  const from = st.dir === 'out' ? `${pl.here} → ${pl.there}` : `${pl.there} → ${pl.here}`;
+  const how = [...new Set(st.g.map(x => hmModeHow(x.mo)))].join(' · ');
+  const order = n > 1 && hmShare(pl.P, st.m) > 0 ? ` This can close it: jump lightest first, ${pl.ships[st.g[n - 1].i].name} (${hmModeWord(st.g[n - 1].mo)}) last.` : '';
+  return `${hmStepWhoHtml(pl, st)} <b>${escapeHtml(one ? `${d} ${hmModeWord(st.g[0].mo)}` : d)}</b> <span class="d">· ${escapeHtml(from)} · ${escapeHtml(hmT(st.m))}</span><br><span class="d hm-how">${escapeHtml(how.charAt(0).toUpperCase() + how.slice(1) + '.' + order)}</span>`;
+}
+function hmStepWhoHtml(pl, st){ const one = hmOneMode(st); return hmGroups(pl, st).map(e => `<b>${escapeHtml(hmNm(e))}</b>${escapeHtml(one ? '' : ` (${hmModesOf(e)})`)}`).join(one ? ', ' : ' and '); }
+function hmShortTxt(pl, st){ const d = hmDirWord(pl, st); return hmOneMode(st) ? `${hmWho(pl, st)} ${d} ${hmModeWord(st.g[0].mo)}` : `${hmGroups(pl, st).map(e => `${hmNm(e)} (${hmModesOf(e)})`).join(' + ')} ${d}`; }
+function hmRiskTxt(r){ return r >= 0.5 ? `${Math.round(r * 100)}%` : `about 1 in ${Math.max(2, Math.round(1 / r))}`; }
+function hmDoneTxt(pl){
+  const side = pl.fin === 'this' ? pl.here : pl.there, offs = pl.ships.filter(s => s.at !== pl.fin).map(s => s.name);
+  return {rolled: `Rolled: the hole is gone and everyone is in ${side}.`, crit: `Crit: it says less than 10% and everyone is in ${side}.`,
+    stranded: `The hole closed with ${offs.join(', ')} on the other side.`, closed: 'The hole closed (you wanted it open).'}[pl.done] || '';
+}
+function hmSaidHtml(k, colon){ return `<span class="${escapeHtml('hm-c ' + WH_MASS_CM[k])}">${escapeHtml(WH_MASS_SAYS[k] + (colon ? ':' : ''))}</span>`; }
+function hmPvTxt(pv){ const t = (k) => k > 80 ? '80+' : String(k); return pv.lo === pv.hi ? t(pv.lo) : `${t(pv.lo)}–${t(pv.hi)}`; }   // a run still going after 80 steps is "80+", not a count
+// ---- the panel
+function hmLinksHtml(n){
+  const H = hmState(), cur = H.link ? whLinkKey(H.link.a, H.link.b) : '';
+  return (n === null ? [] : whLinksOf(n)).map(l => { const o = l.a === n ? l.b : l.a, t = hmLinkType(l, n), k = whLinkKey(l.a, l.b), m = l.mass && IT_WH_INFO_TXT.mass[l.mass] ? ` · mass ${IT_WH_INFO_TXT.mass[l.mass][0]}` : '';
+    return `<option value="${escapeHtml(k)}"${escapeHtml(k === cur ? ' selected' : '')}>${escapeHtml(`to ${whName(o)} · ${t.code || (t.k162 ? 'K162' : 'type not known')}${m}`)}</option>`; }).join('')
+    + `<option value=""${escapeHtml(cur ? '' : ' selected')}>Another hole (type it)</option>`;
+}
+function hmHoleLineHtml(h, ty){
+  if(!h) return ty ? escapeHtml(`“${ty}” isn’t a wormhole type the page knows.`) : '';
+  const mil = (v) => (v / 1e6).toFixed(2).replace(/0$/, '');
+  return escapeHtml(`${h.code} → ${h.to} · ${hmT(h.M0)} total (${mil(h.M0 * 0.9)}–${mil(h.M0 * 1.1)} million, ±10%) · up to ${hmT(h.J)} a jump`)
+    + (h.regen ? ' · <b>this hole regains its mass: rolling it isn’t practical</b>' : '');
+}
+function hmFitOptsHtml(r){ const fs = myShipSorted(); return fs.length ? `<optgroup label="Your fits">${hmFitOptHtml(fs, r)}</optgroup>` : ''; }
+function hmFitOptHtml(fs, r){ return fs.map(f => `<option value="fit:${escapeHtml(f.id)}"${escapeHtml(r.fit === f.id ? ' selected' : '')}>${escapeHtml(f.fitName ? `${f.shipName} — ${f.fitName}` : f.shipName)}</option>`).join(''); }
+function hmShipLineHtml(r, s, h){
+  if(s && s.bad) return `<b class="it-warn">${escapeHtml(s.err)}</b>`;
+  if(!s) return escapeHtml(r.fit || String(r.hull || '').trim() ? 'working out its masses…' : '');
+  const big = h ? s.modes.filter(m => m.m > h.J) : [], fit = h ? s.modes.filter(m => m.m <= h.J) : s.modes;
+  const warn = h && big.length ? (fit.length ? `only ${fit.map(hmModeWord).join(' or ')} fits this hole` : 'too heavy for this hole') : '';
+  return escapeHtml(s.modes.map(m => `${hmT(m.m)} ${m.k === 'hot' ? `hot (${m.lab})` : hmModeWord(m)}`).join(' · '))
+    + (s.est ? ' · <i>hull only: plates, a Higgs Anchor or a ZPME change this</i>' : '') + (warn ? ` · <b class="it-warn">${escapeHtml(warn)}</b>` : '');
+}
+function hmShipRowHtml(r, i, h){
+  const s = hmShipOf(r), lab = 'Ship ' + (i + 1);
+  return `<div class="hm-ship" role="group" aria-label="${escapeHtml(lab)}"><select data-hm-ship="${Number(i)}"${escapeHtml(r.fit ? ' class="hm-w2"' : '')} aria-label="${escapeHtml(lab)}">${hmFitOptsHtml(r)}<option value="hull"${escapeHtml(r.fit ? '' : ' selected')}>Type a hull…</option></select>`
+    + (r.fit ? '' : `<input type="text" data-hm-hull="${Number(i)}" value="${escapeHtml(r.hull || '')}" placeholder="Hull, e.g. Megathron" aria-label="Hull" list="whMassHullDl" maxlength="40" spellcheck="false">`)
+    + `<button type="button" class="x-close" data-hm-rm="${Number(i)}" aria-label="${escapeHtml('Remove ' + lab.toLowerCase())}" title="Remove">×</button>`
+    + `<span class="wh-note hm-m">${hmShipLineHtml(r, s, h)}</span>`
+    + `<label class="wh-note hm-fk"><input type="checkbox" data-hm-fin="${Number(i)}"${escapeHtml(r.fin ? ' checked' : '')}> Finisher: waits until the hole is under 10%</label></div>`;
+}
+function hmHullDlHtml(){ return Object.values(INTEL_SHIPS).map(v => v[0]).filter(Boolean).sort().map(nm => `<option value="${escapeHtml(nm)}"></option>`).join(''); }
+function hmSelHtml(k, lab, opts, wide){ const H = hmState(); return `<label class="${escapeHtml(wide ? 'wh-lnk wide' : 'wh-lnk')}">${escapeHtml(lab)} <select data-hm="${escapeHtml(k)}" aria-label="${escapeHtml(lab)}">${whOptsHtml(opts, H[k])}</select></label>`; }
+function hmHeadHtml(){ return `<div class="wh-poph">Crit or roll a hole<span class="hm-hr">${infoBtnHtml('whmap#mass')}<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></span></div>`; }
+function hmSumHtml(pl){
+  const H = hmState();
+  return `<div class="wh-note hm-sum"><span>${escapeHtml(`${pl.H.code} to ${pl.there} · ${pl.goal === 'roll' ? 'roll it' : 'crit it'}, finish in ${pl.fin === 'this' ? pl.here : pl.there} · ${pl.ships.map(s => s.name + (s.fin ? ' (finisher)' : '')).join(', ')}`)}</span><span class="hm-sb"><button type="button" data-hm="undo"${escapeHtml(H.back.length ? '' : ' disabled')} title="Take the last answer back (as far back as step 1)">Undo</button><button type="button" data-hm="edit">Change</button><button type="button" data-hm="reset">Start over</button></span></div>`
+    + (H.rs ? whAskHtml(`Start over? The ${pl.hist.length} step${pl.hist.length === 1 ? '' : 's'} so far are forgotten; the hole starts from what it says now.`, [['hm-rs', 'Start over'], ['hm-rs-no', 'Keep going']]) : '');
+}
+function hmTypeBoxHtml(n, l, lt, o){
+  const lab = l && !lt.code ? `K162: what’s the type on the other side (${whName(o)})?` : 'Type';
+  return `<span class="wh-ty wide"><input type="text" data-hm="ty" value="${escapeHtml(hmState().ty)}" placeholder="${escapeHtml(lab)}" aria-label="${escapeHtml(lab)}" maxlength="4" spellcheck="false" autocapitalize="characters" list="whMassTyDl"><datalist id="whMassTyDl">${whTyOptsHtml(n, !!(l && !lt.code))}</datalist></span>`;
+}
+function hmActsHtml(h){
+  const H = hmState(), ready = H.ships.map(hmShipOf), ok = ready.some(s => s && !s.bad), wait = H.ships.some((r, i) => !ready[i] && (r.fit || String(r.hull || '').trim()));
+  if(H.prev) return `<div class="wh-acts">${hmAddBtnHtml()}<button type="button" class="mys-primary" data-hm="goon"${escapeHtml(ok && !wait ? '' : ' disabled')}>${escapeHtml(`Carry on (${H.prev.hist.length} step${H.prev.hist.length === 1 ? '' : 's'} so far)`)}</button><button type="button" data-hm="go">Start over</button></div>`;
+  return `<div class="wh-acts">${hmAddBtnHtml()}<button type="button" class="mys-primary" data-hm="go"${escapeHtml(h && !h.regen && ok && !wait ? '' : ' disabled')}>Show the steps</button></div>`;
+}
+function hmAddBtnHtml(){ return hmState().ships.length < WH_MASS_MAX ? '<button type="button" data-hm="add">+ Ship</button>' : ''; }   // while there's room for one more
+function hmPanelHtml(){
+  const H = hmState(), n = whFocus(), l = H.link, lt = l ? hmLinkType(l, n) : null, o = l ? (l.a === n ? l.b : l.a) : null, h = hmHole(H.ty);
+  if(H.pl) return hmHeadHtml() + hmSumHtml(H.pl) + `<div class="hm-steps" aria-live="polite">${hmStepsHtml()}</div>`;   // steps under way: the setup folds to one line pinned at the top
+  return hmHeadHtml() + `<div class="wh-addf hm-f"><label class="wh-lnk wide">Hole <select data-hm="link" aria-label="Hole">${hmLinksHtml(n)}</select></label>`
+    + (!l || !lt.code ? hmTypeBoxHtml(n, l, lt, o) : '')
+    + `<div class="wh-note wide hm-hl">${hmHoleLineHtml(h, H.ty)}</div>`
+    + hmSelHtml('st', 'It says now', [['fresh', 'Fresh (nothing through yet)'], ['stable', 'More than 50%'], ['reduced', 'Less than 50%'], ['critical', 'Less than 10%']])
+    + hmSelHtml('goal', 'Goal', [['roll', 'Roll it (close it)'], ['crit', 'Crit it (under 10%, still open)']])
+    + hmSelHtml('fin', 'Finish in', [['this', `this side: ${n !== null ? whName(n) : 'here'}`], ['other', `the other side: ${o !== null ? whName(o) : 'the other side'}`]], true) + '</div>'
+    + `<div class="wh-sub">Ships</div>${hmShipsHtml(h)}<datalist id="whMassHullDl">${hmHullDlHtml()}</datalist>` + hmActsHtml(h);
+}
+function hmShipsHtml(h){ return hmState().ships.map((r, i) => hmShipRowHtml(r, i, h)).join(''); }
+function hmStepsHeadHtml(pl, pv, stuck){ return `<div class="wh-sub">${escapeHtml(`Steps${stuck ? ' · no safe step left' : pv ? ` · about ${hmPvTxt(pv)}${pl.hist.length ? ' more' : ''} step${pv.hi === 1 ? '' : 's'}${pv.risky ? ' · may need a risky trip' : ''}` : ''}`)}</div>`; }
+function hmDoneItemsHtml(pl){
+  const old = Math.max(0, pl.hist.length - 3);   // the last three steps; the earlier ones fold into a line
+  return (old ? `<li class="hm-old">${escapeHtml(`${old} earlier step${old === 1 ? '' : 's'}`)}</li>` : '') + pl.hist.slice(old).map((x, k) => `<li value="${Number(old + k + 1)}"><span>${escapeHtml(x.short)}</span> ${hmSaidHtml(x.obs)}</li>`).join('');
+}
+function hmDoneListHtml(pl){ return pl.hist.length ? `<ol class="hm-done">${hmDoneItemsHtml(pl)}</ol>` : ''; }
+function hmWaitHtml(pl, st){ return st.wait ? `<div class="wh-note it-warn">${escapeHtml(`Wait until ${new Date(st.wait).toTimeString().slice(0, 5)} first: ${hmWho(pl, st)} jumped ${hmDirWord(pl, st)} less than 5 minutes ago (polarized).`)}</div>` : ''; }
+function hmRiskHtml(pl, st){
+  if(!(st.risk > 0)) return '';
+  return `<div class="wh-note it-warn"><b>No fully safe jump:</b> ${escapeHtml(`${hmRiskTxt(st.risk)} that it closes behind ${hmWho(pl, st)}. ${st.safe > 0 ? `A ship under ${hmT(st.safe)} would be safe.` : 'No ship is light enough to be sure.'}`)}${hmFinAltHtml(pl, st)}</div>`;
+}
+function hmFinAltHtml(pl, st){   // the finisher could go safely instead: offered, not chosen (the owner: "shouldn't the heron be saved until the end in this case?")
+  if(!st.finAlt) return '';
+  const q = hmClone(pl); q.finOk = true; const fn = pl.ships.filter(s => s.fin).map(s => s.name).join(', ');
+  return ` ${escapeHtml(`${fn} (finisher) is kept for the end.`)} <button type="button" data-hm="finnow">${escapeHtml(`Send ${fn} instead: safe, about ${hmPvTxt(hmPreview(q))} steps`)}</button>`;
+}
+function hmBranchesHtml(pl, st, now){
+  return hmPossibleSays(pl, st).map(k => { const q = hmClone(pl); hmApply(q, st, k, now + 60e3); const nx = hmNext(q, now + 60e3);
+    return `<li>${hmSaidHtml(k, true)} ${escapeHtml(q.done ? hmDoneTxt(q) : nx && !nx.none ? hmShortTxt(q, nx) + (nx.risk > 0 ? ` (risky: ${hmRiskTxt(nx.risk)})` : '') + (nx.wait ? ', after a wait' : '') : 'no safe step')}</li>`; }).join('');
+}
+function hmAnsHtml(){ return ['stable', 'reduced', 'critical', 'gone'].map(k => `<button type="button" class="${escapeHtml('hm-c ' + WH_MASS_CM[k])}" data-hm-say="${escapeHtml(k)}"><i></i>${escapeHtml(WH_MASS_SAYS[k])}</button>`).join(''); }   // 44 px on a phone
+function hmStepNowHtml(pl, st, now){
+  const H = hmState();
+  return (pl.reset ? '<div class="wh-note it-warn">That answer doesn’t fit these masses, so the steps start again from what it says now. Check the ships or the type.</div>' : '')
+    + `<div class="hm-now"><span class="hm-n">${Number(pl.hist.length + 1)}.</span> ${hmStepHtml(pl, st)}</div>${hmWaitHtml(pl, st)}${hmRiskHtml(pl, st)}`
+    + '<div class="wh-note">Then Show Info on the hole: what does it say?</div>'
+    + `<div class="hm-ans">${hmAnsHtml()}</div>`
+    + `<button type="button" class="it-whp-xb" data-hm="br" aria-expanded="${escapeHtml(String(H.open))}" aria-controls="whMassBr">${IT_CHEV}What’s next</button>`
+    + `<ul class="hm-br" id="whMassBr"${escapeHtml(H.open ? '' : ' hidden')}>${hmBranchesHtml(pl, st, now)}</ul>`;
+}
+function hmStepsHtml(){
+  const H = hmState(), pl = H.pl, now = Date.now(), st = pl.done ? null : hmNext(pl, now), stuck = !!(st && !st.none && st.risk >= 0.99);
+  H.step = st;
+  return hmStepsHeadHtml(pl, H.pv, stuck) + hmDoneListHtml(pl) + hmStepsBodyHtml(pl, st, stuck, now);
+}
+function hmStepsBodyHtml(pl, st, stuck, now){
+  const H = hmState();
+  if(pl.done) return `<div class="hm-now hm-end">${escapeHtml(hmDoneTxt(pl))}</div>` + (H.ask ? whAskHtml(H.ask, [['hm-rm', 'Remove'], ['hm-rm-no', 'Keep it']]) : '');
+  if(!st || st.none) return '<div class="hm-now">No ship here can jump this hole.</div>';
+  if(stuck) return `<div class="hm-now">${escapeHtml(`No safe step left with these ships: the next jump ${hmDirWord(pl, st)} would close the hole behind ${hmWho(pl, st)}.`)}</div>`
+    + `<div class="wh-note it-warn">${escapeHtml(`${st.safe > 0 ? `A ship under ${hmT(st.safe)} can do the last trip safely: add one with Change.` : 'No ship is light enough to be sure.'} Or leave it here: it says ${WH_MASS_SAYS[pl.obs].toLowerCase()}.`)}</div>`;
+  return hmStepNowHtml(pl, st, now);
+}
+function hmPop(){ return whS.el ? whS.el.querySelector('.wh-pop[data-pop="mass"]') : null; }
+function hmPaint(){
+  const p = hmPop(); if(!p || p.hidden) return; const H = hmState(), y = p.scrollTop;
+  p.innerHTML = hmPanelHtml(); p.scrollTop = y;
+  const nw = p.querySelector('.hm-now'); if(nw){ const top = nw.offsetTop - 120; if(nw.offsetTop + 160 > p.scrollTop + p.clientHeight || top < p.scrollTop) p.scrollTop = Math.max(0, top); }
+  clearTimeout(H.timer); H.timer = 0;   // a polarization wait: drawn again once when it's over (only while the panel is open)
+  if(H.step && !H.step.none && H.step.wait > Date.now()) H.timer = setTimeout(() => { H.timer = 0; hmPaint(); }, Math.min(H.step.wait - Date.now() + 500, 6e5));
+}
+// opened on the system in focus: its first connection with a type, and that connection's Mass
+function hmOpen(){ const H = hmState(), n = whFocus(), ls = n === null ? [] : whLinksOf(n); if(!H.pl || !ls.includes(H.link)){ H.link = ls.find(l => hmLinkType(l, n).code) || ls[0] || null; H.pl = null; H.back = []; H.prev = null; H.ask = null; H.rs = false; hmFromLink(n); } hmPaint(); }
+function hmFromLink(n){ const H = hmState(), l = H.link; if(!l){ H.ty = ''; H.st = 'stable'; return; } H.ty = hmLinkType(l, n).code; H.st = l.mass || 'stable'; }
+function hmGo(carry){
+  const H = hmState(), h = hmHole(H.ty); if(!h) return;
+  const ships = H.ships.map(hmShipOf).filter(s => s && !s.bad); if(!ships.length) return;
+  const pl = hmNew(H, ships), pv = carry && H.prev;
+  if(pv){   // Carry on: what the hole could be and the jumps so far stay; a ship kept keeps its side and its polarization
+    pl.P = pv.P; pl.obs = pv.obs; pl.hist = pv.hist; const used = new Set();
+    for(const s of pl.ships){ const k = pv.ships.findIndex((o, j) => !used.has(j) && o.label === s.label); if(k >= 0){ used.add(k); s.at = pv.ships[k].at; s.last = {...pv.ships[k].last}; } }
+  }
+  H.pl = pl; H.back = []; H.prev = null; H.ask = null; H.rs = false;   // a new run: Undo goes back as far as here (the owner: "your recommendation is fine here")
+  H.pv = hmPreview(pl);
+}
+function hmMark(){ const H = hmState(); H.back.push({pl: hmClone(H.pl), obs: H.pl.obs, done: H.pl.done, reset: H.pl.reset, finOk: H.pl.finOk, mass: H.link ? (H.link.mass || '') : null}); }
+function hmLinkLive(){ const H = hmState(); return H.link && whS.st.links.includes(H.link) ? H.link : null; }
+function hmLinkMass(v){ const l = hmLinkLive(); if(!l) return; if(v) l.mass = v; else delete l.mass; l.u = Date.now(); whSave(); whS.drawKey = ''; whS.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true); }
+function hmSay(k){   // an answer: what Show Info says after the step (Q7, the owner: "Yes, update it (Recommended)": the connection's Mass follows)
+  const H = hmState(), pl = H.pl, st = H.step; if(!pl || !st || st.none) return;
+  hmMark(); hmApply(pl, st, k, Date.now()); H.pv = pl.done ? null : hmPreview(pl);
+  if(pl.obs !== 'gone' && hmLinkLive()) hmLinkMass(pl.obs);
+  const l = hmLinkLive(); if(pl.done && pl.obs === 'gone' && l){ const n = whFocus(); H.ask = `The hole is gone. Remove the connection to ${whName(l.a === n ? l.b : l.a)}?`; }
+}
+// Undo (the owner: "and a \"back\" button", then "let's change \"Back\" to \"Undo\""): the last answer taken back, as far as step 1 of this run;
+// the connection's Mass as it was (unless it was removed)
+function hmUndo(){
+  const H = hmState(), b = H.back.pop(); if(!b) return;
+  H.pl = b.pl; Object.assign(H.pl, {obs: b.obs, done: b.done, reset: b.reset, finOk: b.finOk}); H.ask = null; H.rs = false; H.pv = hmPreview(H.pl);
+  if(b.mass !== null && hmLinkLive() && (H.link.mass || '') !== b.mass) hmLinkMass(b.mass);
+}
+// Start over (the owner: "needs to be a start over or reset button"): back to the setup, same hole, ships, goal and side; It says now = the last answer
+function hmReset(){ const H = hmState(), pl = H.pl; H.back = []; H.rs = false; H.prev = null; H.ask = null; H.pl = null; if(pl && pl.obs && pl.obs !== 'gone') H.st = pl.obs; else if(hmLinkLive()) H.st = H.link.mass || 'stable'; }
+function hmClick(b){   // from whWire's click handler, for buttons inside the panel; true when it was the panel's
+  const H = hmState(), d = b.dataset;
+  if(d.hm === 'add'){ if(H.ships.length < WH_MASS_MAX) H.ships.push({hull: ''}); hmSave(); }
+  else if(d.hmRm !== undefined){ H.ships.splice(Number(d.hmRm), 1); hmSave(); }
+  else if(d.hm === 'go') hmGo(false);
+  else if(d.hm === 'goon') hmGo(true);
+  else if(d.hm === 'br') H.open = !H.open;
+  else if(d.hm === 'undo') hmUndo();
+  else if(d.hm === 'finnow'){ hmMark(); H.pl.finOk = true; H.pv = hmPreview(H.pl); }   // the finisher for the rest of the run; Undo takes it back
+  else if(d.hm === 'reset'){ if(H.pl && H.pl.hist.length && !H.pl.done) H.rs = true; else hmReset(); }
+  else if(d.whAsk === 'hm-rs') hmReset();
+  else if(d.whAsk === 'hm-rs-no') H.rs = false;
+  else if(d.hm === 'edit'){ H.prev = H.pl && H.pl.hist.length && !H.pl.done ? H.pl : null; H.pl = null; H.ask = null; H.rs = false; }
+  else if(d.hmSay) hmSay(d.hmSay);
+  else if(d.whAsk === 'hm-rm'){ const l = hmLinkLive(); H.ask = null; if(l) whLinksDel(new Set([whLinkKey(l.a, l.b)]), whFocus()); H.link = null; }   // the connection list's own delete
+  else if(d.whAsk === 'hm-rm-no') H.ask = null;
+  else return false;
+  const f = b.dataset.hm || ''; hmPaint();
+  const p = hmPop(), bs = p ? [...p.querySelectorAll('button')] : [], again = bs.find(x => f && x.dataset.hm === f && !x.disabled) || bs.find(x => x.dataset.hmSay) || bs.find(x => !x.disabled && (x.dataset.hm === 'go' || x.dataset.hm === 'add'));
+  if(again) again.focus({preventScroll: true});   // the focus stays in the panel after it's drawn again
+  return true;
+}
+function hmChange(t){   // from whWire's change handler, for the panel's fields
+  const H = hmState(), n = whFocus(), d = t.dataset;
+  if(['link', 'ty', 'st'].includes(d.hm)) H.prev = null;   // another hole, or what it says now: a fresh start
+  if(d.hm === 'link'){ H.link = t.value ? whS.st.links.find(l => whLinkKey(l.a, l.b) === t.value) || null : null; hmFromLink(n); }
+  else if(d.hm === 'ty') H.ty = t.value.trim().toUpperCase();
+  else if(d.hm === 'st' || d.hm === 'goal' || d.hm === 'fin') H[d.hm] = t.value;
+  else if(d.hmShip !== undefined){ const i = Number(d.hmShip), f = H.ships[i] && H.ships[i].fin; H.ships[i] = t.value === 'hull' ? {hull: ''} : {fit: t.value.slice(4)}; if(f) H.ships[i].fin = true; hmSave(); }
+  else if(d.hmFin !== undefined){ const r = H.ships[Number(d.hmFin)]; if(r){ if(t.checked) r.fin = true; else delete r.fin; hmSave(); } }
+  else if(d.hmHull !== undefined){ const i = Number(d.hmHull), f = H.ships[i] && H.ships[i].fin, s = hmShipId(t.value); H.ships[i] = {hull: s ? s[1] : t.value.trim().slice(0, 40)}; if(f) H.ships[i].fin = true; hmSave(); }
+  else return;
+  H.pl = null; H.ask = null;
+  const key = Object.keys(d)[0], val = key ? d[key] : null;
+  hmPaint(); const p = hmPop(), e = p && key ? [...p.querySelectorAll('input, select')].find(x => x.dataset[key] === val) : null; if(e) e.focus({preventScroll: true});   // the field just changed keeps the focus
+}
+// ==== 070 end ====
 function whWire(el){
   el.addEventListener('click', (ev) => {
     const b = ev.target.closest('button');
@@ -35976,6 +36384,7 @@ function whWire(el){
     }
     const d = b.dataset;
     if(d.whRp){ whPnSet(whS.open === d.whRp ? '' : d.whRp); return; }   // 056: the button shows or hides its panel; nothing else shuts it
+    if(b.closest('.wh-pop[data-pop="mass"]') && hmClick(b)) return;   // 070: the Mass panel's buttons (its questions too)
     if(d.whAsk){ whAskAct(d.whAsk); return; }   // 059 (P20): a question's answer
     if(d.whAll){ whAllAct(d.whAll); return; }
     if(d.whSec){ whS.secs.sigs = !whS.secs.sigs; whSecSave(); whPnRedraw('[data-wh-sec="sigs"]'); return; }
@@ -35997,6 +36406,7 @@ function whWire(el){
   });
   el.addEventListener('change', (ev) => {
     const f = ev.target;
+    if(f.closest('.wh-pop[data-pop="mass"]')){ hmChange(f); return; }   // 070
     if(f.closest('[data-wh-ed]')){ whEdit(f); return; }
     if(f.name === 'link' && f.closest('.wh-addf')){ whAddTyList(f.form); return; }   // 061 (D6)
     if(f.dataset.whSw === 'lazy'){ whS.sg.lazy = f.checked; whSgSave(); whPnRedraw('[data-wh-sw="lazy"]'); return; }   // 059 (P5): one setting for every system

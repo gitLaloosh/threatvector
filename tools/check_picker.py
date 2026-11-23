@@ -66,6 +66,7 @@ REGIONS = [
 CSS = {
     'it': ['intel'], 'pt': ['intel'], 'nb': ['intel'], 'nbx': ['intel'], 'fe': ['intel'], 'fj': ['intel'], 'fsys': ['intel'], 'ftg': ['intel'],
     'wh': ['intel'], 'whPanel': ['intel'], 'tabWh': ['intel'], 'tabBtnWh': ['intel'], 'tm': ['intel', 'layout'], 'tab': ['intel', 'layout'],   # 048
+    'hm': ['intel', 'layout'],   # 070: the Wormholes tab's Mass panel
     'intel': ['intel'], 'intelPanel': ['intel'], 'intelSw': ['intel'], 'tabIntel': ['intel'],
     'sa': ['system'], 'side': ['system'], 'std': ['system'], 'vs': ['system', 'myship'], 'ds': ['system'], 'contacts': ['system'],
     'candidate': ['system'], 'candidates': ['system'], 'saResults': ['system'], 'tabDscan': ['system'],
