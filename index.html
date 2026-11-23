@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-kNj1IIbuDD0ZnFptXTYxQC7+AxATlvCSDeHwH9BIWso='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-dnOCqaZ/swpGnjbLi2qD+7fH+SPaYYI0ZjIPT4CeZSQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -31363,7 +31363,7 @@ function itMapSecText(i){ return (itMapSecT(i) / 10).toFixed(1); }
 const IT_MAP_LV = {sovh: 'sov', jumph: 'jumps', killh: 'kills'};
 const IT_MAP_SOVC = {y: '#4f8fe0', f: '#8db8f2', n: '#a8b2b9', h: '#c65b4e', npc: '#7a6f58', u: IT_MAP_PLAIN};   // yours --side-friendly, hostile --danger; NPC faction space muted khaki
 const IT_MAP_SOVW = {y: 'your alliance', f: 'friendly', n: 'neutral', h: 'hostile'};
-const IT_MAP_JH = ['#2a3640', '#2f5d63', '#3f8a83', '#6fb59a', '#b8d88a', '#f0f0b0'], IT_MAP_JHS = [0, 1, 10, 50, 150, 500];   // 0 / 1–9 / 10–49 / 50–149 / 150–499 / 500+ (median 14)
+const IT_MAP_JH = ['#5f676e', '#8f7d2c', '#cfa526', '#f5891c', '#ff5420', '#ff2433'], IT_MAP_JHS = [0, 1, 10, 50, 150, 500];   // 0 / 1–9 / 10–49 / 50–149 / 150–499 / 500+ (median 14); the owner at the hand test: "shift from greens and yellows to going from yellow to red. gray is none." (as the game's map)
 const IT_MAP_KH = ['#2a3640', '#6b4a52', '#9a4f55', '#c65b4e', '#ef8f78'], IT_MAP_KHS = [0, 1, 2, 5, 20], IT_MAP_KHN = [0, 1, 50, 200, 500];   // ships + pods 0 / 1 / 2–4 / 5–19 / 20+; NPC 0 / 1–49 / 50–199 / 200–499 / 500+
 function itMapLvStep(v, S){ let k = 0; while(k + 1 < S.length && v >= S[k + 1]) k++; return k; }
 function itMapLvFmt(v){ return v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + 'k' : String(v); }

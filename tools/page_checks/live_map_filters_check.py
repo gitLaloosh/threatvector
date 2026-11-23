@@ -207,7 +207,7 @@ def run(b, html, w, parts):
             setf(pg, 'jumph'); pg.wait_for_timeout(800)
             if LV['asked'].count('jumps') != 1: out.append(f'{w}: Jumps (past hour): {LV["asked"]}')
             if pg.evaluate("() => itMapSt().colour") != 'jumph': out.append(f'{w}: Jumps (past hour) isn\'t the colour')
-            JH, JS = ['#2a3640', '#2f5d63', '#3f8a83', '#6fb59a', '#b8d88a', '#f0f0b0'], [0, 1, 10, 50, 150, 500]
+            JH, JS = ['#5f676e', '#8f7d2c', '#cfa526', '#f5891c', '#ff5420', '#ff2433'], [0, 1, 10, 50, 150, 500]   # grey none, yellow to red (the owner's hand test)
             stp = lambda v, S: max(k for k in range(len(S)) if v >= S[k])
             cols = pg.evaluate(COLS)
             bad = [(SYSNAME[s], JUMPS.get(s, 0), cols.get(str(s))) for s in ids if cols.get(str(s)) != JH[stp(JUMPS.get(s, 0), JS)]]

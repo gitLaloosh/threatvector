@@ -143,6 +143,9 @@ As planned, with these choices made at the build (none changes what the owner pi
   button off the next column's buttons (`intel_map_layout_check` now checks that instead of "right of the whole column"). On a phone the rows are
   44 px with no gap, so Colour and View fit beside Only on the 390 px map (447 px tall); each group wraps on its own when the map is shorter
   (`itMapFlSet`: Only's rows `--it-flr`, Colour's `--it-flc`).
+- **Jumps (past hour)'s colours** (the owner at the hand test, 2026-11-22: "think we need to shift from greens and yellows to going from yellow to
+  red. gray is none.", then "we dont need to match in-game brightness, but the contrast helps from yellow to red"): grey for none, then a dim
+  yellow rising in brightness to a vivid red (`IT_MAP_JH`), so the busiest systems stand out most under the soft colour.
 - **`itMapRegCol`** now uses a general greedy colouring (`itMapGreedy`), shared with per alliance; the regions' colours are unchanged.
 - **Info text:** `intel` [Map] +41 words; its cap 716 (`check_subtext.py`). "Map: within"'s hover says the three live colours don't fade.
 - **Checks:** new `live_map_filters_check.py` (20 mutants); `intel_check.py`'s ESI stand-in answers the two hourly lists (`LV`);
