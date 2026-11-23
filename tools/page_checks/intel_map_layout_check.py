@@ -91,8 +91,9 @@ def case_wide(b, html, w, out, errs):
     pg.evaluate("itMapFilterSet('wh')"); pg.mouse.move(5, 5); pg.wait_for_timeout(900)
     if pg.evaluate("getComputedStyle(document.querySelector('[data-it-whl]')).visibility === 'visible'"): out.append(f'{w}: Wormholes on keeps its panel button up with the pointer away (057: "it doesn\'t need to stick when on")')
     pg.hover('[data-im-f="wh"]'); pg.wait_for_timeout(300)
-    pb = pg.evaluate(f"""(()=>{{ const R={R}, p=document.querySelector('[data-it-whl]'), pr=R(p), f=R(document.querySelector('[data-im-f="wh"]')), c=R(document.querySelector('.it-map-fbtns'));
-      return {{shown: getComputedStyle(p).visibility==='visible', right: pr.left>=c.right, level: Math.abs(pr.top-f.top)<4}}; }})()""")
+    pb = pg.evaluate(f"""(()=>{{ const R={R}, ov={OV}, p=document.querySelector('[data-it-whl]'), pr=R(p), f=R(document.querySelector('[data-im-f="wh"]')), c=R(document.querySelector('.it-map-fbtns'));
+      const others=[...document.querySelectorAll('.it-map-fbtns [data-im-f]')].map(R);   // 065: a column too short wraps; the button sits in the gap, off every filter
+      return {{shown: getComputedStyle(p).visibility==='visible', right: pr.left>=f.right && !others.some(o=>ov(pr,o)), level: Math.abs(pr.top-f.top)<4}}; }})()""")
     if not all(pb.values()): out.append(f'{w}: Wormholes on shows its panel button right of the column, level with it: {pb}')
     pg.evaluate("itMapFilterSet('wh')"); pg.wait_for_timeout(300)
     pg.evaluate("document.querySelector('.it-map-fb').classList.add('named')"); pg.wait_for_timeout(350)
@@ -131,8 +132,9 @@ def case_wide(b, html, w, out, errs):
     # a row's system name centres that system in the part the list doesn't cover, its tooltip open, the list still open
     pg.click('.it-whp [data-it-whgo]'); pg.wait_for_timeout(400)
     c = pg.evaluate(f"""(()=>{{ const id = Number(document.querySelector('.it-whp [data-it-whgo]').dataset.itWhgo), i = itGraphGet().at.get(id), [a, b] = itMapFree();
-      return {{x: itm.Q[2*i], want: (a+b)/2, y: itm.Q[2*i+1], h: itm.H/2, tip: !itm.tip.hidden, list: itWhListShown(), title: document.querySelector('.it-whp [data-it-whgo]').title}}; }})()""")
-    if abs(c['x'] - c['want']) > 3 or abs(c['y'] - c['h']) > 3 or not c['tip'] or not c['list'] or c['title'] != 'Show on the map' or c['want'] <= pg.evaluate("itm.W/2") + 20:
+      return {{x: itm.Q[2*i], want: (a+b)/2, y: itm.Q[2*i+1], h: itm.H/2, tip: !itm.tip.hidden, list: itWhListShown(), title: document.querySelector('.it-whp [data-it-whgo]').title,
+        room: itm.box.getBoundingClientRect().right - document.querySelector('.it-whp').getBoundingClientRect().right}}; }})()""")   # 065: room right of the list (a column wrapped in two leaves under 96 px at 760: the whole width, 052's rule)
+    if abs(c['x'] - c['want']) > 3 or abs(c['y'] - c['h']) > 3 or not c['tip'] or not c['list'] or c['title'] != 'Show on the map' or (c['room'] >= 104 and c['want'] <= pg.evaluate("itm.W/2") + 20):
         out.append(f'{w}: a list name centres its system in the part the list doesn\'t cover, tooltip open, list open: {c}')
     # the site's checkboxes; switches untouched
     ck = pg.evaluate("""(()=>{const c=document.querySelector('.it-whp input[name=dr]'), sw=document.querySelector('#intelSw'), g=getComputedStyle(c); const t=document.createElement('i'); t.style.color='var(--bg)'; document.body.appendChild(t); const bg=getComputedStyle(t).color; t.remove();

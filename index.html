@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-n8yT018n6L3sA6rJ4XZFRg2BLKck7tSVq/TZRkxQBHU='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-r2dDIbp0s8k+3gQX88VTksqyFhLOd3h3aiuQuyj8weY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2857,6 +2857,22 @@
   .it-sov-r{display:flex; gap:6px; align-items:baseline; padding:1px 0;} .it-sov-r .m{width:14px; flex:none; text-align:center;} .it-sov-r .ln{flex:none; min-width:52px; color:var(--text-dim);} .it-sov-r .s{font-weight:600;} .it-sov-r .d{min-width:0; color:var(--text-dim); overflow-wrap:anywhere;}
   .it-sov-r.ok .m{color:var(--it-clear);} .it-sov-r.warn .m{color:var(--amber);} .it-sov-r.bad .m{color:var(--danger);} .it-sov-r.dup{opacity:.7;}
   .it-sovtip{color:var(--heading);}
+  /* build queue 065: the column's groups (display:contents on a wide map: the column as before); Region pick's list; the hover's holder logo;
+     the legend's "In view" line */
+  .it-map-fbtns .it-map-fg{display:contents;} .it-map-fbtns{column-gap:44px;}   /* a map too short for one column wraps into two: the gap keeps a filter's settings button off the next column's buttons */
+  .it-mpp .it-mp-rq{width:100%; box-sizing:border-box; margin:2px 0 6px;} .it-mpp .it-mp-rl{max-height:240px; overflow:auto; margin:4px 0; padding-right:4px;} .it-mpp .it-mp-rn{color:var(--text-dim); font-size:11.5px; margin-left:6px;} .it-mpp .it-mp-rall{padding-bottom:4px; margin-bottom:2px; border-bottom:1px solid var(--line);}
+  .it-mpp .it-sov-k[hidden]{display:none;}
+  .it-map-tip img.it-sovlg{width:16px; height:16px; vertical-align:-3px; border-radius:2px; margin-right:4px;}
+  .it-map-leg .it-map-fl.it-map-hv{gap:8px;} .it-map-leg .it-map-hv .d{color:var(--text-dim);} .it-map-hv1{display:inline-flex; align-items:center; gap:3px;} .it-map-hv1 img{width:14px; height:14px; border-radius:2px;}
+  @media (max-width: 599px){
+    .it-map-fb.open .it-map-fbtns{grid-template-columns:auto auto; grid-template-rows:auto 1fr; grid-auto-flow:row; column-gap:0; row-gap:0; align-items:start; background:rgba(12,16,20,.97);}
+    .it-map-fbtns .it-map-fg{display:grid; grid-auto-flow:column; grid-template-rows:repeat(var(--it-flr, 12), auto); grid-auto-columns:92px; gap:0; justify-items:start; align-content:start;}   /* 92 px: a filter and its settings button, so nothing moves when one shows; more filters than fit wrap into another column */
+    .it-map-fbtns .it-map-fg-colour{grid-column:1; grid-row:1; grid-template-rows:repeat(var(--it-flc, 12), auto);}
+    .it-map-fbtns .it-map-fg-view{grid-column:1; grid-row:2; border-top:1px solid var(--line);}
+    .it-map-fbtns .it-map-fg-only{grid-column:2; grid-row:1 / span 2; margin-left:2px; padding-left:4px; border-left:1px solid var(--line);}
+    .it-map-fbtns > .it-map-fsep{display:none;}
+    .it-mpp .it-mp-rl{max-height:none;}
+  }
   @media (max-width: 599px){ .it-map-fbtns .it-map-fsep{width:36px;} .it-mpp .it-mp-q button{min-height:44px;} .it-sov-k{min-height:44px;} .it-sov-l button, .it-sov-kind select{min-height:44px;} }
   /* build queue 044: signature IDs (mono, the wormhole colour; a Drifter one pink with DR), life / mass / size tags, the × per ID, the Add form's second row, the lines as typed */
   .it-gtag.it-sig{font-family:var(--mono, monospace); text-transform:none; letter-spacing:.3px; color:var(--it-wh); background:color-mix(in srgb, var(--it-wh) 12%, transparent);} .it-sig b{font-weight:600; color:var(--text); margin-left:3px;}
@@ -3098,6 +3114,9 @@
   input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]):checked, input[type=radio]:checked{border-color:var(--cyan);}
   input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]):focus-visible, input[type=radio]:focus-visible{outline:none; border-color:var(--cyan); box-shadow:0 0 0 2px var(--accent-ring);}
   input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]):disabled, input[type=radio]:disabled{opacity:.45; cursor:not-allowed;}
+  /* build queue 065: part ticked (a Select all box with some picked, indeterminate): a cyan dash on the dark box */
+  input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]):indeterminate{border-color:var(--cyan);}
+  input[type=checkbox]:not(.mys-sw):not(.dmg-sw):not([role=switch]):indeterminate::before{visibility:visible; width:8px; height:0; margin-top:0; border-width:0 0 2px 0; transform:none;}
 
   /* ---- v2026.11.01.1: the profile (one control at the top right) and its panel; profile_mockup_5.html ---- */
   :root{--st-clear:var(--cyan); --st-near:var(--amber); --st-in:var(--danger);}   /* Intel's states (the owner: cyan, amber, A = the Hostile red) */
@@ -3436,7 +3455,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.22.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.23.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3817,7 +3836,7 @@ const CARD_INFO = {
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none); Only filters, any number, all must match (their settings beside them); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter on, systems past {card:itnear}'s range fade.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none), Sov holder, Jumps and Kills (past hour) from ESI: who holds each system (by your standings or one colour per alliance; zoomed in, its logo) and the past hour's jumps or kills; Only filters, any number, all must match (their settings beside them; Region pick: the regions you tick); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter or ESI colour on, systems past {card:itnear}'s range fade.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus jump bridges you can use with Use jump bridges on the map (green curves, the bridge button hides them; the alert glow and Paths to you stay by stargate).",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list. With Use jump bridges on, routes take only bridge jumps arriving in the ticked zones (zone 1 free by default).",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
@@ -4821,7 +4840,7 @@ function zkbRetryStep(now){   // one step of every Retry countdown; true while o
 // the panel is open, never in a hidden tab; the zKillboard count ages out on one timeout set for the next expiry (bgAgeArm).
 // ESI is counted by kind of lookup, not by feature (the owner 2026-11-04, "let's go with your recommendation"): the calls sit in
 // helpers that every feature and Intel's background lookups share, so only the kind is known where the request is made.
-const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location', online: 'Your online status', contacts: 'Your standings', waypoints: 'Your destination', sov: 'Sovereignty'};   // waypoints: build queue 047   // sov: build queue 057 (your jump bridges' zones)
+const ESI_KINDS = {types: 'Item data', names: 'Names', killmails: 'Killmails', orgs: 'Corporations and alliances', pilots: 'Pilots', systems: 'Systems and gates', status: 'Server status', location: 'Your location', online: 'Your online status', contacts: 'Your standings', waypoints: 'Your destination', sov: 'Sovereignty', activity: 'System activity'};   // waypoints: build queue 047   // sov: build queue 057 (your jump bridges' zones; 065 the map's Sov holder too)   // activity: build queue 065 (jumps and kills in the past hour)
 const ESI_USE_KEY = 'dscanEsiUse', ESI_USE_MIN = 15, ESI_ERR_LIMIT = 100, ESI_ERR_WARN = 50, ESI_GROUP_WARN = 0.2;
 const ZKB_WHO_KEY = 'dscanZkbWho', ZKB_WARN_AT = 80;   // amber from 80 of 100 (the planner's default, kept by the owner 2026-11-04)
 let bgEsiPend = null, bgEsiFlushT = 0, bgOpen = false, bgTimer = 0, bgAgeT = 0, bgRaf = 0, bgLastSegs = '', bgLastBody = '', bgR2Times = [];
@@ -27525,7 +27544,7 @@ function itBridgePaint(){
 const IT_SOV_URL = 'https://esi.evetech.net/sovereignty/systems?compatibility_date=2026-05-19';   // checked live 2026-11-16 (the build review)
 const IT_JB_ZONES = [{n: 1, x: 0, ly: '0–5 LY'}, {n: 2, x: 2, ly: '5.1–10 LY'}, {n: 3, x: 6, ly: '10.1–15 LY'}, {n: 4, x: 9, ly: '15.1–20 LY'}, {n: 5, x: 15, ly: '20.1 LY and on'}];
 const IT_RP_JB_KEY = 'tvRouteJb', IT_SOV_RETRY_MS = [60000, 120000, 300000], IT_SOV_MIN_MS = 60000;
-const itSov = {sys: null, caps: null, at: 0, exp: 0, busy: false, fails: 0, next: 0, err: ''};
+const itSov = {sys: null, caps: null, info: null, at: 0, exp: 0, busy: false, fails: 0, next: 0, err: '', reads: 0};   // 065: info, every system's claim (the map's Sov holder)
 let itJbMemo = null, itRpJbZones = null;
 // the zone of a distance to the capital, rounded up to 0.01 as the hover shows it (the owner: "At 5.00 LY": 5.00 zone 1, 5.01 zone 2)
 function itJbZoneOf(ly){ const v = Number(itMapLyText(ly)); return v <= 5 ? 1 : v <= 10 ? 2 : v <= 15 ? 3 : v <= 20 ? 4 : 5; }
@@ -27539,10 +27558,11 @@ function itRpJbRead(){
 }
 function itRpJbSet(){ if(!itRpJbZones) itRpJbZones = itRpJbRead(); return itRpJbZones; }
 function itRpJbSave(){ try{ localStorage.setItem(IT_RP_JB_KEY, JSON.stringify({v: 1, zones: itRpJbSet()})); }catch(e){ /* this visit only */ } }
-// the read is wanted: Intel runs, the switch is on and the list has a bridge; never inside the Intel example's sandbox
+// the read is wanted: Intel runs, the switch is on and the list has a bridge; never inside the Intel example's sandbox. Build queue 065 (L1): or
+// the map shows with Sov holder on (itMapLvWant): one read serves both
 function itSovWanted(){
   try{ if(itRpAside) return false; }catch(e){ return false; }   // before the route planner's part of the script has run
-  return !!(it.on && it.set && it.set.bridgesOn) && itBridges().edges.length > 0;
+  return (!!(it.on && it.set && it.set.bridgesOn) && itBridges().edges.length > 0) || itMapLvWant('sov');
 }
 function itSovNeed(){
   if(itSov.busy || !itSovWanted()) return;
@@ -27550,29 +27570,82 @@ function itSovNeed(){
   if((itSov.sys && now < itSov.exp) || now < itSov.next) return;
   itSovRead();
 }
+// 065: every field read defensively (the build review, "Fetch it once": the names from a client generated from ESI's spec, UNVERIFIED until the
+// hand test): a field missing or of another type is left out, never an error. Per system: {k: 'a'} an alliance's claim (al, co, cap, since,
+// dev: {m, i, s, adm}, vw: [start, end]), {k: 'f', f} a faction's, {k: 'u'} unclaimed
+function itSovClaim(c){
+  const num = (v) => typeof v === 'number' && Number.isFinite(v) ? v : null, int = (v) => Number.isInteger(v) && v > 0 ? v : null, str = (v) => typeof v === 'string' && v.length < 64 ? v : null;
+  if(!c || typeof c !== 'object') return null;
+  const a = c.alliance;
+  if(a && typeof a === 'object' && int(a.alliance_id)){
+    const d = a.development && typeof a.development === 'object' ? a.development : null, h = a.sovereignty_hub && typeof a.sovereignty_hub === 'object' ? a.sovereignty_hub : null;
+    const w = h && h.vulnerability_window && typeof h.vulnerability_window === 'object' ? h.vulnerability_window : null;
+    return {k: 'a', al: a.alliance_id, co: int(a.corporation_id), cap: a.is_capital_system === true, since: str(a.claimed_since),
+      dev: d ? {m: num(d.military_level), i: num(d.industrial_level), s: num(d.strategic_level), adm: num(d.activity_defense_multiplier)} : null,
+      vw: w && str(w.start) && str(w.end) ? [w.start, w.end] : null};
+  }
+  if(c.faction && typeof c.faction === 'object' && int(c.faction.faction_id)) return {k: 'f', f: c.faction.faction_id};
+  if(c.unclaimed === true) return {k: 'u'};
+  return null;
+}
 async function itSovRead(){
-  itSov.busy = true; itJbChanged();
+  itSov.busy = true; itSov.reads++; itJbChanged();
   let ok = false;
   try{
     const r = await esiFetch(IT_SOV_URL, undefined, 'sov');
     if(r.ok){
       const j = await r.json(), list = j && Array.isArray(j.solar_systems) ? j.solar_systems : null;
       if(list){
-        const sys = new Map(), caps = new Map();
+        const sys = new Map(), caps = new Map(), info = new Map();
         for(const s of list){
-          const a = s && s.claim && s.claim.alliance, id = s && s.solar_system_id;
-          if(!Number.isInteger(id) || !a || !Number.isInteger(a.alliance_id)) continue;   // a faction's or unclaimed: no alliance holds it
-          sys.set(id, a.alliance_id);
-          if(a.is_capital_system === true) caps.set(a.alliance_id, id);
+          const id = s && s.solar_system_id; if(!Number.isInteger(id)) continue;
+          const c = itSovClaim(s.claim); if(!c) continue;
+          info.set(id, c);
+          if(c.k !== 'a') continue;   // a faction's or unclaimed: no alliance holds it
+          sys.set(id, c.al);
+          if(c.cap) caps.set(c.al, id);
         }
         const now = Date.now(), ex = Date.parse(r.headers.get('expires') || '');
-        Object.assign(itSov, {sys, caps, at: now, exp: Math.max(now + IT_SOV_MIN_MS, Number.isFinite(ex) ? ex : now + 300000), fails: 0, next: 0, err: ''});
+        Object.assign(itSov, {sys, caps, info, at: now, exp: Math.max(now + IT_SOV_MIN_MS, Number.isFinite(ex) ? ex : now + 300000), fails: 0, next: 0, err: ''});
         ok = true;
       } else itSov.err = 'its answer had no systems';
     } else itSov.err = `ESI answered ${r.status}`;
   }catch(e){ itSov.err = "ESI couldn't be reached"; }
   if(!ok){ itSov.next = Date.now() + IT_SOV_RETRY_MS[Math.min(itSov.fails, IT_SOV_RETRY_MS.length - 1)]; itSov.fails++; }   // a copy held is used meanwhile
   itSov.busy = false; itJbChanged();
+}
+// ---- build queue 065 (L1; roadmap/live-map-filters-plan.md): jumps and kills in each system in the past hour, ESI's two public lists, read as
+// 057 reads sovereignty: only while the map shows with its colour on (itMapLvWant), at most once per ESI's Expires (an hour), memory only, a
+// failed read asked again after 60 s, 120 s, then 5 minutes and only when something needs it, never on a timer of its own (LESSON #120). A
+// system missing from a list had none that hour (absent = 0, UNVERIFIED until the hand test); before a read nothing is 0: "no data yet", grey
+const IT_LV_URL = {jumps: `${ESI}/universe/system_jumps/?datasource=tranquility`, kills: `${ESI}/universe/system_kills/?datasource=tranquility`};
+const itLv = {jumps: {d: null, at: 0, lm: 0, exp: 0, busy: false, fails: 0, next: 0, err: '', reads: 0}, kills: {d: null, at: 0, lm: 0, exp: 0, busy: false, fails: 0, next: 0, err: '', reads: 0}};
+function itLvNeed(k){
+  const L = itLv[k];
+  if(!L || L.busy || !itMapLvWant(k)) return;
+  const now = Date.now();
+  if((L.d && now < L.exp) || now < L.next) return;
+  itLvRead(k);
+}
+async function itLvRead(k){
+  const L = itLv[k]; L.busy = true; L.reads++;
+  let ok = false;
+  try{
+    const r = await esiFetch(IT_LV_URL[k], undefined, 'activity');
+    if(r.ok){
+      const j = await r.json();
+      if(Array.isArray(j)){
+        const d = new Map(), n = (v) => Number.isInteger(v) && v >= 0 ? v : 0;
+        for(const x of j){ const id = x && x.system_id; if(!Number.isInteger(id)) continue; d.set(id, k === 'jumps' ? n(x.ship_jumps) : [n(x.ship_kills), n(x.pod_kills), n(x.npc_kills)]); }
+        const now = Date.now(), ex = Date.parse(r.headers.get('expires') || ''), lm = Date.parse(r.headers.get('last-modified') || '');
+        Object.assign(L, {d, at: now, lm: Number.isFinite(lm) ? lm : now, exp: Math.max(now + IT_SOV_MIN_MS, Number.isFinite(ex) ? ex : now + 3600000), fails: 0, next: 0, err: ''});
+        ok = true;
+      } else L.err = 'its answer had no systems';
+    } else L.err = `ESI answered ${r.status}`;
+  }catch(e){ L.err = "ESI couldn't be reached"; }
+  if(!ok){ L.next = Date.now() + IT_SOV_RETRY_MS[Math.min(L.fails, IT_SOV_RETRY_MS.length - 1)]; L.fails++; }   // a copy held is used meanwhile
+  L.busy = false;
+  if(typeof itm !== 'undefined' && itm.el) itMapRefresh();
 }
 // something the zones read changed: the rows, the Routes box's line and the map (which searches again only when what it counts changed)
 function itJbChanged(){ itBridgePaint(); if(typeof itm !== 'undefined' && itm.el) itMapRefresh(); }
@@ -30286,7 +30359,7 @@ function itExFill(f){
 // has its list under the map, so the whole width)
 function itExMeasure(f, col, w, h){
   const phone = itExPhone(), fb = col.querySelector('.it-map-fb'), bs = fb && fb.querySelector('.it-map-fbtns');
-  if(bs){ const rows = String(itMapFlRows(h, fb.offsetTop, phone, bs.children.length)); if(bs.style.getPropertyValue('--it-flr') !== rows) bs.style.setProperty('--it-flr', rows); }
+  if(bs) itMapFlSet(bs, h, fb.offsetTop, phone);
   const bx = col.getBoundingClientRect(), rr = [...col.querySelectorAll('.it-map-fbtns, .it-map-fcur')].map(e => e.getBoundingClientRect()).filter(q => q.width > 0)[0];
   let box = null;
   if(rr){
@@ -30604,11 +30677,18 @@ function itMapFbarHtml(){
   return `<div class="it-map-fb"><div class="it-map-fn" aria-hidden="true"></div><button type="button" class="it-map-fcur" aria-expanded="false" aria-haspopup="true"></button>`
     + `<div class="it-map-fbtns" role="toolbar" aria-label="Map filters">${itMapFbtnsHtml()}</div></div>`;
 }
-// 058: a thin line between the groups (colour, only, view)
-function itMapFbtnsHtml(){
-  const sep = (t) => `<span class="it-map-fsep" aria-hidden="true" title="${escapeHtml(t)}"></span>`, G = {only: 'Only: switch on any number; every one that is on must match', view: 'View'};
-  return IT_MAP_FILTERS.map((f, k) => (k && f.g !== IT_MAP_FILTERS[k - 1].g ? sep(G[f.g] || '') : '') + (IT_MAP_PANEL_BTN[f.k] ? `<span class="it-map-fw">${itMapFbtnHtml(f)}${itMapPanelBtnHtml(f.k)}</span>` : itMapFbtnHtml(f))).join('');
-}
+// 058: a thin line between the groups (colour, only, view). Build queue 065 (L6, the 058 bug "the filter column on a phone is a jumble"; the
+// owner: "Fold the fix in"): each group in a wrapper, display:contents on a wide map (the column as before), on a phone Colour with View under
+// it in one column and Only in the second (wrapping into a third when the map is too short: "Yes, build the wrap now"), each filter's
+// settings button in a lane of its own beside it, so nothing moves when one shows
+const IT_MAP_FG = {colour: 'Colour: one at a time', only: 'Only: switch on any number; every one that is on must match', view: 'View'};
+function itMapFbtnsHtml(){ return Object.keys(IT_MAP_FG).map((g, k) => (k ? itMapFsepHtml(IT_MAP_FG[g]) : '') + itMapFgHtml(g)).join(''); }
+function itMapFsepHtml(t){ return `<span class="it-map-fsep" aria-hidden="true" title="${escapeHtml(t)}"></span>`; }
+function itMapFgHtml(g){ return `<div class="it-map-fg it-map-fg-${escapeHtml(g)}" role="group" aria-label="${escapeHtml(IT_MAP_FG[g])}">${itMapFgBtnsHtml(g)}</div>`; }
+function itMapFgBtnsHtml(g){ return IT_MAP_FILTERS.filter(f => f.g === g).map(itMapFiltHtml).join(''); }
+function itMapFiltHtml(f){ return IT_MAP_PANEL_BTN[f.k] ? `<span class="it-map-fw">${itMapFbtnHtml(f)}${itMapPanelBtnHtml(f.k)}</span>` : itMapFbtnHtml(f); }
+// the column's items (a filter, or a filter with its settings button, and the lines between groups): what its rows are counted from, not the wrappers
+function itMapFbN(bs){ return bs.querySelectorAll('.it-map-fg > *, .it-map-fsep').length; }
 function itMapFbtnHtml(f){ return `<button type="button" data-im-f="${escapeHtml(f.k)}" title="${escapeHtml(f.name)}: ${escapeHtml(itMapFNote(f))}" aria-label="${escapeHtml(f.name)}" aria-pressed="false">${itMapIconHtml(f.k)}</button>`; }
 function itMapPanelBtnHtml(k){ return IT_MAP_PANEL_BTN[k](); }
 // build queue 040, moved beside its filter in 052: the filters with a panel and their panel buttons (Sov upgrades adds its own, 053)
@@ -30616,13 +30696,18 @@ function itMapPanelBtnHtml(k){ return IT_MAP_PANEL_BTN[k](); }
 const IT_MAP_PANEL_BTN = {wh: () => `<button type="button" class="it-map-pb it-whl" data-it-whl aria-haspopup="dialog" aria-expanded="false" aria-label="Wormhole list" title="Wormhole list: add or remove">${IT_WH_LIST_ICON}</button>`,
   sov: () => sovPanelBtnHtml(),
   secr: () => `<button type="button" class="it-map-pb" data-it-mpn="secr" aria-haspopup="dialog" aria-expanded="false" aria-label="Security range: from and to" title="Security range: from and to">${IT_MAP_SET_ICON}</button>`,
-  near: () => `<button type="button" class="it-map-pb" data-it-mpn="near" aria-haspopup="dialog" aria-expanded="false" aria-label="Within N jumps: how many" title="Within N jumps: how many">${IT_MAP_SET_ICON}</button>`};
+  near: () => `<button type="button" class="it-map-pb" data-it-mpn="near" aria-haspopup="dialog" aria-expanded="false" aria-label="Within N jumps: how many" title="Within N jumps: how many">${IT_MAP_SET_ICON}</button>`,
+  // 065: Sov holder's, Kills (past hour)'s and Region pick's settings (Jumps (past hour) has none)
+  sovh: () => `<button type="button" class="it-map-pb" data-it-mpn="sovh" aria-haspopup="dialog" aria-expanded="false" aria-label="Sov holder: by standing or by alliance" title="Sov holder: by standing or by alliance">${IT_MAP_SET_ICON}</button>`,
+  killh: () => `<button type="button" class="it-map-pb" data-it-mpn="killh" aria-haspopup="dialog" aria-expanded="false" aria-label="Kills (past hour): ships and pods or NPC kills" title="Kills (past hour): ships and pods or NPC kills">${IT_MAP_SET_ICON}</button>`,
+  regpick: () => `<button type="button" class="it-map-pb" data-it-mpn="regpick" aria-haspopup="dialog" aria-expanded="false" aria-label="Region pick: which regions" title="Region pick: which regions">${IT_MAP_SET_ICON}</button>`};
+const IT_MP_KEYS = ['secr', 'near', 'sovh', 'killh', 'regpick'];   // the filters whose settings are itMp's
 // build queue 053 (the owner at its review: "Yes, one shared path"): the filter panel that is open, one at a time (the Wormholes list or Sov
 // upgrades): its filter, its element, the room it needs beside Near You and the width it takes
 function itMapPanel(){
   if(itWhListShown()) return {k: 'wh', el: itWhL.el, min: IT_MAP_PANEL_MIN, w: 400, room: 260};
   if(typeof sovShown === 'function' && sovShown()) return {k: 'sov', el: sovP.el, min: SOV_PANEL_MIN, w: SOV_PANEL_W, room: 420};   // room: the height kept below its top (the Sov panel is taller)
-  if(itMpShown()) return {k: itMp.k, el: itMp.el, min: IT_MAP_PANEL_MIN, w: 320, room: 240};   // 058: Security range or Within N jumps
+  if(itMpShown()) return {k: itMp.k, el: itMp.el, min: IT_MAP_PANEL_MIN, w: 320, room: itMp.k === 'regpick' ? Math.min(420, Math.max(240, itm.H - 60)) : 240};   // 058: Security range or Within N jumps   // 065: Region pick's list is taller
   return null;
 }
 function itMapPanelClose(back){ itWhListOpen(false, back); sovOpen(false, back); itMpOpen('', back); }
@@ -30672,8 +30757,7 @@ function itMapCtlPlace(){
   const phone = itMapPhone(), pn = itMapPanel(), wl = !!pn, key = [box.clientWidth, itm.H, phone, itNearShown(), itMapStKey(), fb.classList.contains('open'), pn ? pn.k : ''].join('|');   // 058: the stack
   if(key === itm.ctlKey) return; itm.ctlKey = key;
   if(box.classList.contains('pop') !== wl) box.classList.toggle('pop', wl);
-  const rows = String(itMapFlRows(itm.H, fb.offsetTop, phone, bs.children.length));   // 055: shared with the Intel example
-  if(bs.style.getPropertyValue('--it-flr') !== rows) bs.style.setProperty('--it-flr', rows);
+  itMapFlSet(bs, itm.H, fb.offsetTop, phone);   // 055: shared with the Intel example   // 065: the items, not the group wrappers; a phone's two columns
   if(wl && itNearShown() && !itMapRoomForBoth(pn.min)) itNearToggle(false);   // the window got narrower with both open: the panel stays, Near You shuts
   const bx = box.getBoundingClientRect(), rail = box.querySelector('.it-map-rail'), ny = itNearShown() && document.getElementById('itNearCol');
   const stop = (ny && ny.offsetParent ? ny.getBoundingClientRect().left : rail ? rail.getBoundingClientRect().left : bx.right) - bx.left;   // Near You's list, else the rail
@@ -30716,7 +30800,7 @@ function itMapIconHtml(k){ return (IT_MAP_FILTERS.find(f => f.k === k) || IT_MAP
 // build queue 041: a filter's note; Jumps from you says so while your jump bridges are counted
 // 057 (the owner's hand test): Within N's hover said "stargate jumps" while your bridges counted (041 told only Jumps)
 function itMapFNote(f){ if(!itBridgeOn()) return f.note; return f.k === 'jumps' ? 'colour: jumps from your system, your jump bridges counted; zoomed in, the number' : f.k === 'near' ? 'only: systems this many jumps from you or fewer, jump bridges you can use counted' : f.note; }
-function itMapFnameHtml(f){ return f ? `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(itMapFNote(f))}</span>` : '<b>No colour</b> <span>press Security, Jumps or Region to colour the systems again</span>'; }
+function itMapFnameHtml(f){ return f ? `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(itMapFNote(f))}</span>` : '<b>No colour</b> <span>press a colour to colour the systems again</span>'; }
 // 055: marks a filter column (the live map's, or the Intel example's copy before it is made still) from a stack: one painter for both
 function itMapFbarMark(fb, s){
   const paths = s.view === 'paths', k0 = paths ? 'paths' : s.colour, f = IT_MAP_FILTERS.find(x => x.k === k0), n = IT_MAP_ONLY.filter(k => s.only[k]).length;
@@ -30758,11 +30842,13 @@ function itMapFilterSet(k){
     else if((k === 'secr' || k === 'near') && !s.seen[k]){ s.seen[k] = true; open = k; }
     else if(k === 'sov' && !sovStore().lists.length && !sovBridgeEnds().length) open = 'sov-paste';   // 053: no lists yet: its panel opens at the paste box
     else if(k === 'sov' && !sovStore().pick.length) open = 'sov';
+    else if(k === 'regpick' && !s.regions.length) open = 'regpick';   // 065: as Sov upgrades with nothing picked
   }
   itMapStackSave(); itm.mtStep = -1;   // the chip counts from the nearest again (045's did on choosing Wormholes)
   itMapFbarPaint(true); itMapLegend(); itMpPaint(); if(sovShown()) sovPaint(true);
   if(itm.P && itm.home >= 0){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); }   // 040: the key follows the filters (what the wormholes show depends on them)
   if(open && live){ if(open.startsWith('sov')) sovOpen(true, false, open === 'sov-paste' ? 'paste' : ''); else itMpOpen(open); }
+  if(f.g === 'colour') itMapLvAsk();   // 065: a live colour's data, if it isn't held yet
 }
 // ---- 058 (plan 4.5): the settings panels of Security range and Within N jumps, one element, a filter panel like the Wormholes list's
 // (itMapPanel: one at a time, taking turns with Near You, itMapFree; rule B, the shared close button, Escape, a press outside), placed by
@@ -30770,9 +30856,40 @@ function itMapFilterSet(k){
 const itMp = {el: null, k: '', out: null, key: null, built: ''};
 function itMpShown(){ return !!(itMp.el && itMp.k && !itMp.el.hidden && itMp.el.isConnected); }
 function itMpBodyHtml(k){
+  const s = itMapSt();
+  // 065: Sov holder (Q1: by standing first, one colour per alliance as its switch), Kills (past hour) (Q3: NPC kills as its setting), Region pick
+  // (Q5: a box per region with a search; Select all, [stated] "can we add a checkbox to select all regions in the region picker?")
+  if(k === 'sovh') return '<div class="it-mp-note">Colour each system by:</div>' + itMpRadHtml('itMpSovBy', 'standing', s.sovBy !== 'alliance', 'Your standings') + itMpRadHtml('itMpSovBy', 'alliance', s.sovBy === 'alliance', 'One colour per alliance')
+    + '<div class="it-mp-note">Standings: your corporation’s and alliance’s EVE contacts, else your typed lists (the profile’s Pilot tab). Zoomed in, the holder’s logo fills each system’s circle. The hover names the holder.</div>';
+  if(k === 'killh') return '<div class="it-mp-note">Count:</div>' + itMpRadHtml('itMpKill', 'ship', !s.killNpc, 'Ships and pods (players)') + itMpRadHtml('itMpKill', 'npc', s.killNpc, 'NPC kills (ratting)') + '<div class="it-mp-note">From ESI, once an hour. Not the same as “Kills from ' + escapeHtml(cardName('intel')) + '”, which counts the kills ' + escapeHtml(cardName('intel')) + ' saw.</div>';
+  if(k === 'regpick') return itMpRegHtml();
   if(k === 'secr') return `<div class="it-mp-row">${rsHtml('mapSecLo')}${rsHtml('mapSecHi')}</div><div class="it-mp-q"><span>Quick:</span><button type="button" data-it-mpq="hi">High</button><button type="button" data-it-mpq="low">Low</button><button type="button" data-it-mpq="null">Null</button></div>`
     + '<div class="it-mp-note">Both ends count, in either order. It compares the number the map shows (one decimal).</div><div class="it-mp-cnt" role="status"></div>';
   return `<div class="it-mp-row">${rsHtml('mapNear')}</div><div class="it-mp-note">${escapeHtml(itBridgeOn() ? 'From your system, your jump bridges counted, as Jumps from you counts.' : 'By stargate from your system, as Jumps from you counts.')} “Map: within” still sets how far reports and names show.</div><div class="it-mp-cnt" role="status"></div>`;
+}
+// 065: Region pick's list: a search box (spaces and dashes ignored), Clear with "N picked", Select all (every region the list shows: a dash
+// when some are), a box per region with its system count, yours first, then A-Z
+function itMpRegHtml(){
+  const T = itMapTable(), s = itMapSt(), n = new Map(); for(let i = 0; i < T.n; i++) n.set(T.reg[i], (n.get(T.reg[i]) || 0) + 1);
+  const mine = itm.home >= 0 ? T.regions[T.reg[itm.home]] : '', pick = new Set(s.regions);
+  const rows = T.regions.map((r, k) => [r, n.get(k) || 0]).filter(x => x[1]).sort((a, b) => (b[0] === mine) - (a[0] === mine) || a[0].localeCompare(b[0]));
+  return '<input type="search" class="it-mp-rq" placeholder="Search regions" aria-label="Search regions" autocomplete="off" spellcheck="false" maxlength="40">'
+    + '<div class="it-mp-q"><button type="button" data-it-mprclr>Clear</button><span class="it-mp-rn" role="status"></span></div>'
+    + '<label class="it-sov-k it-mp-rall"><input type="checkbox" data-it-mprall> <span class="it-mp-rallt">Select all</span><span class="it-sov-n it-mp-ralln"></span></label><div class="it-mp-rl" role="group" aria-label="Regions">'
+    + itMpRegRowsHtml(rows, pick, mine)
+    + '</div><div class="it-mp-cnt" role="status"></div>';
+}
+function itMpRegRowsHtml(rows, pick, mine){ return rows.map(([r, c]) => itMpRegRowHtml(r, c, pick.has(r), r === mine)).join(''); }
+function itMpRegRowHtml(r, c, on, mine){ return `<label class="it-sov-k" data-it-mpr="${escapeHtml(r.toLowerCase().replace(/[\s-]/g, ''))}"><input type="checkbox" data-it-mpreg="${escapeHtml(r)}"${escapeHtml(on ? ' checked' : '')}> <span>${escapeHtml(r)}${itMpYoursHtml(mine)}</span><span class="it-sov-n">${Number(c)}</span></label>`; }
+function itMpYoursHtml(on){ return on ? ' <span class="it-sov-from">(yours)</span>' : ''; }
+function itMpRadHtml(nm, v, on, t){ return `<label class="it-sov-k"><input type="radio" name="${escapeHtml(nm)}" value="${escapeHtml(v)}"${escapeHtml(on ? ' checked' : '')}> <span>${escapeHtml(t)}</span></label>`; }
+function itMpRegPaint(){
+  const p = itMp.el, e = p && itMp.k === 'regpick' && p.querySelector('.it-mp-rn'); if(!e) return;
+  const n = itMapSt().regions.length, t = n ? `${n} picked` : 'none picked: nothing matches';
+  if(e.textContent !== t) e.textContent = t;
+  const all = p.querySelector('[data-it-mprall]'), shown = [...p.querySelectorAll('[data-it-mpr]')].filter(l => !l.hidden), on = shown.filter(l => l.querySelector('input').checked).length, q = !!p.querySelector('.it-mp-rq').value.trim();
+  all.checked = !!shown.length && on === shown.length; all.indeterminate = on > 0 && on < shown.length; all.disabled = !shown.length;
+  p.querySelector('.it-mp-rallt').textContent = q ? 'Select all shown' : 'Select all'; p.querySelector('.it-mp-ralln').textContent = String(shown.length);
 }
 function itMpMake(){
   const p = document.createElement('div');
@@ -30782,6 +30899,26 @@ function itMpMake(){
     if(e.target.closest('[data-it-mpx]')){ itMpOpen('', true); return; }
     const q = e.target.closest('[data-it-mpq]');
     if(q){ itMapSt().secr = {hi: {lo: 5, hi: 10}, low: {lo: 1, hi: 4}, null: {lo: -10, hi: 0}}[q.dataset.itMpq]; itMpChanged(); }
+    if(e.target.closest('[data-it-mprclr]')){ itMapSt().regions = []; for(const b of p.querySelectorAll('[data-it-mpreg]')) b.checked = false; itMpChanged(); }   // 065
+  });
+  // 065: Sov holder's and Kills (past hour)'s radios, Region pick's boxes and its search
+  p.addEventListener('change', (e) => {
+    const t = e.target, s = itMapSt();
+    if(t.name === 'itMpSovBy'){ s.sovBy = t.value === 'alliance' ? 'alliance' : 'standing'; itMpChanged(); }
+    else if(t.name === 'itMpKill'){ s.killNpc = t.value === 'npc'; itMpChanged(); }
+    else if(t.dataset.itMprall !== undefined){
+      const shown = [...p.querySelectorAll('[data-it-mpr]')].filter(l => !l.hidden).map(l => l.querySelector('input'));
+      for(const b of shown) b.checked = t.checked;
+      const names = shown.map(b => b.dataset.itMpreg);
+      s.regions = t.checked ? [...new Set([...s.regions, ...names])] : s.regions.filter(r => !names.includes(r)); itMpChanged();
+    }
+    else if(t.dataset.itMpreg !== undefined){ const r = t.dataset.itMpreg; s.regions = t.checked ? [...new Set([...s.regions, r])] : s.regions.filter(x => x !== r); itMpChanged(); }
+  });
+  p.addEventListener('input', (e) => {
+    if(!e.target.classList.contains('it-mp-rq')) return;
+    const q = e.target.value.trim().toLowerCase().replace(/[\s-]/g, '');
+    for(const l of p.querySelectorAll('[data-it-mpr]')){ const h = !!q && !l.dataset.itMpr.includes(q); if(l.hidden !== h) l.hidden = h; }
+    itMpRegPaint();
   });
   itMp.el = p;
 }
@@ -30797,7 +30934,7 @@ function itMpOpen(k, back = true){
   }
   // build queue 060 (the owner's bug, 2026-11-20): the settings open whether the filter is on or off, as the Wormholes list's and Sov upgrades'
   // do (057 shows the button on hover either way); opening them doesn't turn the filter on
-  if(!itm.box || (k !== 'secr' && k !== 'near')) return;
+  if(!itm.box || !IT_MP_KEYS.includes(k)) return;
   if(itMpShown()) itMpOpen('', false);
   if(itm.el.querySelector('.it-map-fb.open')) itMapFbarOpen(false);
   itWhListOpen(false, false); sovOpen(false, false);   // one filter panel at a time
@@ -30808,7 +30945,7 @@ function itMpOpen(k, back = true){
   itMp.k = k; itMp.el.setAttribute('aria-label', name); itMp.el.querySelector('h4').textContent = name;
   itMp.el.hidden = false; { const b = btn(k); if(b) b.setAttribute('aria-expanded', 'true'); }
   itMpPaint(); itm.ctlKey = null; itMapCtlPlace();
-  const f = itMp.el.querySelector('.rs-b:not(:disabled)'); if(f) f.focus({preventScroll: true});
+  const f = itMp.el.querySelector('.rs-b:not(:disabled), input:checked, input[type=search]'); if(f) f.focus({preventScroll: true});
   itMp.out = (e) => { if(!itMp.el.contains(e.target) && !(e.target.closest && e.target.closest('[data-it-mpn]'))) itMpOpen('', false); };
   itMp.key = (e) => { if(e.key === 'Escape' && itMpShown()){ e.preventDefault(); e.stopPropagation(); itMpOpen('', true); } };
   document.addEventListener('pointerdown', itMp.out, true); document.addEventListener('keydown', itMp.key, true);
@@ -30817,7 +30954,7 @@ function itMpPaint(){
   if(!itMpShown()) return;
   const body = itMp.el.querySelector('.it-mp-b');
   if(itMp.built !== itMp.k || !body.firstChild){ itMp.built = itMp.k; body.innerHTML = itMpBodyHtml(itMp.k); }
-  rsPaint(itMp.el); itMpCountPaint();
+  rsPaint(itMp.el); itMpCountPaint(); itMpRegPaint();
 }
 function itMpCountPaint(){   // written only when its words change
   const c = itMpShown() && itMp.el.querySelector('.it-mp-cnt'); if(!c) return;
@@ -30852,6 +30989,14 @@ function itMapRowHtml(){ return '<div class="it-map-row"><span class="it-map-rs"
 // short), for the live map and the example's picture alike
 function itMapH(w, phone){ return Math.round(phone ? Math.min(600, Math.max(440, w * 1.45)) : Math.min(720, Math.max(520, w * 0.5))); }
 function itMapFlRows(H, top, phone, n){ return Math.min(n, Math.max(3, Math.floor((H - 8 - top - 8) / (phone ? 46 : 34)))); }
+// 065: the column's rows, written only when they change: a wide map one grid down the left (a second column when too short); a phone by group,
+// Only's rows (--it-flr) and Colour's above View (--it-flc), 44 px each, so a group taller than the map's room wraps into another column
+function itMapFlSet(bs, H, top, phone){
+  const set = (k, v) => { v = String(v); if(bs.style.getPropertyValue(k) !== v) bs.style.setProperty(k, v); };
+  if(!phone){ set('--it-flr', itMapFlRows(H, top, false, itMapFbN(bs))); return; }
+  const room = H - 8 - top - 8 - 8;   // the map's foot, the column's top, its padding and border
+  set('--it-flr', Math.max(1, Math.floor(room / 44))); set('--it-flc', Math.max(1, Math.floor((room - 45) / 44)));   // View: a 44 px row and its 1 px line
+}
 // 055: the map's markup as it is made, before anything is drawn (intel_example_check's drift guard reads the controls shown at rest from it)
 function itMapMarkupHtml(){
   return `<div class="it-map-box">${itMapZoomHtml()}` + itMapRailHtml()
@@ -30895,7 +31040,7 @@ function itMapRefresh(force){
   itMapLegend();
   const mc = document.querySelector('[data-it-mapctx]'); if(mc) mc.textContent = itMapCtx();
   if(why){ itm.home = -1; itm.you.hidden = true; itPtHide(); itMapWhPulse([]); if(itm.mtb) itm.mtb.hidden = true; return; }
-  itSovNeed();   // build queue 057: EVE's sovereignty, while Intel runs with your bridges on, once per its Expires
+  itMapLvAsk();   // build queue 057: EVE's sovereignty, while Intel runs with your bridges on, once per its Expires   // 065: and the map's live colours (sov, jumps, kills)
   const phone = typeof matchMedia === 'function' && matchMedia('(max-width: 599px)').matches;
   const w = itm.box.clientWidth, h = itMapH(w, phone);   // 052: full width and taller (055: shared with the Intel example)
   { const top = itm.box.closest('.it-top'), mh = `${h + 2}px`; if(top && top.style.getPropertyValue('--it-mh') !== mh){ top.style.setProperty('--it-mh', mh); itNearMoreSoon(); } }   // the panel's height moved: "+N more" again   // Near You's panel ends 8 px above the map's foot
@@ -30929,7 +31074,7 @@ function itMapRefresh(force){
 function itMapKey(){
   const fq = itFlSys();
   // 066: who died, not only the total (a re-work of sides, itSidesRework, can change it with the same total)
-  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kb ? `${r.kb.f}.${r.kb.h}.${r.kb.n}` : r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}`;   // 058: the stack   // 047: Threat Vector's route   // 041: the bridges counted
+  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kb ? `${r.kb.f}.${r.kb.h}.${r.kb.n}` : r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}|lv:${itMapLvKey()}`;   // 058: the stack   // 065: the live colour's read   // 047: Threat Vector's route   // 041: the bridges counted
 }
 // slide the map so your system is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
 function itMapCenter(draw = true){
@@ -31090,6 +31235,13 @@ const IT_MAP_FILTERS = [
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="3.5" cy="13.5" r="2"/><circle cx="9" cy="5.5" r="2"/><circle cx="14.5" cy="11.5" r="2"/><path d="M4.7 11.8l3.1-4.5M10.6 6.9l2.6 3.1"/></svg>'},
   {k: 'region', g: 'colour', name: 'Region', note: 'colour: one per region; neighbouring regions differ',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="5.5" height="5.5" fill="currentColor"/><rect x="10" y="2.5" width="5.5" height="5.5"/><rect x="2.5" y="10" width="5.5" height="5.5"/><rect x="10" y="10" width="5.5" height="5.5" fill="currentColor"/></svg>'},
+  // build queue 065 (roadmap/live-map-filters-plan.md L2): three colours from ESI's live data, each with its own icon
+  {k: 'sovh', g: 'colour', name: 'Sov holder', note: 'colour: who holds each system, by your standings or one colour per alliance; zoomed in, the holder’s logo',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16V2.5"/><path d="M4.5 3h9.5l-2.2 3.2L14 9.5H4.5" fill="currentColor"/></svg>'},
+  {k: 'jumph', g: 'colour', name: 'Jumps (past hour)', note: 'colour: ship jumps through each system in the past hour (ESI); zoomed in, the number',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6.5"/><path d="M5 9h7.2M9.8 6.4L12.4 9l-2.6 2.6"/></svg>'},
+  {k: 'killh', g: 'colour', name: 'Kills (past hour)', note: 'colour: ship and pod kills in each system in the past hour (ESI); NPC kills in its settings',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6.5"/><path d="M6.6 6.6l4.8 4.8M11.4 6.6l-4.8 4.8" stroke-width="2"/></svg>'},
   // 058: the two new Only filters, each with its settings panel (IT_MAP_PANEL_BTN)
   {k: 'secr', g: 'only', name: 'Security range', note: 'only: systems whose security is in your range',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2.5a6.5 6.5 0 1 0 0 13"/><path d="M9 2.5a6.5 6.5 0 0 1 0 13" stroke-dasharray="2 2"/><path d="M6 9h6M6 7v4M12 7v4"/></svg>'},
@@ -31105,6 +31257,9 @@ const IT_MAP_FILTERS = [
   // build queue 053 (roadmap/intel-layout-sov-plan.md 5.6): your pasted sov lists; picked upgrades bright anywhere, the rest dimmed
   {k: 'sov', g: 'only', name: 'Sov upgrades', note: 'only: systems with an upgrade you picked (at a level you ticked)',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2.5l5.5 2.2v4.1c0 3.3-2.3 5.6-5.5 6.7-3.2-1.1-5.5-3.4-5.5-6.7V4.7z"/><path d="M6.5 9l1.8 1.8L11.8 7"/></svg>'},
+  // build queue 065 (L3): only the regions you pick (any pick counts)
+  {k: 'regpick', g: 'only', name: 'Region pick', note: 'only: systems in the regions you pick',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.6l4-2 5 2 4-2v10.8l-4 2-5-2-4 2z"/><path d="M6.5 2.6v10.8M11.5 4.6v10.8"/></svg>'},
   // 052 (plan 4.3): the order is free now that a filter's panel button sits beside it; Paths to you last
   // build queue 043 (the owner: "the wormhole filter button needs to be furthest right so it sits next to it's wormhole list button. also
   // fix the orientation of the "path to you" filter button."): before Wormholes; the icon top down like the tree, you filled at the top
@@ -31116,9 +31271,9 @@ const IT_MAP_FILTERS = [
 // (the one that is on, pressed again: Q1, "i can't toggle anything "off""); any number of Only filters, every one that is on must match and any
 // pick inside one counts (Q2); a view, Paths to you (Q4). Each Only filter keeps its settings while off. Remembered (Q11) in localStorage
 // tvMapStack, a new key: the older page never reads it, and this page never writes tvSov for it (053's reader drops unknown fields)
-const MAP_STACK_KEY = 'tvMapStack', IT_MAP_COLOURS = ['sec', 'jumps', 'region'], IT_MAP_ONLY = ['secr', 'near', 'reports', 'kills', 'wh', 'sov'];
+const MAP_STACK_KEY = 'tvMapStack', IT_MAP_COLOURS = ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh'], IT_MAP_ONLY = ['secr', 'near', 'reports', 'kills', 'wh', 'sov', 'regpick'];   // 065: Sov holder, Jumps and Kills (past hour), Region pick
 const IT_MAP_PLAIN = '#56616b';   // no colour: every system this grey, no number in its circle
-function itMapStackBlank(){ return {v: 1, colour: 'sec', view: 'map', only: Object.fromEntries(IT_MAP_ONLY.map(k => [k, false])), secr: {lo: -5, hi: -3}, near: {n: 5}, sovLv: [], seen: {secr: false, near: false}}; }   // Q16: Security, soft
+function itMapStackBlank(){ return {v: 1, colour: 'sec', view: 'map', only: Object.fromEntries(IT_MAP_ONLY.map(k => [k, false])), secr: {lo: -5, hi: -3}, near: {n: 5}, sovLv: [], seen: {secr: false, near: false}, sovBy: 'standing', killNpc: false, regions: []}; }   // Q16: Security, soft   // 065: sovBy, killNpc, regions (names, so a region CCP adds never shifts them)
 function itMapStackRead(){
   const o = itMapStackBlank(); let s = null; try{ s = JSON.parse(localStorage.getItem(MAP_STACK_KEY)); }catch(e){ s = null; }
   if(!s || typeof s !== 'object' || s.v !== 1) return o;   // a bad value reads as the defaults, field by field below
@@ -31130,6 +31285,9 @@ function itMapStackRead(){
   if(s.near && typeof s.near === 'object') o.near.n = int(s.near.n, 1, 30, o.near.n);
   if(Array.isArray(s.sovLv)) o.sovLv = [...new Set(s.sovLv.filter(n => n === 1 || n === 2 || n === 3))].sort();   // an entry outside 1-3 is dropped
   if(s.seen && typeof s.seen === 'object') for(const k of ['secr', 'near']) o.seen[k] = s.seen[k] === true;
+  if(s.sovBy === 'alliance') o.sovBy = 'alliance';   // 065
+  o.killNpc = s.killNpc === true;
+  if(Array.isArray(s.regions)){ const T = itMapTable(), R = T ? T.regions : []; o.regions = [...new Set(s.regions.filter(r => typeof r === 'string' && R.includes(r)))]; }   // a region the table doesn't have is dropped
   return o;
 }
 function itMapSt(){ return itm.st || (itm.st = itMapStackRead()); }
@@ -31137,7 +31295,7 @@ function itMapStackSave(){ try{ localStorage.setItem(MAP_STACK_KEY, JSON.stringi
 function itMapPaths(){ return itMapSt().view === 'paths'; }
 function itMapOnlyOn(){ const s = itMapSt(); return s.view !== 'paths' && IT_MAP_ONLY.some(k => s.only[k]); }   // Paths to you: no Only filter applies there
 function itMapOnlyCount(){ const s = itMapSt(); return IT_MAP_ONLY.filter(k => s.only[k]).length; }
-function itMapStKey(){ const s = itMapSt(); return JSON.stringify([s.colour, s.view, s.only, s.secr, s.near, s.sovLv]); }
+function itMapStKey(){ const s = itMapSt(); return JSON.stringify([s.colour, s.view, s.only, s.secr, s.near, s.sovLv, s.sovBy, s.killNpc, s.regions]); }
 function itMapWhOn(){ return itMapOnlyOn() && itMapSt().only.wh; }
 // which systems match every Only filter that is on: one array, worked out again only when its key changes, never tested per system per draw
 // (LESSON #120); null with none on. Your system always matches (it never dims). The list: the matches but you, nearest by stargate first,
@@ -31150,6 +31308,7 @@ function itMapMatch(wh){
   if(key === itMt.key) return itMt;
   const n = T.n, m = new Uint8Array(n), D = itm.D, lo = Math.min(s.secr.lo, s.secr.hi), hi = Math.max(s.secr.lo, s.secr.hi);
   const sv = o.sov ? sovIndex() : null, pick = new Set(o.sov ? sovStore().pick : []), lvT = sovTable().lv, lv = s.sovLv;
+  const rg = o.regpick ? new Set(s.regions.map(r => T.regions.indexOf(r))) : null;   // 065: Region pick, any pick counts
   for(let i = 0; i < n; i++){
     let ok = true;
     if(o.secr){ const t = itMapSecT(i); ok = t >= lo && t <= hi; }   // Q9: the number the map shows, both ends, either order
@@ -31158,6 +31317,7 @@ function itMapMatch(wh){
     if(ok && o.kills) ok = !!(itm.rep.get(i) || {}).kills;
     if(ok && o.wh) ok = W.kept.has(i);
     if(ok && o.sov){ const e = sv.at.get(i); ok = false; if(e) for(const [k, l] of e) if(pick.has(k) && (!lvT.has(k) || !lv.length || lv.includes(l))){ ok = true; break; } }   // Q10: any ticked level; none ticked: any
+    if(ok && rg) ok = rg.has(T.reg[i]);
     m[i] = ok ? 1 : 0;
   }
   if(itm.home >= 0) m[itm.home] = 1;
@@ -31179,25 +31339,218 @@ function itMapMix(hex, keep){
 let itMapRegColTab = null;   // region index -> colour index, made once per table
 function itMapRegCol(T){
   if(itMapRegColTab && itMapRegColTab.T === T) return itMapRegColTab.c;
-  const R = T.regions.length, nb = Array.from({length: R}, () => new Set());
-  for(let i = 0; i < T.n; i++) for(const j of T.adj[i]) if(T.reg[i] !== T.reg[j]){ nb[T.reg[i]].add(T.reg[j]); nb[T.reg[j]].add(T.reg[i]); }
-  const order = [...Array(R).keys()].sort((a, b) => nb[b].size - nb[a].size || a - b), c = new Int8Array(R).fill(-1);
-  for(const r of order){ let k = 0; while([...nb[r]].some(q => c[q] === k)) k++; c[r] = k % IT_MAP_REGION.length; }   // greedy: the busiest regions first
-  itMapRegColTab = {T, c};
+  itMapRegColTab = {T, c: itMapGreedy(T, (i) => T.reg[i], T.regions.length)};
+  return itMapRegColTab.c;
+}
+// one colour index per group (regions; 065: Sov holder's alliances), two groups joined by a gate never sharing one where the palette allows:
+// greedy, the busiest groups first (a system outside every group: -1)
+function itMapGreedy(T, gOf, G, P = IT_MAP_REGION, fixed = null){   // 065: P the palette; fixed, groups given a colour of their own (-1 from P)
+  const nb = Array.from({length: G}, () => new Set());
+  for(let i = 0; i < T.n; i++){ const a = gOf(i); if(a < 0) continue; for(const j of T.adj[i]){ const b = gOf(j); if(b >= 0 && b !== a){ nb[a].add(b); nb[b].add(a); } } }
+  const order = [...Array(G).keys()].sort((a, b) => nb[b].size - nb[a].size || a - b), c = new Int8Array(G).fill(-1);
+  for(const r of order){ if(fixed && fixed.has(r)) continue; let k = 0; while([...nb[r]].some(q => c[q] === k)) k++; c[r] = k % P.length; }
   return c;
 }
 // the number in a zoomed-in circle, the hover's and Security range's: the value the dot's colour is picked from (itMapSecT)
 function itMapSecText(i){ return (itMapSecT(i) / 10).toFixed(1); }
+// ---- build queue 065 (Project doc roadmap/live-map-filters-plan.md, mockup Claude outputs/live_map_filters_mockup.html; the owner's answers
+// 2026-11-20): three colours from ESI's live data. Sov holder (Q1 "Switch, default standing"): by your standings (yours, friendly, neutral,
+// hostile from sideOf on the holding alliance, NPC faction space muted, unclaimed plain) or one colour per alliance (Region's palette and greedy
+// method); zoomed in the holder's logo fills the circle, ringed in its colour (Q9 "ring"), a capital ★; gates between two systems of one holder
+// in its colour (Q1b). Jumps (past hour) and Kills (past hour) (Q3: NPC kills as its setting) in steps sized to the spread read 2026-11-20.
+// Each system's colour is worked out once per read and setting (itMapLvPrep, LESSON #120), never per system per draw. Before a read: grey,
+// "no data yet" (never 0). The three skip the distance fades (Q10, "ok, go with your choice for now.").
+const IT_MAP_LV = {sovh: 'sov', jumph: 'jumps', killh: 'kills'};
+const IT_MAP_SOVC = {y: '#4f8fe0', f: '#8db8f2', n: '#a8b2b9', h: '#c65b4e', npc: '#7a6f58', u: IT_MAP_PLAIN};   // yours --side-friendly, hostile --danger; NPC faction space muted khaki
+const IT_MAP_SOVW = {y: 'your alliance', f: 'friendly', n: 'neutral', h: 'hostile'};
+const IT_MAP_JH = ['#5f676e', '#8f7d2c', '#cfa526', '#f5891c', '#ff5420', '#ff2433'], IT_MAP_JHS = [0, 1, 10, 50, 150, 500];   // 0 / 1–9 / 10–49 / 50–149 / 150–499 / 500+ (median 14); the owner at the hand test: "shift from greens and yellows to going from yellow to red. gray is none." (as the game's map)
+const IT_MAP_KH = ['#2a3640', '#6b4a52', '#9a4f55', '#c65b4e', '#ef8f78'], IT_MAP_KHS = [0, 1, 2, 5, 20], IT_MAP_KHN = [0, 1, 50, 200, 500];   // ships + pods 0 / 1 / 2–4 / 5–19 / 20+; NPC 0 / 1–49 / 50–199 / 200–499 / 500+
+function itMapLvStep(v, S){ let k = 0; while(k + 1 < S.length && v >= S[k + 1]) k++; return k; }
+function itMapLvFmt(v){ return v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + 'k' : String(v); }
+function itMapNoFade(){ return !itMapPaths() && !!IT_MAP_LV[itMapSt().colour]; }
+// a live colour's data is wanted: the live map shows (never the Intel example's picture or sandbox) with that colour on
+function itMapLvWant(k){
+  try{ if(itRpAside || !itm.el || !itm.box || itm.cv.parentNode !== itm.box || !itMapVisible() || itMapPaths()) return false; }catch(e){ return false; }
+  return IT_MAP_LV[itMapSt().colour] === k;
+}
+function itMapLvAsk(){
+  itSovNeed(); itLvNeed('jumps'); itLvNeed('kills');
+  try{ if(itMapLvWant('sov') && itMapSt().sovBy === 'standing') sideEveNeed(); }catch(e){ /* by standing: EVE's standings are a need */ }
+}
+// the sov read per map index, once per read: kind (0 no data, 1 an alliance, 2 a faction, 3 unclaimed), the holder as an index into als, the
+// capitals, the gates with one holder at both ends (Q1b), and one colour per alliance
+let itSovIxC = null;
+function itSovIx(){
+  const T = itMapTable(); if(!T || !itSov.info) return null;
+  if(itSovIxC && itSovIxC.at === itSov.at && itSovIxC.T === T) return itSovIxC;
+  const ids = itGraphGet().ids, n = T.n, kind = new Uint8Array(n), grp = new Int16Array(n).fill(-1), cap = new Uint8Array(n), als = [], gi = new Map();
+  for(let i = 0; i < n; i++){
+    const c = itSov.info.get(ids[i]); if(!c) continue;
+    kind[i] = c.k === 'a' ? 1 : c.k === 'f' ? 2 : 3;
+    if(c.k !== 'a') continue;
+    let g = gi.get(c.al); if(g === undefined){ g = als.length; als.push(c.al); gi.set(c.al, g); }
+    grp[i] = g; if(c.cap) cap[i] = 1;
+  }
+  const col = itMapGreedy(T, (i) => grp[i], als.length), edges = [];
+  for(let i = 0; i < n; i++) if(grp[i] >= 0) for(const j of T.adj[i]) if(j > i && grp[j] === grp[i]) edges.push(i, j);
+  itSovIxC = {at: itSov.at, T, kind, grp, cap, als, col, edges};
+  return itSovIxC;
+}
+// what your standings are now, as text (the typed lists, EVE's when in use): Sov holder by standing is worked out again when it changes
+function itSovSideKey(){ const r = side.rec || {}, g = (L) => (L || []).map(x => `${String(x.kind)[0]}${x.id}`).join(','); return `${sideEveKey()}|${r.corp ? r.corp.id : ''}|${r.alliance ? r.alliance.id : ''}|${g(r.friendly)}|${g(r.hostile)}`; }
+function itSovSideOf(al){ const r = side.rec || {}, s = sideOf(null, al, sideSets(), null, null).side; return s === 'f' && r.alliance && r.alliance.id === al ? 'y' : s; }
+// one colour per alliance (Region's method). The owner at the hand test (2026-11-22): "tweak the sov filter colors so YOUR alliance's color is
+// green when the option for "one color for each group" is chosen", "if the user doesn't have an alliance or sov, the rule doesn't need to
+// apply": while your alliance holds a system it is IT_MAP_SOV_MINE and the rest share the palette without its greens; otherwise Region's palette
+const IT_MAP_SOV_MINE = '#3fcf6a', IT_MAP_SOV_PAL = IT_MAP_REGION.filter(c => c !== '#5fbf7f' && c !== '#9fbf4f');
+function itSovMine(){ const r = side.rec; return r && r.alliance && Number.isInteger(r.alliance.id) ? r.alliance.id : 0; }
+let itSovAllC = null;
+function itSovMineLegHtml(on){ return on ? `${itMapSwHtml([IT_MAP_SOV_MINE])} yours ` : ''; }
+function itSovAllCols(X){
+  const me = itSovMine(), g0 = me ? X.als.indexOf(me) : -1, key = `${X.at}|${g0}`;
+  if(itSovAllC && itSovAllC.key === key) return itSovAllC.c;
+  const P = g0 >= 0 ? IT_MAP_SOV_PAL : IT_MAP_REGION, k = g0 >= 0 ? itMapGreedy(X.T, (i) => X.grp[i], X.als.length, P, new Set([g0])) : X.col;
+  const c = Array.from(k, (v, g) => g === g0 ? IT_MAP_SOV_MINE : P[v]);
+  itSovAllC = {key, c, mine: g0 >= 0};
+  return c;
+}
+// the key of what the live colour that is on shows (in itMapKey, so a read or a setting redraws once)
+function itMapLvKey(){
+  const s = itMapSt(), c = itMapPaths() ? '' : s.colour;
+  if(c === 'sovh') return `sovh|${itSov.at}|${s.sovBy}|${s.sovBy === 'standing' ? itSovSideKey() : itSovMine()}`;
+  if(c === 'jumph') return `jumph|${itLv.jumps.at}`;
+  if(c === 'killh') return `killh|${itLv.kills.at}|${s.killNpc}`;
+  return '';
+}
+// each system's colour and number for the live colour that is on, worked out again only when itMapLvKey changes (called once a draw)
+function itMapLvPrep(){
+  const key = itMapLvKey(); if(!key) return (itm.lvCol = null);
+  if(itm.lvCol && itm.lvCol.key === key) return itm.lvCol;
+  const T = itMapTable(), n = T.n, ids = itGraphGet().ids, s = itMapSt(), c = s.colour, col = new Array(n).fill(IT_MAP_PLAIN), v = new Int32Array(n).fill(-1);
+  let st = null, data = false;
+  if(c === 'sovh'){
+    const X = itSovIx();
+    if(X){
+      data = true;
+      st = s.sovBy === 'standing' ? X.als.map(itSovSideOf) : null;
+      const pc = st ? null : itSovAllCols(X);
+      for(let i = 0; i < n; i++){ const k = X.kind[i], g = X.grp[i]; col[i] = k === 1 ? (st ? IT_MAP_SOVC[st[g]] : pc[g]) : k === 2 ? IT_MAP_SOVC.npc : IT_MAP_PLAIN; }
+    }
+  } else {
+    const L = itLv[IT_MAP_LV[c]];
+    if(L.d){
+      data = true;
+      const npc = c === 'killh' && s.killNpc, S = c === 'jumph' ? IT_MAP_JHS : npc ? IT_MAP_KHN : IT_MAP_KHS, P = c === 'jumph' ? IT_MAP_JH : IT_MAP_KH;
+      for(let i = 0; i < n; i++){ const x = L.d.get(ids[i]), val = x === undefined ? 0 : c === 'jumph' ? x : npc ? x[2] : x[0] + x[1]; v[i] = val; col[i] = P[itMapLvStep(val, S)]; }   // absent: none that hour
+    }
+  }
+  itm.lvCol = {key, c, col, v, st, data};
+  return itm.lvCol;
+}
+// a holder's logo, loaded once into a plain image (images.evetech.net, which the CSP allows; drawImage marks the live canvas cross-origin,
+// which nothing reads back: the Intel example's own canvas, the one toDataURL, never draws Sov holder); a logo that fails shows the ticker
+const itSovLogoC = new Map();
+function itSovLogo(al){
+  let im = itSovLogoC.get(al);
+  if(!im){
+    im = new Image(); im.decoding = 'async'; itSovLogoC.set(al, im);
+    im.onload = () => { im.ok = true; itMapSoon(); }; im.onerror = () => { im.bad = true; itMapSoon(); };
+    im.src = `https://images.evetech.net/alliances/${Number(al)}/logo?size=64`;
+  }
+  return im.ok ? im : null;
+}
+// an alliance's or corporation's name and ticker for the hover and the legend: the page's one org cache, asked once; drawn again when it comes
+function itSovOrg(kind, id){
+  if(!id) return null;
+  const v = orgCache.get(`${kind}:${id}`); if(v && typeof v.then !== 'function') return v;
+  if(!v) getOrg(kind, id).then(() => { itMapHvKey = ''; itMapSoon(); if(itm.tip && !itm.tip.hidden && itm.tipAt) itMapTip(...itm.tipAt); }, () => {});
+  return null;
+}
+let itMapSoonRaf = 0;
+function itMapSoon(){ if(itMapSoonRaf || typeof requestAnimationFrame !== 'function') return; itMapSoonRaf = requestAnimationFrame(() => { itMapSoonRaf = 0; if(itm.P && itm.home >= 0 && itMapVisible()) itMapDraw(); }); }
+// Q1b: the gates between two systems of one holder in its colour, over the plain gates and under the bridges (bright inside the reach or a
+// match, faint past it unless an Only filter picks both ends)
+function itSovGatesDraw(c, X, Y, on, big, W, H){
+  const L = itm.lvCol, Sx = L && L.c === 'sovh' && L.data ? itSovIx() : null; if(!Sx || !Sx.edges.length) return;
+  const mt = itm.mt, by = new Map(), E = Sx.edges;
+  for(let e = 0; e < E.length; e += 2){
+    const a = E[e], b = E[e + 1];
+    if((X(a) < 0 && X(b) < 0) || (X(a) > W && X(b) > W) || (Y(a) < 0 && Y(b) < 0) || (Y(a) > H && Y(b) > H)) continue;
+    const lit = mt ? !!(mt.m[a] && mt.m[b]) : true, k = L.col[a] + (lit ? '1' : '0');
+    (by.get(k) || by.set(k, []).get(k)).push(a, b);
+  }
+  c.save(); c.lineWidth = big ? 2 : 1.2;
+  for(const [k, p] of by){ c.strokeStyle = k.slice(0, 7); c.globalAlpha = k.endsWith('1') ? 0.75 : 0.12; c.beginPath(); for(let e = 0; e < p.length; e += 2){ c.moveTo(X(p[e]), Y(p[e])); c.lineTo(X(p[e + 1]), Y(p[e + 1])); } c.stroke(); }
+  c.restore();
+}
+// zoomed in with Sov holder on: an alliance's system shows its logo in the circle, ringed in its colour (Q9, as in game); a capital a ★. The
+// rest (NPC faction space, unclaimed, no data) keep today's disc and number. True when drawn
+function itSovCircle(c, i, x, y, r, a){
+  const L = itm.lvCol; if(!L || L.c !== 'sovh' || !L.data) return false;
+  const X = itSovIx(); if(!X || X.kind[i] !== 1) return false;
+  const al = X.als[X.grp[i]], im = itm.cv.parentNode === itm.box ? itSovLogo(al) : null, col = L.col[i];
+  c.save(); c.globalAlpha = a;
+  c.fillStyle = '#0c1014'; c.beginPath(); c.arc(x, y, r, 0, 6.283); c.fill();
+  if(im){ const lr = r - 1.5; c.save(); c.beginPath(); c.arc(x, y, lr, 0, 6.283); c.clip(); c.drawImage(im, x - lr, y - lr, 2 * lr, 2 * lr); c.restore(); }
+  else { const o = itSovOrg('alliance', al); if(o && o.ticker){ c.fillStyle = '#fff'; c.font = `700 ${Math.max(7, Math.round(r * 0.47))}px system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(o.ticker, x, y + 0.5); } }   // not loaded: the ticker
+  c.lineWidth = 2; c.strokeStyle = col; c.beginPath(); c.arc(x, y, r - 1, 0, 6.283); c.stroke();
+  if(X.cap[i]){ c.fillStyle = '#ffd76a'; c.font = `700 ${Math.round(r * 0.8)}px system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('★', x + r * 0.85, y - r * 0.85); }
+  c.restore();
+  return true;
+}
+// the number in a zoomed-in circle for a live colour: the hour's count, '–' before a read; null: today's (the security number)
+function itMapLvNum(i){
+  const L = itm.lvCol; if(!L) return null;
+  if(L.c === 'sovh') return null;
+  return L.data ? itMapLvFmt(L.v[i]) : '–';
+}
+function itMapLvAsOf(t){ const d = new Date(t); return `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`; }
+function itMapLvDate(v){ return typeof v === 'string' && /^\d{4}-\d\d-\d\d/.test(v) ? v.slice(0, 10) : ''; }
+function itMapLvTime(v){ const t = Date.parse(v); return Number.isFinite(t) ? itMapLvAsOf(t) : ''; }
+// the hover's lines for the live colour that is on (Q2, "Show both"): the holder with its logo, name, ticker and standing, ★ capital, the
+// holding corporation and since when, the development levels and ADM, the vulnerability window in EVE time; or the hour's counts
+function itMapLvTipHtml(i){
+  const L = itm.lvCol; if(!L) return '';
+  const ids = itGraphGet().ids;
+  if(!L.data) return `<br><span class="d">${escapeHtml(itMapLvState(IT_MAP_LV[L.c]))}</span>`;
+  if(L.c === 'sovh'){
+    const X = itSovIx(), k = X.kind[i];
+    if(k === 2) return '<br><span class="d">NPC faction space</span>';
+    if(k !== 1) return `<br><span class="d">${escapeHtml(k === 3 ? 'unclaimed' : 'no sovereignty listed')}</span>`;
+    const g = X.grp[i], al = X.als[g], c = itSov.info.get(ids[i]) || {}, o = itSovOrg('alliance', al), co = c.co ? itSovOrg('corporation', c.co) : null, st = itSovSideOf(al), d = c.dev;
+    let h = `<br><img class="it-sovlg" src="https://images.evetech.net/alliances/${Number(al)}/logo?size=32" alt="" width="16" height="16" data-imgfail="hide">${itSovNameHtml(o, al)} <span class="${escapeHtml({y: 'friendly', f: 'friendly', n: 'neutral', h: 'hostile'}[st])}">${escapeHtml(IT_MAP_SOVW[st])}</span>${escapeHtml(X.cap[i] ? ' · ★ capital' : '')}`;
+    const since = itMapLvDate(c.since), by = co ? co.name : c.co ? `corporation ${c.co}` : '';
+    if(by || since) h += `<br><span class="d">${escapeHtml(`held${by ? ` by ${by}` : ''}${since ? ` since ${since}` : ''}`)}</span>`;
+    if(d){ const p = [['Military', d.m], ['Industrial', d.i], ['Strategic', d.s]].filter(x => x[1] !== null).map(x => `${x[0]} ${x[1]}`); if(d.adm !== null) p.push(`ADM ${d.adm.toFixed(1)}`); if(p.length) h += `<br><span class="d">${escapeHtml(p.join(' · '))}</span>`; }
+    if(c.vw){ const a = itMapLvTime(c.vw[0]), b = itMapLvTime(c.vw[1]); if(a && b) h += `<br><span class="d">${escapeHtml(`vulnerable ${a}–${b} EVE`)}</span>`; }
+    return h;
+  }
+  const Lv = itLv[IT_MAP_LV[L.c]], x = Lv.d.get(ids[i]), asof = ` (ESI, as of ${itMapLvAsOf(Lv.lm)} EVE)`;
+  if(L.c === 'jumph'){ const j = x || 0; return `<br>${escapeHtml(`${j} jump${j === 1 ? '' : 's'} in the past hour`)}<span class="d">${escapeHtml(asof)}</span>`; }
+  const k = x || [0, 0, 0];
+  return `<br>${escapeHtml(`${k[0]} ship${k[0] === 1 ? '' : 's'} · ${k[1]} pod${k[1] === 1 ? '' : 's'} · ${k[2]} NPC killed in the past hour`)}<span class="d">${escapeHtml(asof)}</span>`;
+}
+function itSovNameHtml(o, al){ return o ? `<b>${escapeHtml(o.name)}</b> [${escapeHtml(o.ticker)}]` : `<b>alliance ${Number(al)}</b>`; }
+// why a live colour has no data yet (its legend line and hover): never "0"
+function itMapLvState(k){
+  const L = k === 'sov' ? itSov : itLv[k], has = k === 'sov' ? !!itSov.info : !!L.d;
+  if(has) return '';
+  return L.err ? `no data yet: ${L.err}; asked again in a while` : 'no data yet: reading it from ESI';
+}
 // a system's colour, from the colour that is on (058: only it colours a dot, Q3; none: plain grey). full: as the scale has it; else your
 // system and the matches keep it and the rest are softened (Q15, zoomed out)
 function itMapColRaw(i){
   const T = itMapTable(), c = itMapSt().colour;
+  if(IT_MAP_LV[c] && !itMapPaths()){ const L = itm.lvCol; return L && L.c === c ? L.col[i] : IT_MAP_PLAIN; }   // 065: worked out once (itMapLvPrep)
   if(c === 'jumps') return itm.D[i] < 0 ? IT_MAP_NONE : IT_MAP_JUMPS[Math.min(IT_MAP_JUMPS.length - 1, itm.D[i])];
   if(c === 'region') return IT_MAP_REGION[itMapRegCol(T)[T.reg[i]]];
   if(c === 'sec') return IT_MAP_SEC[itMapSecClass(i)];
   return IT_MAP_PLAIN;
 }
-function itMapFcol(i){ const c = itMapColRaw(i); return i === itm.home || itMapMatched(i) ? c : itMapMix(c, 0.55); }
+// 065 ([stated] "i know we went to softer colors, can we turn it up just a bit though?", then "let's go with the "More" option on the colors."):
+// 058's 55% zoomed out and 38% in a zoomed-in disc became 80% and 62%
+const IT_MAP_SOFT = 0.8, IT_MAP_SOFT_IN = 0.62;
+function itMapFcol(i){ const c = itMapColRaw(i); return i === itm.home || itMapMatched(i) ? c : itMapMix(c, IT_MAP_SOFT); }
 // 058: dimmed means "doesn't match" only (Q5), while an Only filter is on; your system never
 function itMapDimmed(i){ return i !== itm.home && !!itm.mt && !itm.mt.m[i]; }
 function itMapDraw(){
@@ -31205,6 +31558,8 @@ function itMapDraw(){
   itm.draws++; itJbBtnPaint();
   itm.wh = itMapWh();   // build queue 040: the kept wormholes, and those shown as reports (itMapFcol, itMapDimmed, the labels and the hover read it)
   itm.mt = itMapMatch(itm.wh);   // 058: the systems every Only filter that is on picks out, once a draw (null with none on)
+  itMapLvPrep();   // 065: the live colour that is on, worked out again only when its data or settings changed
+  if(!itm.lvAsk && itm.cv.parentNode === itm.box){ itm.lvAsk = true; Promise.resolve().then(() => { itm.lvAsk = false; itMapLvAsk(); }); }   // 065: its data, once per ESI's Expires (after the draw, never inside it)
   if(itPtLive()){ itMapWhPulse([]); itMapMtPaint(); itPtPaint(); return; }   // build queue 043: the tree covers the map, so the galaxy under it isn't drawn
   if(itm.cv.parentNode === itm.box) itPtHide();
   const T = itMapTable(), n = T.n, c = itm.cv.getContext('2d'), dpr = window.devicePixelRatio || 1, W = itm.W, H = itm.H, v = itm.view, P = itm.P, Q = itm.Q, D = itm.D, R = itm.reach, near = itNearReach();
@@ -31218,7 +31573,8 @@ function itMapDraw(){
   const g = itMapGatePx(), big = g >= 34, r = big ? Math.max(9, Math.min(15, g * 0.2)) : 0, names = g >= 80 && !!it.names;
   // 058: with an Only filter on, a match is bright anywhere and the rest dim, no distance fade on dots (Q5, Q6; the gates still fade past the
   // reach); with none on, today's fades
-  const mt = itm.mt, alpha = (i) => mt ? (mt.m[i] ? 1 : IT_MAP_DIM) : !on(i) ? IT_MAP_FAINT : Dg[i] < 0 || Dg[i] > near ? 0.45 : 1;
+  // 065 (Q10): Sov holder, Jumps (past hour) and Kills (past hour) skip both distance fades (only Only filters dim; the gates still fade)
+  const mt = itm.mt, noFade = itMapNoFade(), alpha = (i) => mt ? (mt.m[i] ? 1 : IT_MAP_DIM) : noFade ? 1 : !on(i) ? IT_MAP_FAINT : Dg[i] < 0 || Dg[i] > near ? 0.45 : 1;
   // the alert range: a soft amber under the systems inside it, never faded (Q7); zoomed out half today's size, zoomed in today's (the owner:
   // "i'm fine with today's diameter while zoomed in but want the new smaller diameter when zoomed out")
   c.fillStyle = 'rgba(217,154,60,.07)';
@@ -31238,6 +31594,7 @@ function itMapDraw(){
   paths.forEach((p, k) => { if(!p.length) return; c.strokeStyle = k & 1 ? C.gateX : C.gate; c.globalAlpha = k & 2 ? 0.55 : 1; c.setLineDash(k & 1 ? (big ? [3, 4] : [2, 3]) : []);
     c.beginPath(); for(let e = 0; e < p.length; e += 2){ c.moveTo(X(p[e]), Y(p[e])); c.lineTo(X(p[e + 1]), Y(p[e + 1])); } c.stroke(); });
   c.setLineDash([]); c.globalAlpha = 1;
+  itSovGatesDraw(c, X, Y, on, big, W, H);   // 065 (Q1b): one holder's gates in its colour
   // build queue 041: your jump bridges, while the setting is on: solid curves in the game's green (the owner's in-game screenshot), under the
   // systems and the routes, faint past the reach; curved like the game's, so one never reads as a gate
   // 057: a bridge left out (D5: another alliance's, no one's; logged out, two alliances') dashed and fainter; the one under the pointer thicker.
@@ -31285,10 +31642,13 @@ function itMapDraw(){
       if(!seen(i)) continue;
       const x = X(i), y = Y(i), a = alpha(i), hit = !!(mt && mt.m[i]) && i !== itm.home;
       // 058: a match's disc a quarter bigger in its full colour (Q8); the rest a dark disc tinted with their colour (Q15); you as the scale has it
-      c.globalAlpha = a; c.fillStyle = hit || i === itm.home ? itMapColRaw(i) : itMapMix(itMapColRaw(i), 0.38); c.beginPath(); c.arc(x, y, hit ? r * 1.25 : r, 0, 6.283); c.fill();
-      c.globalAlpha = 1; c.lineWidth = 1.5; c.strokeStyle = '#0c1014'; c.stroke();
-      c.globalAlpha = Math.max(a, 0.35); c.font = tf; c.fillStyle = '#fff';
-      const col = itMapSt().colour; if(col) c.fillText(col === 'jumps' ? (D[i] < 0 ? '–' : String(D[i])) : itMapSecText(i), x, y + 0.5);   // no colour: no number
+      const logo = itSovCircle(c, i, x, y, hit ? r * 1.25 : r, a);   // 065: Sov holder's logo in the circle
+      if(!logo){
+        c.globalAlpha = a; c.fillStyle = hit || i === itm.home ? itMapColRaw(i) : itMapMix(itMapColRaw(i), IT_MAP_SOFT_IN); c.beginPath(); c.arc(x, y, hit ? r * 1.25 : r, 0, 6.283); c.fill();
+        c.globalAlpha = 1; c.lineWidth = 1.5; c.strokeStyle = '#0c1014'; c.stroke();
+        c.globalAlpha = Math.max(a, 0.35); c.font = tf; c.fillStyle = '#fff';
+        const col = itMapSt().colour, ln = col ? itMapLvNum(i) : null; if(col) c.fillText(ln !== null ? ln : col === 'jumps' ? (D[i] < 0 ? '–' : String(D[i])) : itMapSecText(i), x, y + 0.5);   // no colour: no number   // 065: the hour's count
+      }
       if(names && !taken.has(i)){ const nm = it.names.byId.get(ids[i]); if(nm){ c.font = nf; c.fillStyle = '#b7c1c8'; c.globalAlpha = Math.max(a, 0.4); c.fillText(nm, x, y + r + 9); const w = c.measureText(nm).width; itm.nameBoxes.push([x - w / 2, y + r + 3, x + w / 2, y + r + 15]); } }
     }
     c.restore(); c.globalAlpha = 1;
@@ -31334,6 +31694,7 @@ function itMapDraw(){
   itMapLabels(c, focus, onRoute, C, r);
   itMapRegionNames(c);
   itMapYouArrow();
+  if(itm.cv.parentNode === itm.box) itMapHvPaint();   // 065: the holders in view (the live map only)
 }
 // 039: region names as the game writes them, spaced capitals at the region's middle (its systems' mean; when that is out of view, the
 // middle of its systems in view, 3 or more); yours white, the others grey. None near the box's edge, over another region's name, a
@@ -31437,13 +31798,28 @@ function itMapFLegHtml(){
     case 'jumps': return itBridgeOn() ? `<b>Jumps</b> 0 ${itMapSwHtml(IT_MAP_JUMPS)} 10+ · your jump bridges counted · grey: no route` : `<b>Jumps</b> 0 ${itMapSwHtml(IT_MAP_JUMPS)} 10+ · grey: no gate route`;   // 041
     case 'region': return '<b>Region</b> a colour each; neighbours differ';
     case 'sec': return `<b>Security</b> 1.0 ${itMapSwHtml(IT_MAP_SEC.slice().reverse())} 0.0`;
-    default: return `<b>No colour</b> ${itMapSwHtml([IT_MAP_PLAIN])} every system plain · press Security, Jumps or Region to colour them`;   // 058
+    case 'sovh': {   // 065
+      const w = itMapLvState('sov'); if(w) return `<b>Sov holder</b> ${itMapSwHtml([IT_MAP_PLAIN])} ${escapeHtml(w)}`;
+      const X = itSovIx(), asof = ` · as of ${itMapLvAsOf(itSov.at)} EVE`;
+      if(itMapSt().sovBy === 'alliance'){ const pc = X ? itSovAllCols(X) : IT_MAP_REGION, mine = X && itSovAllC && itSovAllC.mine;
+        return `<b>Sov holder</b> ${itSovMineLegHtml(mine)}${itMapSwHtml([...new Set(pc.filter(c => c !== IT_MAP_SOV_MINE))])} one per alliance ${itMapSwHtml([IT_MAP_SOVC.npc])} NPC ${itMapSwHtml([IT_MAP_SOVC.u])} unclaimed${escapeHtml(asof)}`; }
+      const none = !sideIsSet() && !sideEveUse() ? ' · no standings set: every alliance neutral' : '';
+      return `<b>Sov holder</b> ${itMapSwHtml([IT_MAP_SOVC.y])} yours ${itMapSwHtml([IT_MAP_SOVC.f])} friendly ${itMapSwHtml([IT_MAP_SOVC.n])} neutral ${itMapSwHtml([IT_MAP_SOVC.h])} hostile ${itMapSwHtml([IT_MAP_SOVC.npc])} NPC ${itMapSwHtml([IT_MAP_SOVC.u])} unclaimed${escapeHtml(none + asof)}`;
+    }
+    case 'jumph': { const w = itMapLvState('jumps'); return w ? `<b>Jumps (past hour)</b> ${itMapSwHtml([IT_MAP_PLAIN])} ${escapeHtml(w)}` : `<b>Jumps (past hour)</b> 0 ${itMapSwHtml(IT_MAP_JH)} 500+ · as of ${escapeHtml(itMapLvAsOf(itLv.jumps.lm))} EVE`; }
+    case 'killh': { const w = itMapLvState('kills'), npc = itMapSt().killNpc; return w ? `<b>${escapeHtml(npc ? 'NPC kills' : 'Kills')} (past hour)</b> ${itMapSwHtml([IT_MAP_PLAIN])} ${escapeHtml(w)}` : npc ? `<b>NPC kills (past hour)</b> 0 ${itMapSwHtml(IT_MAP_KH)} 500+ · as of ${escapeHtml(itMapLvAsOf(itLv.kills.lm))} EVE` : `<b>Kills (past hour)</b> ships + pods 0 ${itMapSwHtml(IT_MAP_KH)} 20+ · as of ${escapeHtml(itMapLvAsOf(itLv.kills.lm))} EVE`; }
+    default: return `<b>No colour</b> ${itMapSwHtml([IT_MAP_PLAIN])} every system plain · press a colour to colour them`;   // 058
   }
 }
 function itMapFLegTitle(){
   if(itMapPaths()) return 'Every shortest stargate route to you from a system with hostiles, neutrals or kills inside your alert range; a system on several routes is shown once. Hover or press a system to trace its routes.';
   return {jumps: itBridgeOn() ? 'Jumps from your system, your jump bridges counted (Intel settings), 0 to 10 or more; grey: no route to you' : 'Jumps by stargate from your system, 0 to 10 or more; grey: no gate route to you', region: 'One colour per region; two regions joined by a gate never share one',
-    sec: 'Each system in its security colour, 1.0 to 0.0 and below'}[itMapSt().colour] || 'No colour: the systems are plain grey, so reports, wormholes, kills and the systems your Only filters match stand out';
+    sec: 'Each system in its security colour, 1.0 to 0.0 and below',
+    // 065
+    sovh: itMapSt().sovBy === 'alliance' ? 'Who holds each system: one colour per alliance, neighbours differ; NPC faction space and unclaimed systems plain. From ESI, every 5 minutes while this is on.'
+      : 'Who holds each system, by your standings (your corporation’s and alliance’s EVE contacts, else your typed lists): yours, friendly, neutral, hostile; NPC faction space; unclaimed. From ESI, every 5 minutes while this is on.',
+    jumph: 'Ship jumps through each system in the past hour, from ESI (once an hour); 0, 1–9, 10–49, 50–149, 150–499, 500 or more',
+    killh: itMapSt().killNpc ? 'NPC kills in each system in the past hour, from ESI (once an hour); 0, 1–49, 50–199, 200–499, 500 or more' : 'Ships and pods killed in each system in the past hour, from ESI (once an hour); 0, 1, 2–4, 5–19, 20 or more'}[itMapSt().colour] || 'No colour: the systems are plain grey, so reports, wormholes, kills and the systems your Only filters match stand out';
 }
 // 058 (Q14, the owner: "Second line"): the Only filters that are on, the count first so a narrow screen never loses it; it wraps
 function itMapOnlyLineHtml(){ return itMapOnlyOn() ? `<div class="it-map-fl it-map-only" title="Every Only filter that is on must match; inside one, any pick counts. Hostile and neutral rings, the alert glow and your pin never fade.">${itMapOnlyHtml()}</div>` : ''; }   // 058: the legend's second line
@@ -31453,13 +31829,37 @@ function itMapOnlyHtml(){
   if(o.near) p.push(`within ${s.near.n} jump${s.near.n === 1 ? '' : 's'}`);
   if(o.sov){ const ks = sovPicked().map(sovShow); p.push((!sovStore().lists.length && !sovBridgeEnds().length ? 'no sov lists yet' : ks.length ? (ks.length > 2 ? `${ks.slice(0, 2).join(', ')} +${ks.length - 2}` : ks.join(', ')) : 'no upgrade picked') + (s.sovLv.length ? ` level ${s.sovLv.join(', ')}` : '')); }
   if(o.reports) p.push('a report'); if(o.kills) p.push('kills in Intel'); if(o.wh) p.push(`a wormhole (last ${Number(itWhStore().keepH)} h)`);
+  if(o.regpick){ const rs = s.regions; p.push(rs.length ? 'in ' + (rs.length > 2 ? `${rs.slice(0, 2).join(', ')} +${rs.length - 2}` : rs.join(', ')) : 'no region picked'); }   // 065
   return `<b>Only</b> <b>${Number(n)} match</b> · ${escapeHtml(p.join(' · '))}`;
 }
 function itMapLegend(){
   const leg = itm.el.querySelector('.it-map-leg'), ring = (col, r) => `<i class="ring" style="width:${r * 2}px;height:${r * 2}px;border-color:${col}"></i>`;
   const h = `<div class="it-map-fl" title="${escapeHtml(itMapFLegTitle())}">${itMapFLegHtml()}</div>${itMapOnlyLineHtml()}<span><svg class="pin" width="11" height="15" viewBox="-1 -1 16 22" aria-hidden="true"><path d="M7 20C5.5 16 0 12 0 7a7 7 0 0 1 14 0c0 5-5.5 9-7 13z" fill="#fff" stroke="#0c1014" stroke-width="2"/><circle cx="7" cy="7" r="2.6" fill="#0c1014"/></svg>you</span><span>${ring('var(--danger)', 6)}hostile</span><span>${ring('#b9c3ca', 6)}neutral</span><span>${ring('var(--side-friendly)', 6)}friendly</span><span class="sz">${ring('#9aa6ae', 4)}solo ${ring('#9aa6ae', 6)}2–10 ${ring('#9aa6ae', 8.5)}11+</span>${IT_WH_LEG_HTML}`
-    + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span><span><i class="dot"></i>within your alert range (${it.set.range})</span><span>faded: past ${escapeHtml(cardName('itnear'))} (${itNearReach()})</span><span>faint: past ${escapeHtml(cardName('itmap'))}: within (${Number(itMapReach())})</span><span title="${escapeHtml(`Kills here within "forget reports after" (${Number(it.set.forget)} min), by who died: friendlies lost, hostiles killed, neutrals killed`)}">✕ kills by who died: <i class="it-mkb f">friendly</i> <i class="it-mkb h">hostile</i> <i class="it-mkb n">neutral</i></span>`;   // 066
-  if(leg._h !== h){ leg.innerHTML = h; leg._h = h; }
+    + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span><span><i class="dot"></i>within your alert range (${it.set.range})</span>${itMapFadeLegHtml()}<span title="${escapeHtml(`Kills here within "forget reports after" (${Number(it.set.forget)} min), by who died: friendlies lost, hostiles killed, neutrals killed`)}">✕ kills by who died: <i class="it-mkb f">friendly</i> <i class="it-mkb h">hostile</i> <i class="it-mkb n">neutral</i></span>`;   // 066
+  if(leg._h !== h){ leg.innerHTML = h; leg._h = h; itMapHvKey = ''; if(itm.P && itm.home >= 0 && itm.cv.parentNode === itm.box) itMapHvPaint(); }   // 065 (Q10): no faded / faint entries for the three live colours
+}
+// the legend's faded / faint entries; none with Sov holder, Jumps or Kills (past hour) on (065, Q10)
+function itMapFadeLegHtml(){ return itMapNoFade() ? '' : `<span>faded: past ${escapeHtml(cardName('itnear'))} (${Number(itNearReach())})</span><span>faint: past ${escapeHtml(cardName('itmap'))}: within (${Number(itMapReach())})</span>`; }
+// 065: with Sov holder on, a line under the legend's first: the five holders with the most systems in view, with their logos and counts; worked
+// out again only when the view, the read or the settings change (LESSON #120)
+let itMapHvKey = '';
+function itMapHvOneHtml(al, k){ const o = itSovOrg('alliance', al), nm = o ? o.name : `alliance ${al}`; return `<span class="it-map-hv1" title="${escapeHtml(`${nm}: ${k} system${k === 1 ? '' : 's'}`)}"><img src="https://images.evetech.net/alliances/${Number(al)}/logo?size=32" alt="" width="14" height="14" data-imgfail="hide">${escapeHtml(o ? o.ticker : '…')} <span class="d">${Number(k)}</span></span>`; }
+function itMapHvLineHtml(top){ return top.length ? `<b>In view</b> ${itMapHvTopHtml(top.slice(0, 5))}${itMapHvMoreHtml(top.length - 5)}` : '<b>In view</b> <span class="d">no alliance holds a system in view</span>'; }
+function itMapHvTopHtml(top){ return top.map(([al, k]) => itMapHvOneHtml(al, k)).join(' '); }
+function itMapHvMoreHtml(n){ return n > 0 ? ` <span class="d">+${Number(n)}</span>` : ''; }
+function itMapHvPaint(){
+  const leg = itm.el && itm.el.querySelector('.it-map-leg'); if(!leg) return;
+  const L = itm.lvCol, on = !!(L && L.c === 'sovh' && L.data && !itMapPaths()), v = itm.view, key = on ? [L.key, v.k, v.tx, v.ty, itm.W, itm.H].join('|') : '';
+  let el = leg.querySelector(':scope > .it-map-hv');
+  if(!on){ if(el) el.remove(); itMapHvKey = ''; return; }
+  if(key === itMapHvKey && el) return;
+  itMapHvKey = key;
+  const X = itSovIx(), Q = itm.Q, W = itm.W, H = itm.H, cnt = new Map();
+  for(let i = 0; i < X.T.n; i++){ const g = X.grp[i]; if(g < 0) continue; const x = Q[2 * i], y = Q[2 * i + 1]; if(x < 0 || y < 0 || x > W || y > H) continue; cnt.set(g, (cnt.get(g) || 0) + 1); }
+  const top = [...cnt].sort((p, q) => q[1] - p[1] || p[0] - q[0]);
+  const tk = top.map(([g, k]) => [X.als[g], k]), h = itMapHvLineHtml(tk);
+  if(!el){ el = document.createElement('div'); el.className = 'it-map-fl it-map-hv'; const after = leg.querySelector(':scope > .it-map-only') || leg.querySelector(':scope > .it-map-fl'); if(after) after.after(el); else leg.prepend(el); }
+  if(el._h !== h){ el.innerHTML = itMapHvLineHtml(tk); el._h = h; }   // written only when it changes
 }
 // ---- build queue 043: "Paths to you" (Project doc roadmap/paths-to-you-plan.md, mockup Claude outputs/paths_to_you_mockup.html; the owner:
 // "a tree view of paths to you from reported hostiles within the "near you" alert range", then "alert range", "every shortest route", top
@@ -31695,7 +32095,8 @@ function itMapKbTipHtml(r){ return `<span class="d">${escapeHtml(`✕ ${r.kills}
 function itMapKbPartsHtml(r){ return ['f', 'h', 'n'].filter(v => r.kb[v]).map(v => `<span class="it-mkb ${escapeHtml(v)}">${escapeHtml(`${r.kb[v]} ${IT_KILL_WORD[v][r.kb[v] === 1 ? 2 : 3]}`)}</span>`).join('<span class="d">, </span>'); }
 function itMapTip(i, x, y){
   const tip = itm.tip;
-  if(i < 0){ tip.hidden = true; return; }
+  if(i < 0){ tip.hidden = true; itm.tipAt = null; return; }
+  itm.tipAt = [i, x, y];   // 065: drawn again when a holder's name comes
   const T = itMapTable(), ids = itGraphGet().ids, r = itm.rep.get(i), d = itm.D[i];
   const wh = itm.wh && itm.wh.mark.get(i);   // 040: the wormhole shown at this system, if any
   const where = d === 0 ? 'you are here' : d < 0 ? 'no gate route to you' : `${d} jump${d === 1 ? '' : 's'}`;
@@ -31712,6 +32113,7 @@ function itMapTip(i, x, y){
   } else if(d > itm.reach || d < 0) h += `<br><span class="d">past ${escapeHtml(cardName('itmap'))}: within (${Number(itm.reach)}): reports aren’t shown here</span>`;
   else if(i !== itm.home) h += `<br><span class="d">nothing reported in the last ${it.set.forget} min</span>`;
   if(wh) h += `<br>${itMapWhTipHtml(wh)}`;
+  if(IT_MAP_LV[itMapSt().colour] && !itMapPaths()) h += itMapLvTipHtml(i);   // 065: the live colour's lines
   if(itMapOnlyOn() && itMapSt().only.sov) h += sovTipHtml(i);   // 058: while Sov upgrades is on   // build queue 053: every kind the system has in your lists, with its level
   const dg = itm.Dg ? itm.Dg[i] : d;   // 041: the Feed reads kills by stargate (itJumps), whatever the map counts
   if(dg > itKillRange()) h += `<br><span class="d">past the Feed's kill range (${itKillRange()}): its kills aren’t read</span>`;
@@ -33519,7 +33921,7 @@ const RS = {
   range: {label: 'Alert: within', title: () => 'The ring of being alert: a hostile or neutral this close sounds and notifies',
     steps: () => IT_RANGES, value: () => it.set.range, set: (v) => { it.set.range = v; }, why: (end) => end === 'lo' ? 'The smallest alert range' : 'The largest alert range'},
   // 039 (the owner: "\"Map: within\""; was "Jumps shown"): it limits reports and names now, not what's drawn
-  mapReach: {label: () => `${cardName('itmap')}: within`, title: () => 'Reports and names show this many jumps from you; systems farther out are drawn faint', steps: () => itRangeList(itNearReach(), IT_MAP_MAX), value: () => itMapReach(),
+  mapReach: {label: () => `${cardName('itmap')}: within`, title: () => 'Reports and names show this many jumps from you; systems farther out are drawn faint (not with Sov holder, Jumps or Kills in the past hour)', steps: () => itRangeList(itNearReach(), IT_MAP_MAX), value: () => itMapReach(),
     set: (v) => { it.set.mapReach = v === itKillRange() ? null : v; },
     why: (end) => end === 'lo' ? `Can't be less than ${cardName('itnear')} (${itNearReach()}): every row there has its dot` : `The Feed's largest kill range (${IT_MAP_MAX})`,
     note: () => it.set.mapReach == null ? `follows the Feed (${itKillRange()})` : `yours · the Feed: ${itKillRange()}${itMapReach() > itKillRange() ? ', no kills read past it' : ''}`, unit: ''},

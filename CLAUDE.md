@@ -554,6 +554,23 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   since build queue 063 (roadmap/security-shown-plan.md) the table's own tenth, `INTEL_MAP.secT`, which `tools/jump_table_update.py` works out from
   CCP's unrounded value (nearest tenth, above 0.0 and below 0.05 shows 0.1; a halfway value from `SEC_CHECKED_IN_GAME`, else the nearest and named
   in its pull request to check in game); nothing on the page rounds security. Region's colours leave out cyan, amber and the lilacs (Q13). `intel_map_stack_check.py`.
+- **Map filters from live data** (v2026.11.23.1, build queue 065; roadmap/live-map-filters-plan.md, mockup `Claude outputs/live_map_filters_mockup.html`;
+  the owner's answers: "Switch, default standing", "Show both", "One filter, NPC as setting", "Box per region + search", "Fold the fix in", "ring",
+  "More"): three Colour filters, Sov holder (`sovh`), Jumps (past hour) (`jumph`), Kills (past hour) (`killh`), and the Only filter Region pick
+  (`regpick`). One reader per kind (L1): `itSovRead` (057's, now keeping every claim in `itSov.info` through `itSovClaim`, every field read
+  defensively) and `itLvRead` (`IT_LV_URL`, ESI kind `activity`, "System activity"), each read only while wanted (`itSovWanted`: 057's bridges
+  or `itMapLvWant('sov')`; `itMapLvWant`: the live map shows with that colour on, never the Intel example), at most once per Expires, 60 / 120 s /
+  5 min after a failure, memory only, asked from `itMapLvAsk` (itMapRefresh, a colour pressed, a microtask after a draw), never a timer. Before a
+  read: grey and "no data yet", never 0 (`itMapLvState`); a system missing from the hour's lists is 0. Colours worked out once per read and
+  setting (`itMapLvPrep` keyed by `itMapLvKey`, which is in `itMapKey`; LESSON #120): by standing (`itSovSideOf`: sideOf on the holding alliance,
+  `itSovSideKey` follows your standings) or per alliance (`itMapGreedy`, Region's method, `itMapRegCol` uses it too; your alliance `IT_MAP_SOV_MINE` green and the rest without greens, `itSovAllCols`, only while it holds a system); `itSovIx` (per read: kinds,
+  holders, capitals, same-holder gates). Zoomed in `itSovCircle` (logo from `itSovLogo`, a plain image, ringed in the holder's colour; a failed
+  logo shows the ticker), `itSovGatesDraw`, the hover `itMapLvTipHtml`, the legend's "In view" line `itMapHvPaint` (keyed to the view). Q10:
+  `itMapNoFade` (no distance fade for the three; `itMapFadeLegHtml` drops the legend's faded / faint). Soft colour `IT_MAP_SOFT` 0.8,
+  `IT_MAP_SOFT_IN` 0.62. Settings in `itMp` (`IT_MP_KEYS`; Region pick's list `itMpRegHtml`, Select all with the global checkbox rule's dash for
+  `:indeterminate`). `tvMapStack` gains `sovBy`, `killNpc`, `regions` (names; an unknown one dropped): safe both ways. The column in group
+  wrappers (`itMapFbtnsHtml`, `.it-map-fg`, display:contents on a wide map with a 44 px column gap for a wrapped column's settings buttons; a
+  phone: Colour over View, Only beside, each wrapping, `itMapFlSet` / `itMapFbN`). `live_map_filters_check.py`.
 - **Kill counts by who died** (v2026.11.21.3, build queue 066; roadmap/kill-counts-plan.md, mockup `Claude outputs/kill_counts_mockup.html`; the owner:
   "amber X [N] [N] [N]", "go with A"): a map label's kill tag is the amber ✕, then the counts by who died, friendly, hostile, neutral (`C.kill`:
   `--side-friendly`, `#f08b7e`, `#b9c3ca`), none for a standing with no deaths; `itMapReports` counts `kb` from `st.kills`' `v` (unknown: neutral);
@@ -749,7 +766,7 @@ still gets its own targeted check and mutants.
 **How the numbers are worked out, for people:** `METHODOLOGY.md` (was the "How effective HP and DPS are
 calculated" note on the page, removed in v2026.10.14.51); each card's short version is its ⓘ panel (`CARD_INFO`).
 Change both when a calculation's assumptions change. Since build queue 036 (v2026.11.11.3) the panels are short (`check_subtext.py`:
-85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"; 620 since 052, "raise it"; 670 since 041, "Raise to 670 (Recommended)"), the detail is in METHODOLOGY.md (its Intel, Who's in the
+85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"; 620 since 052, "raise it"; 670 since 041, "Raise to 670 (Recommended)"; 716 since 065, "Raise cap ~40"), the detail is in METHODOLOGY.md (its Intel, Who's in the
 system and Sides sections too), and nothing on the page links to it (build queue 037 took 036's footer link out, the owner: "i dont want that link displayed"). A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
 panel never inherits a heading's case or spacing (`.info-body`; `info_panels_check.py`).
 

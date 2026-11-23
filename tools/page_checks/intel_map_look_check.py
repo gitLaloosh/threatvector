@@ -18,14 +18,14 @@ not by the page. Uses intel_check.py's made-up folder, mocks and names (you in 1
   * the filters: each system's colour (security class, the band's 0.45 line since build queue 058; jumps 0 to 10+, none without a gate
     route; region, never the same colour as a region joined by a gate; the Only filters Intel reports and Kills dimming the rest, one at a
     time here: stacking is intel_map_stack_check.py), a dot's pixel follows the pressed colour (softened, 058), a press redraws once;
-  * the column: ten buttons inside the map box (Sov upgrades since build queue 053, sov_upgrades_check.py) (Wormholes since build queue 040, wormhole_filter_check.py; Paths to you since 043,
+  * the column: fourteen buttons (065: Sov holder, Jumps and Kills (past hour), Region pick) inside the map box (Sov upgrades since build queue 053, sov_upgrades_check.py) (Wormholes since build queue 040, wormhole_filter_check.py; Paths to you since 043,
     paths_to_you_check.py; Security range and Within N jumps since 058), the pressed one aria-pressed, 32 px; the name line shown on a press, faded after;
   * routes past the reach (the owner: "yes"): hover shows its route and the tip says reports aren't shown there; a press keeps it; a
     system with no gate route to you: the tip says so, nothing kept;
   * Near You's panel in the map at 905, 1000 and 1200 px with a busy row (LESSON #113): 320 px (052), no row wider than its box, and
     the map's column the same height for each colour and the view, Near You's panel for every filter (058: an Only filter adds the
     legend's second line);
-  * 390 px: one 44 px button; it opens the column of ten 44 px buttons; a pick, Escape (focus back on the button) and a press outside
+  * 390 px: one 44 px button; it opens the column of fourteen 44 px buttons; a pick, Escape (focus back on the button) and a press outside
     close it; no sideways scroll;
   * the info text and "Map: within"; the timings (layout at a 30-jump reach, a redraw of the whole galaxy), printed for the history doc;
   * mutants, each must fail: separate x and y scales, a wider spread off CCP's place, a filter that doesn't redraw, gates between
@@ -57,7 +57,7 @@ JUMPCOL = ['#ffffff', '#4acff3', '#62daa6', '#71e452', '#eeff83', '#de6a0c', '#c
 def secclass(k):   # by index: the shown value (LESSON #170); 063: the table's tenth
     return max(0, SECT[k])
 def soft(hexc, keep):   # 058 (Q15): a colour mixed toward the map's background #0c1014
-    return '#' + ''.join(f'{round(int(hexc[1 + 2 * q:3 + 2 * q], 16) * keep + (12, 16, 20)[q] * (1 - keep)):02x}' for q in range(3))
+    return '#' + ''.join(f'{int(int(hexc[1 + 2 * q:3 + 2 * q], 16) * keep + (12, 16, 20)[q] * (1 - keep) + 0.5):02x}' for q in range(3))   # as JavaScript's Math.round (Python's round halves to even)
 NOGATE = next(sid for sid in ids if sid not in D0)   # a system with no gate route to 1DQ1-A (Pochven, from k-space)
 # a busy Near You row (LESSON #113): three pilots, three ships, a count, camp words
 HOST = [M.PILOTS[M.pick(98000003, k)][0] for k in range(3)]
@@ -122,7 +122,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         if st != [0, 1, 2]: out.append(f'the zoom stages at a 30 / 40 / 85 px gate: {st} (want dots, circles, circles with names)')
         px = pg.evaluate("""([V, id]) => { eval(V)(40); const i = itGraphGet().at.get(id), r = Math.max(9, Math.min(15, 40 * 0.2)), c = itm.cv.getContext('2d'), d = window.devicePixelRatio || 1;
           return [...c.getImageData(Math.round(itm.Q[2 * i] * d), Math.round((itm.Q[2 * i + 1] - r + 2.5) * d), 1, 1).data]; }""", [VIEW, SYSID['8WA-Z6']])
-        want = soft(SECCOL[secclass(IDX[SYSID['8WA-Z6']])], 0.38)   # 058: zoomed in, a dark disc tinted with the colour (nothing filtered)
+        want = soft(SECCOL[secclass(IDX[SYSID['8WA-Z6']])], 0.62)   # 058: zoomed in, a dark disc tinted with the colour (nothing filtered)   # 065 (Q11, "More"): 62%
         rgb = [int(want[1:3], 16), int(want[3:5], 16), int(want[5:7], 16)]
         if max(abs(px[q] - rgb[q]) for q in range(3)) > 24: out.append(f'zoomed in, 8WA-Z6\'s circle tinted with its security colour {want}: {px}')
         spy = pg.evaluate("""(V) => { eval(V)(16); const c = itm.cv.getContext('2d'), log = [], s0 = c.stroke, f0 = c.fillText; let dash = [];
@@ -164,13 +164,13 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         pg.mouse.move(5, 5); pg.wait_for_timeout(100)   # off the map first: leaving a hovered system redraws it
         d0 = pg.evaluate('itm.draws'); pg.click('#intelPanel [data-im-f="jumps"]'); pg.wait_for_timeout(150)
         d1, px = pg.evaluate('itm.draws'), pg.evaluate(DOT, q)
-        want = soft(JUMPCOL[D0[q]], 0.55); rgb = [int(want[1:3], 16), int(want[3:5], 16), int(want[5:7], 16)]   # 058 (Q15): softened, nothing filtered
+        want = soft(JUMPCOL[D0[q]], 0.8); rgb = [int(want[1:3], 16), int(want[3:5], 16), int(want[5:7], 16)]   # 058 (Q15): softened, nothing filtered   # 065 (Q11): 80%
         if d1 - d0 != 1 or max(abs(px[k] - rgb[k]) for k in range(3)) > 30: out.append(f'Jumps from you pressed: {d1 - d0} draws (want 1), {SYSNAME[q]}\'s dot {px[:3]} (want {want})')
         pg.click('#intelPanel [data-im-f="sec"]'); pg.wait_for_timeout(150)
     if 'bar' in parts:
         bb = pg.evaluate("""() => { const box = itm.box.getBoundingClientRect(); return [...itm.box.querySelectorAll('[data-im-f]')].map(b => { const r = b.getBoundingClientRect();
           return [b.dataset.imF, b.getAttribute('aria-pressed'), Math.round(r.width), Math.round(r.height), r.left >= box.left && r.right <= box.right && r.top >= box.top && r.bottom <= box.bottom]; }); }""")
-        if [x[0] for x in bb] != ['sec', 'jumps', 'region', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'paths'] or [x[1] for x in bb] != ['true'] + ['false'] * 9 or any(x[2] != 32 or x[3] != 32 or not x[4] for x in bb):   # 058: Security range, Within N jumps
+        if [x[0] for x in bb] != ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'regpick', 'paths'] or [x[1] for x in bb] != ['true'] + ['false'] * 13 or any(x[2] != 32 or x[3] != 32 or not x[4] for x in bb):   # 058: Security range, Within N jumps
             out.append(f'the bar at 1440 px: {bb}')
         pg.mouse.move(5, 5); pg.click('#intelPanel [data-im-f="region"]'); pg.mouse.move(5, 5); pg.wait_for_timeout(500)
         nm = pg.evaluate("() => { const n = itm.box.querySelector('.it-map-fn'); return [n.textContent, getComputedStyle(n).opacity, itm.box.querySelector('[data-im-f=\"region\"]').getAttribute('aria-pressed')]; }")
@@ -196,7 +196,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         pg.mouse.move(5, 5)
     if 'info' in parts or 'routes' in parts:
         it_ = pg.evaluate("() => [CARD_INFO.intel.join(' '), rsLabel(RS.mapReach), RS.mapReach.title()]")
-        if "**{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route; right-click a system to set your destination in EVE." not in it_[0] or 'Filters (left): one colour (press it again for none); Only filters, any number, all must match' not in it_[0] or '(solo, 2–10, 11+)' not in it_[0]: out.append('the info text (intel) is not the owner\'s pick')
+        if "**{card:itmap}:** EVE's 2D map around you; hover one, or a row, for its route; right-click a system to set your destination in EVE." not in it_[0] or 'Filters (left): one colour (press it again for none), Sov holder, Jumps and Kills (past hour) from ESI' not in it_[0] or 'Only filters, any number, all must match' not in it_[0] or '(solo, 2–10, 11+)' not in it_[0]: out.append('the info text (intel) is not the owner\'s pick')
         if it_[1] != 'Map: within' or not it_[2].startswith('Reports and names show this many jumps from you'): out.append(f'the stepper: {it_[1:]}')
         tm = pg.evaluate("() => { it.set.mapReach = 30; itm.W = 0; itMapRefresh(true); const a = [itm.layoutMs, itm.vis.length]; itMapZoom(itm.W / 2, itm.H / 2, 1e-6); const t = performance.now(); for(let k = 0; k < 10; k++) itMapDraw(); a.push((performance.now() - t) / 10); it.set.mapReach = null; itm.W = 0; itMapRefresh(true); return a; }")
         print(f'TIMING: layout at a 30-jump reach ({tm[1]} systems) {tm[0]:.1f} ms; a redraw of the whole galaxy {tm[2]:.1f} ms')
@@ -222,7 +222,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         if ph != [44, 44, 'none']: out.append(f'390 px: one 44 px button, the row hidden {ph}')
         pg.tap('#intelPanel .it-map-fcur'); pg.wait_for_timeout(150)
         op = pg.evaluate("() => [itm.box.querySelector('.it-map-fb').classList.contains('open'), [...itm.box.querySelectorAll('[data-im-f]')].map(b => { const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; })]")
-        if not op[0] or op[1] != [[44, 44]] * 10: out.append(f'390 px: a tap opens the column of ten 44 px buttons {op}')   # 053: Sov upgrades; 058: Security range, Within N jumps
+        if not op[0] or op[1] != [[44, 44]] * 14: out.append(f'390 px: a tap opens the column of fourteen 44 px buttons {op}')   # 053: Sov upgrades; 058: Security range, Within N jumps; 065: Sov holder, Jumps and Kills (past hour), Region pick
         pg.tap('#intelPanel [data-im-f="jumps"]'); pg.wait_for_timeout(150)
         pk = pg.evaluate("() => [itMapSt().colour, itm.box.querySelector('.it-map-fb').classList.contains('open')]")
         pg.tap('#intelPanel .it-map-fcur'); pg.wait_for_timeout(100); pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
@@ -249,7 +249,7 @@ with sync_playwright() as p:
     b = p.chromium.launch()
     errs = []
     out = []; layout_cases(b, HTML, out, errs)
-    check(not out, "the map like EVE's 2D map: the whole galaxy at CCP's places, one scale, 12 px apart in the reach, opening on you; zoom stages, dotted gates between regions, region names; the ten filters and their column; routes past the reach; Near You beside it unmoved by the filters at 905-1200 px; the phone's one button" + ''.join(f'\n      {o}' for o in out))
+    check(not out, "the map like EVE's 2D map: the whole galaxy at CCP's places, one scale, 12 px apart in the reach, opening on you; zoom stages, dotted gates between regions, region names; the fourteen filters and their column; routes past the reach; Near You beside it unmoved by the filters at 905-1200 px; the phone's one button" + ''.join(f'\n      {o}' for o in out))
     tmp = tempfile.mkdtemp(prefix='maplook_mut_')
     for name_, a_, *rest in MUTANTS:
         b_, parts = (None, rest[0]) if isinstance(a_, list) else rest

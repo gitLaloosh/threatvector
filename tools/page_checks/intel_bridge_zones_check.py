@@ -295,7 +295,7 @@ MUTANTS = [
     ('a direction used with its zone unticked', "return {from: x, to: y, toId: to, z, ly, use: zs.includes(z)};", "return {from: x, to: y, toId: to, z, ly, use: true};", ('zones',)),
     ('a two-alliance bridge used (logged out)', "else if(ha !== hb) why = {k: 'two'};", "else if(false) why = {k: 'two'};", ('zones',)),
     ('5.00 LY read as zone 2', "return v <= 5 ? 1 : v <= 10 ? 2", "return v < 5 ? 1 : v <= 10 ? 2", ('zones',)),
-    ('a sov read with no bridge listed', "return !!(it.on && it.set && it.set.bridgesOn) && itBridges().edges.length > 0;", "return !!(it.on && it.set && it.set.bridgesOn);", ('read',)),
+    ('a sov read with no bridge listed', "return (!!(it.on && it.set && it.set.bridgesOn) && itBridges().edges.length > 0) || itMapLvWant('sov');", "return !!(it.on && it.set && it.set.bridgesOn) || itMapLvWant('sov');", ('read',)),   # 065: or the map's Sov holder
     ('bridges in the route with the switch off', "const st = !on ? 'off' : !B.edges.length", "const st = false ? 'off' : !B.edges.length", ('zones',)),
     ('zones on the rows with the switch off', "Z = it.set && it.set.bridgesOn ? itJbZones() : null;", "Z = itJbZones();", ('zones',)),
     ('another alliance\'s bridge counted on the map', "for(const [a, b] of B.edges){ if(Z.bad.has(itJbPair(a, b))) continue; B.adj[a].push(b);", "for(const [a, b] of B.edges){ B.adj[a].push(b);", ('map',)),

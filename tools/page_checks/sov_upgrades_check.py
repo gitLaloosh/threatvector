@@ -100,7 +100,7 @@ def cases(b, html, parts=('table', 'store', 'filter', 'paste', 'map', 'lists', '
         pg.evaluate("() => localStorage.removeItem('tvSov')")
     if 'filter' in parts:
         F = pg.evaluate("""() => { const ks = IT_MAP_FILTERS.map(f => f.k), b = document.querySelector('[data-im-f="sov"]'), pb = document.querySelector('[data-it-sovl]');
-          return [ks.indexOf('sov') === ks.indexOf('paths') - 1, !!b, !!pb && pb.parentElement === b.parentElement && b.parentElement.classList.contains('it-map-fw')]; }""")
+          return [ks.indexOf('sov') === ks.indexOf('paths') - 2 && ks.indexOf('regpick') === ks.indexOf('sov') + 1, !!b, !!pb && pb.parentElement === b.parentElement && b.parentElement.classList.contains('it-map-fw')]; }""")
         if F != [True, True, True]: out.append(f'the filter: before Paths to you {F[0]}, its button {F[1]}, its panel button beside it {F[2]}')
         pg.click('[data-im-f="sov"]'); pg.wait_for_timeout(400)
         P = pg.evaluate("() => { const p = document.querySelector('.it-sovp'); return p && [p.hidden, p.getAttribute('role'), !!p.querySelector('button.x-close'), !document.querySelector('#itSovPaste').hidden, document.activeElement && document.activeElement.matches('#itSovPaste textarea'), document.querySelector('[data-it-sovl]').getAttribute('aria-expanded')]; }")

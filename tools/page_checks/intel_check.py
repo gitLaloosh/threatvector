@@ -82,8 +82,18 @@ NAMES_CALLS, STATUS = [], {'v': str(J['build']), 'names_fail': False}
 IDS_ASKED = set()   # v.102: every name sent to /universe/ids/
 # build queue 057: ESI's /sovereignty/systems, refused unless a check sets SOV['answer'] (made-up holders and capitals only); every ask noted
 SOV = {'answer': None, 'asked': [], 'status': 200, 'expires': 300}
+# build queue 065: ESI's /universe/system_jumps/ and /universe/system_kills/ (jumps and kills in the past hour), refused unless a check sets
+# LV[kind] (made-up counts only); every ask noted
+LV = {'jumps': None, 'kills': None, 'asked': [], 'status': 200, 'expires': 3600}
 def esi(route):
     url, body = route.request.url, route.request.post_data or ''
+    m = re.search(r'/universe/system_(jumps|kills)/', url)
+    if m:
+        LV['asked'].append(m.group(1))
+        if LV[m.group(1)] is None: return route.fulfill(status=404, content_type='application/json', body='{"error":"not found"}')
+        if LV['status'] != 200: return route.fulfill(status=LV['status'], content_type='application/json', body='{"error":"down"}')
+        exp = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(time.time() + LV['expires'])); lm = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(time.time() - 600))
+        return route.fulfill(status=200, content_type='application/json', headers={'expires': exp, 'last-modified': lm}, body=json.dumps(LV[m.group(1)]))
     if '/sovereignty/systems' in url:
         SOV['asked'].append(url)
         if SOV['answer'] is None: return route.fulfill(status=404, content_type='application/json', body='{"error":"not found"}')

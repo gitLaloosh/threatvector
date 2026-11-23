@@ -54,7 +54,7 @@ SITES = {
 # function -> its esiFetch calls (v2026.11.04.4; before, each of these had its own fetch() to ESI)
 ESI_SITES = {'resolveNamesToIds', 'getType', 'getGroup', 'resolveIdsToNames', 'fetchKillmail',
     'getOrg', 'saAffiliation', 'paAffEsi', 'itSecFetch', 'itGateDest', 'gdServerVersion', 'esiDownCheck',
-    'itGameLoc', 'ssoOnCheck', 'sideEveFetchList', 'itRpGo', 'itSovRead'}   # build queue 057: itSovRead (EVE's sovereignty, GET IT_SOV_URL: the route isn't under /latest)   # build queue 047: itRpGo (Send destination to EVE: POST /ui/autopilot/waypoint, with the login)   # v2026.11.09.2 (030): your corporation's and alliance's EVE contacts, with the login   # v2026.11.09.1 (029): Show when I'm online in EVE, with the login   # v2026.11.08.4 (028): Use my game location, with the login   # v2026.11.06.6: esiDownCheck (ESI /status/ once a minute only while ESI is down, build queue 015)   # v2026.11.04.3: gdServerVersion (ESI /status/ once per load: item data after a patch); v2026.10.31.5: itGateDest (a stargate's destination); v2026.10.29.5: itCheckBuild (ESI /status/) removed
+    'itGameLoc', 'ssoOnCheck', 'sideEveFetchList', 'itRpGo', 'itSovRead', 'itLvRead'}   # build queue 065: itLvRead (jumps and kills in the past hour, IT_LV_URL: two ${ESI} addresses)   # build queue 057: itSovRead (EVE's sovereignty, GET IT_SOV_URL: the route isn't under /latest)   # build queue 047: itRpGo (Send destination to EVE: POST /ui/autopilot/waypoint, with the login)   # v2026.11.09.2 (030): your corporation's and alliance's EVE contacts, with the login   # v2026.11.09.1 (029): Show when I'm online in EVE, with the login   # v2026.11.08.4 (028): Use my game location, with the login   # v2026.11.06.6: esiDownCheck (ESI /status/ once a minute only while ESI is down, build queue 015)   # v2026.11.04.3: gdServerVersion (ESI /status/ once per load: item data after a patch); v2026.10.31.5: itGateDest (a stargate's destination); v2026.10.29.5: itCheckBuild (ESI /status/) removed
 HOST_RX = {'zkb': r'\$\{ZKB\}|zkillboard\.com/api', 'r2z2': r'\$\{IT_R2Z2\}|r2z2\.zkillboard\.com', 'esi': r'\$\{ESI\}|esi\.evetech\.net'}
 problems = []
 def code_only(s):   # the script with // and /* */ comments blanked (same length, so positions and lines still match)
@@ -106,6 +106,9 @@ for fn in SITES:
 # build queue 057: the one ESI address outside ${ESI} (/latest), written once and only to ESI's host
 if 'IT_SOV_URL' in src and not re.search(r"const IT_SOV_URL = 'https://esi\.evetech\.net/[^'`$]*';", src):
     problems.append('IT_SOV_URL must be written once, as a plain https://esi.evetech.net/ address (build queue 057)')
+# build queue 065: the hour's two lists, each a ${ESI} address, written once
+if 'IT_LV_URL' in src and not re.search(r"const IT_LV_URL = \{jumps: `\$\{ESI\}/universe/system_jumps/\?datasource=tranquility`, kills: `\$\{ESI\}/universe/system_kills/\?datasource=tranquility`\};", src):
+    problems.append('IT_LV_URL must be written once, as two ${ESI}/universe/... addresses (build queue 065)')
 mk = re.search(r'const ESI_KINDS = \{([^}]*)\}', src)
 KINDS = set(re.findall(r'(\w+):', mk.group(1))) if mk else set()
 if not KINDS: problems.append('ESI_KINDS not found (the kinds of ESI lookup the budgets panel counts)')
@@ -119,7 +122,7 @@ for m in re.finditer(r'(?<![\w.$])esiFetch\(', src):
         d += {'(': 1, ')': -1}.get(src[i], 0); i += 1
     args = src[m.end():i - 1]
     if fn not in ESI_SITES: problems.append(f'index.html:{line(src, m.start())}: esiFetch() in {fn}(), which is not in ESI_SITES: list it')
-    if not re.match(r'\s*(`\$\{ESI\}|IT_SOV_URL\b)', args): problems.append(f'index.html:{line(src, m.start())}: esiFetch() for something other than ${{ESI}}: {args[:60]!r}')
+    if not re.match(r'\s*(`\$\{ESI\}|IT_SOV_URL\b|IT_LV_URL\[k\])', args): problems.append(f'index.html:{line(src, m.start())}: esiFetch() for something other than ${{ESI}}: {args[:60]!r}')
     kk = re.search(r",\s*'(\w+)'\s*(?:,\s*\{[^{}]*\})?\s*$", args)   # the kind; 028: then {scope} for a call with the login
     if re.search(r",\s*'\w+'\s*,\s*\{", args):
         auth_callers.add(fn)

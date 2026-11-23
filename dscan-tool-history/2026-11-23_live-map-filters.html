@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-23 — Intel map filters from live data: Sov holder, Jumps and Kills in the past hour, Region pick; the phone column by group</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel map filters from live data: Sov holder, Jumps and Kills in the past hour, Region pick; the phone column by group</h1>
+<p><span class="tag">Page</span><span class="tag">Intel map</span> 2026-11-23 &middot; <code>v2026.11.23.1</code> &middot; branch <code>065-live-map-filters</code> &middot; build queue 065 (plan <code>roadmap/live-map-filters-plan.md</code>, mockup <code>Claude outputs/live_map_filters_mockup.html</code>, its scripts in <code>roadmap/live-map-filters-mockup/</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>Four backlog entries: a sovereignty filter (who holds each system), jumps in the past hour, kills in the past hour, and a region pick; and the 058 bug "the filter column on a phone is a jumble", which four more buttons would make worse.</li>
+<li>The owner's answers (2026-11-20): Sov holder "Switch, default standing"; logos in the circles as in game, none over patches zoomed out ("No (Recommended)"); the hover "Show both"; Kills (past hour) "One filter, NPC as setting"; Region pick "Box per region + search", then a Select all box; the phone column "Fold the fix in"; the logo's ring "ring"; no distance fade for the three live colours ("ok, go with your choice for now."); soft colour "More". At the build review (2026-11-22): the sov field names "Fetch it once (Recommended)", one ESI kind "System activity", the phone column's wrap "Yes, build the wrap now".</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The reader (L1):</b> 057's <code>itSovRead</code> keeps every system's claim (<code>itSov.info</code>, <code>itSovClaim</code>, each field read defensively); <code>itLvRead</code> reads ESI's <code>/universe/system_jumps/</code> and <code>/universe/system_kills/</code> (<code>IT_LV_URL</code>, a new ESI kind <code>activity</code>, "System activity"). Each is read only while the live map shows its colour (or, for sov, 057's bridges need it), at most once per ESI's Expires, after a failure in 60 s, 120 s, then 5 minutes, in memory only, never on a timer of its own.</li>
+<li><b>Three Colour filters:</b> Sov holder (by your standings: yours, friendly, neutral, hostile, NPC faction space, unclaimed; or one colour per alliance in its settings, your own alliance green and no other alliance green while it holds a system (the owner at the hand test); zoomed in, the holder's logo in each circle, ringed in its colour, a ★ on a capital, the ticker when the logo can't load; gates between two systems of one holder in its colour; the hover with the holding corporation, since when, the levels, ADM and the vulnerability window; an "In view" line under the legend). Jumps (past hour) 0 / 1–9 / 10–49 / 50–149 / 150–499 / 500+: grey for none, then a dim yellow rising to a vivid red (the owner at the hand test: "going from yellow to red. gray is none."). Kills (past hour) ships and pods 0 / 1 / 2–4 / 5–19 / 20+, or NPC kills 0 / 1–49 / 50–199 / 200–499 / 500+ in its settings. Before a read every system is grey and the legend says "no data yet", never 0; a system missing from an hour's list had none.</li>
+<li><b>No distance fade</b> for those three (Q10): only Only filters dim; the legend leaves out "faded" and "faint"; "Map: within"'s hover says so.</li>
+<li><b>Soft colour</b> 80% zoomed out and 62% in a zoomed-in disc (was 55% / 38%), for every colour.</li>
+<li><b>Region pick</b>, an Only filter: its list (a search ignoring dashes and spaces, Clear, Select all with a dash when some are picked, a box per region with its count, yours first); any pick counts; switched on with none picked, its list opens. The page's one checkbox rule gains the dash (<code>:indeterminate</code>).</li>
+<li><b>The column by group:</b> wrappers that are <code>display:contents</code> on a wide map (the column as before, with a 44 px gap when a short map wraps it, so a settings button doesn't cover the next column); on a phone Colour over View in one column and Only in the next, each wrapping on its own, 44 px rows, nothing moving when a settings button shows.</li>
+<li><b>Stored:</b> <code>tvMapStack</code> gains <code>sovBy</code>, <code>killNpc</code> and <code>regions</code> (names; one the table doesn't have is dropped). The older page reads the key as before (it ignores the new fields; a new colour or Region pick it doesn't know reads as Security and off); a save from the older page drops the new fields, so going back loses only those settings. Nothing from ESI is stored.</li>
+<li><b>Info text:</b> <code>intel</code> [Map] names the three ESI colours and Region pick (+41 words, cap 716).</li>
+<li><b>Checks:</b> new <code>tools/page_checks/live_map_filters_check.py</code> (1440 and 390 px; stand-ins for the three ESI lists with made-up holders and counts; 20 mutants). <code>intel_check.py</code>'s ESI stand-in answers the hourly lists. <code>check_request_gates.py</code> lists <code>itLvRead</code>. <code>intel_map_stack_check</code>, <code>intel_map_look_check</code> and <code>intel_map_layout_check</code> follow the new column and soft colour.</li>
+</ul>
+
+<h2>To check by hand</h2>
+<ul>
+<li>Hover a held system with Sov holder on and compare its levels, ADM and vulnerability window with the game's sovereignty view (the field names came from a client generated from ESI's spec).</li>
+<li>Jumps (past hour): a quiet system's count against the in-game map's "jumps in the last hour"; a system missing from ESI's list should be 0 there.</li>
+</ul>
+</body>
+</html>
