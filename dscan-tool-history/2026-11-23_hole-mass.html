@@ -23,9 +23,10 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <li><b>A ship's masses come from the fit's own calculation:</b> the fit result gains <code>mass</code> beside <code>alignTime</code> (no prop running, the prop module running), from the same numbers; the ZPME mode is the fit worked out again with it running. A typed hull is its mass plus a MWD of its size, marked "hull only".</li>
 <li><b>The holes still possible are boxes</b> (<code>hmPoss</code>, <code>hmBoxSays</code>): a step is shown as safe only when no hole the answers allow could be closed by it, and the odds are the share of boxes that could.</li>
 <li><b>+ Add's Linked to</b> (<code>whAddLinkList</code>) is built on opening and after every Add: the form stays open after an Add, so from an empty map the second system was going in loose too. Same rule both times: where you are, else the system in focus (the one just added).</li>
+<li><b>A safe plan that is slow offers the faster jump</b> (the owner at the review: "80 steps basically converts to 40 trips while waiting 5 minutes each round trip.", then "i agree" to offering both choices with the time): the estimate beside Steps now says how long too ("about 8–12 steps, 20–30 min with polarization": a minute a step plus the polarization waits, from each jump). When the safe plan is over 30 minutes, the step offers the least risky group at least twice as heavy ("Send Megathron out cold instead: about 1 in 131 that it closes behind Megathron; about 4–6 steps, 8–15 min taking the faster jumps"); pressed, that one step is the faster one, with "Back to the safe way"; never chosen for you. "Send … instead" for the finisher gives its time too.</li>
 <li><b>The phone toolbar</b> wraps into two rows of 44 x 44 controls (+ Add, Share and the gear were 39 px before).</li>
-<li><b>Info text:</b> new <code>whmap#mass</code> panel (202 words); <code>whmap</code> [Focus and adding] gains "Mass works out how to crit or roll a hole", 410 words, its cap set to that (the owner: "Raise to ~410").</li>
-<li><b>Checks:</b> new <code>tools/page_checks/wormhole_mass_check.py</code> (the steps replayed against real holes and against the exact range the answers allow; saved fits' and hulls' masses; the panel; + Add's Linked to; a phone; 17 mutants). The regression suite pins <code>massBaseT</code> / <code>massBoostedT</code> on two goldens, from pyfa's own handlers.</li>
+<li><b>Info text:</b> new <code>whmap#mass</code> panel (207 words); <code>whmap</code> [Focus and adding] gains "Mass works out how to crit or roll a hole", 410 words, its cap set to that (the owner: "Raise to ~410").</li>
+<li><b>Checks:</b> new <code>tools/page_checks/wormhole_mass_check.py</code> (the steps replayed against real holes and against the exact range the answers allow; saved fits' and hulls' masses; the panel; + Add's Linked to; a phone; a slow plan's faster jump and the time; 23 mutants). The regression suite pins <code>massBaseT</code> / <code>massBoostedT</code> on two goldens, from pyfa's own handlers.</li>
 </ul>
 
 <h2>Stored data</h2>
@@ -36,6 +37,7 @@ code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
 <h2>Lesson for future models</h2>
 <ul>
 <li>LESSON #177: the mockup tracked the holes still possible as points, and a step was "safe" when no point could be closed by it. A real hole's total falls between the points: one had 988 t left where the points said at least 1,200 t, and a Heron trip marked safe closed it. Boxes that cover the whole range, kept while any part fits, back the claim; the check tests it against the exact range, not only against holes the grid happens to hold. Also: a made-up fit with a module the game doesn't have is built without it, silently, so read back what the page built.</li>
+<li>LESSON #178: steps ranked only by risk gave a Megathron and a Heron 80+ safe Heron trips, over three hours with polarization. Count what each choice costs in the user's units (time), and when the safe one is costly offer the cheaper one beside it with its odds, never picked for the user.</li>
 </ul>
 </body>
 </html>

@@ -667,7 +667,7 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   that will allow you to quickly identify how best to reach the hole state that is desired"): Mass on the toolbar (`data-wh-pop="mass"`, its
   `.wh-pop` drawn by `hmPaint` from `hmState()` = `whS.hm`; ⓘ `whmap#mass`). Ships are saved fits (their masses from the fit's `estimate.mass`,
   the ZPME mode by `estimateHpAndDps` with it set active) or typed hulls (`getType`; Intel's `itShips` names), up to `WH_MASS_MAX`, kept in
-  `tvWhMass` (new key). The holes still possible are boxes `[total, left, half-widths]` (`hmPoss`, kept by `hmBoxSays`, LESSON #177); `hmNext`
+  `tvWhMass` (new key). The holes still possible are boxes `[total, left, half-widths]` (`hmPoss`, kept by `hmBoxSays`, LESSON #177); a safe plan over 30 min offers the faster jump with its odds, never picked for you (`st.fast`, `hmSlowHtml`, LESSON #178); `hmNext`
   picks a group (the way back counted, the finisher held, polarization), `hmApply` takes an answer; answers set the connection's Mass, Undo puts
   it back; It's gone asks before `whLinksDel` (the System panel's delete too). The phone toolbar wraps (44 x 44). + Add's Linked to is built by
   `whAddLinkList`, on opening and after every Add (070's bug). `wormhole_mass_check.py` (the steps replayed against holes, the exact range).

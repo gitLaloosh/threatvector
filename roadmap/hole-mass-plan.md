@@ -201,9 +201,14 @@ As planned, with these differences found or chosen at the build:
   hole closes behind the one that empties it; over 60 holes and both finish sides, plus holes at a box's edge; for a fresh hole the answers pin the
   total to an exact range, and every step marked safe must need less than any of those holes has left; ships that went out on a safe step must
   have a safe way back; the risk counted box by box; the finisher, polarization, an impossible answer, the words; saved fits' and hulls' masses
-  with esi_from_sde; the panel; + Add's Linked to; a phone) and 17 mutants, among them the plan's two and "points instead of boxes".
-- **Seen at the build, left for the owner:** with a light ship that isn't the finisher, a reduced hole can turn into many safe Heron trips (the
-  preview says "about 49–80+ steps"): safe steps come before risky ones whatever they carry, as section 4 says.
+  with esi_from_sde; the panel; + Add's Linked to; a phone) and (then) 17 mutants, among them the plan's two and "points instead of boxes".
+- **A safe plan that is slow** (found at the build: with a light ship that isn't the finisher, a reduced hole turned into many safe Heron trips,
+  "about 49–80+ steps"; the owner at the review: [stated] "80 steps basically converts to 40 trips while waiting 5 minutes each round trip.", then
+  [stated] "i agree" to offering both choices with the time; LESSON #178): the estimate gives the time too, a minute a step plus the polarization
+  waits counted from each jump (`WH_MASS_STEP_MS`; a Heron alone: 80 steps, about 3 h 20 min). Over `WH_MASS_SLOW_MS` (30 minutes) the safe step
+  offers `st.fast`, the least risky group at least twice as heavy, with its odds and the estimate taking the faster jumps (`hmPreview(pl, true)`);
+  pressed (`H.fast`), that one step is the faster one with "Back to the safe way"; the next step is chosen as before. A preview run that strands
+  someone isn't counted as steps. `whmap#mass` 207 words (the hull note moved to the row only, where it already was). 23 mutants.
 
 ## Sources
 

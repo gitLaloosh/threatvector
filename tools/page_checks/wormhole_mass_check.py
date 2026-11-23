@@ -21,6 +21,9 @@ CCP's wormhole systems from the page's own tables; ESI answered from pyfa's SDE 
     without K162); answers set the connection's Mass and Undo puts it back (off before the first answer); Start over asks while jumps were made
     (Keep going keeps them) and returns with It says now = the last answer; It's gone asks before removing the connection; the ship rows and
     the Finisher tick are kept after a reload (tvWhMass);
+  * a safe plan that is slow (Megathron and Heron on a D382 at less than 50%: the Heron's small trips) offers the faster jump beside it with its
+    odds and its own estimate, never chosen by itself; pressed, that step is the faster one with "Back to the safe way", and the step after an
+    answer is chosen as before; the estimate counts a minute a step plus the 5-minute polarization waits (a Heron alone: 2 steps per 5 minutes);
   * + Add's Linked to: with you on the map, a system selected, both, neither; after an Add the list is built again (from an empty map the
     second system is linked to the first);
   * a phone (390 px): the toolbar's controls 44 x 44 without overlapping each other or the rail, the panel without sideways scroll, the
@@ -172,6 +175,20 @@ def calc_cases(pg, out, parts):
         if not re.search(r'Megathron ×2', wd['g']): out.append(f'a group isn\'t counted: {wd["g"]!r}')
         if wd['d2'] != 'in': out.append(f'finishing on the other side, the first jump isn\'t "in" ({wd["d2"]})')
         if 'last.' not in wd['last'] or 'lightest first' not in wd['last']: out.append(f'a group that can close the hole doesn\'t say who goes last: {wd["last"][:160]!r}')
+        # a slow safe plan: the faster jump is offered, never chosen; the time counts polarization (a Heron alone, 2 steps per 5 minutes)
+        sl = pg.evaluate("""([mega, heron]) => { const h = hmHole('D382'), mk = (ships, st, goal) => ({H: h, M0: h.M0, goal, fin: 'this', here: 'A', there: 'B',
+            ships: ships.map(s => ({...s, modes: s.modes.filter(m => m.m <= h.J), at: 'this', last: {out: 0, back: 0}})), P: hmPoss(h.M0, st), obs: st, hist: [], done: '', reset: false, finOk: false});
+          const p1 = mk([mega, heron], 'reduced', 'roll'), s1 = hmNext(p1, Date.now()), pv = hmPreview(p1), pf = hmPreview(p1, true);
+          const p2 = mk([heron], 'stable', 'crit'), v2 = hmPreview(p2);
+          return {risk: s1.risk, who: hmShortTxt(p1, s1), fast: s1.fast ? [s1.fast.risk, hmShortTxt(p1, s1.fast), !!s1.fast.isFast] : null, pv: [pv.cap, pv.thi], pf: [pf.cap, pf.hi, pf.thi, pf.lo],
+            heron: [v2.cap, v2.thi, v2.waited], dur: [hmDurTxt(3 * 60e3), hmDurTxt(23 * 60e3), hmDurTxt(200 * 60e3), hmDurTxt(60 * 60e3)]}; }""", [SHIPS['mega'], SHIPS['heron']])
+        if sl['risk'] != 0 or 'Heron' not in sl['who']: out.append(f'the slow case\'s step isn\'t the safe Heron trip (risk {sl["risk"]}, {sl["who"]!r}): the faster jump was chosen for you')
+        if not sl['fast'] or not (0 < sl['fast'][0] < 0.99) or 'Megathron' not in sl['fast'][1] or not sl['fast'][2]: out.append(f'a slow safe plan offers no faster jump: {sl["fast"]}')
+        if not (sl['pv'][0] or sl['pv'][1] >= 30 * 60e3): out.append(f'the Heron\'s safe plan isn\'t slow ({sl["pv"]})')
+        if sl['pf'][0] or sl['pf'][1] > 20 or sl['pf'][2] >= 30 * 60e3: out.append(f'taking the faster jumps isn\'t faster ({sl["pf"]})')
+        if sl['pf'][3] < 2: out.append(f'a run that strands someone is counted as steps (from {sl["pf"][3]} step)')
+        if not (sl['heron'][0] and sl['heron'][2] and 195 * 60e3 <= sl['heron'][1] <= 205 * 60e3): out.append(f'a Heron alone: 80 steps aren\'t about 3 h 20 min with polarization ({sl["heron"]})')
+        if sl['dur'] != ['3 min', '25 min', '3 h 20 min', '1 h']: out.append(f'durations: {sl["dur"]}')
 
 def ui_cases(b, html, out, errs, parts):
     if parts is not None and not ({'fit', 'ui'} & set(parts)): return
@@ -287,9 +304,43 @@ def phone_cases(b, html, out, errs, parts):
     if not s['ans'] or min(s['ans']) < 43.5: out.append(f'a phone: answer buttons under 44 px ({s["ans"]})')
     ctx.close()
 
+def fast_cases(b, html, out, errs, parts):
+    if parts is not None and 'fast' not in parts: return
+    ctx, pg = start(b, html, 1440, errs)
+    ids = pg.evaluate(SEED); pg.evaluate("whPaint(true)"); pg.click('[data-wh-pop="mass"]'); pg.wait_for_timeout(200)
+    k = pg.evaluate("([a, d]) => whLinkKey(a, d)", [ids['a'], ids['d']]); pg.select_option('.hm-pop [data-hm="link"]', k); pg.wait_for_timeout(100)
+    for i, fid in enumerate(('mf1', 'mf3')):
+        pg.click('.hm-pop [data-hm="add"]'); pg.select_option(f'.hm-pop [data-hm-ship="{i}"]', f'fit:{fid}'); pg.wait_for_timeout(100)
+    wait_masses(pg, 2); pg.click('.hm-pop [data-hm="go"]'); pg.wait_for_timeout(400)
+    t = pop_text(pg) or ''; now = pg.locator('.hm-pop .hm-now').text_content() or ''
+    if not re.search(r'Steps · about 80\+ steps, over \d+ h( \d+ min)? with polarization', t): out.append(f'the slow plan\'s heading: {t[:160]!r}')
+    if 'Heron' not in now or 'Megathron' in now: out.append(f'the first step isn\'t the safe Heron trip: {now[:120]!r}')
+    fb = pg.locator('.hm-pop [data-hm="fast"]')
+    if 'Safe but slow:' not in t or not fb.count(): out.append(f'a slow safe plan doesn\'t offer the faster jump: {t[:300]!r}'); ctx.close(); return
+    ft = fb.text_content() or ''
+    if not re.search(r'Send Megathron out (cold|hot) instead: about 1 in \d+ that it closes behind Megathron; about [\d–]+ steps, [\d–]+ min( with polarization)? taking the faster jumps', ft): out.append(f'the faster jump\'s button: {ft!r}')
+    fb.click(); pg.wait_for_timeout(300)
+    t = pop_text(pg) or ''; now = pg.locator('.hm-pop .hm-now').text_content() or ''
+    if 'Megathron' not in now or 'Faster, not safe:' not in t or not pg.locator('.hm-pop [data-hm="safe"]').count(): out.append(f'the faster jump picked doesn\'t show it with its odds: {now[:100]!r}')
+    if 'over' in (pg.locator('.hm-pop .wh-sub').first.text_content() or ''): out.append('the heading keeps the safe plan\'s time after the faster jump was picked')
+    bt = pg.locator('.hm-pop [data-hm="safe"]').text_content() or ''
+    if not re.search(r'Back to the safe way: Heron out (hot|cold), about 80\+ steps, over', bt): out.append(f'Back to the safe way: {bt!r}')
+    pg.click('.hm-pop [data-hm="safe"]'); pg.wait_for_timeout(300)
+    now = pg.locator('.hm-pop .hm-now').text_content() or ''
+    if 'Heron' not in now or 'Megathron' in now: out.append(f'Back to the safe way doesn\'t bring the Heron trip back: {now[:100]!r}')
+    pg.click('.hm-pop [data-hm="fast"]'); pg.wait_for_timeout(300)
+    pg.click('.hm-pop [data-hm-say="reduced"]'); pg.wait_for_timeout(300)
+    h = pg.evaluate("() => { const H = hmState(); return [H.pl.hist.length, H.pl.hist[0] && H.pl.hist[0].short, H.step && H.step.isFast || false]; }")
+    if h[0] != 1 or 'Megathron' not in (h[1] or '') or h[2]: out.append(f'after answering the faster jump: {h}')
+    pg.click('.hm-pop [data-hm="undo"]'); pg.wait_for_timeout(300)
+    now = pg.locator('.hm-pop .hm-now').text_content() or ''
+    if 'Heron' not in now or pg.evaluate("() => hmState().fast"): out.append(f'Undo doesn\'t go back to the safe step: {now[:100]!r}')
+    ctx.close()
+
 def cases(b, html, parts=None):
     out, errs = [], []
     ui_cases(b, html, out, errs, parts)
+    fast_cases(b, html, out, errs, parts)
     if parts is not None and 'calc' in parts and not ({'fit', 'ui'} & set(parts)):
         ctx, pg = start(b, html, 1440, errs, fits=False); calc_cases(pg, out, parts); ctx.close()
     link_cases(b, html, out, errs, parts)
@@ -313,6 +364,12 @@ MUTANTS = [
     ('a K162\'s far side with K162 in its list', "(noK162 ? '' : o('K162',", "(false ? '' : o('K162',", ('ui',)),
     ('Start over without its question', "else if(d.hm === 'reset'){ if(H.pl && H.pl.hist.length && !H.pl.done) H.rs = true; else hmReset(); }", "else if(d.hm === 'reset') hmReset();", ('ui',)),
     ('the rows not kept', "function hmSave(){ try{ localStorage.setItem(WH_MASS_KEY,", "function hmSave(){ try{ if(0) localStorage.setItem(WH_MASS_KEY,", ('ui',)),
+    ('the faster jump chosen for you', "if(f){ st.fast = out(f, away); st.fast.isFast = true; st.fast.slow = {...st}; }", "if(f) return out(f, away);", ('calc',)),
+    ('the time without polarization', "const at = Math.max(now, st.wait);", "const at = now;", ('calc',)),
+    ('no faster offer when the safe way is slow', "if(!st.fast || !pv || !(pv.cap || pv.thi >= WH_MASS_SLOW_MS)) return '';", "if(true) return '';", ('fast',)),
+    ('the faster estimate takes it once only', "if(fast && st.fast) st = st.fast;", "if(fast && !k && st.fast) st = st.fast;", ('calc',)),
+    ('a stranded run counted as steps', "const ok = runs.filter(r => !r.lost),", "const ok = runs,", ('calc',)),
+    ('Back to the safe way doing nothing', "else if(d.hm === 'safe'){ if(H.pl && H.fast){ H.fast = false;", "else if(d.hm === 'safe'){ if(false){ H.fast = false;", ('fast',)),
     ('+ Add\'s Linked to not built after an Add', "  whSelect(id); whAddLinkList(f);   // 070", "  whSelect(id);   // 070", ('link',)),
     ('the phone toolbar not wrapping', ".wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px; flex-wrap:wrap; pointer-events:none;} .wh-ctl > *{flex:none; pointer-events:auto;}", ".wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px;}", ('phone',)),
 ]
@@ -322,7 +379,7 @@ if __name__ == '__main__':
         b = p.chromium.launch()
         out, errs = cases(b, HTML)
         for o in out: check(False, o)
-        check(not out, 'the steps (crit, roll, both sides, the risk, the finisher, polarization, words), fits\' and hulls\' masses, the panel, + Add\'s Linked to, a phone')
+        check(not out, 'the steps (crit, roll, both sides, the risk, the finisher, polarization, words, a slow plan\'s faster jump, the time), fits\' and hulls\' masses, the panel, + Add\'s Linked to, a phone')
         check(not errs, f'no page errors {errs[:3]}')
         for name, old, new, parts in MUTANTS:
             if PAGE.count(old) != 1: check(False, f'mutant "{name}": its line isn\'t in the page once'); continue

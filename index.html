@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xg0orSkkzYGtV11pUkc80wrQPSKzjDBEdMdbJqXV74M='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-dpjy6I/z6Z/XMGm5wZDvaI/sJ1apOZPgOOrfFJ216ck='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3900,10 +3900,10 @@ const CARD_INFO = {
  ],
  "whmap#mass": [
   "Works out, step by step, how to bring a hole under 10% (crit) or close it (roll) with the ships you pick, leaving everyone on the side you choose.",
-  "[The numbers] Each type’s total mass and mass per jump are CCP’s. A new hole’s total is within ±10% of it, so the steps keep every total that fits what Show Info has said.",
-  "[In, out, hot, cold] Out is a jump to the side you don’t want to finish on; in, to the side you do. The hole takes your ship’s mass as you press jump: hot is the MWD (or AB) running, cold is off. Ships that can jump together are one step, then one look at Show Info; a finisher waits until the hole says less than 10%. A typed hull counts no plates, Higgs Anchor or ZPME.",
-  "[Safety] A jump that could close the hole is shown only when everyone then ends on your side; if no safe one is left, you see the odds and how light a ship must be. Polarization: no ship jumps the same way twice within 5 minutes.",
-  "[For reference] Nothing is sent to EVE. Picking a connection keeps its Mass up to date."
+  "[The numbers] Each type’s total mass and mass per jump are CCP’s. A new hole’s total is within ±10% of it; the steps keep every total that fits what Show Info said.",
+  "[In, out, hot, cold] Out is a jump to the side you don’t want to finish on; in, to the side you do. The hole takes your ship’s mass as you press jump: hot is the MWD (or AB) running, cold is off. Ships that can jump together are one step, then one look at Show Info; a finisher waits until the hole says less than 10%.",
+  "[Safety] A jump that could close the hole is shown only when everyone then ends on your side; if none is left, you see the odds and how light a ship must be. A safe plan over 30 minutes also offers the faster risky jump, with its odds, for you to pick. Polarization: no ship jumps the same way twice within 5 minutes; the time counts it.",
+  "[For reference] Nothing is sent to EVE. Answers set the connection’s Mass."
  ]
 };
 const CTX_MAX = 40;
@@ -36017,6 +36017,10 @@ function whRtPinForm(f){
 const WH_MASS_KEY = 'tvWhMass';   // {v: 1, ships: [{fit: <saved fit id>, fin?} | {hull: <name>, fin?}]} (Q8; new key, safe both ways)
 const WH_MASS_MAX = 4;   // Q2: "Up to 4 (Recommended)"
 const WH_MASS_POL_MS = 5 * 60e3;   // polarization: no second jump the same way through the same hole within 5 minutes (UNVERIFIED, hand test)
+const WH_MASS_STEP_MS = 60e3;   // the estimate counts a minute a step (a jump and Show Info), plus the polarization waits
+// a safe plan this long also offers the fastest risky jump beside it (the owner, at the review: "80 steps basically converts to 40 trips while
+// waiting 5 minutes each round trip.", then "i agree" to offering both choices with the time): never chosen for you
+const WH_MASS_SLOW_MS = 30 * 60e3;
 const WH_MASS_PROP = {1: 500, 2: 5000, 3: 50000, 4: 500000};   // a MWD of the hull's rig size adds this (t; massAddition, CCP's SDE)
 const WH_MASS_ZPME_EFFECT = 7142;   // the Zero-Point Mass Entangler's effect (pyfa Effect7142: mass x0.2 while it runs; MWD blocked)
 const WH_MASS_SAYS = {stable: 'More than 50%', reduced: 'Less than 50%', critical: 'Less than 10%', gone: 'It’s gone'};
@@ -36024,7 +36028,7 @@ const WH_MASS_CM = {stable: 'cm0', reduced: 'cm1', critical: 'cm2', gone: 'cmx'}
 const WH_MASS_SVG = '<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="8" cy="10.5" rx="6" ry="3.5"/><path d="M8 1.5v6M5.5 5L8 7.5 10.5 5"/></svg>';
 function hmState(){
   const S = whS;
-  if(!S.hm){ S.hm = {ships: hmRead(), link: null, ty: '', st: 'stable', goal: 'roll', fin: 'this', pl: null, back: [], prev: null, open: true, rs: false, ask: null, pv: null, step: null, sm: new Map(), timer: 0}; }
+  if(!S.hm){ S.hm = {ships: hmRead(), link: null, ty: '', st: 'stable', goal: 'roll', fin: 'this', pl: null, back: [], prev: null, open: true, rs: false, ask: null, pv: null, pvSafe: null, fast: false, step: null, sm: new Map(), timer: 0}; }
   return S.hm;
 }
 function hmRead(){ try{ const o = JSON.parse(localStorage.getItem(WH_MASS_KEY) || 'null'); if(o && o.v === 1 && Array.isArray(o.ships)) return o.ships.filter(r => r && typeof r === 'object' && (typeof r.fit === 'string' || typeof r.hull === 'string')).slice(0, WH_MASS_MAX).map(r => r.fit ? {fit: r.fit, ...(r.fin ? {fin: true} : {})} : {hull: r.hull.slice(0, 40), ...(r.fin ? {fin: true} : {})}); }catch(e){ } return []; }
@@ -36140,6 +36144,10 @@ function hmNext(pl, now){
   const best = pool[0], free = best.wait ? pool.find(c => c.risk === best.risk && c.fin <= best.fin && !c.wait && c.m >= best.m * 0.75) : null;   // a free group nearly as heavy beats a wait
   const st = out(free || best, away);
   if(pool !== C && st.risk > 0 && C.some(c => c.fin && c.risk === 0)) st.finAlt = true;   // the finisher could go safely instead: offered, not chosen
+  if(st.risk === 0){   // safe: the least risky group at least twice as heavy, offered when the safe way is slow (hmSlowHtml), never chosen here
+    const f = pool.filter(c => c.risk > 0 && c.risk < 0.99 && c.m >= 2 * st.m).sort((a, b) => a.risk - b.risk || (a.wait > 0) - (b.wait > 0) || b.m - a.m)[0];
+    if(f){ st.fast = out(f, away); st.fast.isFast = true; st.fast.slow = {...st}; }
+  }
   return st;
 }
 function hmApply(pl, st, obs, now){
@@ -36154,15 +36162,17 @@ function hmClone(pl){ return {...pl, ships: pl.ships.map(s => ({...s, last: {...
 function hmPossibleSays(pl, st){ return ['stable', 'reduced', 'critical', 'gone'].filter(k => pl.P.some(c => hmBoxSays(c, st.m, k))); }
 // a quick run against three holes the answers still allow (the least, middle and most left), answering truthfully: how many steps, and
 // whether a risky trip may come
-function hmPreview(pl){
-  const P = pl.P, picks = [P[0], P[P.length >> 1], P[P.length - 1]], runs = [];
+// whether a risky trip may come, and how long it takes (a minute a step plus the polarization waits; fast: every step that offers a faster
+// jump takes it, as if you pressed it each time)
+function hmPreview(pl, fast){
+  const P = pl.P, picks = [P[0], P[P.length >> 1], P[P.length - 1]], runs = [], t0 = Date.now();
   for(const t of picks){
-    const q = hmClone(pl); let R = t[1], k = 0, risky = false, now = Date.now();
-    for(; k < 80; k++){ const st = hmNext(q, now); if(!st || st.none) break; if(st.risk > 0) risky = true; R -= st.m; now = Math.max(now, st.wait) + 60e3; hmApply(q, st, hmSt(t[0], R), now); if(q.done) break; }
-    runs.push({k: k + 1, risky});
+    const q = hmClone(pl); let R = t[1], k = 0, risky = false, waited = false, now = t0;
+    for(; k < 80; k++){ let st = hmNext(q, now); if(!st || st.none) break; if(fast && st.fast) st = st.fast; if(st.risk > 0) risky = true; if(st.wait > now) waited = true; R -= st.m; const at = Math.max(now, st.wait); now = at + WH_MASS_STEP_MS; hmApply(q, st, hmSt(t[0], R), at); if(q.done) break; }   // polarization counts from the jump
+    runs.push({k: k + 1, risky, waited, ms: now - t0, lost: q.done === 'stranded' || (q.done === 'closed' && pl.goal === 'crit')});
   }
-  const ks = runs.map(r => r.k);
-  return {lo: Math.min(...ks), hi: Math.max(...ks), risky: runs.some(r => r.risky)};
+  const ok = runs.filter(r => !r.lost), R = ok.length ? ok : runs, ks = R.map(r => r.k), ms = R.map(r => r.ms);   // a run that strands someone isn't a count of steps: the odds say that
+  return {lo: Math.min(...ks), hi: Math.max(...ks), risky: runs.some(r => r.risky), tlo: Math.min(...ms), thi: Math.max(...ms), cap: R.some(r => r.k > 80), waited: R.some(r => r.waited)};
 }
 // ---- words (the owner: "can we modify verbiage to say \"in hot\", \"in cold\", \"out hot\", \"out cold\" etc?", then "\"out\" would be the
 // side you dont want to end up on."): out = a jump to the side you don't finish on, in = to the side you do; hot = the prop module running
@@ -36197,6 +36207,15 @@ function hmDoneTxt(pl){
 }
 function hmSaidHtml(k, colon){ return `<span class="${escapeHtml('hm-c ' + WH_MASS_CM[k])}">${escapeHtml(WH_MASS_SAYS[k] + (colon ? ':' : ''))}</span>`; }
 function hmPvTxt(pv){ const t = (k) => k > 80 ? '80+' : String(k); return pv.lo === pv.hi ? t(pv.lo) : `${t(pv.lo)}–${t(pv.hi)}`; }   // a run still going after 80 steps is "80+", not a count
+// a duration: whole minutes under 10, then to 5 minutes, then hours and minutes
+function hmDurTxt(ms){ const m = Math.max(1, Math.round(ms / 60e3)); if(m < 10) return `${m} min`; const r = Math.round(m / 5) * 5; return r < 60 ? `${r} min` : `${Math.floor(r / 60)} h${r % 60 ? ` ${r % 60} min` : ''}`; }
+// the estimate's time ("10–25 min with polarization"; a run cut off at 80 steps is "over …", since it would take longer still)
+function hmPvTimeTxt(pv){
+  const a = hmDurTxt(pv.tlo), b = hmDurTxt(pv.thi), over = pv.cap ? 'over ' : '', mins = (t) => /^\d+ min$/.test(t);
+  const t = a === b ? over + b : pv.cap ? `${a} to over ${b}` : mins(a) && mins(b) ? `${a.split(' ')[0]}–${b}` : `${a}–${b}`;
+  return t + (pv.waited ? ' with polarization' : '');
+}
+function hmPvAllTxt(pv){ return `about ${hmPvTxt(pv)} step${pv.hi === 1 ? '' : 's'}, ${hmPvTimeTxt(pv)}`; }
 // ---- the panel
 function hmLinksHtml(n){
   const H = hmState(), cur = H.link ? whLinkKey(H.link.a, H.link.b) : '';
@@ -36258,7 +36277,7 @@ function hmPanelHtml(){
     + `<div class="wh-sub">Ships</div>${hmShipsHtml(h)}<datalist id="whMassHullDl">${hmHullDlHtml()}</datalist>` + hmActsHtml(h);
 }
 function hmShipsHtml(h){ return hmState().ships.map((r, i) => hmShipRowHtml(r, i, h)).join(''); }
-function hmStepsHeadHtml(pl, pv, stuck){ return `<div class="wh-sub">${escapeHtml(`Steps${stuck ? ' · no safe step left' : pv ? ` · about ${hmPvTxt(pv)}${pl.hist.length ? ' more' : ''} step${pv.hi === 1 ? '' : 's'}${pv.risky ? ' · may need a risky trip' : ''}` : ''}`)}</div>`; }
+function hmStepsHeadHtml(pl, pv, stuck){ return `<div class="wh-sub">${escapeHtml(`Steps${stuck ? ' · no safe step left' : pv ? ` · about ${hmPvTxt(pv)}${pl.hist.length ? ' more' : ''} step${pv.hi === 1 ? '' : 's'}, ${hmPvTimeTxt(pv)}${pv.risky ? ' · may need a risky trip' : ''}` : ''}`)}</div>`; }
 function hmDoneItemsHtml(pl){
   const old = Math.max(0, pl.hist.length - 3);   // the last three steps; the earlier ones fold into a line
   return (old ? `<li class="hm-old">${escapeHtml(`${old} earlier step${old === 1 ? '' : 's'}`)}</li>` : '') + pl.hist.slice(old).map((x, k) => `<li value="${Number(old + k + 1)}"><span>${escapeHtml(x.short)}</span> ${hmSaidHtml(x.obs)}</li>`).join('');
@@ -36266,13 +36285,26 @@ function hmDoneItemsHtml(pl){
 function hmDoneListHtml(pl){ return pl.hist.length ? `<ol class="hm-done">${hmDoneItemsHtml(pl)}</ol>` : ''; }
 function hmWaitHtml(pl, st){ return st.wait ? `<div class="wh-note it-warn">${escapeHtml(`Wait until ${new Date(st.wait).toTimeString().slice(0, 5)} first: ${hmWho(pl, st)} jumped ${hmDirWord(pl, st)} less than 5 minutes ago (polarized).`)}</div>` : ''; }
 function hmRiskHtml(pl, st){
-  if(!(st.risk > 0)) return '';
+  if(st.isFast) return hmFastHtml(pl, st);
+  if(!(st.risk > 0)) return hmSlowHtml(pl, st);
   return `<div class="wh-note it-warn"><b>No fully safe jump:</b> ${escapeHtml(`${hmRiskTxt(st.risk)} that it closes behind ${hmWho(pl, st)}. ${st.safe > 0 ? `A ship under ${hmT(st.safe)} would be safe.` : 'No ship is light enough to be sure.'}`)}${hmFinAltHtml(pl, st)}</div>`;
 }
 function hmFinAltHtml(pl, st){   // the finisher could go safely instead: offered, not chosen (the owner: "shouldn't the heron be saved until the end in this case?")
   if(!st.finAlt) return '';
   const q = hmClone(pl); q.finOk = true; const fn = pl.ships.filter(s => s.fin).map(s => s.name).join(', ');
-  return ` ${escapeHtml(`${fn} (finisher) is kept for the end.`)} <button type="button" data-hm="finnow">${escapeHtml(`Send ${fn} instead: safe, about ${hmPvTxt(hmPreview(q))} steps`)}</button>`;
+  return ` ${escapeHtml(`${fn} (finisher) is kept for the end.`)} <button type="button" data-hm="finnow">${escapeHtml(`Send ${fn} instead: safe, ${hmPvAllTxt(hmPreview(q))}`)}</button>`;
+}
+// a safe step whose plan is slow: the faster risky jump beside it, with its odds (the owner: "i agree"; offered, never chosen for you)
+function hmSlowHtml(pl, st){   // LESSON #178
+  const H = hmState(), pv = H.pv;
+  if(!st.fast || !pv || !(pv.cap || pv.thi >= WH_MASS_SLOW_MS)) return '';
+  const f = st.fast, pf = hmPreview(pl, true);
+  return `<div class="wh-note it-warn"><b>Safe but slow:</b> ${escapeHtml(`${hmPvAllTxt(pv)}.`)} <button type="button" data-hm="fast">${escapeHtml(`Send ${hmShortTxt(pl, f)} instead: ${hmRiskTxt(f.risk)} that it closes behind ${hmWho(pl, f)}; ${hmPvAllTxt(pf)} taking the faster jumps`)}</button></div>`;
+}
+// the faster step, chosen: its odds, and the way back to the safe one with that plan's time
+function hmFastHtml(pl, st){
+  const H = hmState(), s = st.slow, pv = H.pvSafe;
+  return `<div class="wh-note it-warn"><b>Faster, not safe:</b> ${escapeHtml(`${hmRiskTxt(st.risk)} that it closes behind ${hmWho(pl, st)}.`)} <button type="button" data-hm="safe">${escapeHtml(`Back to the safe way: ${hmShortTxt(pl, s)}${pv ? `, ${hmPvAllTxt(pv)}` : ''}`)}</button></div>`;
 }
 function hmBranchesHtml(pl, st, now){
   return hmPossibleSays(pl, st).map(k => { const q = hmClone(pl); hmApply(q, st, k, now + 60e3); const nx = hmNext(q, now + 60e3);
@@ -36289,7 +36321,9 @@ function hmStepNowHtml(pl, st, now){
     + `<ul class="hm-br" id="whMassBr"${escapeHtml(H.open ? '' : ' hidden')}>${hmBranchesHtml(pl, st, now)}</ul>`;
 }
 function hmStepsHtml(){
-  const H = hmState(), pl = H.pl, now = Date.now(), st = pl.done ? null : hmNext(pl, now), stuck = !!(st && !st.none && st.risk >= 0.99);
+  const H = hmState(), pl = H.pl, now = Date.now(); let st = pl.done ? null : hmNext(pl, now);
+  if(H.fast && st && st.fast) st = st.fast; else H.fast = false;   // the faster step, when it was picked (hmSlowHtml)
+  const stuck = !!(st && !st.none && st.risk >= 0.99);
   H.step = st;
   return hmStepsHeadHtml(pl, H.pv, stuck) + hmDoneListHtml(pl) + hmStepsBodyHtml(pl, st, stuck, now);
 }
@@ -36320,7 +36354,7 @@ function hmGo(carry){
     pl.P = pv.P; pl.obs = pv.obs; pl.hist = pv.hist; const used = new Set();
     for(const s of pl.ships){ const k = pv.ships.findIndex((o, j) => !used.has(j) && o.label === s.label); if(k >= 0){ used.add(k); s.at = pv.ships[k].at; s.last = {...pv.ships[k].last}; } }
   }
-  H.pl = pl; H.back = []; H.prev = null; H.ask = null; H.rs = false;   // a new run: Undo goes back as far as here (the owner: "your recommendation is fine here")
+  H.pl = pl; H.back = []; H.prev = null; H.ask = null; H.rs = false; H.fast = false;   // a new run: Undo goes back as far as here (the owner: "your recommendation is fine here")
   H.pv = hmPreview(pl);
 }
 function hmMark(){ const H = hmState(); H.back.push({pl: hmClone(H.pl), obs: H.pl.obs, done: H.pl.done, reset: H.pl.reset, finOk: H.pl.finOk, mass: H.link ? (H.link.mass || '') : null}); }
@@ -36328,7 +36362,7 @@ function hmLinkLive(){ const H = hmState(); return H.link && whS.st.links.includ
 function hmLinkMass(v){ const l = hmLinkLive(); if(!l) return; if(v) l.mass = v; else delete l.mass; l.u = Date.now(); whSave(); whS.drawKey = ''; whS.pn = {}; whPaint(true); if(typeof itMapRefresh === 'function') itMapRefresh(true); }
 function hmSay(k){   // an answer: what Show Info says after the step (Q7, the owner: "Yes, update it (Recommended)": the connection's Mass follows)
   const H = hmState(), pl = H.pl, st = H.step; if(!pl || !st || st.none) return;
-  hmMark(); hmApply(pl, st, k, Date.now()); H.pv = pl.done ? null : hmPreview(pl);
+  hmMark(); hmApply(pl, st, k, Date.now()); H.fast = false; H.pv = pl.done ? null : hmPreview(pl);
   if(pl.obs !== 'gone' && hmLinkLive()) hmLinkMass(pl.obs);
   const l = hmLinkLive(); if(pl.done && pl.obs === 'gone' && l){ const n = whFocus(); H.ask = `The hole is gone. Remove the connection to ${whName(l.a === n ? l.b : l.a)}?`; }
 }
@@ -36336,11 +36370,11 @@ function hmSay(k){   // an answer: what Show Info says after the step (Q7, the o
 // the connection's Mass as it was (unless it was removed)
 function hmUndo(){
   const H = hmState(), b = H.back.pop(); if(!b) return;
-  H.pl = b.pl; Object.assign(H.pl, {obs: b.obs, done: b.done, reset: b.reset, finOk: b.finOk}); H.ask = null; H.rs = false; H.pv = hmPreview(H.pl);
+  H.pl = b.pl; Object.assign(H.pl, {obs: b.obs, done: b.done, reset: b.reset, finOk: b.finOk}); H.ask = null; H.rs = false; H.fast = false; H.pv = hmPreview(H.pl);
   if(b.mass !== null && hmLinkLive() && (H.link.mass || '') !== b.mass) hmLinkMass(b.mass);
 }
 // Start over (the owner: "needs to be a start over or reset button"): back to the setup, same hole, ships, goal and side; It says now = the last answer
-function hmReset(){ const H = hmState(), pl = H.pl; H.back = []; H.rs = false; H.prev = null; H.ask = null; H.pl = null; if(pl && pl.obs && pl.obs !== 'gone') H.st = pl.obs; else if(hmLinkLive()) H.st = H.link.mass || 'stable'; }
+function hmReset(){ const H = hmState(), pl = H.pl; H.back = []; H.fast = false; H.rs = false; H.prev = null; H.ask = null; H.pl = null; if(pl && pl.obs && pl.obs !== 'gone') H.st = pl.obs; else if(hmLinkLive()) H.st = H.link.mass || 'stable'; }
 function hmClick(b){   // from whWire's click handler, for buttons inside the panel; true when it was the panel's
   const H = hmState(), d = b.dataset;
   if(d.hm === 'add'){ if(H.ships.length < WH_MASS_MAX) H.ships.push({hull: ''}); hmSave(); }
@@ -36349,7 +36383,9 @@ function hmClick(b){   // from whWire's click handler, for buttons inside the pa
   else if(d.hm === 'goon') hmGo(true);
   else if(d.hm === 'br') H.open = !H.open;
   else if(d.hm === 'undo') hmUndo();
-  else if(d.hm === 'finnow'){ hmMark(); H.pl.finOk = true; H.pv = hmPreview(H.pl); }   // the finisher for the rest of the run; Undo takes it back
+  else if(d.hm === 'finnow'){ hmMark(); H.pl.finOk = true; H.fast = false; H.pv = hmPreview(H.pl); }   // the finisher for the rest of the run; Undo takes it back
+  else if(d.hm === 'fast'){ if(H.pl && !H.fast){ H.pvSafe = H.pv; H.fast = true; H.pv = hmPreview(H.pl, true); } }   // this step only: the next one is safe again unless picked
+  else if(d.hm === 'safe'){ if(H.pl && H.fast){ H.fast = false; H.pv = H.pvSafe || hmPreview(H.pl); } }
   else if(d.hm === 'reset'){ if(H.pl && H.pl.hist.length && !H.pl.done) H.rs = true; else hmReset(); }
   else if(d.whAsk === 'hm-rs') hmReset();
   else if(d.whAsk === 'hm-rs-no') H.rs = false;

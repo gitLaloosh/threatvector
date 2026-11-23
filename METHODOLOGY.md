@@ -682,5 +682,10 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
     Crit it never. A finisher waits until the hole says less than 10% (or is offered when only it has a safe trip). Polarization: no ship
     jumps the same way through the hole twice within 5 minutes (a nearly as heavy group that is free goes instead of a wait).
   - **When nothing is fully safe** the step shows the least risky jump, its odds and how light a ship would have to be ("a ship under N t",
-    rounded down to 100 t). The step count beside the heading is a quick run against three holes the answers still allow (the least, middle and
-    most left); a run still going after 80 steps shows as "80+".
+    rounded down to 100 t). The estimate beside the heading is a quick run against three holes the answers still allow (the least, middle and
+    most left): how many steps and how long, counting a minute a step and the polarization waits from each jump; a run still going after 80
+    steps shows as "80+" and "over" its time, and a run that strands someone isn't counted (its odds are shown instead).
+  - **When the safe way is slow** (over 30 minutes, often a light ship's small trips: a Heron alone makes about 40 round trips in 80 steps,
+    at least 5 minutes each), the step also offers the least risky group at least twice as heavy, with its odds and how long the plan takes
+    if you keep taking the faster jumps. It is never chosen for you: pressed, that one step is the faster one, with "Back to the safe way";
+    the step after it is chosen as before.

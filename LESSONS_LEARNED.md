@@ -204,6 +204,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #175 A stored field read at start-up runs before the rest of the script: a helper further down (a const not yet set) throws only once that field is saved, so check a reload with every new stored field present. See also #12.
 - #171 A reference built for one job carries that job's stubs: pyfa_effects runs every handler with calculateRangeFactor = 1, so projected handlers ran at full strength until the check put pyfa's own back.
 - #177 Points standing in for a continuous range can't back a "safe" claim: the real value falls between them. Track boxes that cover the range (kept while any part fits) and test the claim against the exact range; check that a made-up fit's modules all arrived.
+- #178 A plan ranked only by risk can be safe and useless: count what each choice costs, and show the trade-off. Cost it in the user's units (time) and offer the cheaper one beside it with its odds, never picked for the user.
 
 **Intel and live data (chat logs, zKillboard's feed)**
 
@@ -1291,6 +1292,17 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   500MN) is built without it and no error is shown, so a check built on it tests a different fit. Read back what the page built (the
   module-state list) before trusting a number from it.
 
+
+## 178. A plan ranked only by risk can be safe and useless: count what each choice costs, and show the trade-off
+
+- **What happened (build queue 070, at the review, 2026-11-23):** the Mass steps always put a fully safe step before a risky one, whatever it
+  moved. With a Megathron and a Heron on a hole at less than 50%, the Megathron's next trip had a small chance of closing the hole behind it, so
+  every step was the Heron: "about 49–80+ steps". The owner: [stated] "80 steps basically converts to 40 trips while waiting 5 minutes each round
+  trip." Over three hours of shuttling, which nobody would do, shown as the answer.
+- **Do this instead:** when a rule ranks by one thing (risk), work out what the winner costs in the unit the user pays (here time: a minute a
+  step plus the polarization waits, counted from each jump) and show it. When it is costly, offer the cheaper choice beside it with its odds and
+  its own cost, and leave the pick to the user (`hmSlowHtml`, `WH_MASS_SLOW_MS`; the owner agreed to "offer both choices" with the time). A
+  preview that strands someone isn't a step count: leave such runs out and show the odds instead.
 ## 160. A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it
 
 - **What happened (build queue 039, v2026.11.12.3):** the map-look plan gave its new layout as "7 ms". That was the layout without its
