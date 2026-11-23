@@ -422,7 +422,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   three more from ESI's live data (build queue 065): Sov holder (who holds each system, from /sovereignty/systems, read at
   most once per its 5-minute Expires while it's on: by your standings, the holding alliance's side as a pilot of it would get
   it, your own alliance blue, NPC faction space khaki, unclaimed plain grey; or one colour per alliance, Region's palette and
-  method; zoomed in, the alliance's logo in each system's circle, ringed in its colour, a capital with a ★; the gates between
+  method, your own alliance green and no other alliance green while it holds a system; zoomed in, the alliance's logo in each system's circle, ringed in its colour, a capital with a ★; the gates between
   two systems of one holder drawn in its colour; the hover gives the holding corporation, since when, the development levels,
   ADM and the vulnerability window in EVE time; a line under the legend lists the five holders with the most systems in
   view), Jumps (past hour) (ship jumps, 0 / 1–9 / 10–49 / 50–149 / 150–499 / 500+) and Kills (past hour) (ships and pods,

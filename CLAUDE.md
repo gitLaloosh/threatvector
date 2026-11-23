@@ -563,7 +563,7 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   5 min after a failure, memory only, asked from `itMapLvAsk` (itMapRefresh, a colour pressed, a microtask after a draw), never a timer. Before a
   read: grey and "no data yet", never 0 (`itMapLvState`); a system missing from the hour's lists is 0. Colours worked out once per read and
   setting (`itMapLvPrep` keyed by `itMapLvKey`, which is in `itMapKey`; LESSON #120): by standing (`itSovSideOf`: sideOf on the holding alliance,
-  `itSovSideKey` follows your standings) or per alliance (`itMapGreedy`, Region's method, `itMapRegCol` uses it too); `itSovIx` (per read: kinds,
+  `itSovSideKey` follows your standings) or per alliance (`itMapGreedy`, Region's method, `itMapRegCol` uses it too; your alliance `IT_MAP_SOV_MINE` green and the rest without greens, `itSovAllCols`, only while it holds a system); `itSovIx` (per read: kinds,
   holders, capitals, same-holder gates). Zoomed in `itSovCircle` (logo from `itSovLogo`, a plain image, ringed in the holder's colour; a failed
   logo shows the ticker), `itSovGatesDraw`, the hover `itMapLvTipHtml`, the legend's "In view" line `itMapHvPaint` (keyed to the view). Q10:
   `itMapNoFade` (no distance fade for the three; `itMapFadeLegHtml` drops the legend's faded / faint). Soft colour `IT_MAP_SOFT` 0.8,

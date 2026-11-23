@@ -198,7 +198,12 @@ def run(b, html, w, parts):
                 nb = pg.evaluate("() => { const T = itMapTable(), X = itSovIx(); let bad = 0; for(let i = 0; i < T.n; i++) for(const j of T.adj[i]) if(X.grp[i] >= 0 && X.grp[j] >= 0 && X.grp[i] !== X.grp[j] && itMapColRaw(i) === itMapColRaw(j)) bad++; return bad; }")
                 if nb: out.append(f'{w}: per alliance, {nb} neighbouring holder pairs share a colour')
                 if pg.evaluate("() => { const T = itMapTable(); for(let i = 0; i < T.n; i++) if(['#4fc3d9', '#d99a3c', '#9b7bd8', '#c98fd0'].includes(itMapColRaw(i))) return true; return false; }"): out.append(f'{w}: a reserved hue')
-                if 'one per alliance' not in legfl(pg): out.append(f'{w}: per alliance legend {legfl(pg)}')
+                if 'one per alliance' not in legfl(pg) or 'yours' not in legfl(pg): out.append(f'{w}: per alliance legend {legfl(pg)}')
+                # the owner at the hand test: your alliance green, no other alliance green; no alliance (or no sov of yours): the palette as before
+                gr = pg.evaluate("() => { const T = itMapTable(), X = itSovIx(), mine = X.grp[itm.home], o = []; for(let i = 0; i < T.n; i++) if(X.grp[i] >= 0 && X.grp[i] !== mine && ['#3fcf6a', '#5fbf7f', '#9fbf4f'].includes(itMapColRaw(i))) o.push(i); return [itMapColRaw(itm.home), o.length]; }")
+                if gr != ['#3fcf6a', 0]: out.append(f'{w}: per alliance, yours {gr[0]} (want green #3fcf6a), {gr[1]} other systems green')
+                na = pg.evaluate("() => { const a = side.rec.alliance; side.rec.alliance = null; itMpChanged(); const r = [itMapColRaw(itm.home), IT_MAP_REGION.includes(itMapColRaw(itm.home)), itm.el.querySelector('.it-map-leg .it-map-fl').textContent.includes('yours')]; side.rec.alliance = a; itMpChanged(); return r; }")
+                if not na[1] or na[2]: out.append(f'{w}: no alliance: your holder\'s colour {na[0]} not from the palette, or the legend says yours')
                 pg.evaluate("() => itMp.el.querySelector('input[value=standing]').click()"); pg.wait_for_timeout(200)
                 pg.evaluate("() => itMpOpen('', false)")
         # ---- Jumps and Kills (past hour)
@@ -349,6 +354,8 @@ MUTANTS = [
     ('no wrap on a short phone map', "grid-template-rows:repeat(var(--it-flr, 12), auto); grid-auto-columns:92px;", "grid-template-rows:none; grid-auto-flow:row; grid-auto-columns:92px;", ('phone',)),
     ('the rows counted from the group wrappers', "set('--it-flr', itMapFlRows(H, top, false, itMapFbN(bs)));", "set('--it-flr', itMapFlRows(H, top, false, bs.children.length));", ('column',)),
     ('soft colour back to 55%', "const IT_MAP_SOFT = 0.8,", "const IT_MAP_SOFT = 0.55,", ('sov',)),
+    ('your alliance not green per alliance', "const c = Array.from(k, (v, g) => g === g0 ? IT_MAP_SOV_MINE : P[v]);", "const c = Array.from(k, (v, g) => P[Math.max(0, v)]);", ('sov',)),
+    ('another alliance green per alliance', "IT_MAP_SOV_PAL = IT_MAP_REGION.filter(c => c !== '#5fbf7f' && c !== '#9fbf4f');", "IT_MAP_SOV_PAL = IT_MAP_REGION;", ('sov',)),
     ('the hover without the development levels', "if(d){ const p = [['Military', d.m]", "if(false){ const p = [['Military', d.m]", ('sov',)),
 ]
 # the "logo zoomed out" mutant needs a drawImage on the live canvas: draws the logo once at the top left whenever Sov holder is on

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-dnOCqaZ/swpGnjbLi2qD+7fH+SPaYYI0ZjIPT4CeZSQ='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-r2dDIbp0s8k+3gQX88VTksqyFhLOd3h3aiuQuyj8weY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -31344,11 +31344,11 @@ function itMapRegCol(T){
 }
 // one colour index per group (regions; 065: Sov holder's alliances), two groups joined by a gate never sharing one where the palette allows:
 // greedy, the busiest groups first (a system outside every group: -1)
-function itMapGreedy(T, gOf, G){
+function itMapGreedy(T, gOf, G, P = IT_MAP_REGION, fixed = null){   // 065: P the palette; fixed, groups given a colour of their own (-1 from P)
   const nb = Array.from({length: G}, () => new Set());
   for(let i = 0; i < T.n; i++){ const a = gOf(i); if(a < 0) continue; for(const j of T.adj[i]){ const b = gOf(j); if(b >= 0 && b !== a){ nb[a].add(b); nb[b].add(a); } } }
   const order = [...Array(G).keys()].sort((a, b) => nb[b].size - nb[a].size || a - b), c = new Int8Array(G).fill(-1);
-  for(const r of order){ let k = 0; while([...nb[r]].some(q => c[q] === k)) k++; c[r] = k % IT_MAP_REGION.length; }
+  for(const r of order){ if(fixed && fixed.has(r)) continue; let k = 0; while([...nb[r]].some(q => c[q] === k)) k++; c[r] = k % P.length; }
   return c;
 }
 // the number in a zoomed-in circle, the hover's and Security range's: the value the dot's colour is picked from (itMapSecT)
@@ -31399,10 +31399,25 @@ function itSovIx(){
 // what your standings are now, as text (the typed lists, EVE's when in use): Sov holder by standing is worked out again when it changes
 function itSovSideKey(){ const r = side.rec || {}, g = (L) => (L || []).map(x => `${String(x.kind)[0]}${x.id}`).join(','); return `${sideEveKey()}|${r.corp ? r.corp.id : ''}|${r.alliance ? r.alliance.id : ''}|${g(r.friendly)}|${g(r.hostile)}`; }
 function itSovSideOf(al){ const r = side.rec || {}, s = sideOf(null, al, sideSets(), null, null).side; return s === 'f' && r.alliance && r.alliance.id === al ? 'y' : s; }
+// one colour per alliance (Region's method). The owner at the hand test (2026-11-22): "tweak the sov filter colors so YOUR alliance's color is
+// green when the option for "one color for each group" is chosen", "if the user doesn't have an alliance or sov, the rule doesn't need to
+// apply": while your alliance holds a system it is IT_MAP_SOV_MINE and the rest share the palette without its greens; otherwise Region's palette
+const IT_MAP_SOV_MINE = '#3fcf6a', IT_MAP_SOV_PAL = IT_MAP_REGION.filter(c => c !== '#5fbf7f' && c !== '#9fbf4f');
+function itSovMine(){ const r = side.rec; return r && r.alliance && Number.isInteger(r.alliance.id) ? r.alliance.id : 0; }
+let itSovAllC = null;
+function itSovMineLegHtml(on){ return on ? `${itMapSwHtml([IT_MAP_SOV_MINE])} yours ` : ''; }
+function itSovAllCols(X){
+  const me = itSovMine(), g0 = me ? X.als.indexOf(me) : -1, key = `${X.at}|${g0}`;
+  if(itSovAllC && itSovAllC.key === key) return itSovAllC.c;
+  const P = g0 >= 0 ? IT_MAP_SOV_PAL : IT_MAP_REGION, k = g0 >= 0 ? itMapGreedy(X.T, (i) => X.grp[i], X.als.length, P, new Set([g0])) : X.col;
+  const c = Array.from(k, (v, g) => g === g0 ? IT_MAP_SOV_MINE : P[v]);
+  itSovAllC = {key, c, mine: g0 >= 0};
+  return c;
+}
 // the key of what the live colour that is on shows (in itMapKey, so a read or a setting redraws once)
 function itMapLvKey(){
   const s = itMapSt(), c = itMapPaths() ? '' : s.colour;
-  if(c === 'sovh') return `sovh|${itSov.at}|${s.sovBy}|${s.sovBy === 'standing' ? itSovSideKey() : ''}`;
+  if(c === 'sovh') return `sovh|${itSov.at}|${s.sovBy}|${s.sovBy === 'standing' ? itSovSideKey() : itSovMine()}`;
   if(c === 'jumph') return `jumph|${itLv.jumps.at}`;
   if(c === 'killh') return `killh|${itLv.kills.at}|${s.killNpc}`;
   return '';
@@ -31418,7 +31433,8 @@ function itMapLvPrep(){
     if(X){
       data = true;
       st = s.sovBy === 'standing' ? X.als.map(itSovSideOf) : null;
-      for(let i = 0; i < n; i++){ const k = X.kind[i], g = X.grp[i]; col[i] = k === 1 ? (st ? IT_MAP_SOVC[st[g]] : IT_MAP_REGION[X.col[g]]) : k === 2 ? IT_MAP_SOVC.npc : IT_MAP_PLAIN; }
+      const pc = st ? null : itSovAllCols(X);
+      for(let i = 0; i < n; i++){ const k = X.kind[i], g = X.grp[i]; col[i] = k === 1 ? (st ? IT_MAP_SOVC[st[g]] : pc[g]) : k === 2 ? IT_MAP_SOVC.npc : IT_MAP_PLAIN; }
     }
   } else {
     const L = itLv[IT_MAP_LV[c]];
@@ -31785,7 +31801,8 @@ function itMapFLegHtml(){
     case 'sovh': {   // 065
       const w = itMapLvState('sov'); if(w) return `<b>Sov holder</b> ${itMapSwHtml([IT_MAP_PLAIN])} ${escapeHtml(w)}`;
       const X = itSovIx(), asof = ` · as of ${itMapLvAsOf(itSov.at)} EVE`;
-      if(itMapSt().sovBy === 'alliance') return `<b>Sov holder</b> ${itMapSwHtml(X ? [...new Set(Array.from(X.col).map(k => IT_MAP_REGION[k]))] : IT_MAP_REGION)} one per alliance ${itMapSwHtml([IT_MAP_SOVC.npc])} NPC ${itMapSwHtml([IT_MAP_SOVC.u])} unclaimed${escapeHtml(asof)}`;
+      if(itMapSt().sovBy === 'alliance'){ const pc = X ? itSovAllCols(X) : IT_MAP_REGION, mine = X && itSovAllC && itSovAllC.mine;
+        return `<b>Sov holder</b> ${itSovMineLegHtml(mine)}${itMapSwHtml([...new Set(pc.filter(c => c !== IT_MAP_SOV_MINE))])} one per alliance ${itMapSwHtml([IT_MAP_SOVC.npc])} NPC ${itMapSwHtml([IT_MAP_SOVC.u])} unclaimed${escapeHtml(asof)}`; }
       const none = !sideIsSet() && !sideEveUse() ? ' · no standings set: every alliance neutral' : '';
       return `<b>Sov holder</b> ${itMapSwHtml([IT_MAP_SOVC.y])} yours ${itMapSwHtml([IT_MAP_SOVC.f])} friendly ${itMapSwHtml([IT_MAP_SOVC.n])} neutral ${itMapSwHtml([IT_MAP_SOVC.h])} hostile ${itMapSwHtml([IT_MAP_SOVC.npc])} NPC ${itMapSwHtml([IT_MAP_SOVC.u])} unclaimed${escapeHtml(none + asof)}`;
     }

@@ -146,6 +146,10 @@ As planned, with these choices made at the build (none changes what the owner pi
 - **Jumps (past hour)'s colours** (the owner at the hand test, 2026-11-22: "think we need to shift from greens and yellows to going from yellow to
   red. gray is none.", then "we dont need to match in-game brightness, but the contrast helps from yellow to red"): grey for none, then a dim
   yellow rising in brightness to a vivid red (`IT_MAP_JH`), so the busiest systems stand out most under the soft colour.
+- **Your alliance green per alliance** (the owner at the hand test, 2026-11-22: "tweak the sov filter colors so YOUR alliance's color is green when
+  the option for "one color for each group" is chosen", "if the user doesn't have an alliance or sov, the rule doesn't need to apply"): while your
+  alliance holds a system, it is `IT_MAP_SOV_MINE` and the other alliances share Region's palette without its two greens (`itSovAllCols`); the
+  legend adds "yours". With no alliance, or none of its systems held, the palette is as before.
 - **`itMapRegCol`** now uses a general greedy colouring (`itMapGreedy`), shared with per alliance; the regions' colours are unchanged.
 - **Info text:** `intel` [Map] +41 words; its cap 716 (`check_subtext.py`). "Map: within"'s hover says the three live colours don't fade.
 - **Checks:** new `live_map_filters_check.py` (20 mutants); `intel_check.py`'s ESI stand-in answers the two hourly lists (`LV`);
