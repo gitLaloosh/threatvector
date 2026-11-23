@@ -663,6 +663,14 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   for the Local log, the login's id for EVE location); a reading for another pilot, or the first after You becomes another character (`whYouNew` from
   `itMeSync`, by id: a character's log ↔ the login's stand-in isn't a change), is a first reading, whatever its time: no connection, no Intel entry.
   `wormhole_home_check.py`.
+  Build queue 070 (v2026.11.23.2; roadmap/hole-mass-plan.md, mockup `Claude outputs/hole_mass_mockup.html`; the owner: "we want simple, clear steps
+  that will allow you to quickly identify how best to reach the hole state that is desired"): Mass on the toolbar (`data-wh-pop="mass"`, its
+  `.wh-pop` drawn by `hmPaint` from `hmState()` = `whS.hm`; ⓘ `whmap#mass`). Ships are saved fits (their masses from the fit's `estimate.mass`,
+  the ZPME mode by `estimateHpAndDps` with it set active) or typed hulls (`getType`; Intel's `itShips` names), up to `WH_MASS_MAX`, kept in
+  `tvWhMass` (new key). The holes still possible are boxes `[total, left, half-widths]` (`hmPoss`, kept by `hmBoxSays`, LESSON #177); a safe plan over 30 min offers the faster jump with its odds, never picked for you (`st.fast`, `hmSlowHtml`, LESSON #178); `hmNext`
+  picks a group (the way back counted, the finisher held, polarization), `hmApply` takes an answer; answers set the connection's Mass, Undo puts
+  it back; It's gone asks before `whLinksDel` (the System panel's delete too). The phone toolbar wraps (44 x 44). + Add's Linked to is built by
+  `whAddLinkList`, on opening and after every Add (070's bug). `wormhole_mass_check.py` (the steps replayed against holes, the exact range).
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a

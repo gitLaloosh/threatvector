@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-23 — Wormholes: Mass, the steps to crit or roll a hole; + Add's Linked to after an Add</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Wormholes: Mass, the steps to crit or roll a hole; + Add's Linked to after an Add</h1>
+<p><span class="tag">Page</span><span class="tag">Wormholes</span><span class="tag">Fit maths</span> 2026-11-23 &middot; <code>v2026.11.23.2</code> &middot; branch <code>070-hole-mass</code>: build queue 070 (plan <code>roadmap/hole-mass-plan.md</code>, mockup <code>Claude outputs/hole_mass_mockup.html</code>).</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-22: "build a button into the wormhole map that lets you calculate how to crit or roll a hole. ... we want simple, clear steps that will allow you to quickly identify how best to reach the hole state that is desired."</li>
+<li>A bug he recorded the same day, to go with the next delivery after 065: "\"add\" system button in map defaults to no connection."</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Mass on the Wormholes map's toolbar</b> (between + Add and Share) opens "Crit or roll a hole": the hole (a connection of the system in focus, or a type with the + Add form's list; a K162 asks for its far side's type), what Show Info says now, Roll it or Crit it, which side to finish on, and up to 4 ships (saved fits or typed hulls, one markable as the finisher). Then one step at a time ("Megathron, Heron out hot"), answered with what Show Info says next, with What's next folded under it, Undo (back to step 1), Change (Carry on) and Start over. Answers set the connection's Mass; It's gone asks before removing the connection.</li>
+<li><b>A ship's masses come from the fit's own calculation:</b> the fit result gains <code>mass</code> beside <code>alignTime</code> (no prop running, the prop module running), from the same numbers; the ZPME mode is the fit worked out again with it running. A typed hull is its mass plus a MWD of its size, marked "hull only".</li>
+<li><b>The holes still possible are boxes</b> (<code>hmPoss</code>, <code>hmBoxSays</code>): a step is shown as safe only when no hole the answers allow could be closed by it, and the odds are the share of boxes that could.</li>
+<li><b>+ Add's Linked to</b> (<code>whAddLinkList</code>) is built on opening and after every Add: the form stays open after an Add, so from an empty map the second system was going in loose too. Same rule both times: where you are, else the system in focus (the one just added).</li>
+<li><b>A safe plan that is slow offers the faster jump</b> (the owner at the review: "80 steps basically converts to 40 trips while waiting 5 minutes each round trip.", then "i agree" to offering both choices with the time): the estimate beside Steps now says how long too ("about 8–12 steps, 20–30 min with polarization": a minute a step plus the polarization waits, from each jump). When the safe plan is over 30 minutes, the step offers the least risky group at least twice as heavy ("Send Megathron out cold instead: about 1 in 131 that it closes behind Megathron; about 4–6 steps, 8–15 min taking the faster jumps"); pressed, that one step is the faster one, with "Back to the safe way"; never chosen for you. "Send … instead" for the finisher gives its time too.</li>
+<li><b>The phone toolbar</b> wraps into two rows of 44 x 44 controls (+ Add, Share and the gear were 39 px before).</li>
+<li><b>Info text:</b> new <code>whmap#mass</code> panel (207 words); <code>whmap</code> [Focus and adding] gains "Mass works out how to crit or roll a hole", 410 words, its cap set to that (the owner: "Raise to ~410").</li>
+<li><b>Checks:</b> new <code>tools/page_checks/wormhole_mass_check.py</code> (the steps replayed against real holes and against the exact range the answers allow; saved fits' and hulls' masses; the panel; + Add's Linked to; a phone; a slow plan's faster jump and the time; 23 mutants). The regression suite pins <code>massBaseT</code> / <code>massBoostedT</code> on two goldens, from pyfa's own handlers.</li>
+</ul>
+
+<h2>Stored data</h2>
+<ul>
+<li>New key <code>tvWhMass</code> <code>{v: 1, ships: [{fit, fin?} | {hull, fin?}]}</code>: an older page never reads it; this page reads only known fields. Answers write the connection's <code>mass</code> in <code>tvWhChain</code> with the values its own Mass select writes. Safe both ways.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #177: the mockup tracked the holes still possible as points, and a step was "safe" when no point could be closed by it. A real hole's total falls between the points: one had 988 t left where the points said at least 1,200 t, and a Heron trip marked safe closed it. Boxes that cover the whole range, kept while any part fits, back the claim; the check tests it against the exact range, not only against holes the grid happens to hold. Also: a made-up fit with a module the game doesn't have is built without it, silently, so read back what the page built.</li>
+<li>LESSON #178: steps ranked only by risk gave a Megathron and a Heron 80+ safe Heron trips, over three hours with polarization. Count what each choice costs in the user's units (time), and when the safe one is costly offer the cheaper one beside it with its odds, never picked for the user.</li>
+</ul>
+</body>
+</html>

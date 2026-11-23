@@ -353,6 +353,12 @@ for (const [fitId, fit] of Object.entries(golden)) {
     result.alignTimeBase = result.alignTime.base;
     if (result.alignTime.boosted !== null) result.alignTimeBoosted = result.alignTime.boosted;
   }
+  // 070 (Project doc roadmap/hole-mass-plan.md): the masses a wormhole takes (tonnes, 0.01), for the Wormholes tab's Mass panel; pinned on
+  // two goldens from pyfa's own handlers (tools/pyfa_fit_oracle.py: ship 'mass' with the prop module online / active, 2026-11-23)
+  if (result && result.mass) {
+    result.massBaseT = Math.round(result.mass.base / 10) / 100;
+    if (result.mass.boosted !== null) result.massBoostedT = Math.round(result.mass.boosted / 10) / 100;
+  }
   // v2026.10.14.25: drone recommendation as shown ("Name (size)"; alt 'none' when there is no second pick)
   if (result && result.drones && result.drones.primary) {
     result.droneRecPrimary = `${result.drones.primary.name} (${result.drones.primary.size})`;
