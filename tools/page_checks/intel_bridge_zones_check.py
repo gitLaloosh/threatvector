@@ -314,7 +314,7 @@ MUTANTS = [
     ('no hover on a bridge line', "bj = i < 0 ? itMapPickBridge(x, y, false) : -1;", "bj = -1;", ('map',)),
     ('the zone rows short on a phone', " .it-rp-box .it-rp-jbz label{min-height:44px;}", "", ('phone',)),
     ('a route\'s bridge step drawn the way it is crossed', "else itBridgeArc(c, a, b, X, Y); }", "else itMapArc(c, X(a), Y(a), X(b), Y(b)); }", ('map',)),
-    ('Within N\'s hover says stargate jumps with bridges on', ": f.k === 'near' ? 'only: systems this many jumps from you or fewer, jump bridges you can use counted' : f.note; }", ": f.note; }", ('map',)),
+    ('Within N\'s hover says stargate jumps with bridges on', ": f.k === 'near' ? 'only: systems within N jumps of you (jump bridges you can use counted), or N light years where a jump drive can land' : f.note; }", ": f.note; }", ('map',)),   # 067: Distance's note
     ('the Level row written into the Jump bridge row', "{ const x = p.querySelector('div.it-sov-lv'), h = sovLvHtml();", "{ const x = p.querySelector('.it-sov-k .it-sov-from') || p.querySelector('div.it-sov-lv'), h = sovLvHtml();", ('map',)),
     ('the bridges at full brightness', ":root{--it-bridge:#00a800;}", ":root{--it-bridge:#00f000;}", ('map',)),
 ]

@@ -571,6 +571,13 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   `:indeterminate`). `tvMapStack` gains `sovBy`, `killNpc`, `regions` (names; an unknown one dropped): safe both ways. The column in group
   wrappers (`itMapFbtnsHtml`, `.it-map-fg`, display:contents on a wide map with a 44 px column gap for a wrapped column's settings buttons; a
   phone: Colour over View, Only beside, each wrapping, `itMapFlSet` / `itMapFbN`). `live_map_filters_check.py`.
+- **Distance** (v2026.11.24.1, build queue 067; roadmap/ly-distance-plan.md, mockup `Claude outputs/ly_distance_mockup.html`; the owner: "Within N jumps →
+  Distance (Recommended)", "Only where a jump can land (Recommended)", at the build review "Add 7.5 LY pick (Recommended)"): 058's Only filter
+  `near` renamed, a Jumps / Light years switch in its settings (`itMpNearModeHtml`, 065's `itMpRadHtml`); Jumps exactly as before; Light years
+  `RS.mapLy` (tenths, 1-200) and quick picks `IT_MP_LY_QUICK` (6 / 7 / 7.5 / 8 / 10, at Jump Drive Calibration V). A match: LY from you rounded up
+  to 0.01 as the hover shows it (`itMapLyC`, the one rounding `itMapLyText` uses too; `itMapLyIn`) and landable (`itMapNoLand`: 0.5+ as shown,
+  Pochven by region, Zarzakh by ID in `IT_MAP_NOLAND`); the hover's line `itMapLyTipHtml`; the Only line "within 7.0 LY (jump drive)".
+  `tvMapStack.near` gains `mode` ('j' | 'ly') and `ly` (tenths, default 70): safe both ways. `ly_distance_check.py`.
 - **Kill counts by who died** (v2026.11.21.3, build queue 066; roadmap/kill-counts-plan.md, mockup `Claude outputs/kill_counts_mockup.html`; the owner:
   "amber X [N] [N] [N]", "go with A"): a map label's kill tag is the amber ✕, then the counts by who died, friendly, hostile, neutral (`C.kill`:
   `--side-friendly`, `#f08b7e`, `#b9c3ca`), none for a standing with no deaths; `itMapReports` counts `kb` from `st.kills`' `v` (unknown: neutral);
@@ -784,7 +791,7 @@ still gets its own targeted check and mutants.
 **How the numbers are worked out, for people:** `METHODOLOGY.md` (was the "How effective HP and DPS are
 calculated" note on the page, removed in v2026.10.14.51); each card's short version is its ⓘ panel (`CARD_INFO`).
 Change both when a calculation's assumptions change. Since build queue 036 (v2026.11.11.3) the panels are short (`check_subtext.py`:
-85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"; 620 since 052, "raise it"; 670 since 041, "Raise to 670 (Recommended)"; 716 since 065, "Raise cap ~40"; 741 since 071, "Raise to ~738 (Recommended)", set from the final count), the detail is in METHODOLOGY.md (its Intel, Who's in the
+85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"; 620 since 052, "raise it"; 670 since 041, "Raise to 670 (Recommended)"; 716 since 065, "Raise cap ~40"; 741 since 071, "Raise to ~738 (Recommended)"; 754 since 067, "Raise to ~754 (Recommended)", set from the final count), the detail is in METHODOLOGY.md (its Intel, Who's in the
 system and Sides sections too), and nothing on the page links to it (build queue 037 took 036's footer link out, the owner: "i dont want that link displayed"). A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
 panel never inherits a heading's case or spacing (`.info-body`; `info_panels_check.py`).
 

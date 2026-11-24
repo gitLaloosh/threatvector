@@ -206,6 +206,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #171 A reference built for one job carries that job's stubs: pyfa_effects runs every handler with calculateRangeFactor = 1, so projected handlers ran at full strength until the check put pyfa's own back.
 - #177 Points standing in for a continuous range can't back a "safe" claim: the real value falls between them. Track boxes that cover the range (kept while any part fits) and test the claim against the exact range; check that a made-up fit's modules all arrived.
 - #178 A plan ranked only by risk can be safe and useless: count what each choice costs, and show the trade-off. Cost it in the user's units (time) and offer the cheaper one beside it with its odds, never picked for the user.
+- #180 A planned mutant can be equivalent to the code: work out whether it changes any result before relying on it (rounding up then comparing with a whole step is the same as comparing the raw value), and mutate what can differ instead.
 
 **Intel and live data (chat logs, zKillboard's feed)**
 
@@ -1314,6 +1315,17 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - **Do this instead:** before adding to a row of absolutely placed controls, search the CSS for what is placed against it (`right:`, `left:`,
   `:has(...)` offsets) and say in the plan where each goes. Measure the real page at 390 px with every optional control showing (the bridge
   lines, a kept route, Home), not the new one alone; a check asserts no overlap (`intel_home_check.py`'s `over`), with a mutant per placement.
+## 180. A planned mutant can be equivalent to the code: work out whether it changes any result before relying on it
+
+- **What happened (build queue 067, 2026-11-24):** the Distance plan's mutant "the raw LY instead of the rounded one (a system shown as 7.00 LY
+  left out)" was meant to prove the filter compares what the hover shows (light years rounded up to 0.01). But the range is set in whole
+  tenths, and for a whole step N, `ceil(x × 100) ≤ N` holds exactly when `x × 100 ≤ N`: rounding up and then comparing with a whole number
+  of hundredths is the same test as comparing the raw value. The mutant could never fail, so a check built on it would have passed with
+  or without the rounding it was meant to guard.
+- **How it was caught:** at the build, before the check was written, by working out what the mutant changes.
+- **Do this instead:** before writing a mutant, name an input where it gives a different answer; if there is none, it is equivalent and
+  proves nothing. Mutate what can differ: here rounding to the nearest hundredth instead of up, with a test world that holds a system just
+  past a tenth (shown one hundredth over) and asserts it stays out (`ly_distance_check.py`).
 ## 160. A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it
 
 - **What happened (build queue 039, v2026.11.12.3):** the map-look plan gave its new layout as "7 ms". That was the layout without its

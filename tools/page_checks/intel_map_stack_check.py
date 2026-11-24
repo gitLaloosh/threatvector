@@ -7,7 +7,7 @@ array level 3 where system security level is N"; his answers Q1-Q21 (the plan's 
 names (you in 1DQ1-A); every pilot, line, wormhole and sov list is made up (the sov list is written from the map's own systems at the start).
 The drawing is read from the map's own canvas calls (every arc's place, radius, strength and colour, recorded during one draw), not pixels.
 Checks, at 1440 px and 390 px:
-  * the column: Colour (Security, Jumps, Region) · Only (Security range, Within N jumps, Intel reports, Kills, Wormholes, Sov upgrades) ·
+  * the column: Colour (Security, Jumps, Region) · Only (Security range, Distance (Within N jumps until 067), Intel reports, Kills, Wormholes, Sov upgrades) ·
     View (Paths to you), a line between groups; nothing dims and no "Only" line with no Only filter on; no wormholes chip;
   * soft colour (Q15): with nothing on every system but yours softened zoomed out and a tinted disc zoomed in; a match keeps its colour;
   * the owner's example (Security range -0.5 to -0.3 + Sov upgrades Threat Detection level 3): the matches exactly the systems in that range
@@ -26,7 +26,7 @@ Checks, at 1440 px and 390 px:
   * the security shown (the owner at the review): a system stored at 0.45 and low-sec shows 0.4, in the 0.4 colour, outside quick High;
   * stored: tvMapStack across a reload, a bad value read as the defaults, tvSov keeps its form; the Intel example never reads or writes it;
   * no sideways scroll, no page errors;
-  * build queue 060: each settings button (Security range, Within N jumps) pressed with its filter off opens its settings, the
+  * build queue 060: each settings button (Security range, Distance) pressed with its filter off opens its settings, the
     filter still off (the owner's bug: it did nothing);
   * mutants, each must fail (see MUTANTS).
 v2026.11.16.2 fails (one filter at a time, no tvMapStack).
@@ -309,7 +309,7 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
             for bad in ('not json', '{"v": 2, "colour": ""}', '{"v": 1, "colour": "kills", "view": "x", "only": {"secr": "yes"}, "secr": {"lo": 3.5, "hi": -40}, "near": {"n": 99}, "sovLv": [0, 3, 3, 7, "2"]}'):
                 pg.evaluate("(v) => localStorage.setItem('tvMapStack', v)", bad)
                 r = pg.evaluate("() => itMapStackRead()")
-                ok = r['colour'] == 'sec' and r['view'] == 'map' and not any(r['only'].values()) and r['secr'] == {'lo': -5, 'hi': -3} and r['near'] == {'n': 5} and r['sovLv'] == ([3] if '"v": 1' in bad else [])
+                ok = r['colour'] == 'sec' and r['view'] == 'map' and not any(r['only'].values()) and r['secr'] == {'lo': -5, 'hi': -3} and r['near'] == {'n': 5, 'mode': 'j', 'ly': 70} and r['sovLv'] == ([3] if '"v": 1' in bad else [])
                 if not ok: out.append(f'a bad tvMapStack {bad[:30]!r} read as {r}')
         if 'example' in parts:
             before = pg.evaluate("() => { const v = JSON.stringify(Object.assign(itMapStackBlank(), {colour: '', only: {secr: true, near: false, reports: false, kills: false, wh: false, sov: false}})); localStorage.setItem('tvMapStack', v); return v; }")
@@ -341,7 +341,7 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
 MUTANTS = [
     ('a non-matching kept hole still bold (Q21b)', "itm.wh.kept.has(i) && itm.mt.m[i]); }", "itm.wh.kept.has(i)); }", ('wh',)),
     ('Kills still amber (Q3)', "  if(c === 'jumps') return itm.D[i] < 0", "  if((itm.rep.get(i) || {}).kills) return IT_MAP_KILL;\n  if(c === 'jumps') return itm.D[i] < 0", ('kills',)),
-    ('OR instead of AND (Q2)', "    if(ok && o.near) ok = D[i] >= 0 && D[i] <= s.near.n;", "    if(o.near) ok = ok || (D[i] >= 0 && D[i] <= s.near.n);", ('wh',)),
+    ('OR instead of AND (Q2)', "    if(ok && o.near) ok = lyMode ? itMapLyIn(i) === true && !itMapNoLand(i) : D[i] >= 0 && D[i] <= s.near.n;", "    if(o.near) ok = ok || (lyMode ? itMapLyIn(i) === true && !itMapNoLand(i) : D[i] >= 0 && D[i] <= s.near.n);", ('wh',)),   # 067: the light years branch
     ('the distance fade kept while filtering (Q6)', "alpha = (i) => mt ? (mt.m[i] ? 1 : IT_MAP_DIM)", "alpha = (i) => mt ? (mt.m[i] ? (!on(i) ? IT_MAP_FAINT : 1) : IT_MAP_DIM)", ('ex',)),
     ('no settings button on hover (057)', ".it-map-fw:hover > button.it-map-pb, .it-map-fw:has(", ".it-map-fw:has(", ('panel',)),
     ('the settings button kept up while its filter is on (057: hover only)', ".it-map-fw:hover > button.it-map-pb, .it-map-fw:has(", ".it-map-fw > [aria-pressed=\"true\"] ~ button.it-map-pb, .it-map-fw:hover > button.it-map-pb, .it-map-fw:has(", ('panel',)),
