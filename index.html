@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-dpjy6I/z6Z/XMGm5wZDvaI/sJ1apOZPgOOrfFJ216ck='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Vdh3RWuUMRfVkrP/CL0FJz4wRs6qpAqZJhoQvMwYcNI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2742,7 +2742,10 @@
   .it-rp-sug li{padding:5px 9px; font:400 12px/1.3 var(--sans); cursor:pointer; color:var(--text);} .it-rp-sug li.on, .it-rp-sug li:hover{background:#1d2731;}
   .it-rp-sug li .d, .it-rp-menu .d, .it-rp-note .d, .it-rp-box .d{color:var(--text-dim);}
   .it-map-box button.it-map-clr{top:8px; left:auto; right:148px;}   /* 052: left of the zoom buttons (the filter column is under the search box) */
-  @media (min-width: 600px){ .it-map-box:has(.it-map-zoom [data-im-z="jb"]:not([hidden])) button.it-map-clr{right:182px;} }   /* 059: one more zoom-column button while bridges are on (a phone: Hide all routes sits top left) */
+  @media (min-width: 600px){ .it-map-box:has(.it-map-zoom [data-im-z="jb"]:not([hidden])) button.it-map-clr{right:182px;} }   /* 059: one more zoom-column button while bridges are on (a phone: since 071 under the rail) */
+  @media (min-width: 600px){ .it-map-box:has(.it-map-zoom [data-im-z="home"]:not([hidden])) button.it-map-clr{right:182px;} .it-map-box:has(.it-map-zoom [data-im-z="home"]:not([hidden])):has(.it-map-zoom [data-im-z="jb"]:not([hidden])) button.it-map-clr{right:216px;} }   /* 071: and Home's house */
+  .it-map-box > button.it-map-clr > svg{display:none;}   /* 071: words on a wide map; a phone shows the icon (the Wormholes tab's toolbar pattern, .wh-tb) */
+  .it-map-tip .it-ho, .it-map-leg .it-ho{color:var(--wh-st-home); display:inline-flex; gap:3px; align-items:center;} .it-ho svg{display:inline-block; flex:none;} .it-map-leg i.ln.it-ho-ln{background:var(--wh-st-home);}   /* 071: Home, in the house colour */
   .it-map-zoom button[data-im-z="jb"][aria-pressed="true"]{border-color:var(--cyan); color:var(--cyan); background:var(--tag-on);}   /* 059: on (rule A's pressed look, as the Wormholes tab's Select) */
   .it-rp-menu{position:absolute; z-index:6; min-width:230px; max-width:calc(100% - 8px); box-sizing:border-box; padding:6px; border:1px solid #2c3842; border-radius:6px; background:var(--panel-2); box-shadow:0 8px 22px rgba(0,0,0,.55); font:400 12px/1.35 var(--sans); color:var(--text);}
   .it-rp-mh{padding:3px 6px 6px; border-bottom:1px solid var(--line); margin-bottom:4px;} .it-rp-mh b{color:var(--heading);}
@@ -2763,7 +2766,13 @@
   @media (max-width: 599px){
     .it-rp-search{top:60px; right:8px; width:auto;} .it-rp-search input{height:44px; min-height:44px; font-size:16px;}
     .it-rp-sug li{display:flex; align-items:center; gap:4px; min-height:44px; box-sizing:border-box;}   /* 064: 44 px rows on a phone (the map's search and the System Analyzer's) */
-    .it-map-box button.it-map-clr{top:8px; left:8px; right:auto; min-height:44px;} .it-rp-note{bottom:8px;} .it-rp-list li{min-height:44px;} .it-rp-list li button, .it-rp-add button, .it-rp-add input{min-height:44px;}
+    /* 071 (the owner: "go with your suggestion"; measured on main at 390 px: a 310 px map, "Hide all routes" over the + button): the top row holds
+       only + − ⤢ ⌂ ⌖; the bridge lines button and Hide all routes (an icon, its name in the title) go down the rail's column, under Near You's button.
+       LESSON #179: what is placed against the top row moves with it */
+    .it-map-zoom button[data-im-z="jb"]{position:absolute; top:152px; right:0;}   /* the box's 160 px: the rail's 112, its 44 px button and 4 px gap (the bar is at 8) */
+    .it-map-box:has(.it-map-zoom [data-im-z="jb"]:not([hidden])) > button.it-map-clr{top:208px;}
+    .it-map-box > button.it-map-clr > svg{display:block; margin:auto;} .it-map-box > button.it-map-clr > span{display:none;}
+    .it-map-box button.it-map-clr{top:160px; left:auto; right:8px; width:44px; height:44px; min-height:44px; padding:0;} .it-rp-note{bottom:8px;} .it-rp-list li{min-height:44px;} .it-rp-list li button, .it-rp-add button, .it-rp-add input{min-height:44px;}
   }
   .it-map-hint{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); padding:8px 12px; border-radius:6px; background:rgba(10,13,16,.85); color:var(--heading); font:600 13px var(--sans); opacity:0; transition:opacity .2s; pointer-events:none;}
   .it-map-hint.on{opacity:1;}
@@ -3470,7 +3479,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.23.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.23.3</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3851,7 +3860,7 @@ const CARD_INFO = {
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none), Sov holder, Jumps and Kills (past hour) from ESI: who holds each system (by your standings or one colour per alliance; zoomed in, its logo) and the past hour's jumps or kills; Only filters, any number, all must match (their settings beside them; Region pick: the regions you tick); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter or ESI colour on, systems past {card:itnear}'s range fade.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none), Sov holder, Jumps and Kills (past hour) from ESI: who holds each system (by your standings or one colour per alliance; zoomed in, its logo) and the past hour's jumps or kills; Only filters, any number, all must match (their settings beside them; Region pick: the regions you tick); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter or ESI colour on, systems past {card:itnear}'s range fade. Set as Home (right-click): a house marks it, hovers count jumps from it, the top house button centers on it, its menu shows the route.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus jump bridges you can use with Use jump bridges on the map (green curves, the bridge button hides them; the alert glow and Paths to you stay by stargate).",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list. With Use jump bridges on, routes take only bridge jumps arriving in the ticked zones (zone 1 free by default).",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
@@ -30213,6 +30222,7 @@ function itExSandbox(fn){
   const whSt = itWhSt, whAside = itWhAside;   // build queue 040: the example never reads or writes the user's wormholes (LESSON #162)
   itWhSt = itWhBlank(); itWhAside = true;
   const rpAside = itRpAside; itRpAside = true;   // 047: its map keeps the shortest stargate routes (the build review)
+  const hoAside = itHoAside; itHoAside = true;   // 071: and has no Home (no house, hover line, route, legend entry or top button)
   // build queue 055 (the owner at its review: "yes"): the map's filters are today's defaults (058's itMapStackBlank: Security, soft, no Only
   // filter) for everything the example draws, its legend and its copy of the filter column as well as its picture, never the user's own
   // stack (tvMapStack); the match set it keys is set aside with it
@@ -30255,7 +30265,7 @@ function itExSandbox(fn){
   }finally{
     for(const k of keys){ if(has[k]) it[k] = save[k]; else delete it[k]; }
     side.rec = rec; itEntryId = eid; itAnCan = can; itFrozenNow = fz; itm.pinned = pins; [itm.hover, itm.rowHover] = hov; itExOrg = null;
-    itWhSt = whSt; itWhAside = whAside; itRpAside = rpAside;
+    itWhSt = whSt; itWhAside = whAside; itRpAside = rpAside; itHoAside = hoAside;
     if(stHas) itm.st = st0; else delete itm.st; itm.mt = mt0;
   }
 }
@@ -30994,13 +31004,15 @@ function itMpChanged(){
 }
 // build queue 055: the map's controls each from one builder, used by the live map and by the Intel example's still copies (itExCtlHtml),
 // so the two can't drift (intel_example_check's drift guard)
-function itMapZoomHtml(){ return `<div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button><button type="button" data-im-z="jb" aria-pressed="true" aria-label="Jump bridge lines" hidden>${IT_JB_ICON}</button></div>`; }
+function itMapZoomHtml(){ return `<div class="it-map-zoom"><button type="button" data-im-z="in" title="Zoom in (or the mouse wheel)" aria-label="Zoom in">+</button><button type="button" data-im-z="out" title="Zoom out (or the mouse wheel)" aria-label="Zoom out">−</button><button type="button" data-im-z="fit" title="Back to the whole area" aria-label="Fit the map">⤢</button><button type="button" data-im-z="home" title="Center on your Home" aria-label="Center on your Home" hidden>${IT_HO_ICON}</button><button type="button" data-im-z="me" title="Center on your system" aria-label="Center on your system">${IT_MAP_CROSS}</button><button type="button" data-im-z="jb" aria-pressed="true" aria-label="Jump bridge lines" hidden>${IT_JB_ICON}</button></div>`; }
 // 059 (the owner, 2026-11-17: "add a button to the map that toggles jump bridge visibility (not a filter, just a visibility toggle)", then "Zoom
 // column", "Route step stays, hover off", "Remember; only while on", and "button defaults to on when jump bridges are enabled. no need for the line
 // through it, just shows off state when they're turned off"): after ⌖, only while the map counts bridges (itBridgeOn); on by default (the pressed
 // look), off hides only the green lines: the counts, the Jumps colours, Within N and the routes still use the bridges, a route's bridge step is still
 // drawn, and a bridge's hover is off. Kept in dscanIntel (it.set.jbHide).
 const IT_JB_ICON = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="3" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="13" cy="12" r="1.8" fill="currentColor" stroke="none"/><path d="M3.6 10.6Q8 1.5 12.4 10.6"/></svg>';
+// 071: Hide all routes as a phone shows it (the rail's column): a route line with an × over it
+const IT_CLR_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 15C5 9 9 13 11 7"/><circle cx="3" cy="15" r="1.4" fill="currentColor" stroke="none"/><path d="M11.5 2.5l4.5 4.5M16 2.5L11.5 7"/></svg>';
 function itJbHidden(){ return !!(it.set && it.set.jbHide) && itBridgeOn(); }
 function itJbBtnPaint(){
   const b = itm.el && itm.el.querySelector('[data-im-z="jb"]'); if(!b) return;
@@ -31025,7 +31037,7 @@ function itMapFlSet(bs, H, top, phone){
 // 055: the map's markup as it is made, before anything is drawn (intel_example_check's drift guard reads the controls shown at rest from it)
 function itMapMarkupHtml(){
   return `<div class="it-map-box">${itMapZoomHtml()}` + itMapRailHtml()
-    + itRpSearchHtml() + `<button type="button" class="it-map-clr" hidden>Hide all routes</button><canvas role="img" aria-label="Map of the systems around you, with the reported pilots and their routes to you"></canvas><canvas class="it-map-fx" aria-hidden="true"></canvas><div class="it-map-whp" aria-hidden="true"></div><button type="button" class="it-map-mt" data-it-mt hidden></button>`
+    + itRpSearchHtml() + `<button type="button" class="it-map-clr" hidden title="Hide all routes" aria-label="Hide all routes">${IT_CLR_ICON}<span>Hide all routes</span></button><canvas role="img" aria-label="Map of the systems around you, with the reported pilots and their routes to you"></canvas><canvas class="it-map-fx" aria-hidden="true"></canvas><div class="it-map-whp" aria-hidden="true"></div><button type="button" class="it-map-mt" data-it-mt hidden></button>`
     + `<button type="button" class="it-map-you" hidden title="You're off the map here: press to center on your system" aria-label="Center on your system"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>You</button><div class="it-map-tip" hidden></div><div class="it-map-hint" aria-hidden="true">Use two fingers to move the map</div><div class="it-map-msg" hidden></div>${itMapFbarHtml()}</div>`
     + `<div class="it-map-leg"></div>${itMapRowHtml()}`;
 }
@@ -31062,6 +31074,7 @@ function itMapRefresh(force){
   msg.hidden = !why; msg.textContent = why; itm.cv.hidden = !!why;
   if(itm.box.classList.contains('nomap') !== !!why) itm.box.classList.toggle('nomap', !!why);   // 064 (the owner's "left panel bug"): no map, only the message: no filter column (it was laid out for a map of height 0), search, zoom or rail   // LESSON #176: itm.cv.hidden alone lost to the canvas's display:block
   itm.el.querySelector('[data-im-z="me"]').hidden = !!why;   // nothing to center on
+  itHoBtnPaint();   // 071: the house, while a Home is set (nomap is set above)
   itMapLegend();
   const mc = document.querySelector('[data-it-mapctx]'); if(mc) mc.textContent = itMapCtx();
   if(why){ itm.home = -1; itm.you.hidden = true; itPtHide(); itMapWhPulse([]); if(itm.mtb) itm.mtb.hidden = true; return; }
@@ -31099,12 +31112,12 @@ function itMapRefresh(force){
 function itMapKey(){
   const fq = itFlSys();
   // 066: who died, not only the total (a re-work of sides, itSidesRework, can change it with the same total)
-  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kb ? `${r.kb.f}.${r.kb.h}.${r.kb.n}` : r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}|lv:${itMapLvKey()}`;   // 058: the stack   // 065: the live colour's read   // 047: Threat Vector's route   // 041: the bridges counted
+  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kb ? `${r.kb.f}.${r.kb.h}.${r.kb.n}` : r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}|lv:${itMapLvKey()}|ho:${itHoKey()}`;   // 058: the stack   // 065: the live colour's read   // 047: Threat Vector's route   // 041: the bridges counted
 }
-// slide the map so your system is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
-function itMapCenter(draw = true){
-  if(!itm.P || itm.home < 0) return;
-  const v = itm.view, i = itm.home; v.tx = itMapFreeX() - itm.P[2 * i] * v.k; v.ty = itm.H / 2 - itm.P[2 * i + 1] * v.k;   // 052: in the part no panel covers
+// slide the map so your system (071: or Home, i) is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
+function itMapCenter(draw = true, i = itm.home){
+  if(!itm.P || itm.home < 0 || i < 0) return;
+  const v = itm.view; v.tx = itMapFreeX() - itm.P[2 * i] * v.k; v.ty = itm.H / 2 - itm.P[2 * i + 1] * v.k;   // 052: in the part no panel covers
   if(draw){ itMapTip(-1); itMapDraw(); }
 }
 // three white rings spreading from your system over 1.6 s, then nothing: on their own canvas over the map, so the map itself isn't redrawn
@@ -31640,14 +31653,15 @@ function itMapDraw(){
   const focus = itm.hover >= 0 ? itm.hover : itm.rowHover, onRoute = new Set(), gr = itGraphGet();
   const show = new Set([...itm.pinned].map(id => gr.at.get(id)).filter(i => i !== undefined && D[i] > 0));
   if(focus >= 0 && D[focus] > 0) show.add(focus);
+  const hoR = itHoRouteOn() ? itHoIdx() : -1; if(hoR >= 0 && D[hoR] > 0) show.add(hoR);   // 071: the route to Home, while shown
   const reps = [...show].map(i => [i, itm.rep.get(i)]).sort((a, b) => (a[1] && a[1].side === 'hostile' ? 1 : 0) - (b[1] && b[1].side === 'hostile' ? 1 : 0));
   for(const [i, rp] of reps){
     const route = itMapRoute(i), lit = focus === i;
     route.forEach(([a, b]) => { onRoute.add(a); onRoute.add(b); });
     c.globalAlpha = focus >= 0 && !lit ? 0.35 : 0.9;
-    c.strokeStyle = rp && rp.side !== 'clear' ? C[rp.side] : C.cyan;
+    c.strokeStyle = i === hoR ? itMapCol('--wh-st-home', '#4fc3d9') : rp && rp.side !== 'clear' ? C[rp.side] : C.cyan;   // 071: Home's always the house colour
     c.lineWidth = (rp && rp.n ? Math.min(7, 1.5 + Math.log2(rp.n + 1)) : 2) + (lit ? 1.5 : 0);
-    c.setLineDash(itm.pinned.has(gr.ids[i]) ? [] : [6, 4]); c.lineCap = 'round';
+    c.setLineDash(itm.pinned.has(gr.ids[i]) || i === hoR ? [] : [6, 4]); c.lineCap = 'round';
     c.beginPath(); for(const [a, b] of route){ if(T.adj[a].includes(b)) { c.moveTo(X(a), Y(a)); c.lineTo(X(b), Y(b)); } else itBridgeArc(c, a, b, X, Y); } c.stroke();   // 041 (D13): a step that isn't a gate is its bridge's curve (057: the same curve, whichever way it is crossed)
   }
   c.setLineDash([]); c.globalAlpha = 1;
@@ -31708,6 +31722,7 @@ function itMapDraw(){
   if(fq !== undefined && on(fq)){ c.strokeStyle = C.cyan; c.lineWidth = 2; c.beginPath(); c.arc(X(fq), Y(fq), big ? r + 10 : 19, 0, 6.283); c.stroke(); }
   if(focus >= 0){ c.strokeStyle = C.cyan; c.lineWidth = 1.5; c.beginPath(); c.arc(X(focus), Y(focus), big ? r + 12 : 21, 0, 6.283); c.stroke(); }
   // v2026.11.04.1: your system, drawn last so nothing covers it: its dot (zoomed in, its circle), and a white pin standing on it
+  itHoDraw(c, X, Y, big, r);   // 071: Home's house, just under your pin
   { const i = itm.home; if(!big){ c.fillStyle = itMapFcol(i); c.beginPath(); c.arc(X(i), Y(i), 6, 0, 6.283); c.fill(); } itMapPinDraw(c, X(i), Y(i) - (big ? r : 6)); }
   itm.fbBox = itm.exFb ? itm.exFb.slice() : null;   // the filter bar's place in the box: no name goes under it (055: the Intel example's, measured on its copy)
   { const fb = itm.box && itm.cv.parentNode === itm.box && itm.box.querySelector('.it-map-fbtns, .it-map-fcur');
@@ -31769,6 +31784,7 @@ function itMapLabels(c, focus, onRoute, C, cr = 0){   // cr: the circles' radius
   for(const b of itm.nameBoxes || []) add(b);   // 039: the names under the circles
   if(itm.fbBox) add(itm.fbBox);   // and the filter bar
   if(itm.chipBox) add(itm.chipBox);   // 045: and the chip (058: the match chip)
+  if(itm.hoBox) add(itm.hoBox);   // 071: and Home's house
   const hx = Q[2 * itm.home], hy = Q[2 * itm.home + 1] - (cr ? cr - 6 : 0), pin = [hx - 9, hy - 29, hx + 9, hy + (cr ? 2 * cr - 6 : 0)];   // your pin's box: no name goes over it (v2026.11.04.1)
   add(pin);
   c.textBaseline = 'middle';
@@ -31860,7 +31876,7 @@ function itMapOnlyHtml(){
 function itMapLegend(){
   const leg = itm.el.querySelector('.it-map-leg'), ring = (col, r) => `<i class="ring" style="width:${r * 2}px;height:${r * 2}px;border-color:${col}"></i>`;
   const h = `<div class="it-map-fl" title="${escapeHtml(itMapFLegTitle())}">${itMapFLegHtml()}</div>${itMapOnlyLineHtml()}<span><svg class="pin" width="11" height="15" viewBox="-1 -1 16 22" aria-hidden="true"><path d="M7 20C5.5 16 0 12 0 7a7 7 0 0 1 14 0c0 5-5.5 9-7 13z" fill="#fff" stroke="#0c1014" stroke-width="2"/><circle cx="7" cy="7" r="2.6" fill="#0c1014"/></svg>you</span><span>${ring('var(--danger)', 6)}hostile</span><span>${ring('#b9c3ca', 6)}neutral</span><span>${ring('var(--side-friendly)', 6)}friendly</span><span class="sz">${ring('#9aa6ae', 4)}solo ${ring('#9aa6ae', 6)}2–10 ${ring('#9aa6ae', 8.5)}11+</span>${IT_WH_LEG_HTML}`
-    + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span><span><i class="dot"></i>within your alert range (${it.set.range})</span>${itMapFadeLegHtml()}<span title="${escapeHtml(`Kills here within "forget reports after" (${Number(it.set.forget)} min), by who died: friendlies lost, hostiles killed, neutrals killed`)}">✕ kills by who died: <i class="it-mkb f">friendly</i> <i class="it-mkb h">hostile</i> <i class="it-mkb n">neutral</i></span>`;   // 066
+    + `<span><i class="ln"></i>route to you (dashed: hover; solid: kept)</span>${itHoLegHtml()}<span><i class="dot"></i>within your alert range (${it.set.range})</span>${itMapFadeLegHtml()}<span title="${escapeHtml(`Kills here within "forget reports after" (${Number(it.set.forget)} min), by who died: friendlies lost, hostiles killed, neutrals killed`)}">✕ kills by who died: <i class="it-mkb f">friendly</i> <i class="it-mkb h">hostile</i> <i class="it-mkb n">neutral</i></span>`;   // 066
   if(leg._h !== h){ leg.innerHTML = h; leg._h = h; itMapHvKey = ''; if(itm.P && itm.home >= 0 && itm.cv.parentNode === itm.box) itMapHvPaint(); }   // 065 (Q10): no faded / faint entries for the three live colours
 }
 // the legend's faded / faint entries; none with Sov holder, Jumps or Kills (past hour) on (065, Q10)
@@ -32127,6 +32143,7 @@ function itMapTip(i, x, y){
   const where = d === 0 ? 'you are here' : d < 0 ? 'no gate route to you' : `${d} jump${d === 1 ? '' : 's'}`;
   let h = `<b>${escapeHtml(itSysName(ids[i]))}</b> <span class="d">${escapeHtml(T.regions[T.reg[i]] || '')} · ${escapeHtml(itMapSecText(i))} · ${escapeHtml(where)}</span>`;
   h += itMapJbTipHtml(i);   // 041: how many of those jumps are by jump bridge, and the count by stargate
+  h += itHoTipHtml(i);   // 071: jumps from Home, or "Your Home"
   // v2026.11.04.1: how far in light-years, as a jump drive measures it (the owner: "the distance in LY (from the player's current system)")
   const ly = i !== itm.home ? itMapLy(i, itm.home) : null;
   if(ly !== null) h += `<br><span class="ly"><b>${itMapLyText(ly)} LY</b> <span class="d">from ${escapeHtml(itSysName(ids[itm.home]))}</span></span>`;
@@ -33558,7 +33575,8 @@ function itRpTouch(){ return typeof matchMedia === 'function' && (matchMedia('(h
 // the tooltip's lines (itMapTip): Threat Vector's route when it differs from the shortest, what it couldn't avoid, the avoid list, the
 // right-click hint; on a phone, once its route is kept (a press), the three buttons
 function itRpTipHtml(i){
-  if(itRpAside || i < 0 || i === itm.home) return {h: '', act: false};
+  if(itRpAside || i < 0) return {h: '', act: false};
+  if(i === itm.home) return itRpTouch() && !itHoAside ? {h: `<div class="it-rp-btns it-rp-intip"${itRpGroupHtml(true, itGraphGet().ids[i])}>${itHoBtnsHtml(i, true)}</div>`, act: true} : {h: '', act: false};   // 071: a phone, your own system: Home's buttons only
   const ids = itGraphGet().ids, gid = ids[i], d = itm.D[i], path = d > 0 ? itRpPath(i) : null;
   // 041 (D11): a route by stargate is compared with the stargate count; 057: a route that can take your bridges, with the fewest jumps over
   // the graph it searched (stargates plus the directions used)
@@ -33575,13 +33593,13 @@ function itRpTipHtml(i){
   }
   return {h, act};
 }
-// the menu's (and the phone tooltip's) three buttons
+// the menu's (and the phone tooltip's) three buttons, then Home's (071)
 function itRpBtnsHtml(i, inTip){
   const ids = itGraphGet().ids, gid = ids[i], d = itm.D[i], can = d > 0, path = can ? itRpPath(i) : null, w = itRpWarn(path), on = itRpSet().list.includes(gid);
   return `<div class="it-rp-btns${escapeHtml(inTip ? ' it-rp-intip' : '')}"${itRpGroupHtml(inTip, gid)}>`
     + `<button type="button"${itRpRoleHtml(inTip)} data-it-rp-go="eve" data-it-rp-i="${Number(i)}"${itOnHtml(!can, 'disabled')}>Send destination to EVE <span>(EVE's route)</span></button>`
     + `<button type="button"${itRpRoleHtml(inTip)} data-it-rp-go="tv" data-it-rp-i="${Number(i)}"${itOnHtml(!can, 'disabled')}>Send destination to EVE <span>(Threat Vector's route)</span>${itRpSubHtml(path, w)}</button>`
-    + `<button type="button"${itRpRoleHtml(inTip)} class="it-rp-av" data-it-rp-av="${Number(gid)}"${itOnHtml(i === itm.home, 'disabled')}>${escapeHtml(on ? 'Stop avoiding' : 'Avoid this system')}</button></div>`;
+    + `<button type="button"${itRpRoleHtml(inTip)} class="it-rp-av" data-it-rp-av="${Number(gid)}"${itOnHtml(i === itm.home, 'disabled')}>${escapeHtml(on ? 'Stop avoiding' : 'Avoid this system')}</button>${itHoBtnsHtml(i, inTip)}</div>`;   // 071: Home's items
 }
 function itRpRoleHtml(inTip){ return inTip ? '' : ' role="menuitem"'; }   // the menu's items; in a phone's tooltip they are plain buttons in a group
 function itRpGroupHtml(inTip, gid){ return inTip ? ` role="group" aria-label="${escapeHtml(itSysName(gid))}"` : ''; }
@@ -33594,7 +33612,7 @@ function itRpMenuOpen(i, x, y, opener){
   itRpMenuClose(false);
   if(i < 0 || !itm.box || itRpAside) return;
   const ids = itGraphGet().ids, m = document.createElement('div');
-  m.className = 'it-rp-menu'; m.setAttribute('role', 'menu'); m.setAttribute('aria-label', `${itSysName(ids[i])}: send destination to EVE`);
+  m.className = 'it-rp-menu'; m.setAttribute('role', 'menu'); m.setAttribute('aria-label', itSysName(ids[i]));   // 071: the system alone (it holds Home's items too)
   m.innerHTML = `<div class="it-rp-mh"><b>${escapeHtml(itSysName(ids[i]))}</b>${itRpWhereHtml(i)}</div>${itRpBtnsHtml(i, false)}`;
   itm.box.appendChild(m); itRp.menu = m; itRp.opener = opener || null;
   const mw = m.offsetWidth, mh = m.offsetHeight;
@@ -33703,6 +33721,96 @@ function itRpAvoid(gid){
   if(k >= 0) s.list.splice(k, 1); else if(s.list.length < IT_RP_LIST_MAX && itGraphGet().at.has(gid)) s.list.push(gid);
   itRpSave(); itRpMenuClose(false); itRpRefresh();
 }
+// ---- build queue 071 (Project doc roadmap/intel-home-plan.md, mockup Claude outputs/home_mockup.html; the owner: "also add the ability to set
+// a "home" system from the intel map. use something like the in-game "home" system icon (just draw it yourself)", then "Intel's own Home
+// (Recommended)", "Route to Home,Jumps from Home on hover", "i would put the "home" button at the top to the left of the "center on your system".
+// it should "center on your home system""): one system you pick as Home, Intel's own (not the Wormholes tab's Home status; itm.home is *your*
+// system, so this one is itHo). Kept in localStorage tvHome {v: 1, id, route} (a new key: an older page never reads it; anything else is
+// ignored). Marked by a house we draw (no CCP art), "N jumps from Home" in every hover, the top bar's house centers on it, its menu shows a kept
+// route to it in the house colour that a move doesn't clear (off until shown, the owner). None of it inside the Intel example (itHoAside).
+const IT_HO_KEY = 'tvHome';
+const IT_HO_ICON = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M2.5 7.5L8 2.5l5.5 5"/><path d="M4 6.5V13.5h8V6.5"/><path d="M6.8 13.5v-3.2h2.4v3.2"/></svg>';
+const itHo = {id: 0, route: false, dk: '', D: null};   // dk / D: the jumps from Home, kept until Home or the bridges change
+let itHoAside = false;   // inside the Intel example's sandbox: no Home at all (LESSON #162)
+function itHoRead(){
+  itHo.id = 0; itHo.route = false; itHo.dk = '';
+  let o = null;
+  try{ o = typeof localStorage === 'undefined' ? null : JSON.parse(localStorage.getItem(IT_HO_KEY) || 'null'); }catch(e){ o = null; }
+  if(o && typeof o === 'object' && o.v === 1 && Number.isInteger(o.id) && o.id > 0){ itHo.id = o.id; itHo.route = o.route === true; }
+}
+function itHoSave(){ try{ if(itHo.id) localStorage.setItem(IT_HO_KEY, JSON.stringify({v: 1, id: itHo.id, route: itHo.route})); else localStorage.removeItem(IT_HO_KEY); }catch(e){} }
+// Home's index on the map, or -1 (none, the example, or a system the map's table doesn't hold: kept, not drawn)
+function itHoIdx(){ if(itHoAside || !itHo.id) return -1; const i = itGraphGet().at.get(itHo.id); return i === undefined ? -1 : i; }
+function itHoName(){ return itSysName(itHo.id); }
+function itHoKey(){ return itHoIdx() < 0 ? '' : `${itHo.id}.${itHo.route ? 1 : 0}`; }   // in itMapKey: the house, the route and the hover follow it
+function itHoRouteOn(){ return itHo.route && itHoIdx() >= 0; }
+// jumps from Home over the graph "jumps from you" uses (stargates, and your bridges while the map counts them, itBridgeAdj)
+function itHoDist(){
+  const h = itHoIdx(), T = itMapTable(); if(h < 0 || !T) return null;
+  const key = `${itHo.id}|${itm.jbKey || ''}`; if(itHo.dk === key && itHo.D) return itHo.D;
+  const adj = itm.jbKey ? itBridgeAdj() : T.adj, D = new Int16Array(T.n).fill(-1), q = [h]; D[h] = 0;
+  for(let k = 0; k < q.length; k++){ const x = q[k]; for(const y of adj[x]) if(D[y] < 0){ D[y] = D[x] + 1; q.push(y); } }
+  itHo.dk = key; itHo.D = D; return D;
+}
+// the hover's line under the first: "9 jumps from Home (X)", on Home "Your Home"
+function itHoTipHtml(i){
+  const h = itHoIdx(); if(h < 0 || i < 0) return '';
+  if(i === h) return `<br><span class="it-ho">${IT_HO_ICON} Your Home</span>`;
+  const D = itHoDist(), d = D ? D[i] : -1;
+  return `<br><span class="d">${escapeHtml(d < 0 ? `no gate route from Home (${itHoName()})` : `${d} jump${d === 1 ? '' : 's'} from Home (${itHoName()})`)}</span>`;
+}
+// the right-click menu's (and a phone tooltip's) Home items, after Avoid: Set as Home anywhere else; on Home its route and Remove Home
+function itHoBtnsHtml(i, inTip){
+  if(itHoAside) return '';
+  const gid = itGraphGet().ids[i];
+  if(gid === itHo.id && itHoIdx() >= 0){
+    const here = i === itm.home;
+    return `<button type="button"${itRpRoleHtml(inTip)} class="it-rp-av" data-it-ho="rt"${itOnHtml(here, 'disabled')}>${escapeHtml(`${itHo.route ? 'Hide' : 'Show'} the route to Home`)}${itHoSubHtml(here ? '(you are here)' : '')}</button>`
+      + `<button type="button"${itRpRoleHtml(inTip)} class="it-rp-av" data-it-ho="off">Remove Home</button>`;
+  }
+  return `<button type="button"${itRpRoleHtml(inTip)} class="it-rp-av" data-it-ho="set" data-it-ho-id="${Number(gid)}">Set as Home${itHoSubHtml(itHo.id ? `(instead of ${itHoName()})` : '')}</button>`;
+}
+function itHoSubHtml(t){ return t ? ` <span>${escapeHtml(t)}</span>` : ''; }   // an item's dim second part, as the menu's other items have
+// the top bar's house: shown while a Home is on the map (and there is a map)
+function itHoBtnPaint(){
+  const b = itm.el && itm.el.querySelector('[data-im-z="home"]'); if(!b) return;
+  const off = itHoIdx() < 0 || itm.box.classList.contains('nomap'), t = off ? 'Center on your Home' : `Center on your Home (${itHoName()})`;
+  if(b.hidden !== off) b.hidden = off;   // written only when it changes (LESSON #120)
+  if(b.title !== t){ b.title = t; b.setAttribute('aria-label', t); }
+}
+// the legend's entries while a Home is set (the owner: "Add it while set (Recommended)"), and the route's line while it's shown
+function itHoLegHtml(){ return itHoIdx() < 0 ? '' : `<span class="it-ho">${IT_HO_ICON}${escapeHtml(`Home (${itHoName()})`)}</span>` + (itHo.route ? '<span><i class="ln it-ho-ln"></i>route to Home (kept)</span>' : ''); }
+// the house on the canvas: above Home's dot (zoomed in, above its circle); when you're in Home, left of your pin. Its box is kept so no name
+// goes over it (itMapLabels)
+function itHoDraw(c, X, Y, big, r){
+  itm.hoBox = null;
+  const i = itHoIdx(); if(i < 0) return;
+  const s = big ? 15 : 12, here = i === itm.home, x = X(i) - (here ? (big ? r + 12 : 13) : 0), base = here ? Y(i) + s * 0.45 : Y(i) - (big ? r + 3 : 5);
+  if(x < -s || x > itm.W + s || base < -2 || base - s > itm.H + 2) return;
+  itHoHouse(c, x, base, s); itm.hoBox = [x - s * 0.6, base - s - 1, x + s * 0.6, base + 1];
+}
+function itHoHouse(c, x, base, s){   // base: the house's bottom, centred on x; a roof, a body and a door, with the map's dark outline
+  const w = s * 0.78, hb = s * 0.5, top = base - s;
+  c.save(); c.lineJoin = 'round';
+  c.beginPath(); c.moveTo(x - s * 0.55, base - hb); c.lineTo(x, top); c.lineTo(x + s * 0.55, base - hb); c.lineTo(x + w / 2, base - hb); c.lineTo(x + w / 2, base); c.lineTo(x - w / 2, base); c.lineTo(x - w / 2, base - hb); c.closePath();
+  c.lineWidth = 3.5; c.strokeStyle = '#0c1014'; c.stroke();
+  c.shadowColor = 'rgba(0,0,0,.5)'; c.shadowBlur = 5; c.fillStyle = itMapCol('--wh-st-home', '#4fc3d9'); c.fill(); c.shadowBlur = 0;
+  c.fillStyle = '#0c1014'; c.fillRect(x - s * 0.1, base - hb * 0.62, s * 0.2, hb * 0.62);   // the door
+  c.restore();
+}
+// a pick from the menu or a phone's tooltip: set, replace or remove Home, or its route on / off
+function itHoAct(a, id){
+  itRpMenuClose(false); itMapTip(-1);
+  if(a === 'set' && Number.isInteger(id) && itGraphGet().at.has(id)){ itHo.id = id; itHo.route = false; }
+  else if(a === 'off'){ itHo.id = 0; itHo.route = false; }
+  else if(a === 'rt' && itHoIdx() >= 0 && itHoIdx() !== itm.home) itHo.route = !itHo.route;
+  else return;
+  itHo.dk = ''; itHoSave(); itHoChanged();
+}
+function itHoChanged(){ if(typeof itm !== 'undefined' && itm.el){ itHoBtnPaint(); itMapRefresh(true); } }
+itHoRead();
+// another tab set, moved or removed Home
+if(typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('storage', (e) => { if(e.key === IT_HO_KEY){ itHoRead(); itHoChanged(); } });
 // a setting or the list changed: the routes again, the map, and the Routes box if it is on screen
 function itRpRefresh(focusSel){
   itRp.key = '';
@@ -33854,6 +33962,8 @@ function itRpBind(el){
     if(go){ e.preventDefault(); if(!go.disabled) itRpGo(go.dataset.itRpGo, Number(go.dataset.itRpI)); return; }
     const av = e.target.closest && e.target.closest('[data-it-rp-av]');
     if(av){ e.preventDefault(); const inBox = !!av.closest('[data-it-rp-box]'); itRpAvoid(Number(av.dataset.itRpAv)); if(inBox){ const b = document.querySelector('[data-it-rp-box] [data-it-rp-av]') || document.querySelector('[data-it-rp-box] input[name=sys]'); if(b) b.focus({preventScroll: true}); } return; }
+    const ho = e.target.closest && e.target.closest('[data-it-ho]');
+    if(ho){ e.preventDefault(); if(!ho.disabled) itHoAct(ho.dataset.itHo, Number(ho.dataset.itHoId)); return; }   // 071: Home's items
     if(e.target.closest && e.target.closest('[data-it-rp-nx]')){ itRpNote(null); return; }
     const fb = e.target.closest && e.target.closest('[data-it-rp-force]');
     if(fb){ itRpNote(null); itRp.force = true; itRpGo(fb.dataset.itRpForce, Number(fb.dataset.itRpI)); return; }
@@ -33914,7 +34024,7 @@ function itMapBind(){
     if(e.target.closest('.it-map-fcur')){ itMapFbarOpen(!itm.el.querySelector('.it-map-fb.open')); return; }
     const z = e.target.closest('[data-im-z]');
     if(z && z.dataset.imZ === 'jb'){ it.set.jbHide = !it.set.jbHide; itWriteSet(); itm.hoverJb = -1; itMapTip(-1); itMapDraw(); return; }   // 059: never read as a zoom
-    if(z){ if(z.dataset.imZ === 'fit'){ itMapFitView(); itMapTip(-1); itMapDraw(); } else if(z.dataset.imZ === 'me') itMapCenter(); else itMapZoom(itm.W / 2, itm.H / 2, z.dataset.imZ === 'in' ? 1.5 : 1 / 1.5); return; }
+    if(z){ if(z.dataset.imZ === 'fit'){ itMapFitView(); itMapTip(-1); itMapDraw(); } else if(z.dataset.imZ === 'me') itMapCenter(); else if(z.dataset.imZ === 'home') itMapCenter(true, itHoIdx()); else itMapZoom(itm.W / 2, itm.H / 2, z.dataset.imZ === 'in' ? 1.5 : 1 / 1.5); return; }
     if(e.target.closest('.it-map-you')){ itMapCenter(); return; }
     if(e.target.closest('.it-map-clr')){ itm.pinned.clear(); e.target.closest('.it-map-clr').hidden = true; itRenderLists(); itMapRefresh(true); }
   });

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-23 — Intel map: a Home system, marked with a house; the phone's corner buttons</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel map: a Home system, marked with a house; the phone's corner buttons</h1>
+<p><span class="tag">Page</span><span class="tag">Intel map</span> 2026-11-23 &middot; <code>v2026.11.23.3</code> &middot; branch <code>071-intel-home</code> &middot; build queue 071 (plan <code>roadmap/intel-home-plan.md</code>, mockup <code>Claude outputs/home_mockup.html</code>, its scripts in <code>roadmap/intel-home-mockup/</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner (2026-11-22): "also add the ability to set a "home" system from the intel map. use something like the in-game "home" system icon (just draw it yourself)." His answers (2026-11-23): "Intel's own Home (Recommended)", "Route to Home,Jumps from Home on hover", the house button "at the top to the left of the "center on your system"", the route toggle in "Home's menu (Recommended)", "Off until shown (Recommended)", the legend "Add it while set (Recommended)", your own system's phone tooltip "Yes, add it (Recommended)", the info cap "Raise to ~738 (Recommended)".</li>
+<li>At the build review: the plan left "Hide all routes" where a wider top row would cover it. Measured on main at 390 px, the map is 310 px wide and "Hide all routes" (115 px) already covered the + button with four buttons, 59 px of the row with the bridge lines button. The owner: "go with your suggestion".</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Home</b> (<code>itHo</code>; <code>itm.home</code> stays your own system): Set as Home in every system's right-click menu ("(instead of X)" once one is set); on Home, Show / Hide the route to Home and Remove Home (<code>itHoBtnsHtml</code>, after Avoid, through the menu's own handler, <code>itHoAct</code>). Kept in <code>localStorage</code> <code>tvHome</code> <code>{v: 1, id, route}</code> (<code>itHoRead</code> / <code>itHoSave</code>; anything else ignored; another tab's change read again).</li>
+<li><b>On the map:</b> a house we draw (<code>itHoHouse</code>, <code>--wh-st-home</code>, the map's dark outline) above Home's dot, left of your pin when you're in Home, its box kept so no name goes over it; every hover's "N jumps from Home (X)" (<code>itHoDist</code>: one search from Home over the graph the map counts on, kept until Home or the bridges change), "Your Home" on Home; the legend's Home entry and, while shown, "route to Home (kept)".</li>
+<li><b>Center on your Home:</b> a house button left of Center on your system, shown while a Home is set (<code>itHoBtnPaint</code>); <code>itMapCenter(draw, i)</code> now centers either.</li>
+<li><b>The route to Home:</b> drawn with the kept routes, solid, always the house colour, kept apart from <code>itm.pinned</code> so a move doesn't clear it (nor Hide all routes: its own item turns it off); off while you're in Home ("(you are here)"). <code>itMapKey</code> carries Home and the route.</li>
+<li><b>A phone:</b> your own system's tooltip holds Home's buttons alone. The top row holds only + − ⤢ ⌂ ⌖; the bridge lines button and Hide all routes (an icon, <code>IT_CLR_ICON</code>, its name in the title and aria-label, as the Wormholes tab's toolbar shows its buttons) go down the rail's column under Near You's button. A wide map keeps the words; Hide all routes moves over for the house.</li>
+<li>The right-click menu's accessible name is the system's name alone (it holds Home's items too). The Intel example sets Home aside (<code>itHoAside</code> in <code>itExSandbox</code>): no house, hover line, route, legend entry or button.</li>
+<li><code>CARD_INFO.intel</code> [Map]: "Set as Home (right-click): a house marks it, hovers count jumps from it, the top house button centers on it, its menu shows the route."; the Intel cap 741, the final count.</li>
+<li>Checks: <code>tools/page_checks/intel_home_check.py</code> (new; 14 mutants); <code>route_planner_check.py</code> reads the menu's fourth item.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>A plan that adds a button to a row of absolutely placed controls should list what is placed against that row (here "Hide all routes", a fixed distance from the right edge), and measure the phone with every optional control showing. The mockup checked five buttons alone; the real page already overlapped with four. LESSON #179.</li>
+</ul>
+</body></html>

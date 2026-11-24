@@ -440,7 +440,7 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   one button and takes turns with Near You, a panel is a sheet that shuts Near You; on a wide map with no room for both side by side they
   take turns too (`itMapRoomForBoth`, the owner: "sure"). Placed by `itMapCtlPlace` (a key: the map's size, the filter, Near You, the
   panel; no timers). ⌖, your first view, a jump, a search pick, a Wormholes-list pick and ⤢ use the part of the map no panel covers
-  (`itMapFree`, the owner: "yes"; the whole width when that part is under 96 px). Hide all routes sits left of the zoom buttons (a phone: top left). `intel_map_layout_check.py`.
+  (`itMapFree`, the owner: "yes"; the whole width when that part is under 96 px). Hide all routes sits left of the zoom buttons (a phone: since 071 an icon down the rail's column, with the bridge lines button). `intel_map_layout_check.py`.
 - **Sov upgrades** (v2026.11.16.1, build queue 053, part 2 of the Project doc roadmap/intel-layout-sov-plan.md, now `roadmap/`; mockup `Claude
   outputs/intel_layout_mockup.html`; the owner: "Paste now, ESI later", "Kind, level shown", "Until replaced", "Bright / dim"): the map filter `sov`
   (before Paths to you) with its panel button (`[data-it-sovl]`, `sovOpen`, `.it-whp.it-sovp`: rule B, the shared close button, Esc, a press
@@ -671,6 +671,16 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   picks a group (the way back counted, the finisher held, polarization), `hmApply` takes an answer; answers set the connection's Mass, Undo puts
   it back; It's gone asks before `whLinksDel` (the System panel's delete too). The phone toolbar wraps (44 x 44). + Add's Linked to is built by
   `whAddLinkList`, on opening and after every Add (070's bug). `wormhole_mass_check.py` (the steps replayed against holes, the exact range).
+- **Intel's own Home** (v2026.11.23.3, build queue 071; roadmap/intel-home-plan.md, mockup `Claude outputs/home_mockup.html`; the owner: "Intel's own
+  Home (Recommended)", "Route to Home,Jumps from Home on hover", the house button "at the top to the left of the "center on your system""): one
+  system you pick (`itHo`; `itm.home` stays *your* system), kept in localStorage `tvHome` `{v: 1, id, route}` (`itHoRead`, another tab's change
+  read again). Set as Home / Show or Hide the route to Home / Remove Home after Avoid in the right-click menu (`itHoBtnsHtml`, `itHoAct`; on a
+  phone in a kept system's tooltip, and alone in your own system's); a house we draw (`itHoHouse`, `--wh-st-home`, no CCP art) above Home, its
+  box kept from names (`itm.hoBox`); "N jumps from Home" in every hover (`itHoDist`, the graph the map counts on); the top row's house centers
+  it (`itMapCenter(draw, i)`); the route to Home a kept route in the house colour that a move or Hide all routes doesn't clear; the legend's
+  entries; `itMapKey` carries it. Never in the Intel example (`itHoAside`). A phone's top row holds only + − ⤢ ⌂ ⌖: the bridge lines button and
+  Hide all routes (an icon, `IT_CLR_ICON`) go down the rail's column (the owner at the review: "go with your suggestion"; LESSON #179); a wide
+  map's Hide all routes moves over for the house. `intel_home_check.py`.
 - **Kills and losses in the system** (v2026.11.02.3, Project doc roadmap/system-activity-plan.md): one zKillboard request per
   system an hour (`/kills/systemID/<id>/pastSeconds/259200/`), then killmails from ESI newest first to the window or
   `SA_ACT_KM_MAX` (300). The system: an Intel Assess's, else ⚙ (`saSet`, localStorage dscanSaSet): your location from Intel or a
@@ -774,7 +784,7 @@ still gets its own targeted check and mutants.
 **How the numbers are worked out, for people:** `METHODOLOGY.md` (was the "How effective HP and DPS are
 calculated" note on the page, removed in v2026.10.14.51); each card's short version is its ⓘ panel (`CARD_INFO`).
 Change both when a calculation's assumptions change. Since build queue 036 (v2026.11.11.3) the panels are short (`check_subtext.py`:
-85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"; 620 since 052, "raise it"; 670 since 041, "Raise to 670 (Recommended)"; 716 since 065, "Raise cap ~40"), the detail is in METHODOLOGY.md (its Intel, Who's in the
+85 words open, 210 in all, Intel 600 since build queue 047: the owner, "push the cap to 600"; 620 since 052, "raise it"; 670 since 041, "Raise to 670 (Recommended)"; 716 since 065, "Raise cap ~40"; 741 since 071, "Raise to ~738 (Recommended)", set from the final count), the detail is in METHODOLOGY.md (its Intel, Who's in the
 system and Sides sections too), and nothing on the page links to it (build queue 037 took 036's footer link out, the owner: "i dont want that link displayed"). A paragraph may hold several `**Lead:**` parts (`infoBoldHtml`); a
 panel never inherits a heading's case or spacing (`.info-body`; `info_panels_check.py`).
 
