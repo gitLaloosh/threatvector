@@ -8,7 +8,7 @@ status number" and "add badges for gate camps, ess and kills"; the button before
 the top line the count only, the map's drag help kept under the box, the count a 3 px tag (the tag rule). Uses intel_check.py's made-up
 folder, mocks and names; the systems around 1DQ1-A have no loops, so you jump (a Local line) to a made-up area with one, its systems
 named PTnn-Z here; every pilot and line is made up. The expected tree is worked out here from the jump table on its own. Checks:
-  * the column: fourteen filters (065), Paths to you last (052), Sov upgrades before it (053), Security range and Within N jumps (058), the list button right after Wormholes; the name line;
+  * the column: fourteen filters (065), Paths to you last (052), Sov upgrades before it (053), Security range and Within N jumps (058; Distance since 067), the list button right after Wormholes; the name line;
   * the tree: exactly your system, the sources (a hostile or neutral report, or kills, within the alert range; a clear and a report past
     the alert range left out) and the systems on their shortest routes; exactly the gates on those routes; a system with two shortest
     routes has both gates;

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Vdh3RWuUMRfVkrP/CL0FJz4wRs6qpAqZJhoQvMwYcNI='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-vaPnOwnhBne6TjwmXOCTwH10E8z7DP0tyifZoNw/78Q='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -2833,6 +2833,7 @@
   .it-mpp .rs-v{width:5.2ch;}   /* 058: the security steppers show "-1.0" whole (the owner's hand test: "0.:", "-0"); 3.2ch fits jumps only */
   .it-mpp .it-mp-q{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 8px; color:var(--text-dim);}
   .it-mpp .it-mp-q button{min-height:28px; padding:0 10px; font-size:12px;}
+  .it-mpp .it-mp-q button[aria-pressed="true"]{background:var(--tag-on);}   /* 067: Distance's quick pick equal to the value */
   .it-mpp .it-mp-note{color:var(--text-dim); line-height:1.4;} .it-mpp .it-mp-cnt{margin-top:8px; color:var(--heading);}
   .it-map-leg .it-map-fl.it-map-only{display:block; height:auto; overflow:visible; white-space:normal; line-height:1.45; color:var(--text);}   /* Q14: it wraps; the colour line stays one line */
   .it-sov-lv{margin:8px 0 10px;} .it-sov-lvr{display:flex; flex-wrap:wrap; align-items:center; gap:4px 14px;} .it-sov-lvr > b{font:600 12px var(--sans); color:var(--heading);} .it-sov-lva, .it-sov-lvn{color:var(--text-dim);} .it-sov-lvn{margin-top:2px; line-height:1.4;}
@@ -3479,7 +3480,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.23.3</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.24.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3860,7 +3861,7 @@ const CARD_INFO = {
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none), Sov holder, Jumps and Kills (past hour) from ESI: who holds each system (by your standings or one colour per alliance; zoomed in, its logo) and the past hour's jumps or kills; Only filters, any number, all must match (their settings beside them; Region pick: the regions you tick); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter or ESI colour on, systems past {card:itnear}'s range fade. Set as Home (right-click): a house marks it, hovers count jumps from it, the top house button centers on it, its menu shows the route.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none), Sov holder, Jumps and Kills (past hour) from ESI: who holds each system (by your standings or one colour per alliance; zoomed in, its logo) and the past hour's jumps or kills; Only filters, any number, all must match (their settings beside them; Distance counts stargate jumps, or light years where a jump drive can land; Region pick: the regions you tick); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter or ESI colour on, systems past {card:itnear}'s range fade. Set as Home (right-click): a house marks it, hovers count jumps from it, the top house button centers on it, its menu shows the route.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus jump bridges you can use with Use jump bridges on the map (green curves, the bridge button hides them; the alert glow and Paths to you stay by stargate).",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list. With Use jump bridges on, routes take only bridge jumps arriving in the ticked zones (zone 1 free by default).",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
@@ -30672,13 +30673,25 @@ function itMapLy(i, j){
   return Math.sqrt(dx * dx + dy * dy + dz * dz) * INTEL_MAP.p3u;
 }
 // to 2 decimals, rounded up (the owner: "Round up to 0.01"): 7.004 shows 7.01, so a system that reads within a jump range always is
-function itMapLyText(d){ return (Math.ceil(d * 100 - 1e-9) / 100).toFixed(2); }   // 1e-9: float noise on an exact value doesn't push it up a step
+function itMapLyText(d){ return (itMapLyC(d) / 100).toFixed(2); }
+// 067: the same rounding in hundredths of a LY, as a whole number, so the Distance filter compares exactly what the hover shows
+function itMapLyC(d){ return Math.ceil(d * 100 - 1e-9); }   // 1e-9: float noise on an exact value doesn't push it up a step
 // build queue 058 (the owner at its review, "yes": one place works out the security the game shows, and a check keeps it so): every map
 // reader of the security goes through itMapSecT, in tenths (tools/check_sec_shown.py; LESSON #170). Build queue 063 (roadmap/security-shown-plan.md):
 // the table carries the tenth the game shows (secT, from CCP's unrounded value by tools/jump_table_update.py), so nothing here rounds it
 // (065a: the fallback for a table from before 063 is gone)
 function itMapSecT(i){ return itMapTable().secT[i]; }
 function itMapSecClass(i){ return Math.max(0, itMapSecT(i)); }
+// build queue 067 (the owner: "Only where a jump can land (Recommended)", the rules: "i can confirm"): where a jump drive can't land, and why;
+// '' where it can. Not 0.5 or higher as the map shows it, not Pochven (by region), not Zarzakh (by ID: not in the jump table today)
+const IT_MAP_NOLAND = {region: 'Pochven', sys: 30100000, sysName: 'Zarzakh'};
+function itMapNoLand(i){
+  const T = itMapTable(); if(itMapSecT(i) >= 5) return 'high-sec';
+  if(T.regions[T.reg[i]] === IT_MAP_NOLAND.region) return IT_MAP_NOLAND.region;
+  return itGraphGet().ids[i] === IT_MAP_NOLAND.sys ? IT_MAP_NOLAND.sysName : '';
+}
+// in light years: the system within the range (as the hover rounds it), or false; null without the table's 3D positions
+function itMapLyIn(i){ const d = itMapLy(i, itm.home); return d === null ? null : itMapLyC(d) <= itMapSt().near.ly * 10; }
 function itMapTier(n){ return n <= 1 ? 'solo' : n <= 10 ? 'small' : 'fleet'; }
 const itm = {el: null, home: -1, reach: 0, W: 0, H: 0, P: null, Q: null, vis: [], D: null, G: 1, kMin: 1, kMax: 12, st: null, par: null, view: {k: 1, tx: 0, ty: 0}, hover: -1, hoverJb: -1, rowHover: -1,
   pinned: new Set(), key: '', draws: 0, layouts: 0, layoutMs: 0, drag: null, pinch: null, justDragged: false, rep: new Map(), stale: false,
@@ -30731,7 +30744,7 @@ function itMapPanelBtnHtml(k){ return IT_MAP_PANEL_BTN[k](); }
 const IT_MAP_PANEL_BTN = {wh: () => `<button type="button" class="it-map-pb it-whl" data-it-whl aria-haspopup="dialog" aria-expanded="false" aria-label="Wormhole list" title="Wormhole list: add or remove">${IT_WH_LIST_ICON}</button>`,
   sov: () => sovPanelBtnHtml(),
   secr: () => `<button type="button" class="it-map-pb" data-it-mpn="secr" aria-haspopup="dialog" aria-expanded="false" aria-label="Security range: from and to" title="Security range: from and to">${IT_MAP_SET_ICON}</button>`,
-  near: () => `<button type="button" class="it-map-pb" data-it-mpn="near" aria-haspopup="dialog" aria-expanded="false" aria-label="Within N jumps: how many" title="Within N jumps: how many">${IT_MAP_SET_ICON}</button>`,
+  near: () => `<button type="button" class="it-map-pb" data-it-mpn="near" aria-haspopup="dialog" aria-expanded="false" aria-label="Distance: how far" title="Distance: how far">${IT_MAP_SET_ICON}</button>`,
   // 065: Sov holder's, Kills (past hour)'s and Region pick's settings (Jumps (past hour) has none)
   sovh: () => `<button type="button" class="it-map-pb" data-it-mpn="sovh" aria-haspopup="dialog" aria-expanded="false" aria-label="Sov holder: by standing or by alliance" title="Sov holder: by standing or by alliance">${IT_MAP_SET_ICON}</button>`,
   killh: () => `<button type="button" class="it-map-pb" data-it-mpn="killh" aria-haspopup="dialog" aria-expanded="false" aria-label="Kills (past hour): ships and pods or NPC kills" title="Kills (past hour): ships and pods or NPC kills">${IT_MAP_SET_ICON}</button>`,
@@ -30834,7 +30847,7 @@ function itMapIconHtml(k){ return (IT_MAP_FILTERS.find(f => f.k === k) || IT_MAP
 // the phone's folded button shows the colour's icon and a neutral count of the Only filters that are on (rule A: never amber)
 // build queue 041: a filter's note; Jumps from you says so while your jump bridges are counted
 // 057 (the owner's hand test): Within N's hover said "stargate jumps" while your bridges counted (041 told only Jumps)
-function itMapFNote(f){ if(!itBridgeOn()) return f.note; return f.k === 'jumps' ? 'colour: jumps from your system, your jump bridges counted; zoomed in, the number' : f.k === 'near' ? 'only: systems this many jumps from you or fewer, jump bridges you can use counted' : f.note; }
+function itMapFNote(f){ if(!itBridgeOn()) return f.note; return f.k === 'jumps' ? 'colour: jumps from your system, your jump bridges counted; zoomed in, the number' : f.k === 'near' ? 'only: systems within N jumps of you (jump bridges you can use counted), or N light years where a jump drive can land' : f.note; }   // 067: the build review
 function itMapFnameHtml(f){ return f ? `<b>${escapeHtml(f.name)}</b> <span>${escapeHtml(itMapFNote(f))}</span>` : '<b>No colour</b> <span>press a colour to colour the systems again</span>'; }
 // 055: marks a filter column (the live map's, or the Intel example's copy before it is made still) from a stack: one painter for both
 function itMapFbarMark(fb, s){
@@ -30900,7 +30913,9 @@ function itMpBodyHtml(k){
   if(k === 'regpick') return itMpRegHtml();
   if(k === 'secr') return `<div class="it-mp-row">${rsHtml('mapSecLo')}${rsHtml('mapSecHi')}</div><div class="it-mp-q"><span>Quick:</span><button type="button" data-it-mpq="hi">High</button><button type="button" data-it-mpq="low">Low</button><button type="button" data-it-mpq="null">Null</button></div>`
     + '<div class="it-mp-note">Both ends count, in either order. It compares the number the map shows (one decimal).</div><div class="it-mp-cnt" role="status"></div>';
-  return `<div class="it-mp-row">${rsHtml('mapNear')}</div><div class="it-mp-note">${escapeHtml(itBridgeOn() ? 'From your system, your jump bridges counted, as Jumps from you counts.' : 'By stargate from your system, as Jumps from you counts.')} “Map: within” still sets how far reports and names show.</div><div class="it-mp-cnt" role="status"></div>`;
+  if(k === 'near' && s.near.mode === 'ly') return itMpNearModeHtml(s) + `<div class="it-mp-row">${rsHtml('mapLy')}</div><div class="it-mp-q"><span>Quick:</span>${itMpLyQuickHtml()}</div>`
+    + '<div class="it-mp-note">Straight-line from your system, as the hover shows. Only where a jump drive can land: not high-sec, Pochven or Zarzakh. Quick picks: range at Jump Drive Calibration V.</div><div class="it-mp-cnt" role="status"></div>';
+  return itMpNearModeHtml(s) + `<div class="it-mp-row">${rsHtml('mapNear')}</div><div class="it-mp-note">${escapeHtml(itBridgeOn() ? 'From your system, your jump bridges counted, as Jumps from you counts.' : 'By stargate from your system, as Jumps from you counts.')} “Map: within” still sets how far reports and names show.</div><div class="it-mp-cnt" role="status"></div>`;
 }
 // 065: Region pick's list: a search box (spaces and dashes ignored), Clear with "N picked", Select all (every region the list shows: a dash
 // when some are), a box per region with its system count, yours first, then A-Z
@@ -30917,6 +30932,11 @@ function itMpRegHtml(){
 function itMpRegRowsHtml(rows, pick, mine){ return rows.map(([r, c]) => itMpRegRowHtml(r, c, pick.has(r), r === mine)).join(''); }
 function itMpRegRowHtml(r, c, on, mine){ return `<label class="it-sov-k" data-it-mpr="${escapeHtml(r.toLowerCase().replace(/[\s-]/g, ''))}"><input type="checkbox" data-it-mpreg="${escapeHtml(r)}"${escapeHtml(on ? ' checked' : '')}> <span>${escapeHtml(r)}${itMpYoursHtml(mine)}</span><span class="it-sov-n">${Number(c)}</span></label>`; }
 function itMpYoursHtml(on){ return on ? ' <span class="it-sov-from">(yours)</span>' : ''; }
+// build queue 067 (roadmap/ly-distance-plan.md D5): Distance's switch, and its quick picks: jump range at Jump Drive Calibration V (twice CCP's
+// jumpDriveRange, pyfa's SDE at v2.70.0), in tenths; 7.5 for Command carriers (the owner at the build review: "Add 7.5 LY pick (Recommended)")
+const IT_MP_LY_QUICK = [[60, 'Titans, supercarriers'], [70, 'Carriers, dreadnoughts, FAX'], [75, 'Command carriers'], [80, 'Black Ops, Lancers'], [100, 'Jump freighters, Rorqual']];
+function itMpLyQuickHtml(){ return IT_MP_LY_QUICK.map(([v, who]) => `<button type="button" data-it-mply="${Number(v)}" title="${escapeHtml(`${who}, Jump Drive Calibration V`)}" aria-pressed="false">${escapeHtml(`${v / 10} LY`)}</button>`).join(''); }
+function itMpNearModeHtml(s){ const ly = s.near.mode === 'ly'; return `<div class="it-mp-row" role="radiogroup" aria-label="Count in">${itMpRadHtml('itMpNear', 'j', !ly, 'Jumps')}${itMpRadHtml('itMpNear', 'ly', ly, 'Light years')}</div>`; }
 function itMpRadHtml(nm, v, on, t){ return `<label class="it-sov-k"><input type="radio" name="${escapeHtml(nm)}" value="${escapeHtml(v)}"${escapeHtml(on ? ' checked' : '')}> <span>${escapeHtml(t)}</span></label>`; }
 function itMpRegPaint(){
   const p = itMp.el, e = p && itMp.k === 'regpick' && p.querySelector('.it-mp-rn'); if(!e) return;
@@ -30935,12 +30955,14 @@ function itMpMake(){
     const q = e.target.closest('[data-it-mpq]');
     if(q){ itMapSt().secr = {hi: {lo: 5, hi: 10}, low: {lo: 1, hi: 4}, null: {lo: -10, hi: 0}}[q.dataset.itMpq]; itMpChanged(); }
     if(e.target.closest('[data-it-mprclr]')){ itMapSt().regions = []; for(const b of p.querySelectorAll('[data-it-mpreg]')) b.checked = false; itMpChanged(); }   // 065
+    { const y = e.target.closest('[data-it-mply]'); if(y){ itMapSt().near.ly = Number(y.dataset.itMply); itMpChanged(); } }   // 067: a quick pick
   });
   // 065: Sov holder's and Kills (past hour)'s radios, Region pick's boxes and its search
   p.addEventListener('change', (e) => {
     const t = e.target, s = itMapSt();
     if(t.name === 'itMpSovBy'){ s.sovBy = t.value === 'alliance' ? 'alliance' : 'standing'; itMpChanged(); }
     else if(t.name === 'itMpKill'){ s.killNpc = t.value === 'npc'; itMpChanged(); }
+    else if(t.name === 'itMpNear'){ s.near.mode = t.value === 'ly' ? 'ly' : 'j'; itMp.built = ''; itMpChanged(); const r = p.querySelector('[name=itMpNear]:checked'); if(r) r.focus({preventScroll: true}); }   // 067: the body built again, focus kept on the switch
     else if(t.dataset.itMprall !== undefined){
       const shown = [...p.querySelectorAll('[data-it-mpr]')].filter(l => !l.hidden).map(l => l.querySelector('input'));
       for(const b of shown) b.checked = t.checked;
@@ -30990,6 +31012,7 @@ function itMpPaint(){
   const body = itMp.el.querySelector('.it-mp-b');
   if(itMp.built !== itMp.k || !body.firstChild){ itMp.built = itMp.k; body.innerHTML = itMpBodyHtml(itMp.k); }
   rsPaint(itMp.el); itMpCountPaint(); itMpRegPaint();
+  if(itMp.k === 'near'){ const v = String(itMapSt().near.ly); for(const b of itMp.el.querySelectorAll('[data-it-mply]')){ const on = String(b.dataset.itMply === v); if(b.getAttribute('aria-pressed') !== on) b.setAttribute('aria-pressed', on); } }   // 067: the quick pick equal to the value
 }
 function itMpCountPaint(){   // written only when its words change
   const c = itMpShown() && itMp.el.querySelector('.it-mp-cnt'); if(!c) return;
@@ -31283,7 +31306,8 @@ const IT_MAP_FILTERS = [
   // 058: the two new Only filters, each with its settings panel (IT_MAP_PANEL_BTN)
   {k: 'secr', g: 'only', name: 'Security range', note: 'only: systems whose security is in your range',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2.5a6.5 6.5 0 1 0 0 13"/><path d="M9 2.5a6.5 6.5 0 0 1 0 13" stroke-dasharray="2 2"/><path d="M6 9h6M6 7v4M12 7v4"/></svg>'},
-  {k: 'near', g: 'only', name: 'Within N jumps', note: 'only: systems this many stargate jumps from you or fewer',
+  // build queue 067 (roadmap/ly-distance-plan.md; the owner: "Within N jumps → Distance (Recommended)"): stargate jumps, or light years where a jump drive can land
+  {k: 'near', g: 'only', name: 'Distance', note: 'only: systems within N stargate jumps of you, or N light years where a jump drive can land',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="1.6" fill="currentColor"/><circle cx="9" cy="9" r="4"/><circle cx="9" cy="9" r="7" stroke-dasharray="2 2.2"/></svg>'},
   {k: 'reports', g: 'only', name: 'Intel reports', note: 'only: systems with a report or a live wormhole report',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 3.5h13v8.5H8L4.5 15v-3h-2z"/></svg>'},
@@ -31311,7 +31335,7 @@ const IT_MAP_FILTERS = [
 // tvMapStack, a new key: the older page never reads it, and this page never writes tvSov for it (053's reader drops unknown fields)
 const MAP_STACK_KEY = 'tvMapStack', IT_MAP_COLOURS = ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh'], IT_MAP_ONLY = ['secr', 'near', 'reports', 'kills', 'wh', 'sov', 'regpick'];   // 065: Sov holder, Jumps and Kills (past hour), Region pick
 const IT_MAP_PLAIN = '#56616b';   // no colour: every system this grey, no number in its circle
-function itMapStackBlank(){ return {v: 1, colour: 'sec', view: 'map', only: Object.fromEntries(IT_MAP_ONLY.map(k => [k, false])), secr: {lo: -5, hi: -3}, near: {n: 5}, sovLv: [], seen: {secr: false, near: false}, sovBy: 'standing', killNpc: false, regions: []}; }   // Q16: Security, soft   // 065: sovBy, killNpc, regions (names, so a region CCP adds never shifts them)
+function itMapStackBlank(){ return {v: 1, colour: 'sec', view: 'map', only: Object.fromEntries(IT_MAP_ONLY.map(k => [k, false])), secr: {lo: -5, hi: -3}, near: {n: 5, mode: 'j', ly: 70}, sovLv: [], seen: {secr: false, near: false}, sovBy: 'standing', killNpc: false, regions: []}; }   // Q16: Security, soft   // 065: sovBy, killNpc, regions (names, so a region CCP adds never shifts them)
 function itMapStackRead(){
   const o = itMapStackBlank(); let s = null; try{ s = JSON.parse(localStorage.getItem(MAP_STACK_KEY)); }catch(e){ s = null; }
   if(!s || typeof s !== 'object' || s.v !== 1) return o;   // a bad value reads as the defaults, field by field below
@@ -31320,7 +31344,7 @@ function itMapStackRead(){
   if(s.view === 'paths') o.view = 'paths';
   if(s.only && typeof s.only === 'object') for(const k of IT_MAP_ONLY) o.only[k] = s.only[k] === true;
   if(s.secr && typeof s.secr === 'object'){ o.secr.lo = int(s.secr.lo, -10, 10, o.secr.lo); o.secr.hi = int(s.secr.hi, -10, 10, o.secr.hi); }   // tenths
-  if(s.near && typeof s.near === 'object') o.near.n = int(s.near.n, 1, 30, o.near.n);
+  if(s.near && typeof s.near === 'object'){ o.near.n = int(s.near.n, 1, 30, o.near.n); if(s.near.mode === 'ly') o.near.mode = 'ly'; o.near.ly = int(s.near.ly, 1, 200, o.near.ly); }   // 067: mode 'j' | 'ly', ly in tenths (an older page drops both)
   if(Array.isArray(s.sovLv)) o.sovLv = [...new Set(s.sovLv.filter(n => n === 1 || n === 2 || n === 3))].sort();   // an entry outside 1-3 is dropped
   if(s.seen && typeof s.seen === 'object') for(const k of ['secr', 'near']) o.seen[k] = s.seen[k] === true;
   if(s.sovBy === 'alliance') o.sovBy = 'alliance';   // 065
@@ -31347,10 +31371,11 @@ function itMapMatch(wh){
   const n = T.n, m = new Uint8Array(n), D = itm.D, lo = Math.min(s.secr.lo, s.secr.hi), hi = Math.max(s.secr.lo, s.secr.hi);
   const sv = o.sov ? sovIndex() : null, pick = new Set(o.sov ? sovStore().pick : []), lvT = sovTable().lv, lv = s.sovLv;
   const rg = o.regpick ? new Set(s.regions.map(r => T.regions.indexOf(r))) : null;   // 065: Region pick, any pick counts
+  const lyMode = s.near.mode === 'ly';   // 067
   for(let i = 0; i < n; i++){
     let ok = true;
     if(o.secr){ const t = itMapSecT(i); ok = t >= lo && t <= hi; }   // Q9: the number the map shows, both ends, either order
-    if(ok && o.near) ok = D[i] >= 0 && D[i] <= s.near.n;   // as Jumps from you counts (041: your jump bridges too while they're on; itm.jbKey is in the key)
+    if(ok && o.near) ok = lyMode ? itMapLyIn(i) === true && !itMapNoLand(i) : D[i] >= 0 && D[i] <= s.near.n;   // as Jumps from you counts (041: your jump bridges too while they're on; itm.jbKey is in the key); 067: or light years where a jump drive can land
     if(ok && o.reports) ok = itm.rep.has(i) || W.live.has(i);
     if(ok && o.kills) ok = !!(itm.rep.get(i) || {}).kills;
     if(ok && o.wh) ok = W.kept.has(i);
@@ -31867,7 +31892,7 @@ function itMapOnlyLineHtml(){ return itMapOnlyOn() ? `<div class="it-map-fl it-m
 function itMapOnlyHtml(){
   const s = itMapSt(), o = s.only, mt = itMapMatch(), n = mt ? mt.list.length : 0, p = [], t = (v) => (v / 10).toFixed(1);
   if(o.secr){ const lo = Math.min(s.secr.lo, s.secr.hi), hi = Math.max(s.secr.lo, s.secr.hi); p.push(lo === hi ? `security ${t(lo)}` : `security ${t(lo)} to ${t(hi)}`); }
-  if(o.near) p.push(`within ${s.near.n} jump${s.near.n === 1 ? '' : 's'}`);
+  if(o.near) p.push(s.near.mode === 'ly' ? `within ${t(s.near.ly)} LY (jump drive)` : `within ${s.near.n} jump${s.near.n === 1 ? '' : 's'}`);   // 067
   if(o.sov){ const ks = sovPicked().map(sovShow); p.push((!sovStore().lists.length && !sovBridgeEnds().length ? 'no sov lists yet' : ks.length ? (ks.length > 2 ? `${ks.slice(0, 2).join(', ')} +${ks.length - 2}` : ks.join(', ')) : 'no upgrade picked') + (s.sovLv.length ? ` level ${s.sovLv.join(', ')}` : '')); }
   if(o.reports) p.push('a report'); if(o.kills) p.push('kills in Intel'); if(o.wh) p.push(`a wormhole (last ${Number(itWhStore().keepH)} h)`);
   if(o.regpick){ const rs = s.regions; p.push(rs.length ? 'in ' + (rs.length > 2 ? `${rs.slice(0, 2).join(', ')} +${rs.length - 2}` : rs.join(', ')) : 'no region picked'); }   // 065
@@ -32134,6 +32159,12 @@ function itMapJbTipHtml(i){
 // build queue 066: the hover's kill line, by who died, each part in the label's colour (the words carry it, not only colour)
 function itMapKbTipHtml(r){ return `<span class="d">${escapeHtml(`✕ ${r.kills} kill${r.kills === 1 ? '' : 's'} here:`)}</span> ${itMapKbPartsHtml(r)}`; }
 function itMapKbPartsHtml(r){ return ['f', 'h', 'n'].filter(v => r.kb[v]).map(v => `<span class="it-mkb ${escapeHtml(v)}">${escapeHtml(`${r.kb[v]} ${IT_KILL_WORD[v][r.kb[v] === 1 ? 2 : 3]}`)}</span>`).join('<span class="d">, </span>'); }
+// build queue 067: Distance in light years, a system in range: in jump range, or why a jump drive can't land there; nothing out of range
+function itMapLyTipHtml(i){
+  const s = itMapSt(); if(!itMapOnlyOn() || !s.only.near || s.near.mode !== 'ly' || i === itm.home || itMapLyIn(i) !== true) return '';
+  const w = itMapNoLand(i);
+  return `<br><span class="d">${escapeHtml(w ? `in range, but a jump drive can't land here (${w})` : `within jump range (${(s.near.ly / 10).toFixed(1)} LY)`)}</span>`;
+}
 function itMapTip(i, x, y){
   const tip = itm.tip;
   if(i < 0){ tip.hidden = true; itm.tipAt = null; return; }
@@ -32147,6 +32178,7 @@ function itMapTip(i, x, y){
   // v2026.11.04.1: how far in light-years, as a jump drive measures it (the owner: "the distance in LY (from the player's current system)")
   const ly = i !== itm.home ? itMapLy(i, itm.home) : null;
   if(ly !== null) h += `<br><span class="ly"><b>${itMapLyText(ly)} LY</b> <span class="d">from ${escapeHtml(itSysName(ids[itm.home]))}</span></span>`;
+  h += itMapLyTipHtml(i);   // 067: with Distance on in light years
   if(r){
     const word = r.side === 'clear' ? 'reported clear' : `<span class="${r.side}">${r.n ? r.n + ' ' : ''}${r.side}</span> · ${{solo: 'solo', small: 'small gang', fleet: 'fleet'}[itMapTier(Math.max(1, r.n))]}`;
     h += `<br>${word} <span class="d">· ${itAgo(r.t)} ago</span>`;
@@ -34066,8 +34098,11 @@ const RS = {
     why: (end) => end === 'lo' ? 'The lowest security (-1.0)' : 'The highest security (1.0)', unit: '', aria: 'security', show: (v) => (v / 10).toFixed(1), read: (t) => Math.round(parseFloat(t) * 10), after: () => itMpChanged()},
   mapSecHi: {label: 'To', title: () => 'Security range: the other end (both ends count, in either order)', steps: () => itRangeList(-10, 10), value: () => itMapSt().secr.hi, set: (v) => { itMapSt().secr.hi = v; },
     why: (end) => end === 'lo' ? 'The lowest security (-1.0)' : 'The highest security (1.0)', unit: '', aria: 'security', show: (v) => (v / 10).toFixed(1), read: (t) => Math.round(parseFloat(t) * 10), after: () => itMpChanged()},
-  mapNear: {label: 'Within', title: () => 'Within N jumps: systems this many stargate jumps from you or fewer', steps: () => itRangeList(1, 30), value: () => itMapSt().near.n, set: (v) => { itMapSt().near.n = v; },
+  mapNear: {label: 'Within', title: () => 'Distance in jumps: systems this many stargate jumps from you or fewer', steps: () => itRangeList(1, 30), value: () => itMapSt().near.n, set: (v) => { itMapSt().near.n = v; },
     why: (end) => end === 'lo' ? 'At least 1 jump' : 'At most 30 jumps', after: () => itMpChanged()},
+  // build queue 067: Distance in light years, in tenths (0.1 to 20.0), shown as the map shows LY
+  mapLy: {label: 'Within', title: () => 'Distance: light years from your system, where a jump drive can land', steps: () => itRangeList(1, 200), value: () => itMapSt().near.ly, set: (v) => { itMapSt().near.ly = v; },
+    why: (end) => end === 'lo' ? 'At least 0.1 LY' : 'At most 20.0 LY', unit: 'LY', aria: 'light years', show: (v) => (v / 10).toFixed(1), read: (t) => Math.round(parseFloat(t) * 10), after: () => itMpChanged()},
 };
 function itRangeList(lo, hi){ const a = []; for(let v = lo; v <= hi; v++) a.push(v); return a; }
 const rsLabel = (s) => typeof s.label === 'function' ? s.label() : s.label;

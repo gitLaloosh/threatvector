@@ -433,8 +433,12 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   after the page closes. These three never fade with distance (only Only filters dim).
   Pressing the one that is on turns colour off (every system plain grey, no number). The colour is soft: mixed toward the
   map's background (80% of the colour zoomed out, 62% in a zoomed-in disc since build queue 065). Only, any number, every one that is on must match and any pick
-  inside one counts: Security range (two ends, 0.1 steps, either order, comparing the number the map shows), Within N jumps
-  (1 to 30, counted as Jumps from you counts: by stargate, plus your jump bridges while they're on), Intel reports, Kills from Intel, Wormholes, Sov upgrades (below) and Region pick (the regions you tick in its list, with a search
+  inside one counts: Security range (two ends, 0.1 steps, either order, comparing the number the map shows), Distance (Within N
+  jumps until build queue 067): in Jumps, 1 to 30, counted as Jumps from you counts (by stargate, plus your jump bridges while they're on); in
+  Light years, 0.1 to 20.0, the straight-line distance from your system rounded up to 0.01 exactly as the hover shows it, and only where a jump
+  drive can land: not 0.5 security or higher (the number the map shows), not Pochven, not Zarzakh. Its quick picks are jump ranges at Jump Drive
+  Calibration V, twice CCP's `jumpDriveRange`: 6 LY titans and supercarriers (3.0), 7 carriers, dreadnoughts and FAX (3.5), 7.5 command
+  carriers (3.75), 8 Black Ops and Lancers (4.0), 10 jump freighters and the Rorqual (5.0). Intel reports, Kills from Intel, Wormholes, Sov upgrades (below) and Region pick (the regions you tick in its list, with a search
   and Select all; none ticked matches nothing but you). While one is on, the systems
   that match are bright anywhere on the map, a little bigger and in full colour, the rest dim, and no system fades with
   distance; hostile and neutral rings, the alert range's glow and your pin never fade; the legend's second line says what

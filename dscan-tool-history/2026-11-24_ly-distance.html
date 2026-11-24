@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-24 — Intel map: Distance, in stargate jumps or light years where a jump drive can land</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel map: Distance, in stargate jumps or light years where a jump drive can land</h1>
+<p><span class="tag">Page</span><span class="tag">Intel map</span> 2026-11-24 &middot; <code>v2026.11.24.1</code> &middot; branch <code>067-ly-distance</code> &middot; build queue 067 (plan <code>roadmap/ly-distance-plan.md</code>, mockup <code>Claude outputs/ly_distance_mockup.html</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner (dscan-backlog-7): "modify "within N jumps" filter to be "Distance: jumps / light years" … gives the user awareness of what systems are within jump range of them with cynos depending on type." His answers (2026-11-16 and 2026-11-20): "Within N jumps → Distance (Recommended)", "Only where a jump can land (Recommended)", "Typed + quick picks (Recommended)", "From you"; the landing rules "i can confirm".</li>
+<li>At the build review (2026-11-24): pyfa v2.70.0's data has the Command Carrier group at a 3.75 LY base range (7.5 LY at Jump Drive Calibration V), which the plan's quick picks left out: "Add 7.5 LY pick (Recommended)". The Intel info text's cap: "Raise to ~754 (Recommended)". The filter's note with jump bridges on: "Use that wording (Recommended)".</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The name:</b> 058's Only filter "Within N jumps" is <b>Distance</b> (<code>IT_MAP_FILTERS</code> <code>near</code>), its notes (bridges off and on, <code>itMapFNote</code>) and its settings button "Distance: how far".</li>
+<li><b>Its settings:</b> a Jumps / Light years switch at the top (<code>itMpNearModeHtml</code>, through 065's <code>itMpRadHtml</code>; the body built again on a change, focus kept on the switch). Jumps: today's stepper and note. Light years: <code>RS.mapLy</code> ("Within 7.0 LY", 0.1 to 20.0, typed on a computer) and quick picks <code>IT_MP_LY_QUICK</code>, 6 / 7 / 7.5 / 8 / 10 LY, their titles naming the ships, the one equal to the value pressed (<code>--tag-on</code>).</li>
+<li><b>The match</b> (<code>itMapMatch</code>): in light years, the LY from you rounded up to 0.01 exactly as the hover shows it (<code>itMapLyC</code>, the one rounding <code>itMapLyText</code> now uses too; <code>itMapLyIn</code>) is the value or less, and a jump drive can land there (<code>itMapNoLand</code>: not 0.5 or higher as the map shows it, not Pochven, not Zarzakh by its ID, <code>IT_MAP_NOLAND</code>). Jumps exactly as before. Your system always matches.</li>
+<li><b>The hover</b> (<code>itMapLyTipHtml</code>): with Distance on in light years, a system in range says "within jump range (7.0 LY)", or "in range, but a jump drive can't land here (high-sec)" (or Pochven / Zarzakh); nothing out of range or on your own system.</li>
+<li><b>The Only line:</b> "within 7.0 LY (jump drive)".</li>
+<li><b>Stored:</b> <code>tvMapStack.near</code> gains <code>mode</code> ('j' | 'ly') and <code>ly</code> (tenths, 1-200, default 70). A stack from before reads as Jumps with its N; a bad value falls back; the page from main reads the new stack (its N kept).</li>
+<li><code>CARD_INFO.intel</code> [Map]: "Distance counts stargate jumps, or light years where a jump drive can land;" inside the Only filters' bracket; the Intel cap 754, from the final count. <code>RS.mapNear</code>'s title "Distance in jumps: …". METHODOLOGY.md's Intel map section.</li>
+<li>Checks: <code>tools/page_checks/ly_distance_check.py</code> (new; 11 mutants); the "Within N jumps" names and two mutant anchors in <code>intel_map_stack_check</code>, <code>intel_bridge_zones_check</code>, <code>intel_map_look_check</code> and <code>paths_to_you_check</code>.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #180: the plan's mutant "the raw LY instead of the rounded one" could never fail. The range is set in whole tenths, and rounding up to a hundredth and then comparing with a whole number of hundredths is the same test as comparing the raw value. The check mutates what can differ instead (rounding to the nearest), with a system just past a tenth in the test world. Before relying on a mutant, name an input where it gives a different answer.</li>
+</ul>
+</body></html>

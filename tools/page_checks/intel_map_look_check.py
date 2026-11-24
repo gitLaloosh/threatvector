@@ -19,7 +19,7 @@ not by the page. Uses intel_check.py's made-up folder, mocks and names (you in 1
     route; region, never the same colour as a region joined by a gate; the Only filters Intel reports and Kills dimming the rest, one at a
     time here: stacking is intel_map_stack_check.py), a dot's pixel follows the pressed colour (softened, 058), a press redraws once;
   * the column: fourteen buttons (065: Sov holder, Jumps and Kills (past hour), Region pick) inside the map box (Sov upgrades since build queue 053, sov_upgrades_check.py) (Wormholes since build queue 040, wormhole_filter_check.py; Paths to you since 043,
-    paths_to_you_check.py; Security range and Within N jumps since 058), the pressed one aria-pressed, 32 px; the name line shown on a press, faded after;
+    paths_to_you_check.py; Security range and Within N jumps since 058, Distance since 067), the pressed one aria-pressed, 32 px; the name line shown on a press, faded after;
   * routes past the reach (the owner: "yes"): hover shows its route and the tip says reports aren't shown there; a press keeps it; a
     system with no gate route to you: the tip says so, nothing kept;
   * Near You's panel in the map at 905, 1000 and 1200 px with a busy row (LESSON #113): 320 px (052), no row wider than its box, and
