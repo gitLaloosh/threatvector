@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-24 — pyfa v2.70.1: Synchronizers count every faction module, the 'Vigilant' Drifter modules, CCP data 3724492</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>pyfa v2.70.1: Synchronizers count every faction module, the 'Vigilant' Drifter modules, CCP data 3724492</h1>
+<p><span class="tag">Calculation</span><span class="tag">pyfa update</span> 2026-11-24 &middot; <code>v2026.11.24.2</code> &middot; branch <code>042-pyfa-next-update</code> &middot; build queue 042 (plan <code>roadmap/pyfa-next-update-plan.md</code>, its "Build review" section)</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-12: "wait for release" (the plan was written against pyfa's master). pyfa tagged v2.70.1 (<code>7e6b50c</code>); the owner, 2026-11-24: "take 042".</li>
+<li>At the build review the release carried 14 commits, not the plan's 3, and CCP data 3724492, not 3687575. The owner's answers: "Whole release (Recommended)", "Inside 042 (Recommended)" (the fixes to our own tools), "Yes, add a Vigilant step (Recommended)" (the hand test).</li>
+</ul>
+
+<h2>What changed in pyfa (v2.70.0 &rarr; v2.70.1)</h2>
+<ul>
+<li><b>Synchronizer rigs</b> (<code>41b0629</code>, <code>a2c7b8e</code>): each faction module's own effect (Effect12963&ndash;12966, 12989&ndash;12993; type <code>offline</code>, a new run time <code>earliest</code>) adds its <code>rigSet&hellip;Module</code> to every fitted Synchronizer's <code>rigSet&hellip;Bonus</code>; the rig's counting effect reads its own <code>rigSet&hellip;Bonus</code>. So every matching module counts, offline included, and a mutated one never does (it is its abyssal type in pyfa, which has no such effect).</li>
+<li><b>Rigs and subsystems first</b> (<code>b05457a</code>, "Fix edge-cases around sansha synchronizer"): <code>fit.py</code> runs them before other modules in each pass.</li>
+<li><b>The 'Vigilant' Drifter modules</b> (<code>820d0d8</code>): Effect13048&ndash;13051 now change the module's own attribute, which its ordinary effect reads (the Overdrive Injector's <code>implantBonusVelocity</code> &times;3; the Shield Boost Amplifier's <code>shieldBoostMultiplier</code> &times;3; the Drone Navigation Computer's <code>speedFactor</code> &times;3; the Cap Recharger's <code>capacitorRechargeRateMultiplier</code> forced to 0.64). Before, they changed the ship, the boosters and the drones directly.</li>
+<li><b>CCP data 3682781 &rarr; 3724492</b> (<code>b79cd90</code>, <code>820d0d8</code>): the Vengeance's <code>shipBonus2AF</code> 3 &rarr; &minus;5 (launchers 25% faster at Amarr Frigate V); 47 boosters renamed "Expired &hellip;" and unpublished; eight Chinese ship names; Supply Depot and text changes the page doesn't read.</li>
+<li>Not modelled by the page, so nothing to do: darkness weather's stacking penalty (<code>5f0190c</code>), a conversions file (<code>6a1e868</code>, two renamed drones; the page keeps no rename list), pyfa's saved-fit events and matplotlib (<code>30a4b0a</code>, <code>ac23acc</code>, <code>5af4b95</code>).</li>
+</ul>
+
+<h2>The first step: <code>pyfa_update_check.py --run</code> against v2.70.1, before any change</h2>
+<p>17 steps failed: the Synchronizer table (its guard: "reads a rigSet...Bonus attribute"), the resist generator (<code>unexpected value expression (-a:rigSetDreadGuristasBonus)</code>), the implant, projected, speed, module-state and Intel tables, the effect-table audit, the golden-fit data, and five comparisons with pyfa (resists 3 fits, missile range 1, every golden fit 5, application 4, projected 6). All the rest passed. Every comparison failure but one was the oracle's (below); the other was the Vigilant Drake (cap recharge 309.4 s against pyfa's 300.0).</p>
+
+<h2>Two gaps in our own tools, fixed first</h2>
+<ul>
+<li><b>The oracle</b> (<code>tools/pyfa_fit_oracle.py</code>) ran only <code>early</code>, <code>normal</code>, <code>late</code>, so it never ran the Synchronizer writers and counted no module: every Synchronizer golden "differed" from pyfa by the oracle's own figures. It now runs <code>earliest</code> first and sorts rigs and subsystems first, as v2.70.1's <code>fit.py</code> does. After the fix only the real changes differed. LESSON #181.</li>
+<li><b>The removed boosters</b> (<code>pyfa_sde.pyfa_removed_types</code>) looked only at published boosters. pyfa's <code>db_update.py</code> keeps only published rows, with its own name overrides ("Expired &hellip;" off, "AIR &hellip; Booster" on). Regenerated as it was, <code>PYFA_REMOVED_IMPLANT_IDS</code> would have lost all 47 expired boosters, which pyfa can't load. Now <code>pyfa_db_published</code> ports those rules: the list holds every implant and booster pyfa lacks (1,292; none of the 177 before dropped), and <code>gen_implant_table.py</code>'s pool takes pyfa's view, which brings in the 16 "AIR &hellip; Booster" boosters CCP leaves unpublished (three booster effects: 1635, 272, 4967).</li>
+</ul>
+
+<h2>What was done</h2>
+<ul>
+<li><b>Synchronizers</b> (PYFA CORE <code>synchronizer-rigs</code>): <code>gen_sync_table.py</code> rewritten for the new model, <code>SYNC_WRITER_EFFECTS</code> (9) and <code>SYNC_RIG_EFFECTS</code> (9), from <code>pyfa_effects.sync_effects</code>; it refuses v2.70.0's shape, a writer that isn't offline / earliest or whose filter isn't exactly the Rig Synchronizer types, a writer on an abyssal type, and any other pyfa effect writing a <code>rigSet&hellip;</code> attribute. <code>pyfaSyncRigTypes</code>: the rig's own bonus plus every faction module copy, in any state, less a pasted copy marked mutated (<code>parseEftFit</code> &rarr; <code>parsed.mutated</code> &rarr; <code>options.mutated</code>, through the Fit Analyzer's input and <code>chgEngineOptions</code>). <code>gen_resist_table.py</code> skips both kinds. DEVIATIONS.md: both TEMPORARY Synchronizer rows deleted.</li>
+<li><b>The 'Vigilant' modules</b> (new PYFA CORE <code>self-active</code>): <code>tools/gen_self_active_table.py</code> writes <code>SELF_ACTIVE_EFFECTS</code> (13048&ndash;13051; it asserts each attribute is read by a passive of every carrier and changed by nothing else; Effect7012, the Assault Damage Control burst, has the same shape and stays in the resist calc). <code>pyfaSelfActiveDogma</code> gives a module's active copies their own attributes; the engine's <code>selfActiveParts</code> splits the module where its passives are read: the capacitor and module-attribute tables, the speed calculation and the drones' and fighters' attributes. The old rows went: 13048 (<code>SPEED_EFFECTS</code>), 13050 (<code>PROJ_DRONE_EFFECTS</code>), 13049 and 13051 (the hand-written cap and repair tables). <code>gen_speed_table.py</code> called every self row "overheat"; it now says which are overheat, self-active or a Synchronizer's.</li>
+<li><b>A 035 bug found on the way</b>: 035's 13049 row sat in <code>SIEGE_FAMILY_REMOTE_REP_EFFECTS</code>, read only for siege modules, so the active amplifier's bonus never reached the page; the Drake's <code>shieldRepSustainedDps</code> pin (86) was the tool's own number, because <code>compare_fit_stats.py</code> left shield reps out with an amplifier. It now compares them (10 goldens; a mutant without 13049 is caught: 85.56 against pyfa's 118.68). LESSON #182.</li>
+<li><b>Regenerated</b> with <code>--write</code>: <code>EFFECT_STATE_TYPE</code> (the nine writers, offline), <code>IMPLANT_EFFECTS</code> and <code>PYFA_REMOVED_IMPLANT_IDS</code>, <code>INTEL_SHIPS</code> (eight names), the speed and projected tables; every other generator up to date. <code>GAME_DATA_PENDING</code> emptied (verified 3724492). Golden fixtures refreshed with <code>OLD_PYFA_SRC</code> (the Vigilant attributes' new values).</li>
+<li><b>Golden fits</b>, each compared with <code>pyfa_fit_oracle.py</code>: re-pinned <code>ishtar_constructed_guristas_sync_hardener_offline</code> (count 3: totalHP 19020 &rarr; 19134, shield EM 7 &rarr; 8, drone DPS 379 &rarr; 381) and <code>drake_constructed_vigilant_aberrant_active</code> (shield rep 86 &rarr; 119, peak recharge 25.3 &rarr; 26); new: all offline, a mutated DDA on a killmail, a Vengeance with rockets (121 DPS; 79 with the old bonus), the Drake with both Vigilant modules online, a Rifter with the Vigilant injector active (566 m/s) and online (493), a Vexor with the Vigilant computer active (drones 4,032 m/s) and online (3,024).</li>
+<li><b>Mutants</b> (by hand, each fails as it should): <code>SYNC_RIG_EFFECTS</code> emptied (every counted fit, not the count-0 one); offline modules not counted, v2.70.0's rule (the two offline fits); a writer applied twice (every counted fit); the Vengeance's old bonus (its DPS); <code>eft_mutation_check.py</code>: the mutated mark dropped (counted), and its count-0 page copy equals the mutated paste.</li>
+<li>The manifest: v2.70.1, <code>7e6b50c</code>, data 3724492, dumped 2026-11-22; six sections re-locked (projected, speed-calc, implant-calc, cap-rep-effect-tables, module-state-tables, synchronizer-rigs) and <code>self-active</code> added; the chain runs <code>gen_self_active_table.py</code>. PYFA_CORE.md, tools/README.md, METHODOLOGY.md ("Synchronizer rigs", "The 'Vigilant' Drifter modules").</li>
+<li>Info text: checked; none (no <code>CARD_INFO</code> panel or Intel note names the rules changed).</li>
+</ul>
+
+<h2>Lessons for future models</h2>
+<ul>
+<li><b>#181</b> When pyfa adds a run time or changes the order, the oracle must too: a mismatch on every fit of one mechanic is a reference problem until shown otherwise.</li>
+<li><b>#182</b> A pin taken from the tool where the comparison skips that stat checks nothing; a row added to a hand table must land in a table the engine reads for that module.</li>
+</ul>
+
+<h2>For the owner</h2>
+<ul>
+<li>Update your own pyfa to v2.70.1. Help &rarr; About must show v2.70.1 and EVE data 3724492 before you compare (LESSON #10).</li>
+<li>Hand test: in the pull request (a Synchronizer fit with one faction module offline, the same with one mutated, a Vengeance, a 'Vigilant' Vital Cap Recharger, the "Changed in EVE's update" note gone).</li>
+</ul>
+</body>
+</html>

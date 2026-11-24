@@ -74,7 +74,7 @@ def oracle_values(o):
     reps = {'shieldRepHpPerSec': (4, 'shieldBonus'), 'armorRepHpPerSec': (27, 'armorDamageAmount')}
     # Build queue 042: shield boost amplifiers are compared too (pyfa's handlers raise the booster's shieldBonus, read here
     # modified). They were left out before, and so were never compared: build queue 035's 'Vigilant' amplifier row sat in a
-    # table the page reads only for siege modules, so its active bonus never reached the page (LESSON #181).
+    # table the page reads only for siege modules, so its active bonus never reached the page (LESSON #182).
     simple = not any(m.item.group.name in ('Siege Module',) or {4936, 5275} & set(m.item.effectIds) for m in o.modules if m.state >= 1)
     for k, (eff, amt) in (reps.items() if simple else ()):
         v[k] = sum(m.get(amt) / (m.get('duration') / 1000) for m in active if eff in m.item.effectIds)

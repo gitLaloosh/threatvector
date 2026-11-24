@@ -1,12 +1,12 @@
 {
   "note": "PYFA CORE lock -- see PYFA_CORE.md. sha256 = SHA-256 of the lines between a section's BEGIN/END markers (LF line endings). Update ONLY with `node tools/check_pyfa_core.mjs --update` after running the section's verify commands; say so in the history doc.",
   "pyfa": {
-    "version": "v2.70.0",
-    "commit": "e5483f8666ed2eda99c98985c59a29b07e3bb844",
-    "clientBuild": 3682781,
-    "dataDumped": "2026-11-10",
-    "verifiedOn": "2026-11-11",
-    "ownerPyfa": "v2.70.0 / EVE data 3682781 (the owner updated 2026-11-11, build queue 035's hand test; v2.70.0 ships data 3682781)"
+    "version": "v2.70.1",
+    "commit": "7e6b50c096e73da9bd9ef3e2a2f6075412e643b3",
+    "clientBuild": 3724492,
+    "dataDumped": "2026-11-22",
+    "verifiedOn": "2026-11-24",
+    "ownerPyfa": "v2.70.0 / EVE data 3682781 (the owner, build queue 035); build queue 042's hand test updates it to v2.70.1 / 3724492"
   },
   "sections": {
     "resist-calc": {
@@ -38,7 +38,7 @@
         "python3 -I tools/independent_checks/compare_speed.py index.html (0 mismatches: every golden fit vs pyfa_fit_oracle)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "cd5eaa26df4c4b9211f0d8fc17c0586fe3483b1336aacaeebb5f5c167e73a6fb"
+      "sha256": "a837f28e4e25c13e532d0332e05d705f1f39cbb18406d7e7674e0f0d286b544d"
     },
     "ewar-calc": {
       "kind": "generated + port",
@@ -59,7 +59,7 @@
         "python3 -I tools/independent_checks/compare_speed.py index.html ; compare_resists.py ; compare_ewar.py (the same fits, 0 mismatches)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "2c8bf91be4352da5d204eae10d2cc2f94acf8e0ad43fc42b8489a4c927f4b08a"
+      "sha256": "bb04394140ae4a11199351538ee17163aa2379a282582bdfd9ef96005d555139"
     },
     "sig-effect-tables": {
       "kind": "audited",
@@ -107,7 +107,7 @@
         "python3 -I tools/independent_checks/check_energy_drains.py index.html (0 mismatches: build queue 060, pyfa's Effect6187 / 6197 / 6691 / 6434 and Fit.addDrain on oracle attributes from every golden fit with a neutralizer, nosferatu, EV drone or Cenobite onto every golden fit over a 19-distance grid, the drain lists and pyfa's eos/capSim.py on the target's best case plus them, and 7 mutants)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "c0ab49dd7de3d8b26b24f4a6119bffe5f22a7d74576157d9a15015c6d8548e82"
+      "sha256": "d4c9a0c8ab2fbf37471c408f88e25babd87fc5f01036d767deccd5cb9a5f08b7"
     },
     "cap-rep-effect-tables": {
       "kind": "audited",
@@ -116,7 +116,7 @@
         "node tools/dump_effect_tables.mjs index.html > /tmp/t.json && python3 -I tools/audit_effect_tables.py /tmp/t.json (must print no MISSING/EXTRA/DIFF)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "75df9ec8fe6fffb853406e41755de70ec64627ea8aa2c26e779c86fbf5c700fb"
+      "sha256": "2e8ac1f2e0addffa5eca83f4b8ad615ee29c2b03c20bb367ef60064d49167579"
     },
     "cap-sim": {
       "kind": "port",
@@ -179,7 +179,7 @@
         "python3 -I tools/gen_module_state_tables.py index.html (must say matches)",
         "node regression_suite/run_regression.mjs index.html"
       ],
-      "sha256": "d26781b1b4363833d1138075e812c566ccace830dc3f2b2daff14c9de652783e"
+      "sha256": "9c938c18b6d88ee513150a10958aeb93eccb241eb92545ad0b3f1094d48cb3ba"
     },
     "cycle-time": {
       "kind": "port",
@@ -203,12 +203,22 @@
     },
     "synchronizer-rigs": {
       "kind": "generated + port",
-      "mirrors": "pyfa v2.70.0 eos/effects.py Synchronizer rig counting effects (Effect12969, 12982, 12984, 12985, 13000, 13006, 13008, 13012, 13016: runTime early, sum of rigSet...Module over fit.modules with state >= ONLINE, the rig's own attributes increaseItemAttr +/-count, position pre); table SYNC_RIG_EFFECTS by gen_sync_table.py (handlers run with a probe module in every FittingModuleState), applied by pyfaSyncRigTypes to a copy of the rig's type for that fit only (build queue 035)",
+      "mirrors": "pyfa v2.70.1 eos/effects.py Synchronizers (a2c7b8e, 41b0629): each faction module's own effect (Effect12963-12966, 12989-12993, type offline, runTime earliest) adds its rigSet...Module to every Rig Synchronizer's rigSet...Bonus; the rig's counting effect (Effect12969, 12982, 12984, 12985, 13000, 13006, 13008, 13012, 13016, runTime early) reads its own rigSet...Bonus and raises its own attributes increaseItemAttr +/-bonus, position pre; a mutated module is its abyssal type (mutatedMixin._mutaInit), which carries no writer. Tables SYNC_WRITER_EFFECTS and SYNC_RIG_EFFECTS by gen_sync_table.py, applied by pyfaSyncRigTypes to a copy of the rig's type for that fit only (every copy in any state, less a pasted copy marked mutated). Build queue 035 (v2.70.0's model), rebuilt in 042",
       "verify": [
         "python3 -I tools/gen_sync_table.py index.html (must say up to date)",
-        "node regression_suite/run_regression.mjs index.html (the Synchronizer goldens, 0 / 1 / several matching modules and one offline, from pyfa_fit_oracle.py)"
+        "node regression_suite/run_regression.mjs index.html (the Synchronizer goldens: 0 / 1 / several matching modules, one and all offline, a mutated one on a killmail; from pyfa_fit_oracle.py with v2.70.1's earliest pass)",
+        "PYFA_SRC=... python3 -I tools/page_checks/eft_mutation_check.py index.html (a pasted mutated faction module counts nothing)"
       ],
-      "sha256": "ff52532f1799630a2bb53c9bc7c15d14bbebc978dee43008ff83ba500f4b74f5"
+      "sha256": "e53042e19372b519150d3821e46f5b99c40e3bc49cfd7a02dcc4e3ab4ab62399"
+    },
+    "self-active": {
+      "kind": "generated + port",
+      "mirrors": "pyfa v2.70.1 eos/effects.py (820d0d8) Effect13048-13051, the 'Vigilant' Drifter modules: an active effect (runTime early) that multiplies or forces its own module's attribute (implantBonusVelocity, shieldBoostMultiplier, speedFactor penalized, capacitorRechargeRateMultiplier), which that module's own passive effect (2865, 1720, 6555, 51) reads. Table SELF_ACTIVE_EFFECTS by gen_self_active_table.py; pyfaSelfActiveDogma gives the module's active copies their own attributes after it (build queue 042)",
+      "verify": [
+        "python3 -I tools/gen_self_active_table.py index.html (must say up to date)",
+        "PYFA_SRC=... python3 -I tools/independent_checks/compare_fit_stats.py index.html, compare_speed.py, check_application.py (the Vigilant goldens, active and online)"
+      ],
+      "sha256": "be547f2c37a3426af9d10046b34a873225deda5fdc6985ac85400dab238d6a24"
     }
   }
 }

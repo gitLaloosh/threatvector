@@ -352,7 +352,7 @@ class OracleFit:
         # ("earliest", "early", "normal", "late"), and modules = sorted(self.modules, key=lambda mod: mod.slot not in
         # (RIG, SUBSYSTEM)) -- a stable sort, rigs and subsystems first. The slot is eos Module.calculateSlot's: the
         # first of rigSlot / loPower / medPower / hiPower / subSystem / serviceSlot among the item's effect names.
-        mods = sorted(self.modules, key=lambda m: _slot_name(m.item) not in ('rigSlot', 'subSystem'))
+        mods = sorted(self.modules, key=lambda m: _slot_name(m.item) not in ('rigSlot', 'subSystem'))   # LESSON #181
         for rt in ('earliest', 'early', 'normal', 'late'):
             for s in self.skills:
                 for e in s.item.effectIds:
