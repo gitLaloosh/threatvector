@@ -14,8 +14,9 @@ ship, boosters, implants, modules; booster side effects off, pyfa's default). Co
   targetingRange / scanResolution      ship maxTargetRange / scanResolution
   sensorStrength                       the largest of the four ship scan strengths
   shieldRepHpPerSec / armorRepHpPerSec  sum over active local repairers (effect 4 shieldBoosting,
-                                       27 armorRepair) of amount / cycle -- fits without amplifiers,
-                                       ancillary repairers or the siege family
+                                       27 armorRepair) of amount / cycle -- fits without ancillary
+                                       repairers or the siege family (amplifiers included since build
+                                       queue 042)
   cap drains                           capacitor.simInputs.best without injectors (an ancillary
                                        shield booster with charges uses none, as in pyfa): the set of
                                        distinct (int cycle ms, capacitorNeed) of the active modules --
@@ -71,7 +72,10 @@ def oracle_values(o):
     active = [m for m in o.modules if m.state >= 2]
     if not any(6730 in m.item.effectIds for m in active): v['sigBase'] = sh('signatureRadius')
     reps = {'shieldRepHpPerSec': (4, 'shieldBonus'), 'armorRepHpPerSec': (27, 'armorDamageAmount')}
-    simple = not any(m.item.group.name in ('Shield Boost Amplifier', 'Siege Module') or {4936, 5275} & set(m.item.effectIds) for m in o.modules if m.state >= 1)
+    # Build queue 042: shield boost amplifiers are compared too (pyfa's handlers raise the booster's shieldBonus, read here
+    # modified). They were left out before, and so were never compared: build queue 035's 'Vigilant' amplifier row sat in a
+    # table the page reads only for siege modules, so its active bonus never reached the page (LESSON #181).
+    simple = not any(m.item.group.name in ('Siege Module',) or {4936, 5275} & set(m.item.effectIds) for m in o.modules if m.state >= 1)
     for k, (eff, amt) in (reps.items() if simple else ()):
         v[k] = sum(m.get(amt) / (m.get('duration') / 1000) for m in active if eff in m.item.effectIds)
     drains = []
