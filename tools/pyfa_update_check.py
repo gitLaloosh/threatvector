@@ -126,8 +126,11 @@ if '--run' in sys.argv:
         ('pasted names, either apostrophe', env + 'python3 -I tools/independent_checks/check_apostrophe_names.py index.html', lambda o: o.strip().splitlines()[-1].startswith('0 misses')),
     ]
     bad = 0
+    # build queue 042: the Weaknesses picks comparison builds an oracle fit per candidate, and with pyfa v2.70.1's fourth run
+    # time ('earliest') and the new goldens it passed 600 s on this machine (0 mismatches when run alone); it gets 20 minutes.
+    SLOW = {'Weaknesses picks vs pyfa': 1200}
     for name, cmd, good in chain:
-        rc, out = sh(cmd)
+        rc, out = sh(cmd, timeout=SLOW.get(name, 600))
         ok = rc == 0 and good(out)
         bad += not ok
         last = out.strip().splitlines()[-1] if out.strip() else ''
