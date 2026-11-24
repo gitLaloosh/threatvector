@@ -5,9 +5,12 @@ item: '[N] <original name>', the mutaplasmid, the attribute line ("maxRange 1400
 Before 035 the tag stayed on the name (nothing resolved) and the attribute line read as a module with a charge.
 
 Through the real page: parseEftFit on made-up pastes (no real fits, names or pilots), compared with the same fit pasted
-without the mutation export; then the Fit Analyzer: a Tristan with a Small Dread Guristas Synchronizer and a mutated
-Dread Guristas Drone Damage Amplifier shows the same drone damage either way (pyfa v2.70.0 counts the module from its
-original item). The mutant (the reader before 035) must fail.
+without the mutation export; then the Fit Analyzer's own path (buildFitFromEft): a Tristan with a Small Dread Guristas
+Synchronizer and a Dread Guristas Drone Damage Amplifier. Since build queue 042 (pyfa v2.70.1, its a2c7b8e) a MUTATED
+faction module doesn't count toward the Synchronizer (pyfa reads it as its abyssal type, which has no faction-module
+effect), so the mutated paste shows exactly the drone damage the plain paste shows on a copy of the page whose
+SYNC_WRITER_EFFECTS is empty (nothing counted), and less than the plain paste on the real page. Two mutants must fail:
+the reader before 035, and the paste reader not passing its mutated mark on (042).
 
     PYFA_SRC=/path/to/pyfa python3 -I tools/page_checks/eft_mutation_check.py [index.html]
 
@@ -86,7 +89,7 @@ def run(path, p, log):
         try: pg.wait_for_function("() => document.querySelector('#fitAnalyzerResults .fit-layout')", timeout=30000)
         except Exception: return None
         pg.wait_for_timeout(500)
-        return pg.evaluate("async (t) => { const f = await parseEftFit(t); const e = await estimateHpAndDps(f.shipTypeId, f.tally, f.cargoItemIds, f.highSlotByFlag, 'sharpshooter', f.midSlotByFlag, null, null, {fitSource: 'eft'}); return e.dpsBreakdown ? JSON.stringify(e.dpsBreakdown.filter(x => /drone/i.test(x.category || x.kind || x.label || ''))) + '|' + e.dpsFixed : String(e.dpsFixed); }", text)
+        return pg.evaluate("async (t) => { const {f: ff} = await buildFitFromEft(t); const e = ff.estimate; return e.dpsBreakdown ? JSON.stringify(e.dpsBreakdown.filter(x => /drone/i.test(x.category || x.kind || x.label || ''))) + '|' + e.dpsFixed : String(e.dpsFixed); }", text)
     out['sync_plain'], out['sync_muta'] = drone_dps(SYNC_PLAIN), drone_dps(SYNC_MUTA)
     out['errs'] = errs
     b.close()
@@ -100,11 +103,26 @@ with sync_playwright() as p:
           'pyfa mutation export: the same fit as the plain paste (tally, the blaster\'s charge; the mutation blocks read as nothing)')
     names = json.dumps(r['muta'].get('tally', {}))
     check('Mutaplasmid' not in names and 'maxRange' not in names and 'damageMultiplier' not in names, 'no mutaplasmid or attribute line read as an item')
-    check(r['sync_plain'] is not None and r['sync_plain'] == r['sync_muta'],
-          f'Synchronizer + a mutated faction module: the same damage as the plain paste (pyfa v2.70.0 counts it from its original item) {r["sync_plain"]} / {r["sync_muta"]}')
+    check(r['sync_plain'] is not None and r['sync_muta'] is not None and r['sync_plain'] != r['sync_muta'],
+          f'Synchronizer + a mutated faction module: less drone damage than the plain paste (pyfa v2.70.1 leaves it out) {r["sync_plain"]} / {r["sync_muta"]}')
     check(not r['errs'], f'no page errors {r["errs"][:2]}')
-    # the mutant: the paste reader before build queue 035
     src = open(html, encoding='utf-8').read()
+    def variant(text, edits, label):
+        for a, b in edits:
+            if a not in text: check(False, f'{label}: the line {a[:60]!r} was not found (update this check)'); return None
+            text = text.replace(a, b, 1)
+        with tempfile.NamedTemporaryFile('w', suffix='.html', dir=os.path.dirname(html), delete=False, encoding='utf-8') as f:
+            f.write(text); mp = f.name
+        try: return run(mp, p, False)
+        finally: os.remove(mp)
+    # nothing counted (SYNC_WRITER_EFFECTS emptied): the plain paste there is what the mutated paste must show here
+    z = variant(src, [(re.search(r'const SYNC_WRITER_EFFECTS = \{.*?\};', src).group(0), 'const SYNC_WRITER_EFFECTS = {};')], 'count-0 copy')
+    if z: check(z['sync_plain'] is not None and z['sync_plain'] == r['sync_muta'],
+                f'the mutated paste counts nothing: its drone damage equals the plain paste with no faction-module effect {r["sync_muta"]} / {z["sync_plain"]}')
+    # mutant (042): the paste reader doesn't pass its mutated mark on, so the mutated module counts (pyfa v2.70.0's rule)
+    m2 = variant(src, [('if(m.mutated) mutated[moduleId] = (mutated[moduleId] || 0) + 1;', '')], 'mutant 042')
+    if m2: check(m2['sync_muta'] == m2['sync_plain'], f'mutant (the mutated mark dropped) counts it, so this check catches it {m2["sync_muta"]} / {m2["sync_plain"]}')
+    # the mutant: the paste reader before build queue 035
     mut = src.replace("const lines = eftStripMutations(text).filter(Boolean);", "const lines = text.split('\\n').map(l => l.trim()).filter(Boolean);", 1)
     mut = mut.replace("const tag = line0.match(EFT_MUTA_TAG_RE);", "const tag = null;", 1)
     if 'const lines = eftStripMutations(text).filter(Boolean);' in mut or 'const tag = null;' not in mut:

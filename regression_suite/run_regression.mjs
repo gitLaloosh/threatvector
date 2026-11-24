@@ -198,7 +198,7 @@ for (const [fitId, fit] of Object.entries(golden)) {
     // fit can pin an optional "moduleStates" object ({typeId: 'offline' |
     // 'online' | 'active'} or {typeId: {active, online, offline}}), the same
     // way tacticalMode works. Fits without it run at the default states.
-    result = await sandbox.estimateHpAndDps(fit.shipTypeId, tally, cargoItemIds, highSlotByFlag, fit.tacticalMode || 'sharpshooter', midSlotByFlag, fit.moduleStates || null, fit.droneStates || null, (fit.fitSource || fit.fighterStates) ? {fitSource: fit.fitSource || null, fighterStates: fit.fighterStates || null} : null);
+    result = await sandbox.estimateHpAndDps(fit.shipTypeId, tally, cargoItemIds, highSlotByFlag, fit.tacticalMode || 'sharpshooter', midSlotByFlag, fit.moduleStates || null, fit.droneStates || null, (fit.fitSource || fit.fighterStates || fit.mutated) ? {fitSource: fit.fitSource || null, fighterStates: fit.fighterStates || null, mutated: fit.mutated || null} : null);
   } catch (e) {
     error = e;
   }

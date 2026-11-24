@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-vaPnOwnhBne6TjwmXOCTwH10E8z7DP0tyifZoNw/78Q='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-oBYdin+ncO4NDamaL6LOM3ZQn2qKvHVUtaNpYtUbkAE='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -14034,6 +14034,7 @@ async function parseEftFit(text){
   // resolves to, exactly as a killmail's shared-flag charge/module pairing
   // already does.
   const moduleTypeIds = [...new Set(moduleLines.map(m => nameToId.get(m.moduleName)).filter(id => id !== undefined))];
+  const mutated = {};   // build queue 042: {typeId: copies pasted with pyfa's mutation tag}
   const typeLookups = await analyzeChunks(moduleTypeIds, async (id) => ({id, type: await getType(id)}), 5);
   const idToType = new Map(typeLookups.filter(r => r && !r.error).map(r => [r.id, r.type]));
 
@@ -14073,6 +14074,9 @@ async function parseEftFit(text){
 
     addToTally(group, moduleId, 1);
     if(chargeId !== null) addToTally(group, chargeId, 1);
+    // build queue 042 (pyfa v2.70.1): a mutated module is its abyssal type in pyfa, so it never counts toward a
+    // Synchronizer rig (pyfaSyncRigTypes, through the engine's options.mutated); the copy is fitted as before.
+    if(m.mutated) mutated[moduleId] = (mutated[moduleId] || 0) + 1;
 
     if(group === 'High slots'){
       const flagEntries = [{id: moduleId, qty: 1}];
@@ -14109,7 +14113,8 @@ async function parseEftFit(text){
     if(group === 'Cargo') cargoItemIds.add(id);
   }
 
-  return { shipTypeId, shipName, fitName, tally, cargoItemIds, allItemIds, highSlotByFlag, midSlotByFlag, idToName, unresolved, implantsNotApplied };
+  return { shipTypeId, shipName, fitName, tally, cargoItemIds, allItemIds, highSlotByFlag, midSlotByFlag, idToName, unresolved, implantsNotApplied,
+    mutated: Object.keys(mutated).length ? mutated : null };
 }
 
 // v2026.10.14.33: the paste -> fit object step is shared by the Fit Analyzer and My Ship (myShipEnsureFit,
@@ -14119,7 +14124,7 @@ async function buildFitFromEft(text, onStatus = () => {}){
   const parsed = await parseEftFit(text);
 
   onStatus(`Estimating hull HP and DPS for ${parsed.shipName}…`);
-  const estimate = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag, null, null, {fitSource: 'eft'});
+  const estimate = await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, 'sharpshooter', parsed.midSlotByFlag, null, null, {fitSource: 'eft', mutated: parsed.mutated});
 
   // Ship modes (MODE_ITEMS / MODE_EFFECT_ROWS, PYFA CORE): a
   // pasted fit has no killmail moment to anchor which mode was active, so
@@ -14132,13 +14137,13 @@ async function buildFitFromEft(text, onStatus = () => {}){
     activeMode = resolveModeKey(parsed.shipTypeId, null);
     tacticalModes = {};
     for(const m of modeOrder) tacticalModes[m] = m === activeMode ? estimate
-      : await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, m, parsed.midSlotByFlag, null, null, {fitSource: 'eft'});
+      : await estimateHpAndDps(parsed.shipTypeId, parsed.tally, parsed.cargoItemIds, parsed.highSlotByFlag, m, parsed.midSlotByFlag, null, null, {fitSource: 'eft', mutated: parsed.mutated});
   }
 
   // v.22: the engine inputs stay on f so the Fit card's module-state
   // buttons can recalculate (recomputeFitWithStates).
   const f = { estimate, tally: parsed.tally, tacticalModes, activeMode, eftText: text,
-    input: {shipTypeId: parsed.shipTypeId, tally: parsed.tally, cargoItemIds: parsed.cargoItemIds, highSlotByFlag: parsed.highSlotByFlag, midSlotByFlag: parsed.midSlotByFlag, fitSource: 'eft'} };
+    input: {shipTypeId: parsed.shipTypeId, tally: parsed.tally, cargoItemIds: parsed.cargoItemIds, highSlotByFlag: parsed.highSlotByFlag, midSlotByFlag: parsed.midSlotByFlag, fitSource: 'eft', mutated: parsed.mutated} };
   return {parsed, f};
 }
 
@@ -14581,31 +14586,41 @@ const EFFECT_STATE_TYPE = {"4":"a","10":"a","26":"a","27":"a","34":"a","38":"a",
 const GROUP_LIMIT_MOD_EFFECTS = {"2251":[["online","increase",435,[3348],null,"ship"],["active","increase",435,[3348],null,"ship"]],"2727":[["active","increase",0,null,["Gas Cloud Scoops"],"skill"]],"6613":[["online","increase",2298,[3348],null,"ship"],["active","increase",2298,[3348],null,"ship"]],"6619":[["online","increase",2298,[3348],null,"ship"],["active","increase",2298,[3348],null,"ship"]],"6640":[["online","increase",2298,[3348],null,"ship"],["active","increase",2298,[3348],null,"ship"]],"6681":[["online","increase",2300,[3348],null,"ship"],["active","increase",2300,[3348],null,"ship"]],"6766":[["active","increase",435,[3348],null,"module"],["online","increase",435,[3348],null,"module"]],"8029":[["online","force",793,null,["Capacitor Booster"],"ship"]]};
 const ACTIVATION_BLOCK_EFFECTS = {"6567":[[5700,[83464],null]],"6658":[[1350,[4385],null]],"7142":[[1350,[3454],null]],"11714":[[5425,[11579],null]]};
 // ==== PYFA CORE END module-state-tables ====
-// SYNCHRONIZER RIGS (build queue 035; Project doc roadmap/pyfa-2-70-update-plan.md "The new mechanic"). pyfa v2.70.0: a
-// Synchronizer rig's bonuses grow with the matching faction modules fitted. One 'early' handler per rig line (Effect13012
-// Dread Guristas ...) sums a counter attribute (rigSet...Module, 1 on each faction module) over the fit's modules in the
-// states it counts (online and up in v2.70.0), then raises the rig's OWN attributes by that count (increaseItemAttr,
-// position 'pre': added to the base value), some by minus the count (resistance bonuses, cap need ...); the rig's ordinary
-// effects then read the raised values through the other tables. SYNC_RIG_EFFECTS is GENERATED by tools/gen_sync_table.py
-// (rows [counterAttrId, minState, [[rigAttrId, sign, default], ...]]; minState: -1 offline, 0 online, 1 active).
-// pyfaSyncRigTypes(fitted, copiesAtLeast) -> Map(typeId -> a copy of that rig's type, attributes raised), for this fit only:
+// SYNCHRONIZER RIGS (build queue 035; rebuilt for pyfa v2.70.1 in build queue 042, roadmap/pyfa-next-update-plan.md). A
+// Synchronizer rig's bonuses grow with the matching faction modules fitted, in two steps (pyfa a2c7b8e, 41b0629):
+//   * each faction module's own effect (Effect12963 Imperial Navy ..., 'offline', runTime 'earliest') adds its
+//     rigSet...Module value (1) to the rigSet...Bonus of every fitted Synchronizer rig. 'offline' effects run in every
+//     state, so an offline module counts; a mutated module is its abyssal type in pyfa, which has no such effect, so it
+//     never counts (a killmail names the abyssal type; a pasted one is marked mutated by the paste reader);
+//   * the rig's counting effect (Effect13012 Dread Guristas ..., 'early') reads its OWN rigSet...Bonus and raises its own
+//     attributes by it (increaseItemAttr, position 'pre': added to the base value), some by minus it (resistance bonuses,
+//     cap need ...); the rig's ordinary effects then read the raised values through the other tables.
+// SYNC_WRITER_EFFECTS {effectId: [bonusAttrId, moduleAttrId]} and SYNC_RIG_EFFECTS {effectId: [bonusAttrId, [[rigAttrId,
+// sign, default], ...]]} are GENERATED by tools/gen_sync_table.py.
+// pyfaSyncRigTypes(fitted, copiesCounted) -> Map(typeId -> a copy of that rig's type, attributes raised), for this fit only:
 //   fitted: [{id, type}] every fitted module, rig and subsystem (pyfa's fit.modules; charges are not modules);
-//   copiesAtLeast(id, minState): copies of that type in a state >= minState (pyfa's mod.state >= ONLINE).
-// The shared type cache is never changed (two fits analysed at once must not see each other's count). DEVIATIONS.md: a
-// mutated faction module on a killmail can't count (only its abyssal type is on the killmail), and a pasted module marked
-// /OFFLINE counts (the paste reader treats it as online); both end with pyfa's release after v2.70.0 (a2c7b8e, 41b0629).
+//   copiesCounted(id): the copies of that type that carry its effects in pyfa: every copy, in any state, less the ones
+//     the paste reader marked mutated.
+// The shared type cache is never changed (two fits analysed at once must not see each other's count).
 // ==== PYFA CORE BEGIN synchronizer-rigs ==== mirrors pyfa; change only to match pyfa (PYFA_CORE.md, tools/pyfa_core_manifest.json)
-const SYNC_RIG_EFFECTS = {"12969":[6314,0,[[6404,1,0.0],[327,1,0.0],[806,1,0.0],[767,1,0.0]]],"12982":[6312,0,[[6405,1,0.0],[1079,1,0.0],[335,1,0.0],[317,-1,0.0]]],"12984":[6315,0,[[6406,1,0.0],[315,1,0.0],[767,1,0.0],[312,-1,0.0]]],"12985":[6313,0,[[20,1,1.0],[6407,1,0.0],[337,1,0.0],[309,1,0.0]]],"13000":[6372,0,[[6384,1,0.0],[6385,1,0.0],[6386,1,0.0],[6387,1,0.0],[6405,1,0.0]]],"13006":[6373,0,[[6405,1,0.0],[6389,1,0.0],[6390,1,0.0],[767,1,0.0]]],"13008":[6375,0,[[349,1,0.0],[6404,1,0.0],[315,1,0.0],[6393,-1,0.0]]],"13012":[6374,0,[[1255,1,0.0],[294,1,0.0],[828,1,0.0],[327,1,0.0],[984,-1,0.0],[985,-1,0.0],[986,-1,0.0],[987,-1,0.0]]],"13016":[6376,0,[[6406,1,0.0],[349,1,0.0],[624,1,0.0],[6398,-1,0.0]]]};
-function pyfaSyncRigTypes(fitted, copiesAtLeast){
+const SYNC_RIG_EFFECTS = {"12969":[6318,[[6404,1,0.0],[327,1,0.0],[806,1,0.0],[767,1,0.0]]],"12982":[6316,[[6405,1,0.0],[1079,1,0.0],[335,1,0.0],[317,-1,0.0]]],"12984":[6319,[[6406,1,0.0],[315,1,0.0],[767,1,0.0],[312,-1,0.0]]],"12985":[6317,[[20,1,1.0],[6407,1,0.0],[337,1,0.0],[309,1,0.0]]],"13000":[6377,[[6384,1,0.0],[6385,1,0.0],[6386,1,0.0],[6387,1,0.0],[6405,1,0.0]]],"13006":[6378,[[6405,1,0.0],[6389,1,0.0],[6390,1,0.0],[767,1,0.0]]],"13008":[6380,[[349,1,0.0],[6404,1,0.0],[315,1,0.0],[6393,-1,0.0]]],"13012":[6379,[[1255,1,0.0],[294,1,0.0],[828,1,0.0],[327,1,0.0],[984,-1,0.0],[985,-1,0.0],[986,-1,0.0],[987,-1,0.0]]],"13016":[6381,[[6406,1,0.0],[349,1,0.0],[624,1,0.0],[6398,-1,0.0]]]};
+const SYNC_WRITER_EFFECTS = {"12963":[6316,6312],"12964":[6317,6313],"12965":[6318,6314],"12966":[6319,6315],"12989":[6377,6372],"12990":[6378,6373],"12991":[6379,6374],"12992":[6380,6375],"12993":[6381,6376]};
+function pyfaSyncRigTypes(fitted, copiesCounted){
   const out = new Map();
   for(const f of fitted){
     for(const e of moduleEffectIds(f.type) || []){
       const row = SYNC_RIG_EFFECTS[e];
       if(!row) continue;
-      const [counter, minState, attrs] = row;
-      let count = 0;
-      for(const g of fitted) count += attrVal(g.type.dogma_attributes, counter, 0) * copiesAtLeast(g.id, minState);
+      const [bonusAttr, attrs] = row;
       const base = out.get(f.id) || f.type;
+      // the rig's own rigSet...Bonus, plus every faction module's rigSet...Module (its writer effect, earliest)
+      let count = attrVal(base.dogma_attributes, bonusAttr, 0);
+      for(const g of fitted){
+        for(const w of moduleEffectIds(g.type) || []){
+          const wr = SYNC_WRITER_EFFECTS[w];
+          if(wr && wr[0] === bonusAttr) count += attrVal(g.type.dogma_attributes, wr[1], 0) * copiesCounted(g.id);
+        }
+      }
       const dogma = (base.dogma_attributes || []).map(a => ({...a}));
       for(const [a, sign, dflt] of attrs){
         const x = dogma.find(d => d.attribute_id === a);
@@ -15031,11 +15046,11 @@ async function estimateHpAndDps(shipTypeId, tally, cargoItemIds, highSlotByFlag,
   // Synchronizer gets an empty map and nothing changes.
   {
     const fitted = defensiveTypesFiltered.filter(dt => dt && !dt.error && qtyById.has(dt.id));
-    const copiesAtLeast = (id, minState) => {
-      const dt = fitted.find(x => x.id === id); if(!dt) return 0;
-      return minState <= -1 ? (qtyById.get(id) || 0) : minState === 0 ? onlineQty(dt) : activeQty(dt);
-    };
-    for(const [id, t] of pyfaSyncRigTypes(fitted, copiesAtLeast)){
+    // build queue 042 (pyfa v2.70.1): every copy counts, whatever its state (the faction modules' writer effects are
+    // 'offline'), except a pasted copy marked mutated (pyfa reads it as its abyssal type: options.mutated, parseEftFit).
+    const mutatedQty = (options && options.mutated) || null;
+    const copiesCounted = (id) => Math.max(0, (qtyById.get(id) || 0) - ((mutatedQty && mutatedQty[id]) || 0));
+    for(const [id, t] of pyfaSyncRigTypes(fitted, copiesCounted)){
       fitTypeOverride.set(id, t);
       for(const dt of fitted) if(dt.id === id) dt.type = t;
     }
@@ -21782,7 +21797,7 @@ async function wpBuildCandidates(f, est){
     const dk = dItems[k];
     const input = assign.size ? wpInputWithCharges(x, assign, kindOf) : x;
     const e = await estimateHpAndDps(input.shipTypeId, input.tally, input.cargoItemIds, input.highSlotByFlag, mode, input.midSlotByFlag,
-      states, dk ? {[String(dk.typeId)]: Math.floor(dk.bayQty + 1e-9)} : (f.droneStates || null), {fitSource: x.fitSource || null, fighterStates: f.fighterStates || null});
+      states, dk ? {[String(dk.typeId)]: Math.floor(dk.bayQty + 1e-9)} : (f.droneStates || null), {fitSource: x.fitSource || null, mutated: x.mutated || null, fighterStates: f.fighterStates || null});
     const ea = e.application || {weapons: [], drones: []};
     for(const [wid, c] of assign){
       const aw = ea.weapons.find(w => w.weaponTypeId === wid && w.ammoTypeId === c);
@@ -21815,7 +21830,7 @@ async function wpBuildCandidates(f, est){
         const states2 = JSON.parse(JSON.stringify(base));
         for(const o of fs.items) if(o.cls === cls) states2[o.typeId] = Object.assign({}, states2[o.typeId] || {}, {n: o.typeId === it.typeId ? n : 0});
         const e = await estimateHpAndDps(x.shipTypeId, x.tally, x.cargoItemIds, x.highSlotByFlag, mode, x.midSlotByFlag, states, f.droneStates || null,
-          {fitSource: x.fitSource || null, fighterStates: states2});
+          {fitSource: x.fitSource || null, mutated: x.mutated || null, fighterStates: states2});
         const af = ((e.application || {}).fighters || []).filter(a => a.typeId === it.typeId);
         const got = ((e.fighterStates || {}).items || []).find(o => o.typeId === it.typeId);
         if(af.length && got && got.active > 0) options.push({typeId: it.typeId, name: it.name, count: got.active, af});
@@ -22004,7 +22019,7 @@ async function fitApplyChargePicks(f){
 }
 // The engine options a fit's state adds (v.78: the unloaded module types)
 function chgEngineOptions(f, x, extra = {}){
-  return Object.assign({fitSource: x.fitSource || null, fighterStates: f.fighterStates || null, unloaded: (f.chgUnloadedTypes && f.chgUnloadedTypes.length) ? f.chgUnloadedTypes : null}, extra);
+  return Object.assign({fitSource: x.fitSource || null, mutated: x.mutated || null, fighterStates: f.fighterStates || null, unloaded: (f.chgUnloadedTypes && f.chgUnloadedTypes.length) ? f.chgUnloadedTypes : null}, extra);
 }
 // Load `chargeId` into copies of module `typeId` (copy index, or every copy when null; every copy for the per-type kinds). A
 // pick equal to the fit's own charge in every copy is dropped, so the fit is back to its own.

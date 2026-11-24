@@ -28,7 +28,7 @@ for (const [fid, fit] of Object.entries(golden)) {
   let tally, cargo, hs, ms;
   if (fit.killmail) ({ tally, cargoItemIds: cargo, highSlotByFlag: hs, midSlotByFlag: ms } = sb.buildLossTally(fit.killmail));
   else { tally = fit.tally; cargo = new Set(Object.keys(tally['Cargo'] || {}).map(Number)); hs = new Map(Object.entries(fit.highSlotByFlag || {}).map(([k, v]) => [Number(k), v])); ms = new Map(Object.entries(fit.midSlotByFlag || {}).map(([k, v]) => [Number(k), v])); }
-  const r = await sb.estimateHpAndDps(fit.shipTypeId, tally, cargo, hs, fit.tacticalMode || 'sharpshooter', ms, fit.moduleStates || null, fit.droneStates || null, fit.fitSource ? {fitSource: fit.fitSource} : null);
+  const r = await sb.estimateHpAndDps(fit.shipTypeId, tally, cargo, hs, fit.tacticalMode || 'sharpshooter', ms, fit.moduleStates || null, fit.droneStates || null, (fit.fitSource || fit.mutated) ? {fitSource: fit.fitSource || null, mutated: fit.mutated || null} : null);
   const si = r.capacitor && r.capacitor.simInputs;
   if (!si) continue;
   for (const v of ['best', 'asbDry', 'withoutBoosts']) {

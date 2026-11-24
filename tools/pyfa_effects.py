@@ -216,9 +216,32 @@ class _ModColl(Coll):
     def __init__(s, probes): Coll.__init__(s, 'modules'); s.probes = probes
     def __iter__(s): return iter(s.probes)
 
+_SYNC_BONUS_RX = re.compile(r'rigSet\w+Bonus')
+def sync_effects(pool=None):
+    """pyfa v2.70.1's Synchronizer model (build queue 042; pyfa a2c7b8e), found by running every handler in `pool`:
+      writers {eid: {'bonus': the rigSet...Bonus attribute raised on other modules, 'value': repr of what it adds,
+                     'filter': the filter lambda, 'kw': keywords}}: a faction module's own effect,
+                     fit.modules.filteredItemIncrease(<a Rig Synchronizer>, 'rigSet...Bonus', <its rigSet...Module>);
+      rigs    {eid: {'bonus': the rigSet...Bonus the rig reads off itself, 'calls': [(coll, method, args, kwargs)]}}:
+                     the rig's counting effect, self.increaseItemAttr(attr, +/- <its own rigSet...Bonus>).
+    gen_sync_table.py checks every detail; the generic generators skip both (gen_resist_table.py)."""
+    writers, rigs = {}, {}
+    pool = pool if pool is not None else sorted(EFFECTS)
+    for eid in pool:
+        calls, err = run(eid, 'module')
+        if err or not calls: continue
+        for coll, meth, a, kw in calls:
+            if coll == 'modules' and meth == 'filteredItemIncrease' and len(a) > 2 and _SYNC_BONUS_RX.fullmatch(str(a[1])):
+                writers[eid] = {'bonus': str(a[1]), 'value': repr(a[2]), 'filter': a[0], 'kw': kw}
+        reads = {m.group(0) for coll, meth, a, kw in calls if coll == 'self' for x in a[1:] for m in [_SYNC_BONUS_RX.search(repr(x))] if m}
+        if reads: rigs[eid] = {'bonus': sorted(reads), 'calls': calls}
+    return {'writers': writers, 'rigs': rigs}
+
 def counting_effects(pool=None):
     """Effects whose handler reads an attribute of EVERY fitted module (a sum over fit.modules), as pyfa v2.70.0's
-    Synchronizer rigs do (Effect13012 ...). Each is run with one probe module in each of pyfa's states:
+    Synchronizer rigs did (Effect13012 ...; since pyfa v2.70.1, build queue 042, none: the rigs read their own
+    rigSet...Bonus, sync_effects. gen_sync_table.py refuses this shape now). Each is run with one probe module in each
+    of pyfa's states:
       {eid: {'counter': attribute read off the modules, 'states': [states in which the probe counted],
              'calls': [(coll, method, args, kwargs) with the probe ONLINE]}}
     The generic generators can't express a value counted over the fit (gen_resist_table stopped on effect 13012:

@@ -11,7 +11,7 @@ Helpers: types, td (type dogma), attrs, effs, groups, cats;
 name(typeId), aname(attrId), ename(effectId), T(typeName) -> typeId str,
 A(typeName) -> {attributeName: value}, gname(typeId), reqs(typeId).
 """
-import json, glob, os
+import json, glob, os, re
 PYFA_SRC = os.environ.get('PYFA_SRC', os.path.join(os.path.dirname(__file__), 'pyfa'))
 B = os.path.join(PYFA_SRC, 'staticdata', 'fsd_built') + os.sep
 if not os.path.isdir(B):
@@ -47,9 +47,33 @@ def reqs(t):
     a = {x['attributeID']: x['value'] for x in td.get(str(t), {}).get('dogmaAttributes', [])}
     return {int(a[i]) for i in (182, 183, 184, 1285, 1289, 1290) if i in a}
 
+_FILAMENT_KEEP = ("'Needlejack'", "'Devana'", "'Pochven'", "'Extraction'", "'Krai Veles'", "'Krai Perun'", "'Krai Svarog'")
+def pyfa_db_published(t):
+    """Whether pyfa's database has type t, and as published: a port of db_update.py processEveTypes (v2.70.1, build queue
+    042). It first overrides CCP's published flag by name (Civilian modules but not shuttles, Capsule, group 4033,
+    82941, 87164 / 87177 and 'AIR ... Booster' on; 'Limited Synth ', 'Expired ', Grand Prix boosters, Mining Blitz
+    booster doses and most filaments off), then keeps only published rows plus a few groups and types.
+    Returns (in_db, published)."""
+    v = types[str(t)]; n = name(t) or ''; g = v.get('groupID'); pub = bool(v.get('published'))
+    if ((n.startswith('Civilian') and 'Shuttle' not in n) or n == 'Capsule' or g == 4033 or int(t) == 82941
+            or int(t) in (87164, 87177) or re.match(r'AIR .+Booster.*', n)):
+        pub = True
+    elif (n.startswith('Limited Synth ') or n.startswith('Expired ') or re.match(r'Grand Prix .*Booster', n)
+          or re.match(r'Mining Blitz .+ Booster Dose .+', n)
+          or (n.endswith(' Filament') and not any(k in n for k in _FILAMENT_KEEP))):
+        pub = False
+    in_db = (pub or g == 1306 or int(t) in (41549, 41548, 41551, 41550) or g in (1882, 1975, 1971, 1983)
+             or int(t) in (92609, 95625))
+    return in_db, pub
+
 def pyfa_removed_types():
-    """Type ids the SDE has but pyfa's database does not offer (db_update.py post-processing, v2.69.2):
-      * boosters whose boosterLastInjectionDatetime is before the data dump (expired event boosters):
+    """Type ids the SDE has but pyfa's database does not offer (db_update.py, v2.70.1):
+      * implants and boosters (category 20) processEveTypes leaves out: unpublished after its name overrides
+        (pyfa_db_published). Build queue 042: in CCP data 3724492 the 47 boosters 96542-96593 are renamed "Expired ..."
+        and unpublished, so pyfa no longer has them at all; before 042 only published boosters were looked at here, and
+        a regenerated PYFA_REMOVED_IMPLANT_IDS would have lost them. Other categories are left out of this set (it is
+        read only for implants and boosters);
+      * boosters still published whose boosterLastInjectionDatetime is before the data dump (expired event boosters):
         DELETED from the database ("Remove boosters which were expired at the time data dump was generated");
       * items named like '%abyssal%' / '%mutated%' / '%_PLACEHOLDER%' and the four Lux Drifter weapons:
         unpublished (except Abyssal Ore Processing, Mutated Drone Specialization, Asteroid Mining Crystals),
@@ -66,10 +90,12 @@ def pyfa_removed_types():
     for t, v in types.items():
         n = name(t) or ''
         low = n.lower()
-        if v.get('published') and (('abyssal' in low or 'mutated' in low or '_placeholder' in low or n in ('Lux Kontos', 'Lux Xiphos', 'Lux Ballistra', 'Lux Kopis'))
-                                   and n not in ('Abyssal Ore Processing', 'Mutated Drone Specialization') and 'Asteroid Mining Crystal' not in n):
+        inDb, pub = pyfa_db_published(t)
+        if cat(t) == 20 and not inDb: out.add(int(t)); continue
+        if pub and (('abyssal' in low or 'mutated' in low or '_placeholder' in low or n in ('Lux Kontos', 'Lux Xiphos', 'Lux Ballistra', 'Lux Kopis'))
+                    and n not in ('Abyssal Ore Processing', 'Mutated Drone Specialization') and 'Asteroid Mining Crystal' not in n):
             out.add(int(t))
-        if cat(t) == 20 and v.get('published'):   # the query filters Item.published
+        if cat(t) == 20 and pub:   # the query filters Item.published
             for a in td.get(str(t), {}).get('dogmaAttributes', []):
                 if a['attributeID'] == lastInj and a['value'] < dumpDays: out.add(int(t))
     return out
