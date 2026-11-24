@@ -309,7 +309,7 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
             for bad in ('not json', '{"v": 2, "colour": ""}', '{"v": 1, "colour": "kills", "view": "x", "only": {"secr": "yes"}, "secr": {"lo": 3.5, "hi": -40}, "near": {"n": 99}, "sovLv": [0, 3, 3, 7, "2"]}'):
                 pg.evaluate("(v) => localStorage.setItem('tvMapStack', v)", bad)
                 r = pg.evaluate("() => itMapStackRead()")
-                ok = r['colour'] == 'sec' and r['view'] == 'map' and not any(r['only'].values()) and r['secr'] == {'lo': -5, 'hi': -3} and r['near'] == {'n': 5} and r['sovLv'] == ([3] if '"v": 1' in bad else [])
+                ok = r['colour'] == 'sec' and r['view'] == 'map' and not any(r['only'].values()) and r['secr'] == {'lo': -5, 'hi': -3} and r['near'] == {'n': 5, 'mode': 'j', 'ly': 70} and r['sovLv'] == ([3] if '"v": 1' in bad else [])
                 if not ok: out.append(f'a bad tvMapStack {bad[:30]!r} read as {r}')
         if 'example' in parts:
             before = pg.evaluate("() => { const v = JSON.stringify(Object.assign(itMapStackBlank(), {colour: '', only: {secr: true, near: false, reports: false, kills: false, wh: false, sov: false}})); localStorage.setItem('tvMapStack', v); return v; }")
