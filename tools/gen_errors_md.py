@@ -43,7 +43,7 @@ for c, r in sorted(reg.items()):
 def names(t): return re.sub(r'\{card:([\w.]+)\}', lambda mm: CARD_NAMES.get(mm.group(1), mm.group(0)), t or '')
 def cell(t): return names(t).replace('|', '\\|').replace('\n', ' ')
 groups = {'APP': 'The page itself', 'ESI': 'ESI (CCP\'s API)', 'ZKB': 'zKillboard', 'DSCAN': 'System Analyzer: the D-Scan box', 'SYS': 'System Analyzer: Local', 'SIDE': 'Your Side',
-          'PILOT': 'Pilot Analyzer', 'FIT': 'Fit Analyzer', 'MYSHIP': 'My Ship'}
+          'PILOT': 'Pilot Analyzer', 'FIT': 'Fit Analyzer', 'MYSHIP': 'My Ship', 'WH': 'Wormholes tab'}   # WH: build queue 072
 order = list(groups)
 out = ['# Error codes', '',
        'Every error Threat Vector shows ends with a code, for example "... (ZKB-01)". To report a problem,',

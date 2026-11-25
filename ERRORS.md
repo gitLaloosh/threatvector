@@ -90,6 +90,12 @@ pilot name.", "Paste a fit first.") carry no code: they are instructions, not er
 | MYSHIP-02 | The saved ship couldn't be loaded | Your profile's My Fits, the Fit Analyzer's "Viewing My Fit" page, the Matchup | The saved fit is recomputed from its EFT text when first needed, and that failed (the message includes the underlying code, e.g. ESI-01), or the stored copy is damaged. | The underlying code in the message. If an item was renamed or removed from the game, Replace the fit. | Recomputing on load lets tool fixes and game patches apply to a saved ship; when it fails, the saved text is kept rather than dropped. | v2026.10.14.33 ([2026-10-23_my-ship-phase1.html](dscan-tool-history/2026-10-23_my-ship-phase1.html)) |
 | MYSHIP-03 | My Fits is full | Your profile's My Fits (+ Add a fit, the paste box), the Fit Analyzer's "Set as my fit" | Adding a fit when 20 are already saved (MY_SHIPS_MAX; the owner 2026-10-25: "limit the list of fits they can save to 20 for now"). | Delete a saved fit you no longer fly, or Replace one, then add the new fit. | A fixed limit keeps the list and the Matchup's ship menu short; the browser could hold far more. | v2026.10.14.65 ([2026-10-25_my-ships-saved-fits.html](dscan-tool-history/2026-10-25_my-ships-saved-fits.html)) |
 
+## Wormholes tab
+
+| Code | What | Where | Cause | What to check | Why it exists | Since |
+|---|---|---|---|---|---|---|
+| WH-01 | A Mass run couldn't be saved | Wormholes tab, the Mass panel (Crit or roll a hole) | An answer, Undo, an added finisher or another change to a run, when the browser refused to keep it (its storage for this site is full). The run works until the page is closed. | Delete a saved run you don't need in Saved runs (the open run is then saved again), or free some of this site's storage. | The owner lost a run to the browser's Back button ("i accidentally hit the "back" button on my browser earlier mid-session and lost my rolling state. not good."), so runs are saved; and "Please make the "storage full" message into an actual warning that stands out." INTEL-11 is the same kind of error shown as amber text; this one is a red box inside the run's pinned line, since losing a run mid-roll costs more. | 2026-11-25 (v2026.11.25.1) ([2026-11-25_hole-mass-runs.html](dscan-tool-history/2026-11-25_hole-mass-runs.html)) |
+
 ## DMG
 
 | Code | What | Where | Cause | What to check | Why it exists | Since |

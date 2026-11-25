@@ -6,7 +6,7 @@ location on its own while it's in front (D19), the three later panels saying so.
 
 Made-up Intel (intel_check.py's folder and stand-ins), CCP's wormhole system names from the page's own table (INTEL_WH). Checks:
   * INTEL_WH: 2,604 systems, Thera class Thera, a shattered and a Drifter system, effects;
-  * the tab right after Intel with its BETA tag and aria-label; one tab row at 1440 and 390 px;
+  * the tab right after Intel, named Wormholes, with no Beta tag since build queue 072; one tab row at 1440 and 390 px;
   * a scripted path from the Local log (k → J1 → J2 → J1 → k2, after a k → k jump): the right systems and connections, a k → k jump records
     nothing; entering J-space from Intel switches to Wormholes, from Pilot Analyzer only marks the button, leaving goes back to Intel;
   * D14: in J-space Intel's system is the k-space entrance and the map says so;
@@ -65,8 +65,9 @@ def cases(b, html, parts=('table', 'path', 'loc', 'panel', 'add', 'map', 'phone'
     if 'table' in parts:
         if T['n'] != 2604 or T['thera'] != 'th' or not T['c13'] or T['dr'] != 5 or T['eff'] != 1038 or '/' not in T['place']:
             out.append(f'INTEL_WH: {T["n"]} systems, Thera {T["thera"]}, C13 {T["c13"]}, {T["dr"]} Drifter, {T["eff"]} effects, place {T["place"]!r} (want 2604, th, one, 5, 1038, "constellation / region")')
-        tb = pg.evaluate("() => { const b = document.getElementById('tabBtnWh'); return [b.previousElementSibling && b.previousElementSibling.id, b.getAttribute('aria-label'), b.querySelector('.it-gtag') && b.querySelector('.it-gtag').textContent, TAB_PANELS.indexOf('wh')]; }")
-        if tb != ['tabBtnIntel', 'Wormholes (beta)', 'Beta', 1]: out.append(f'the tab right after Intel, BETA, labelled: {tb}')
+        tb = pg.evaluate("() => { const b = document.getElementById('tabBtnWh'); return [b.previousElementSibling && b.previousElementSibling.id, b.getAttribute('aria-label'), b.querySelector('.it-gtag') && b.querySelector('.it-gtag').textContent, TAB_PANELS.indexOf('wh'), b.textContent.trim()]; }")
+        # out of beta (build queue 072, the owner: "remove "beta" tag from wormholes tab."): no tag, named by its own text
+        if tb != ['tabBtnIntel', None, None, 1, 'Wormholes']: out.append(f'the tab right after Intel, no Beta tag, named Wormholes: {tb}')
         r = pg.evaluate(ROW)
         if r[1] != 1 or not r[2]: out.append(f'1440: one tab row, no sideways scroll {r}')
     intel_on(pg)
