@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-25 — Intel map: Sov hubs, sov fights coming up and vulnerable hubs</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel map: Sov hubs, sov fights coming up and vulnerable hubs</h1>
+<p><span class="tag">Page</span><span class="tag">Intel map</span> 2026-11-25 &middot; <code>v2026.11.25.2</code> &middot; branch <code>068-sov-hubs</code> &middot; build queue 068 (plan <code>roadmap/sov-hubs-plan.md</code>, mockup <code>Claude outputs/sov_hubs_mockup.html</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner (planning list E2): "structures of various types"; of the four kinds he picked, the two public ones ("Public only for now (Recommended)"). His answers (2026-11-21): "One filter, two kinds (Recommended)", "24 h fights, now for hubs (Recommended)", "Fight tags only, filter on (Recommended)", "Every 2 min, raise cap (Recommended)", ""SOV 19:45" (Recommended)".</li>
+<li>At the build review (2026-11-25), the plan having been written before 065 was built: "your recommendations are fine for all of those questions. while you're working on new icons, modify the wormhole filter button to use a wormhole icon too if you would." (the plan's section 10, B1-B5).</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The filter:</b> a new Only filter <b>Sov hubs</b> (<code>IT_MAP_FILTERS</code> <code>hub</code>, after Sov upgrades; <code>IT_MAP_ONLY</code>), its icon a hub of our own drawing (065's Sov holder has the flag the mockup used; LESSON #183) and its settings button "Sov hubs: which and when".</li>
+<li><b>The Wormholes filter's icon</b> is the game's wormhole shape (<code>WH_SWIRL</code>, as the Wormholes tab's signatures and end marks draw it; its definition moved before <code>IT_MAP_FILTERS</code>, which is built first).</li>
+<li><b>The reader:</b> <code>itCamp</code> / <code>itCampNeed</code> / <code>itCampRead</code>, ESI's <code>/sovereignty/campaigns</code> (<code>IT_CAMP_URL</code>, kind <code>sov</code>), read as 065's lists: only while Sov hubs is on and the live map shows (<code>itMapLvWant('camp')</code>), at most every 2 minutes (<code>IT_CAMP_MS</code>), memory only, 60 s / 120 s / 5 min after a failure, never on a timer of its own. <code>itMapLvWant('sov')</code> is true with Sov hubs on too, so the hubs' windows are read with any colour.</li>
+<li><b>The match</b> (<code>itMapMatch</code>, <code>itHubIx</code>, <code>itHubAt</code>): any ticked kind; a fight starting within its hours (0-48, 24 by default) or under way; a window open now or opening within its hours (0-24, now by default), never one that ended. Its key (<code>itHubKey</code>, also in <code>itMapKey</code>) holds the settings, whether each list is there, each read, and the minute (B2).</li>
+<li><b>Its settings</b> (058's panel <code>itMp</code>, <code>IT_MP_KEYS</code>): a tick and an <code>RS</code> stepper per kind (<code>itMpHubRowHtml</code>, <code>RS.mapHubF</code>, <code>RS.mapHubV</code>), a note, the count. Switched on the first time, they open (<code>seen.hub</code>).</li>
+<li><b>The hover</b> (<code>itHubTipHtml</code>, <code>itHubFightHtml</code>, <code>itHubWhoHtml</code>): each fight's kind, start or how long it has been under way, the defender and score (a freeport's alliances taking part), "nodes anywhere in this constellation"; the hub's window with how long is left, when it opens, or "ended"; "no vulnerability window (in a fight)". With Sov holder's colour on, its own window line gives way (B4).</li>
+<li><b>The tags</b> (<code>itHubTags</code>, in <code>itMapLabels</code>): "SOV 19:45" or "SOV now" beside fights in their hours that every Only filter picks out, with Fight coming up ticked; in a report's or a wormhole's label, or the name and tag where there's room.</li>
+<li><b>The Only line</b> (<code>itHubOnlyText</code>): "a sov fight within 24 h (N) or a hub vulnerable now (N) · ESI HH:MM", "under way" at 0 h, "no data yet", "no kind ticked".</li>
+<li><b>Stored:</b> <code>tvMapStack</code> gains <code>only.hub</code>, <code>hub</code> <code>{fight, fightH, vuln, vulnH}</code> and <code>seen.hub</code>. A stack from before reads with Sov hubs off and the defaults; bad hours fall back; the page from main drops the new fields and keeps the rest.</li>
+<li><code>CARD_INFO.intel</code> [Map]: "Sov hubs: sov fights coming up and vulnerable hubs, from ESI"; the Intel cap 765, from the final count. METHODOLOGY.md: Sov hubs.</li>
+<li>Checks: <code>tools/page_checks/sov_hubs_check.py</code> (new; 12 mutants), a campaigns stand-in in <code>intel_check.py</code>; the filter lists in <code>intel_map_stack_check</code>, <code>live_map_filters_check</code>, <code>sov_upgrades_check</code>, <code>intel_map_look_check</code> and <code>paths_to_you_check</code>; <code>check_request_gates.py</code> lists <code>itCampRead</code> and <code>IT_CAMP_URL</code>.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #183: the mockup was made before 065, queued ahead of it, was built, and gave the new filter the flag 065 then gave Sov holder. At the build review, put a mockup's new pieces beside the page as it is now.</li>
+</ul>
+</body></html>

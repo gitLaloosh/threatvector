@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-P0GGx2/U0DDj6jBsMwJbxQ3O3GAtv/YAucvErXw0Y0Y='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Wvfs/MyxYpIKiBMqqQ4vqinGgaummYOGURuaCWJyuVc='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3488,7 +3488,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.25.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.25.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3870,7 +3870,7 @@ const CARD_INFO = {
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none), Sov holder, Jumps and Kills (past hour) from ESI: who holds each system (by your standings or one colour per alliance; zoomed in, its logo) and the past hour's jumps or kills; Only filters, any number, all must match (their settings beside them; Distance counts stargate jumps, or light years where a jump drive can land; Region pick: the regions you tick); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter or ESI colour on, systems past {card:itnear}'s range fade. Set as Home (right-click): a house marks it, hovers count jumps from it, the top house button centers on it, its menu shows the route.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none), Sov holder, Jumps and Kills (past hour) from ESI: who holds each system (by your standings or one colour per alliance; zoomed in, its logo) and the past hour's jumps or kills; Only filters, any number, all must match (their settings beside them; Distance counts stargate jumps, or light years where a jump drive can land; Region pick: the regions you tick; Sov hubs: sov fights coming up and vulnerable hubs, from ESI); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter or ESI colour on, systems past {card:itnear}'s range fade. Set as Home (right-click): a house marks it, hovers count jumps from it, the top house button centers on it, its menu shows the route.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus jump bridges you can use with Use jump bridges on the map (green curves, the bridge button hides them; the alert glow and Paths to you stay by stargate).",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list. With Use jump bridges on, routes take only bridge jumps arriving in the ticked zones (zone 1 free by default).",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
@@ -27760,6 +27760,49 @@ async function itLvRead(k){
   L.busy = false;
   if(typeof itm !== 'undefined' && itm.el) itMapRefresh();
 }
+// ---- build queue 068 (roadmap/sov-hubs-plan.md H1): ESI's sov fights (/sovereignty/campaigns, public), read as 065's lists are: only while Sov
+// hubs is on and the live map shows (itMapLvWant('camp')), at most every IT_CAMP_MS (the owner: "Every 2 min"; ESI's own cache is 5 s), memory
+// only, a failed read asked again after 60 s, 120 s, then 5 minutes and only when something needs it, never on a timer of its own (LESSON #120;
+// the build review B1: with Intel stopped nothing asks, and the Only line says how old the list is). Each field read defensively (an unknown kind
+// is kept as words, a missing score null). Per system id: its fights, soonest first
+const IT_CAMP_URL = 'https://esi.evetech.net/sovereignty/campaigns?compatibility_date=2026-11-19', IT_CAMP_MS = 120000;   // the plan's Sources: checked live 2026-11-21
+const IT_CAMP_KINDS = {ihub_defense: 'hub defense', tcu_defense: 'TCU defense', station_defense: 'station defense', station_freeport: 'station freeport'};
+const itCamp = {d: null, at: 0, exp: 0, busy: false, fails: 0, next: 0, err: '', reads: 0};
+function itCampNeed(){
+  if(itCamp.busy || !itMapLvWant('camp')) return;
+  const now = Date.now();
+  if((itCamp.d && now < itCamp.exp) || now < itCamp.next) return;
+  itCampRead();
+}
+function itCampOne(x){
+  const int = (v) => Number.isInteger(v) && v > 0 ? v : null, num = (v) => typeof v === 'number' && Number.isFinite(v) ? v : null;
+  if(!x || typeof x !== 'object' || !int(x.solar_system_id)) return null;
+  const t = typeof x.start_time === 'string' ? Date.parse(x.start_time) : NaN; if(!Number.isFinite(t)) return null;
+  const k = typeof x.event_type === 'string' && x.event_type.length < 40 ? x.event_type : '';
+  const part = Array.isArray(x.participants) ? x.participants.filter(p => p && int(p.alliance_id)).slice(0, 20).map(p => [p.alliance_id, num(p.score)]) : null;
+  return {sys: x.solar_system_id, con: int(x.constellation_id), k, t, def: int(x.defender_id), ds: num(x.defender_score), as: num(x.attackers_score), part};
+}
+async function itCampRead(){
+  itCamp.busy = true; itCamp.reads++;
+  let ok = false;
+  try{
+    const r = await esiFetch(IT_CAMP_URL, undefined, 'sov');
+    if(r.ok){
+      const j = await r.json();
+      if(Array.isArray(j)){
+        const d = new Map();
+        for(const x of j){ const c = itCampOne(x); if(c) (d.get(c.sys) || d.set(c.sys, []).get(c.sys)).push(c); }
+        for(const L of d.values()) L.sort((a, b) => a.t - b.t);
+        const now = Date.now();
+        Object.assign(itCamp, {d, at: now, exp: now + IT_CAMP_MS, fails: 0, next: 0, err: ''});
+        ok = true;
+      } else itCamp.err = 'its answer had no list';
+    } else itCamp.err = `ESI answered ${r.status}`;
+  }catch(e){ itCamp.err = "ESI couldn't be reached"; }
+  if(!ok){ itCamp.next = Date.now() + IT_SOV_RETRY_MS[Math.min(itCamp.fails, IT_SOV_RETRY_MS.length - 1)]; itCamp.fails++; }   // a copy held is used meanwhile
+  itCamp.busy = false;
+  if(typeof itm !== 'undefined' && itm.el) itMapRefresh();
+}
 // something the zones read changed: the rows, the Routes box's line and the map (which searches again only when what it counts changed)
 function itJbChanged(){ itBridgePaint(); if(typeof itm !== 'undefined' && itm.el) itMapRefresh(); }
 // Your alliance: the login's while it is Your pilot (sideEveWanted's test, D3), else none (each bridge's holder decides)
@@ -30826,8 +30869,10 @@ const IT_MAP_PANEL_BTN = {wh: () => `<button type="button" class="it-map-pb it-w
   // 065: Sov holder's, Kills (past hour)'s and Region pick's settings (Jumps (past hour) has none)
   sovh: () => `<button type="button" class="it-map-pb" data-it-mpn="sovh" aria-haspopup="dialog" aria-expanded="false" aria-label="Sov holder: by standing or by alliance" title="Sov holder: by standing or by alliance">${IT_MAP_SET_ICON}</button>`,
   killh: () => `<button type="button" class="it-map-pb" data-it-mpn="killh" aria-haspopup="dialog" aria-expanded="false" aria-label="Kills (past hour): ships and pods or NPC kills" title="Kills (past hour): ships and pods or NPC kills">${IT_MAP_SET_ICON}</button>`,
-  regpick: () => `<button type="button" class="it-map-pb" data-it-mpn="regpick" aria-haspopup="dialog" aria-expanded="false" aria-label="Region pick: which regions" title="Region pick: which regions">${IT_MAP_SET_ICON}</button>`};
-const IT_MP_KEYS = ['secr', 'near', 'sovh', 'killh', 'regpick'];   // the filters whose settings are itMp's
+  regpick: () => `<button type="button" class="it-map-pb" data-it-mpn="regpick" aria-haspopup="dialog" aria-expanded="false" aria-label="Region pick: which regions" title="Region pick: which regions">${IT_MAP_SET_ICON}</button>`,
+  // 068: Sov hubs' kinds and hours
+  hub: () => `<button type="button" class="it-map-pb" data-it-mpn="hub" aria-haspopup="dialog" aria-expanded="false" aria-label="Sov hubs: which and when" title="Sov hubs: which and when">${IT_MAP_SET_ICON}</button>`};
+const IT_MP_KEYS = ['secr', 'near', 'sovh', 'killh', 'regpick', 'hub'];   // the filters whose settings are itMp's
 // build queue 053 (the owner at its review: "Yes, one shared path"): the filter panel that is open, one at a time (the Wormholes list or Sov
 // upgrades): its filter, its element, the room it needs beside Near You and the width it takes
 function itMapPanel(){
@@ -30965,7 +31010,7 @@ function itMapFilterSet(k){
   else {
     s.only[k] = !s.only[k];
     if(!s.only[k]){ if(itMp.k === k) itMpOpen('', false); if(k === 'sov') sovOpen(false, false); if(k === 'wh') itWhListOpen(false, false); }
-    else if((k === 'secr' || k === 'near') && !s.seen[k]){ s.seen[k] = true; open = k; }
+    else if((k === 'secr' || k === 'near' || k === 'hub') && !s.seen[k]){ s.seen[k] = true; open = k; }   // 068: Sov hubs too
     else if(k === 'sov' && !sovStore().lists.length && !sovBridgeEnds().length) open = 'sov-paste';   // 053: no lists yet: its panel opens at the paste box
     else if(k === 'sov' && !sovStore().pick.length) open = 'sov';
     else if(k === 'regpick' && !s.regions.length) open = 'regpick';   // 065: as Sov upgrades with nothing picked
@@ -30974,7 +31019,7 @@ function itMapFilterSet(k){
   itMapFbarPaint(true); itMapLegend(); itMpPaint(); if(sovShown()) sovPaint(true);
   if(itm.P && itm.home >= 0){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); }   // 040: the key follows the filters (what the wormholes show depends on them)
   if(open && live){ if(open.startsWith('sov')) sovOpen(true, false, open === 'sov-paste' ? 'paste' : ''); else itMpOpen(open); }
-  if(f.g === 'colour') itMapLvAsk();   // 065: a live colour's data, if it isn't held yet
+  if(f.g === 'colour' || k === 'hub') itMapLvAsk();   // 065: a live colour's data, if it isn't held yet   // 068: Sov hubs' fights and windows
 }
 // ---- 058 (plan 4.5): the settings panels of Security range and Within N jumps, one element, a filter panel like the Wormholes list's
 // (itMapPanel: one at a time, taking turns with Near You, itMapFree; rule B, the shared close button, Escape, a press outside), placed by
@@ -30989,6 +31034,8 @@ function itMpBodyHtml(k){
     + '<div class="it-mp-note">Standings: your corporation’s and alliance’s EVE contacts, else your typed lists (the profile’s Pilot tab). Zoomed in, the holder’s logo fills each system’s circle. The hover names the holder.</div>';
   if(k === 'killh') return '<div class="it-mp-note">Count:</div>' + itMpRadHtml('itMpKill', 'ship', !s.killNpc, 'Ships and pods (players)') + itMpRadHtml('itMpKill', 'npc', s.killNpc, 'NPC kills (ratting)') + '<div class="it-mp-note">From ESI, once an hour. Not the same as “Kills from ' + escapeHtml(cardName('intel')) + '”, which counts the kills ' + escapeHtml(cardName('intel')) + ' saw.</div>';
   if(k === 'regpick') return itMpRegHtml();
+  if(k === 'hub') return itMpHubRowHtml('fight', s.hub.fight, 'Fight coming up', 'mapHubF') + itMpHubRowHtml('vuln', s.hub.vuln, 'Vulnerable', 'mapHubV')   // 068: a tick and its hours per kind
+    + '<div class="it-mp-note">Any ticked kind counts; a started fight always does. EVE time, from ESI: fights every 2 minutes, hub windows every 5, while the map updates (Intel on).</div><div class="it-mp-cnt" role="status"></div>';
   if(k === 'secr') return `<div class="it-mp-row">${rsHtml('mapSecLo')}${rsHtml('mapSecHi')}</div><div class="it-mp-q"><span>Quick:</span><button type="button" data-it-mpq="hi">High</button><button type="button" data-it-mpq="low">Low</button><button type="button" data-it-mpq="null">Null</button></div>`
     + '<div class="it-mp-note">Both ends count, in either order. It compares the number the map shows (one decimal).</div><div class="it-mp-cnt" role="status"></div>';
   if(k === 'near' && s.near.mode === 'ly') return itMpNearModeHtml(s) + `<div class="it-mp-row">${rsHtml('mapLy')}</div><div class="it-mp-q"><span>Quick:</span>${itMpLyQuickHtml()}</div>`
@@ -31015,6 +31062,7 @@ function itMpYoursHtml(on){ return on ? ' <span class="it-sov-from">(yours)</spa
 const IT_MP_LY_QUICK = [[60, 'Titans, supercarriers'], [70, 'Carriers, dreadnoughts, FAX'], [75, 'Command carriers'], [80, 'Black Ops, Lancers'], [100, 'Jump freighters, Rorqual']];
 function itMpLyQuickHtml(){ return IT_MP_LY_QUICK.map(([v, who]) => `<button type="button" data-it-mply="${Number(v)}" title="${escapeHtml(`${who}, Jump Drive Calibration V`)}" aria-pressed="false">${escapeHtml(`${v / 10} LY`)}</button>`).join(''); }
 function itMpNearModeHtml(s){ const ly = s.near.mode === 'ly'; return `<div class="it-mp-row" role="radiogroup" aria-label="Count in">${itMpRadHtml('itMpNear', 'j', !ly, 'Jumps')}${itMpRadHtml('itMpNear', 'ly', ly, 'Light years')}</div>`; }
+function itMpHubRowHtml(v, on, t, rs){ return `<div class="it-mp-row"><label class="it-sov-k"><input type="checkbox" data-it-mphk="${escapeHtml(v)}"${escapeHtml(on ? ' checked' : '')}> <span>${escapeHtml(t)}</span></label>${rsHtml(rs)}</div>`; }   // 068
 function itMpRadHtml(nm, v, on, t){ return `<label class="it-sov-k"><input type="radio" name="${escapeHtml(nm)}" value="${escapeHtml(v)}"${escapeHtml(on ? ' checked' : '')}> <span>${escapeHtml(t)}</span></label>`; }
 function itMpRegPaint(){
   const p = itMp.el, e = p && itMp.k === 'regpick' && p.querySelector('.it-mp-rn'); if(!e) return;
@@ -31040,6 +31088,7 @@ function itMpMake(){
     const t = e.target, s = itMapSt();
     if(t.name === 'itMpSovBy'){ s.sovBy = t.value === 'alliance' ? 'alliance' : 'standing'; itMpChanged(); }
     else if(t.name === 'itMpKill'){ s.killNpc = t.value === 'npc'; itMpChanged(); }
+    else if(t.dataset.itMphk !== undefined){ s.hub[t.dataset.itMphk === 'vuln' ? 'vuln' : 'fight'] = t.checked; itMpChanged(); }   // 068: Sov hubs' kinds
     else if(t.name === 'itMpNear'){ s.near.mode = t.value === 'ly' ? 'ly' : 'j'; itMp.built = ''; itMpChanged(); const r = p.querySelector('[name=itMpNear]:checked'); if(r) r.focus({preventScroll: true}); }   // 067: the body built again, focus kept on the switch
     else if(t.dataset.itMprall !== undefined){
       const shown = [...p.querySelectorAll('[data-it-mpr]')].filter(l => !l.hidden).map(l => l.querySelector('input'));
@@ -31213,7 +31262,7 @@ function itMapRefresh(force){
 function itMapKey(){
   const fq = itFlSys();
   // 066: who died, not only the total (a re-work of sides, itSidesRework, can change it with the same total)
-  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kb ? `${r.kb.f}.${r.kb.h}.${r.kb.n}` : r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}|lv:${itMapLvKey()}|ho:${itHoKey()}`;   // 058: the stack   // 065: the live colour's read   // 047: Threat Vector's route   // 041: the bridges counted
+  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kb ? `${r.kb.f}.${r.kb.h}.${r.kb.n}` : r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}|lv:${itMapLvKey()}|ho:${itHoKey()}|hub:${itMapHubOn() ? itHubKey() : ''}`;   // 068: Sov hubs' reads and the minute   // 058: the stack   // 065: the live colour's read   // 047: Threat Vector's route   // 041: the bridges counted
 }
 // slide the map so your system (071: or Home, i) is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
 function itMapCenter(draw = true, i = itm.home){
@@ -31367,6 +31416,9 @@ const IT_MAP_REGION = ['#5fbf7f', '#d9687f', '#c9c35a', '#5f8fd9', '#3f9f8f', '#
 const IT_MAP_NONE = '#4a535b', IT_MAP_KILL = '#d99a3c', IT_MAP_FAINT = 0.22, IT_MAP_DIM = 0.16, IT_MAP_NAME_MS = 4000;
 // 058: each filter's group (g): colour (one, or none), only (any number, all must match), view (Paths to you); the column draws a line between groups
 const IT_MAP_SET_ICON = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/><circle cx="6" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="9" r="1.6" fill="currentColor"/><circle cx="8" cy="13" r="1.6" fill="currentColor"/></svg>';
+// the game's wormhole shape (the Wormholes tab's signatures and end marks, 059; since build queue 068 also the Wormholes filter's icon, the owner:
+// "modify the wormhole filter button to use a wormhole icon too"): defined here because IT_MAP_FILTERS, built first, uses it
+const WH_SWIRL = 'M5.00 3.50Q6.90 1.70 8.90 0.40Q7.30 2.40 7.50 4.30ZM7.67 3.88Q10.17 4.63 12.30 5.71Q9.77 5.33 8.22 6.45ZM8.67 6.38Q9.27 8.93 9.40 11.31Q8.47 8.93 6.72 8.15ZM7.00 8.50Q5.10 10.30 3.10 11.60Q4.70 9.60 4.50 7.70ZM4.33 8.12Q1.83 7.37 -0.30 6.29Q2.23 6.67 3.78 5.55ZM3.33 5.62Q2.73 3.07 2.60 0.69Q3.53 3.07 5.28 3.85Z';
 const IT_MAP_FILTERS = [
   {k: 'sec', g: 'colour', name: 'Security status', note: 'colour: each system in its security colour, as in the game',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6.5"/><path d="M9 2.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>'},
@@ -31392,11 +31444,16 @@ const IT_MAP_FILTERS = [
   {k: 'kills', g: 'only', name: 'Kills from Intel', note: 'only: systems with kills in Intel',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke-width="2.2"/></svg>'},
   // build queue 040 (the owner: "All of them, anywhere"): every kept wormhole, past "Map: within" too
+  // build queue 068 (the owner: "modify the wormhole filter button to use a wormhole icon too"): the game's wormhole shape (WH_SWIRL), as its signatures show it
   {k: 'wh', g: 'only', name: 'Wormholes', note: 'only: systems with a kept wormhole (reported or added; its list beside it)',
-    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 2.5a6.5 6.5 0 1 1-6.5 6.5"/><path d="M9 5.5a3.5 3.5 0 1 1-3.5 3.5"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>'},
+    icon: `<svg width="18" height="18" viewBox="-0.6 -0.6 13.2 13.2" aria-hidden="true" fill="currentColor"><circle cx="6" cy="6" r="3"/><path d="${WH_SWIRL}"/></svg>`},
   // build queue 053 (roadmap/intel-layout-sov-plan.md 5.6): your pasted sov lists; picked upgrades bright anywhere, the rest dimmed
   {k: 'sov', g: 'only', name: 'Sov upgrades', note: 'only: systems with an upgrade you picked (at a level you ticked)',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2.5l5.5 2.2v4.1c0 3.3-2.3 5.6-5.5 6.7-3.2-1.1-5.5-3.4-5.5-6.7V4.7z"/><path d="M6.5 9l1.8 1.8L11.8 7"/></svg>'},
+  // build queue 068 (roadmap/sov-hubs-plan.md H2; the owner: "One filter, two kinds (Recommended)"): systems whose sov hub has a fight coming up or
+  // is vulnerable, from ESI; its icon a hub of our own drawing (B3: the mockup's flag was Sov holder's)   // LESSON #183
+  {k: 'hub', g: 'only', name: 'Sov hubs', note: 'only: systems whose sov hub has a fight coming up, or is vulnerable (ESI)',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1.8l6.2 3.6v7.2L9 16.2l-6.2-3.6V5.4z"/><circle cx="9" cy="9" r="2.3" fill="currentColor"/><path d="M9 1.8v4.4M15.2 12.6l-3.9-2.2M2.8 12.6l3.9-2.2"/></svg>'},
   // build queue 065 (L3): only the regions you pick (any pick counts)
   {k: 'regpick', g: 'only', name: 'Region pick', note: 'only: systems in the regions you pick',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.6l4-2 5 2 4-2v10.8l-4 2-5-2-4 2z"/><path d="M6.5 2.6v10.8M11.5 4.6v10.8"/></svg>'},
@@ -31411,9 +31468,9 @@ const IT_MAP_FILTERS = [
 // (the one that is on, pressed again: Q1, "i can't toggle anything "off""); any number of Only filters, every one that is on must match and any
 // pick inside one counts (Q2); a view, Paths to you (Q4). Each Only filter keeps its settings while off. Remembered (Q11) in localStorage
 // tvMapStack, a new key: the older page never reads it, and this page never writes tvSov for it (053's reader drops unknown fields)
-const MAP_STACK_KEY = 'tvMapStack', IT_MAP_COLOURS = ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh'], IT_MAP_ONLY = ['secr', 'near', 'reports', 'kills', 'wh', 'sov', 'regpick'];   // 065: Sov holder, Jumps and Kills (past hour), Region pick
+const MAP_STACK_KEY = 'tvMapStack', IT_MAP_COLOURS = ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh'], IT_MAP_ONLY = ['secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick'];   // 065: Sov holder, Jumps and Kills (past hour), Region pick   // 068: Sov hubs
 const IT_MAP_PLAIN = '#56616b';   // no colour: every system this grey, no number in its circle
-function itMapStackBlank(){ return {v: 1, colour: 'sec', view: 'map', only: Object.fromEntries(IT_MAP_ONLY.map(k => [k, false])), secr: {lo: -5, hi: -3}, near: {n: 5, mode: 'j', ly: 70}, sovLv: [], seen: {secr: false, near: false}, sovBy: 'standing', killNpc: false, regions: []}; }   // Q16: Security, soft   // 065: sovBy, killNpc, regions (names, so a region CCP adds never shifts them)
+function itMapStackBlank(){ return {v: 1, colour: 'sec', view: 'map', only: Object.fromEntries(IT_MAP_ONLY.map(k => [k, false])), secr: {lo: -5, hi: -3}, near: {n: 5, mode: 'j', ly: 70}, sovLv: [], seen: {secr: false, near: false, hub: false}, sovBy: 'standing', killNpc: false, regions: [], hub: {fight: true, fightH: 24, vuln: true, vulnH: 0}}; }   // Q16: Security, soft   // 065: sovBy, killNpc, regions (names, so a region CCP adds never shifts them)   // 068: hub (Q2: "24 h fights, now for hubs")
 function itMapStackRead(){
   const o = itMapStackBlank(); let s = null; try{ s = JSON.parse(localStorage.getItem(MAP_STACK_KEY)); }catch(e){ s = null; }
   if(!s || typeof s !== 'object' || s.v !== 1) return o;   // a bad value reads as the defaults, field by field below
@@ -31424,10 +31481,11 @@ function itMapStackRead(){
   if(s.secr && typeof s.secr === 'object'){ o.secr.lo = int(s.secr.lo, -10, 10, o.secr.lo); o.secr.hi = int(s.secr.hi, -10, 10, o.secr.hi); }   // tenths
   if(s.near && typeof s.near === 'object'){ o.near.n = int(s.near.n, 1, 30, o.near.n); if(s.near.mode === 'ly') o.near.mode = 'ly'; o.near.ly = int(s.near.ly, 1, 200, o.near.ly); }   // 067: mode 'j' | 'ly', ly in tenths (an older page drops both)
   if(Array.isArray(s.sovLv)) o.sovLv = [...new Set(s.sovLv.filter(n => n === 1 || n === 2 || n === 3))].sort();   // an entry outside 1-3 is dropped
-  if(s.seen && typeof s.seen === 'object') for(const k of ['secr', 'near']) o.seen[k] = s.seen[k] === true;
+  if(s.seen && typeof s.seen === 'object') for(const k of ['secr', 'near', 'hub']) o.seen[k] = s.seen[k] === true;   // 068: hub
   if(s.sovBy === 'alliance') o.sovBy = 'alliance';   // 065
   o.killNpc = s.killNpc === true;
   if(Array.isArray(s.regions)){ const T = itMapTable(), R = T ? T.regions : []; o.regions = [...new Set(s.regions.filter(r => typeof r === 'string' && R.includes(r)))]; }   // a region the table doesn't have is dropped
+  if(s.hub && typeof s.hub === 'object'){ const h = s.hub; o.hub = {fight: h.fight !== false, fightH: int(h.fightH, 0, 48, 24), vuln: h.vuln !== false, vulnH: int(h.vulnH, 0, 24, 0)}; }   // 068: an older page drops it; a bad hour falls back
   return o;
 }
 function itMapSt(){ return itm.st || (itm.st = itMapStackRead()); }
@@ -31435,8 +31493,82 @@ function itMapStackSave(){ try{ localStorage.setItem(MAP_STACK_KEY, JSON.stringi
 function itMapPaths(){ return itMapSt().view === 'paths'; }
 function itMapOnlyOn(){ const s = itMapSt(); return s.view !== 'paths' && IT_MAP_ONLY.some(k => s.only[k]); }   // Paths to you: no Only filter applies there
 function itMapOnlyCount(){ const s = itMapSt(); return IT_MAP_ONLY.filter(k => s.only[k]).length; }
-function itMapStKey(){ const s = itMapSt(); return JSON.stringify([s.colour, s.view, s.only, s.secr, s.near, s.sovLv, s.sovBy, s.killNpc, s.regions]); }
+function itMapStKey(){ const s = itMapSt(); return JSON.stringify([s.colour, s.view, s.only, s.secr, s.near, s.sovLv, s.sovBy, s.killNpc, s.regions, s.hub]); }   // 068: hub
 function itMapWhOn(){ return itMapOnlyOn() && itMapSt().only.wh; }
+// ---- build queue 068 (Project doc roadmap/sov-hubs-plan.md, mockup Claude outputs/sov_hubs_mockup.html; the owner: "One filter, two kinds
+// (Recommended)", "24 h fights, now for hubs (Recommended)", "Fight tags only, filter on (Recommended)", "Every 2 min, raise cap (Recommended)",
+// ""SOV 19:45" (Recommended)", and at the build review "your recommendations are fine"): Sov hubs, an Only filter. Fight coming up: a fight in
+// the system (ESI's campaigns, itCamp) starting within N hours, or under way. Vulnerable: its hub's window (the sov read, itSov.info's vw) open
+// now or opening within N hours; a hub in a fight has none (ESI). Any ticked kind counts. Worked out once per read, setting or minute (B2: the
+// match's and the map's keys hold the minute while it is on), never per draw (LESSON #120)
+function itMapHubOn(){ try{ return itMapOnlyOn() && !!itMapSt().only.hub; }catch(e){ return false; } }
+// what the match rests on: its settings, whether each list is there (the mockup's find: the read's time alone let a "no data" match outlive the
+// data's return), each read, and the minute
+function itHubKey(){ return `${JSON.stringify(itMapSt().hub)}|c${itCamp.d ? 1 : 0}.${itCamp.at}|v${itSov.info ? 1 : 0}.${itSov.at}|m${Math.floor(Date.now() / 60000)}`; }
+// per map index, once per read: its fights (soonest first) and its hub's window [start, end] as times
+let itHubIxC = null;
+function itHubIx(){
+  const T = itMapTable(); if(!T) return null;
+  const ca = itCamp.d ? itCamp.at : 0, sa = itSov.info ? itSov.at : 0;
+  if(itHubIxC && itHubIxC.T === T && itHubIxC.ca === ca && itHubIxC.sa === sa) return itHubIxC;
+  const at = itGraphGet().at, fight = new Map(), win = new Map();
+  if(itCamp.d) for(const [id, L] of itCamp.d){ const i = at.get(id); if(i !== undefined) fight.set(i, L); }
+  if(itSov.info) for(const [id, c] of itSov.info){
+    if(c.k !== 'a' || !c.vw) continue;
+    const i = at.get(id), a = Date.parse(c.vw[0]), b = Date.parse(c.vw[1]);
+    if(i !== undefined && Number.isFinite(a) && Number.isFinite(b) && b > a) win.set(i, [a, b]);
+  }
+  itHubIxC = {T, ca, sa, fight, win};
+  return itHubIxC;
+}
+function itHubFight(L, now, h){ return L ? L.find(c => c.t - now <= h * 3600000) || null : null; }   // a started fight always counts
+function itHubVulnIn(w, now, h){ return !!w && w[0] - now <= h * 3600000 && w[1] > now; }
+function itHubAt(i, X, now, s){ return (s.fight && !!itHubFight(X.fight.get(i), now, s.fightH)) || (s.vuln && itHubVulnIn(X.win.get(i), now, s.vulnH)); }
+// the Only line's part (H5): the counts across the map for the ticked kinds, "no data yet" (never 0), the read's time in EVE time
+function itHubOnlyText(){
+  const s = itMapSt().hub; if(!s.fight && !s.vuln) return 'sov hubs: no kind ticked';
+  const X = itHubIx(), now = Date.now(), p = [];
+  let f = 0, v = 0;
+  if(X){ for(const L of X.fight.values()) if(itHubFight(L, now, s.fightH)) f++; for(const w of X.win.values()) if(itHubVulnIn(w, now, s.vulnH)) v++; }
+  if(s.fight) p.push(itCamp.d ? `a sov fight ${s.fightH ? `within ${s.fightH} h` : 'under way'} (${f})` : 'sov fights: no data yet');
+  if(s.vuln) p.push(itSov.info ? `a hub vulnerable ${s.vulnH ? `within ${s.vulnH} h` : 'now'} (${v})` : 'hub windows: no data yet');
+  const at = s.fight && itCamp.d ? itCamp.at : s.vuln && itSov.info ? itSov.at : 0;
+  return p.join(' or ') + (at ? ` · ESI ${itMapLvAsOf(at)}` : '');
+}
+function itHubDur(ms){ const m = Math.max(0, Math.round(ms / 60000)), h = Math.floor(m / 60); return h ? `${h} h ${String(m % 60).padStart(2, '0')} min` : `${m} min`; }
+function itCampState(){ return itCamp.err ? `Sov fights: no data yet: ${itCamp.err}; asked again in a while` : 'Sov fights: no data yet: reading them from ESI'; }
+// the hover's lines while Sov hubs is on (H3): each fight in the system, then its hub's window (B4: 065's Sov holder line gives way to this one)
+function itHubTipHtml(i){
+  const X = itHubIx(); if(!X) return '';
+  const now = Date.now(), L = X.fight.get(i), w = X.win.get(i);
+  let h = itCamp.d ? '' : `<br><span class="d">${escapeHtml(itCampState())}</span>`;
+  for(const f of L || []) h += `<br>${itHubFightHtml(f, now)}`;
+  if(w) h += `<br><span class="d">${escapeHtml(`Hub vulnerable ${itMapLvAsOf(w[0])}–${itMapLvAsOf(w[1])} EVE (${w[1] <= now ? 'ended' : w[0] <= now ? `now, ${itHubDur(w[1] - now)} left` : `opens in ${itHubDur(w[0] - now)}`})`)}</span>`;
+  else if(L && L.length) h += '<br><span class="d">Hub: no vulnerability window (in a fight)</span>';
+  else if(!itSov.info) h += `<br><span class="d">${escapeHtml(`Hub windows: ${itMapLvState('sov')}`)}</span>`;
+  return h;
+}
+function itHubFightHtml(f, now){
+  const kind = IT_CAMP_KINDS[f.k] || (f.k ? f.k.replace(/_/g, ' ') : 'event');
+  const when = f.t <= now ? `under way since ${itMapLvAsOf(f.t)} EVE (${itHubDur(now - f.t)})` : `starts ${itMapLvAsOf(f.t)} EVE (in ${itHubDur(f.t - now)})`;
+  return `${escapeHtml(`Sov fight: ${kind}, ${when}`)}${itHubWhoHtml(f)}<span class="d">${escapeHtml('; nodes anywhere in this constellation')}</span>`;
+}
+// who's in it: the defender and the score, or a freeport's alliances taking part with theirs (names from the org cache, asked once)
+function itHubWhoHtml(f){
+  const pct = (v) => Math.round(v * 100), al = (id) => itSovNameHtml(itSovOrg('alliance', id), id);
+  if(f.part) return f.part.length ? `; taking part ${f.part.map(([id, sc]) => al(id) + (sc === null ? '' : ` ${pct(sc)}`)).join(', ')}` : '';
+  if(!f.def) return '';
+  return `; defending ${itSovNameHtml(itSovOrg('alliance', f.def), f.def)}${escapeHtml(f.ds !== null && f.as !== null ? `, score ${pct(f.ds)} / ${pct(f.as)}` : '')}`;
+}
+// the tags beside fights coming up (H4, Q7): "SOV 19:45" (the start in EVE time), "SOV now" once under way; only while Sov hubs is on with Fight
+// coming up ticked, on systems every Only filter picks out (map index -> {t: its text, at: the fight's start})
+function itHubTags(){
+  const s = itMapSt(); if(!itMapHubOn() || !s.hub.fight || !itCamp.d || !itm.mt) return null;
+  const X = itHubIx(); if(!X) return null;
+  const now = Date.now(), out = new Map();
+  for(const [i, L] of X.fight){ const c = itHubFight(L, now, s.hub.fightH); if(c && itm.mt.m[i]) out.set(i, {t: `SOV ${c.t <= now ? 'now' : itMapLvAsOf(c.t)}`, at: c.t}); }
+  return out;
+}
 // which systems match every Only filter that is on: one array, worked out again only when its key changes, never tested per system per draw
 // (LESSON #120); null with none on. Your system always matches (it never dims). The list: the matches but you, nearest by stargate first,
 // then the newest wormhole (the chip steps through it)
@@ -31444,12 +31576,13 @@ const itMt = {key: null, m: null, list: []};
 function itMapMatch(wh){
   if(!itm.D || !itMapOnlyOn()) return null;
   const s = itMapSt(), o = s.only, W = wh || itm.wh || itMapWh(), T = itMapTable();
-  const key = `${itMapStKey()}|${itm.home}|${itm.jbKey || ''}|${o.wh || o.reports ? `${[...W.kept.keys()].join(',')}/${[...W.live.keys()].join(',')}` : ''}|${o.sov ? `${sovIndexKey()}#${sovStore().pick.join(',')}` : ''}|${o.reports || o.kills ? [...itm.rep].map(([i, r]) => `${i}:${r.kills || 0}`).join(',') : ''}`;
+  const key = `${itMapStKey()}|${itm.home}|${itm.jbKey || ''}|${o.wh || o.reports ? `${[...W.kept.keys()].join(',')}/${[...W.live.keys()].join(',')}` : ''}|${o.sov ? `${sovIndexKey()}#${sovStore().pick.join(',')}` : ''}|${o.reports || o.kills ? [...itm.rep].map(([i, r]) => `${i}:${r.kills || 0}`).join(',') : ''}|${o.hub ? itHubKey() : ''}`;   // 068: whether there is data, its reads and the minute
   if(key === itMt.key) return itMt;
   const n = T.n, m = new Uint8Array(n), D = itm.D, lo = Math.min(s.secr.lo, s.secr.hi), hi = Math.max(s.secr.lo, s.secr.hi);
   const sv = o.sov ? sovIndex() : null, pick = new Set(o.sov ? sovStore().pick : []), lvT = sovTable().lv, lv = s.sovLv;
   const rg = o.regpick ? new Set(s.regions.map(r => T.regions.indexOf(r))) : null;   // 065: Region pick, any pick counts
   const lyMode = s.near.mode === 'ly';   // 067
+  const HX = o.hub ? itHubIx() : null, now = Date.now();   // 068: Sov hubs, the clock of this pass (its key holds the minute, B2)
   for(let i = 0; i < n; i++){
     let ok = true;
     if(o.secr){ const t = itMapSecT(i); ok = t >= lo && t <= hi; }   // Q9: the number the map shows, both ends, either order
@@ -31459,6 +31592,7 @@ function itMapMatch(wh){
     if(ok && o.wh) ok = W.kept.has(i);
     if(ok && o.sov){ const e = sv.at.get(i); ok = false; if(e) for(const [k, l] of e) if(pick.has(k) && (!lvT.has(k) || !lv.length || lv.includes(l))){ ok = true; break; } }   // Q10: any ticked level; none ticked: any
     if(ok && rg) ok = rg.has(T.reg[i]);
+    if(ok && o.hub) ok = !!HX && itHubAt(i, HX, now, s.hub);   // 068: any ticked kind counts
     m[i] = ok ? 1 : 0;
   }
   if(itm.home >= 0) m[itm.home] = 1;
@@ -31510,13 +31644,15 @@ function itMapLvStep(v, S){ let k = 0; while(k + 1 < S.length && v >= S[k + 1]) 
 function itMapLvFmt(v){ return v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + 'k' : String(v); }
 function itMapNoFade(){ return !itMapPaths() && !!IT_MAP_LV[itMapSt().colour]; }
 // a live colour's data is wanted: the live map shows (never the Intel example's picture or sandbox) with that colour on
+// build queue 068: or Sov hubs is on: its fights ('camp') and the hubs' windows (the sov read, B5), whichever kind is ticked (B2)
 function itMapLvWant(k){
   try{ if(itRpAside || !itm.el || !itm.box || itm.cv.parentNode !== itm.box || !itMapVisible() || itMapPaths()) return false; }catch(e){ return false; }
+  if((k === 'sov' || k === 'camp') && itMapHubOn()) return true;
   return IT_MAP_LV[itMapSt().colour] === k;
 }
 function itMapLvAsk(){
-  itSovNeed(); itLvNeed('jumps'); itLvNeed('kills');
-  try{ if(itMapLvWant('sov') && itMapSt().sovBy === 'standing') sideEveNeed(); }catch(e){ /* by standing: EVE's standings are a need */ }
+  itSovNeed(); itLvNeed('jumps'); itLvNeed('kills'); itCampNeed();
+  try{ if(IT_MAP_LV[itMapSt().colour] === 'sov' && itMapLvWant('sov') && itMapSt().sovBy === 'standing') sideEveNeed(); }catch(e){ /* by standing: EVE's standings are a need */ }   // 068: Sov hubs alone needs no standings
 }
 // the sov read per map index, once per read: kind (0 no data, 1 an alliance, 2 a faction, 3 unclaimed), the holder as an index into als, the
 // capitals, the gates with one holder at both ends (Q1b), and one colour per alliance
@@ -31663,7 +31799,7 @@ function itMapLvTipHtml(i){
     const since = itMapLvDate(c.since), by = co ? co.name : c.co ? `corporation ${c.co}` : '';
     if(by || since) h += `<br><span class="d">${escapeHtml(`held${by ? ` by ${by}` : ''}${since ? ` since ${since}` : ''}`)}</span>`;
     if(d){ const p = [['Military', d.m], ['Industrial', d.i], ['Strategic', d.s]].filter(x => x[1] !== null).map(x => `${x[0]} ${x[1]}`); if(d.adm !== null) p.push(`ADM ${d.adm.toFixed(1)}`); if(p.length) h += `<br><span class="d">${escapeHtml(p.join(' · '))}</span>`; }
-    if(c.vw){ const a = itMapLvTime(c.vw[0]), b = itMapLvTime(c.vw[1]); if(a && b) h += `<br><span class="d">${escapeHtml(`vulnerable ${a}–${b} EVE`)}</span>`; }
+    if(c.vw && !itMapHubOn()){ const a = itMapLvTime(c.vw[0]), b = itMapLvTime(c.vw[1]); if(a && b) h += `<br><span class="d">${escapeHtml(`vulnerable ${a}–${b} EVE`)}</span>`; }   // 068 (B4): with Sov hubs on, its line (with the countdown) instead
     return h;
   }
   const Lv = itLv[IT_MAP_LV[L.c]], x = Lv.d.get(ids[i]), asof = ` (ESI, as of ${itMapLvAsOf(Lv.lm)} EVE)`;
@@ -31917,19 +32053,22 @@ function itMapLabels(c, focus, onRoute, C, cr = 0){   // cr: the circles' radius
     }
     return pcs;
   };
+  const HT = itHubTags(), hubTag = (i) => { const h = HT && HT.get(i); return h ? [{t: h.t, bg: 'rgba(12,16,20,.85)', col: '#d7dee3', font: TAG}] : []; };   // 068 (H4): "SOV 19:45"
   const whTag = (i) => { const w = WH.mark.get(i); return w ? [itMapWhBoldAt(i) ? {t: itMapWhLabel(w), bg: itMapWhCol(w), col: '#0c1014', font: TAG} : {t: itMapWhLabel(w), bg: 'rgba(12,16,20,.85)', col: itMapWhCol(w), font: TAG}] : []; };   // 045: a filled pill for a bold hole (058: one that matches)   // 040: WH and its age
   // you: the only filled label on the map (with your system's own report, if any), beside the pin's head when there's room (right, left,
   // above it), else beside the dot
-  put(itm.home, [{t: `YOU · ${nm(itm.home)}`, bg: '#fff', col: '#0c1014', font: '700 11px system-ui, sans-serif'}, ...(itm.rep.has(itm.home) ? tags(itm.rep.get(itm.home)) : []), ...whTag(itm.home)], true,
+  put(itm.home, [{t: `YOU · ${nm(itm.home)}`, bg: '#fff', col: '#0c1014', font: '700 11px system-ui, sans-serif'}, ...(itm.rep.has(itm.home) ? tags(itm.rep.get(itm.home)) : []), ...whTag(itm.home), ...hubTag(itm.home)], true,
     (w) => [[hx + 11, hy - 26], [hx - 11 - w, hy - 26], [hx - w / 2, hy - 47], [hx + 11, hy - 7], [hx - 11 - w, hy - 7], [hx - w / 2, hy + 10]]);
   const order = [...itm.rep.keys()].filter(i => i !== itm.home).sort((a, b) => a === focus ? -1 : b === focus ? 1 : D[a] - D[b]);
-  for(const i of order) put(i, [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}, ...tags(itm.rep.get(i)), ...whTag(i)], true);
+  for(const i of order) put(i, [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}, ...tags(itm.rep.get(i)), ...whTag(i), ...hubTag(i)], true);
+  // 068 (H4): a fight with no report or wormhole: its name and tag where there's room, soonest first (a wormhole's label carries it below)
+  if(HT) for(const i of [...HT.keys()].filter(i => i !== itm.home && !itm.rep.has(i) && !WH.mark.has(i)).sort((a, b) => HT.get(a).at - HT.get(b).at)) put(i, [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}, ...hubTag(i)], i === focus);
   // 040: a wormhole with no other report. A live one is a report: named, always. With Wormholes on (058) the matching kept ones nearest
   // first, only where there's room (at the galaxy's zoom there can be hundreds); inside "Map: within" with the name too, else the pill alone
   const whOnly = [...WH.mark.keys()].filter(i => i !== itm.home && !itm.rep.has(i)).sort((a, b) => (D[a] < 0 ? 1e4 : D[a]) - (D[b] < 0 ? 1e4 : D[b]));
   for(const i of whOnly){ const live = !!(WH.live && WH.live.has(i)), named = live || (D[i] >= 0 && D[i] <= itm.reach);
-    const n0 = itm.labels.length; put(i, [...(named ? [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}] : []), ...whTag(i)], (live && !itMapWhBoldAt(i)) || i === focus); if(itMapWhBoldAt(i) && itm.labels.length === n0) put(i, whTag(i), false); }
-  if(focus >= 0 && focus !== itm.home && !itm.rep.has(focus) && !WH.mark.has(focus)) put(focus, [{t: nm(focus), col: C.cyan, font: F}], true);   // 039: any system, past the reach too
+    const n0 = itm.labels.length; put(i, [...(named || HT && HT.has(i) ? [{t: nm(i), col: i === focus ? C.cyan : '#d7dee3', font: F}] : []), ...whTag(i), ...hubTag(i)], (live && !itMapWhBoldAt(i)) || i === focus); if(itMapWhBoldAt(i) && itm.labels.length === n0) put(i, whTag(i), false); }
+  if(focus >= 0 && focus !== itm.home && !itm.rep.has(focus) && !WH.mark.has(focus) && !(HT && HT.has(focus))) put(focus, [{t: nm(focus), col: C.cyan, font: F}], true);   // 039: any system, past the reach too
   for(const i of onRoute) if(i !== itm.home && i !== focus && !itm.rep.has(i) && !WH.mark.has(i)) put(i, [{t: nm(i), col: '#6f7c86', font: '10px system-ui, sans-serif'}], false);
 }
 // 039: the filter's own line in the legend, first and always one line (the same height for every filter, so Near You, as tall as the map's
@@ -31972,6 +32111,7 @@ function itMapOnlyHtml(){
   if(o.secr){ const lo = Math.min(s.secr.lo, s.secr.hi), hi = Math.max(s.secr.lo, s.secr.hi); p.push(lo === hi ? `security ${t(lo)}` : `security ${t(lo)} to ${t(hi)}`); }
   if(o.near) p.push(s.near.mode === 'ly' ? `within ${t(s.near.ly)} LY (jump drive)` : `within ${s.near.n} jump${s.near.n === 1 ? '' : 's'}`);   // 067
   if(o.sov){ const ks = sovPicked().map(sovShow); p.push((!sovStore().lists.length && !sovBridgeEnds().length ? 'no sov lists yet' : ks.length ? (ks.length > 2 ? `${ks.slice(0, 2).join(', ')} +${ks.length - 2}` : ks.join(', ')) : 'no upgrade picked') + (s.sovLv.length ? ` level ${s.sovLv.join(', ')}` : '')); }
+  if(o.hub) p.push(itHubOnlyText());   // 068
   if(o.reports) p.push('a report'); if(o.kills) p.push('kills in Intel'); if(o.wh) p.push(`a wormhole (last ${Number(itWhStore().keepH)} h)`);
   if(o.regpick){ const rs = s.regions; p.push(rs.length ? 'in ' + (rs.length > 2 ? `${rs.slice(0, 2).join(', ')} +${rs.length - 2}` : rs.join(', ')) : 'no region picked'); }   // 065
   return `<b>Only</b> <b>${Number(n)} match</b> · ${escapeHtml(p.join(' · '))}`;
@@ -32267,6 +32407,7 @@ function itMapTip(i, x, y){
   if(wh) h += `<br>${itMapWhTipHtml(wh)}`;
   if(IT_MAP_LV[itMapSt().colour] && !itMapPaths()) h += itMapLvTipHtml(i);   // 065: the live colour's lines
   if(itMapOnlyOn() && itMapSt().only.sov) h += sovTipHtml(i);   // 058: while Sov upgrades is on   // build queue 053: every kind the system has in your lists, with its level
+  if(itMapHubOn()) h += itHubTipHtml(i);   // 068: its fights and its hub's window
   const dg = itm.Dg ? itm.Dg[i] : d;   // 041: the Feed reads kills by stargate (itJumps), whatever the map counts
   if(dg > itKillRange()) h += `<br><span class="d">past the Feed's kill range (${itKillRange()}): its kills aren’t read</span>`;
   if(d > 0){
@@ -34181,6 +34322,12 @@ const RS = {
   // build queue 067: Distance in light years, in tenths (0.1 to 20.0), shown as the map shows LY
   mapLy: {label: 'Within', title: () => 'Distance: light years from your system, where a jump drive can land', steps: () => itRangeList(1, 200), value: () => itMapSt().near.ly, set: (v) => { itMapSt().near.ly = v; },
     why: (end) => end === 'lo' ? 'At least 0.1 LY' : 'At most 20.0 LY', unit: 'LY', aria: 'light years', show: (v) => (v / 10).toFixed(1), read: (t) => Math.round(parseFloat(t) * 10), after: () => itMpChanged()},
+  // build queue 068 (roadmap/sov-hubs-plan.md 5; Q2: "24 h fights, now for hubs"): Sov hubs' hours, a fight starting within 0-48 h (0: started ones
+  // only; a started fight always counts) and a hub vulnerable now or opening within 1-24 h
+  mapHubF: {label: 'Within', title: () => 'Sov fight: starting within N hours (0: started fights only; a started fight always counts)', steps: () => itRangeList(0, 48), value: () => itMapSt().hub.fightH, set: (v) => { itMapSt().hub.fightH = v; },
+    why: (end) => end === 'lo' ? 'Started fights only' : 'At most 48 hours', unit: 'h', aria: 'hours', after: () => itMpChanged()},
+  mapHubV: {label: 'Opens within', title: () => 'Vulnerable: now, or opening within N hours', steps: () => itRangeList(0, 24), value: () => itMapSt().hub.vulnH, set: (v) => { itMapSt().hub.vulnH = v; },
+    why: (end) => end === 'lo' ? 'Vulnerable now' : 'At most 24 hours', unit: '', aria: 'hours', show: (v) => v ? `${v} h` : 'now', read: (t) => /now/i.test(t) ? 0 : Math.round(parseFloat(t)), after: () => itMpChanged()},
 };
 function itRangeList(lo, hi){ const a = []; for(let v = lo; v <= hi; v++) a.push(v); return a; }
 const rsLabel = (s) => typeof s.label === 'function' ? s.label() : s.label;
@@ -35393,7 +35540,7 @@ function whSecHeadHtml(key, title, note, open, sw){
 // just use the same shapes", "that'll allow you to draw them in any color you need"): traced from his screenshots of the game, in currentColor so each
 // takes its row's colour. Structures and other kinds get theirs as he meets them; until then a dim placeholder, never a made-up shape. A result whose
 // type isn't shown yet: the game's cross at 0%, its dot while partly scanned. The wormhole shape is also the map's end mark (WH_SWIRL).
-const WH_SWIRL = 'M5.00 3.50Q6.90 1.70 8.90 0.40Q7.30 2.40 7.50 4.30ZM7.67 3.88Q10.17 4.63 12.30 5.71Q9.77 5.33 8.22 6.45ZM8.67 6.38Q9.27 8.93 9.40 11.31Q8.47 8.93 6.72 8.15ZM7.00 8.50Q5.10 10.30 3.10 11.60Q4.70 9.60 4.50 7.70ZM4.33 8.12Q1.83 7.37 -0.30 6.29Q2.23 6.67 3.78 5.55ZM3.33 5.62Q2.73 3.07 2.60 0.69Q3.53 3.07 5.28 3.85Z';
+// (WH_SWIRL itself is defined before IT_MAP_FILTERS: build queue 068 draws the Wormholes filter's icon from it, and that list is built first)
 const WH_SG_ICON = {
   'Wormhole': `<svg viewBox="0 0 12 12" width="12" height="12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="3"/><path d="${WH_SWIRL}"/></svg>`,
   'Data Site': '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" stroke="currentColor"><rect x="1.3" y="1.3" width="9.4" height="9.4" fill="currentColor" fill-opacity=".4" stroke-width="1.1"/><path d="M3.8 3.4V8.6M6 3.4V8.6M8.2 3.4V8.6" stroke-width="1.2"/></svg>',

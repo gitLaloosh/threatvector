@@ -443,7 +443,7 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   Light years, 0.1 to 20.0, the straight-line distance from your system rounded up to 0.01 exactly as the hover shows it, and only where a jump
   drive can land: not 0.5 security or higher (the number the map shows), not Pochven, not Zarzakh. Its quick picks are jump ranges at Jump Drive
   Calibration V, twice CCP's `jumpDriveRange`: 6 LY titans and supercarriers (3.0), 7 carriers, dreadnoughts and FAX (3.5), 7.5 command
-  carriers (3.75), 8 Black Ops and Lancers (4.0), 10 jump freighters and the Rorqual (5.0). Intel reports, Kills from Intel, Wormholes, Sov upgrades (below) and Region pick (the regions you tick in its list, with a search
+  carriers (3.75), 8 Black Ops and Lancers (4.0), 10 jump freighters and the Rorqual (5.0). Intel reports, Kills from Intel, Wormholes, Sov upgrades and Sov hubs (below) and Region pick (the regions you tick in its list, with a search
   and Select all; none ticked matches nothing but you). While one is on, the systems
   that match are bright anywhere on the map, a little bigger and in full colour, the rest dim, and no system fades with
   distance; hostile and neutral rings, the alert range's glow and your pin never fade; the legend's second line says what
@@ -594,6 +594,19 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   systems with a ticked kind stay bright anywhere on the map, past its reach too, and the rest dim; your own system never dims; hovering a
   system names its upgrades with their levels. A browser whose storage is full keeps the lists for the visit and says so
   (INTEL-11).
+- **Sov hubs** (build queue 068): systems whose sovereignty hub has a fight coming up or is vulnerable, from ESI's public lists (no
+  login). Two kinds, each with a tick and its hours in the filter's settings, any ticked kind counts: Fight coming up, a sov fight
+  in the system (ESI's `/sovereignty/campaigns`: hub defense, TCU defense, station defense or a station freeport) starting within
+  0 to 48 hours (24 by default), a fight under way always; Vulnerable, the hub's vulnerability window (from the same sovereignty
+  read as Sov holder) open now or opening within 1 to 24 hours (now by default). A hub in a fight has no window (ESI gives none).
+  The fights are read every 2 minutes and the windows every 5 while the filter is on and the map updates (it updates while Intel
+  runs; with Intel stopped the map keeps what it last read, and the legend's "ESI HH:MM" says when that was); nothing is kept
+  after the page closes. What matches is worked out again with each read, each setting and each minute. Before a read the
+  legend says "no data yet", never 0. While Fight coming up is ticked, a fight that matches every Only filter gets a tag, "SOV
+  19:45" (its start in EVE time) or "SOV now" once it has started. The hover gives each fight's kind, start or how long it has
+  been under way, the defending alliance and the score (a freeport's taking part instead), that command nodes can be anywhere
+  in the constellation, and the hub's window with how long is left or when it opens; with Sov holder's colour on too, the window
+  is said once. Your choices are kept with the other filters (`tvMapStack`: `only.hub`, `hub`, `seen.hub`).
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location
   on, whichever is newer. While that switch is on and you're logged in, You is the logged-in character (its system from
   EVE alone when the folder has no Local log for it); the character picked in Intel settings is You again after Log out
