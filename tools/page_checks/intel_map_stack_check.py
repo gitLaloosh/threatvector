@@ -112,9 +112,9 @@ def cases(b, html, parts=('col', 'soft', 'ex', 'colour', 'kills', 'rings', 'glow
         out.append('no stacked filters on the page (itMapSt, itMapMatch, Security range)'); ctx.close(); return out, errs
     if 'col' in parts:
         ks = pg.evaluate("() => [...document.querySelectorAll('.it-map-fbtns [data-im-f]')].map(b => b.dataset.imF)")
-        if ks != ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'regpick', 'paths']: out.append(f'the column: {ks}')   # 065: three ESI colours, Region pick
+        if ks != ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick', 'paths']: out.append(f'the column: {ks}')   # 065: three ESI colours, Region pick   # 068: Sov hubs
         sp = pg.evaluate("() => [...document.querySelectorAll('.it-map-fbtns .it-map-fg > *, .it-map-fbtns > .it-map-fsep')].map(c => c.classList.contains('it-map-fsep') ? '|' : (c.querySelector('[data-im-f]') || c).dataset.imF).join(' ')")   # 065: inside the group wrappers
-        if sp != 'sec jumps region sovh jumph killh | secr near reports kills wh sov regpick | paths': out.append(f'the groups: {sp}')
+        if sp != 'sec jumps region sovh jumph killh | secr near reports kills wh sov hub regpick | paths': out.append(f'the groups: {sp}')   # 068: Sov hubs
         if pg.evaluate("() => itMapOnlyOn() || !!itm.mt || (() => { const T = itMapTable(); for(let i = 0; i < T.n; i++) if(itMapDimmed(i)) return true; return false; })()"): out.append('something dims with no Only filter on')
         if pg.evaluate("() => !!document.querySelector('.it-map-leg .it-map-only')"): out.append('an "Only" legend line with no Only filter on')
         if pg.evaluate("() => !!document.querySelector('.it-map-whn') || !document.querySelector('.it-map-mt').hidden"): out.append('the wormholes chip is still there, or the match chip shows with nothing on')

@@ -168,6 +168,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #167 A press and hold that opens a menu under the finger: lifting it clicks the menu's first item. Cancel the release's default (touchend) when the hold opened something. See also #137.
 - #176 The `hidden` attribute loses to any rule that sets `display`: an element the code hid stayed drawn. Give such a class its own `[hidden]` rule (or hide through a class), and check the computed display, not the attribute. See also #45.
 - #179 A control placed against a row of others is covered when the row grows: list what is placed against it, and measure the phone with everything showing (a fixed `right:` offset beside a row of buttons, every optional control on).
+- #183 A mockup made before the items queued ahead of it were built can't show what they added: at the build review, put its new pieces (icons, names, places) beside the page as it is now.
 
 **Checks and test machinery**
 
@@ -3003,3 +3004,12 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   result. When you rename or remove a result field, grep `golden_fits.json`
   for its flattened name and move every pin.
 
+## 183. A mockup made before the items queued ahead of it were built can't show what they added
+
+- **What happened (build queue 068, 2026-11-25):** the Sov hubs mockup was made on 2026-11-21 from a page without 065, which was queued
+  ahead of it. It gave the new filter a flag icon. 065 then gave its Sov holder colour a flag too, so built as mocked, the column would have
+  had two flags with different meanings. The plan's "UI rules it touches" couldn't catch it: the clash didn't exist when it was written.
+- **How it was caught:** at the build review, the mockup's icon was read beside the current column's (065's filters were in it by then).
+- **Do this instead:** when a plan says "build after N", the build review puts the mockup's new pieces (icons, names, colours, places in a
+  list) beside what N and anything else built since added, and asks the owner about a clash before building (here: a hub drawing of its
+  own). A mockup's pieces are a proposal against the page it was made from.

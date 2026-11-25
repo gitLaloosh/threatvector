@@ -18,14 +18,14 @@ not by the page. Uses intel_check.py's made-up folder, mocks and names (you in 1
   * the filters: each system's colour (security class, the band's 0.45 line since build queue 058; jumps 0 to 10+, none without a gate
     route; region, never the same colour as a region joined by a gate; the Only filters Intel reports and Kills dimming the rest, one at a
     time here: stacking is intel_map_stack_check.py), a dot's pixel follows the pressed colour (softened, 058), a press redraws once;
-  * the column: fourteen buttons (065: Sov holder, Jumps and Kills (past hour), Region pick) inside the map box (Sov upgrades since build queue 053, sov_upgrades_check.py) (Wormholes since build queue 040, wormhole_filter_check.py; Paths to you since 043,
+  * the column: fifteen buttons (065: Sov holder, Jumps and Kills (past hour), Region pick; 068: Sov hubs) inside the map box (Sov upgrades since build queue 053, sov_upgrades_check.py) (Wormholes since build queue 040, wormhole_filter_check.py; Paths to you since 043,
     paths_to_you_check.py; Security range and Within N jumps since 058, Distance since 067), the pressed one aria-pressed, 32 px; the name line shown on a press, faded after;
   * routes past the reach (the owner: "yes"): hover shows its route and the tip says reports aren't shown there; a press keeps it; a
     system with no gate route to you: the tip says so, nothing kept;
   * Near You's panel in the map at 905, 1000 and 1200 px with a busy row (LESSON #113): 320 px (052), no row wider than its box, and
     the map's column the same height for each colour and the view, Near You's panel for every filter (058: an Only filter adds the
     legend's second line);
-  * 390 px: one 44 px button; it opens the column of fourteen 44 px buttons; a pick, Escape (focus back on the button) and a press outside
+  * 390 px: one 44 px button; it opens the column of fifteen 44 px buttons; a pick, Escape (focus back on the button) and a press outside
     close it; no sideways scroll;
   * the info text and "Map: within"; the timings (layout at a 30-jump reach, a redraw of the whole galaxy), printed for the history doc;
   * mutants, each must fail: separate x and y scales, a wider spread off CCP's place, a filter that doesn't redraw, gates between
@@ -170,7 +170,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
     if 'bar' in parts:
         bb = pg.evaluate("""() => { const box = itm.box.getBoundingClientRect(); return [...itm.box.querySelectorAll('[data-im-f]')].map(b => { const r = b.getBoundingClientRect();
           return [b.dataset.imF, b.getAttribute('aria-pressed'), Math.round(r.width), Math.round(r.height), r.left >= box.left && r.right <= box.right && r.top >= box.top && r.bottom <= box.bottom]; }); }""")
-        if [x[0] for x in bb] != ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'regpick', 'paths'] or [x[1] for x in bb] != ['true'] + ['false'] * 13 or any(x[2] != 32 or x[3] != 32 or not x[4] for x in bb):   # 058: Security range, Within N jumps
+        if [x[0] for x in bb] != ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick', 'paths'] or [x[1] for x in bb] != ['true'] + ['false'] * 14 or any(x[2] != 32 or x[3] != 32 or not x[4] for x in bb):   # 058: Security range, Within N jumps
             out.append(f'the bar at 1440 px: {bb}')
         pg.mouse.move(5, 5); pg.click('#intelPanel [data-im-f="region"]'); pg.mouse.move(5, 5); pg.wait_for_timeout(500)
         nm = pg.evaluate("() => { const n = itm.box.querySelector('.it-map-fn'); return [n.textContent, getComputedStyle(n).opacity, itm.box.querySelector('[data-im-f=\"region\"]').getAttribute('aria-pressed')]; }")
@@ -222,7 +222,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         if ph != [44, 44, 'none']: out.append(f'390 px: one 44 px button, the row hidden {ph}')
         pg.tap('#intelPanel .it-map-fcur'); pg.wait_for_timeout(150)
         op = pg.evaluate("() => [itm.box.querySelector('.it-map-fb').classList.contains('open'), [...itm.box.querySelectorAll('[data-im-f]')].map(b => { const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; })]")
-        if not op[0] or op[1] != [[44, 44]] * 14: out.append(f'390 px: a tap opens the column of fourteen 44 px buttons {op}')   # 053: Sov upgrades; 058: Security range, Within N jumps; 065: Sov holder, Jumps and Kills (past hour), Region pick
+        if not op[0] or op[1] != [[44, 44]] * 15: out.append(f'390 px: a tap opens the column of fifteen 44 px buttons {op}')   # 068: Sov hubs   # 053: Sov upgrades; 058: Security range, Within N jumps; 065: Sov holder, Jumps and Kills (past hour), Region pick
         pg.tap('#intelPanel [data-im-f="jumps"]'); pg.wait_for_timeout(150)
         pk = pg.evaluate("() => [itMapSt().colour, itm.box.querySelector('.it-map-fb').classList.contains('open')]")
         pg.tap('#intelPanel .it-map-fcur'); pg.wait_for_timeout(100); pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
@@ -249,7 +249,7 @@ with sync_playwright() as p:
     b = p.chromium.launch()
     errs = []
     out = []; layout_cases(b, HTML, out, errs)
-    check(not out, "the map like EVE's 2D map: the whole galaxy at CCP's places, one scale, 12 px apart in the reach, opening on you; zoom stages, dotted gates between regions, region names; the fourteen filters and their column; routes past the reach; Near You beside it unmoved by the filters at 905-1200 px; the phone's one button" + ''.join(f'\n      {o}' for o in out))
+    check(not out, "the map like EVE's 2D map: the whole galaxy at CCP's places, one scale, 12 px apart in the reach, opening on you; zoom stages, dotted gates between regions, region names; the fifteen filters and their column; routes past the reach; Near You beside it unmoved by the filters at 905-1200 px; the phone's one button" + ''.join(f'\n      {o}' for o in out))
     tmp = tempfile.mkdtemp(prefix='maplook_mut_')
     for name_, a_, *rest in MUTANTS:
         b_, parts = (None, rest[0]) if isinstance(a_, list) else rest
