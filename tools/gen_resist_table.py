@@ -78,7 +78,12 @@ table, skillRows, skipped, errors = {}, [], collections.Counter(), []
 # build queue 035: pyfa v2.70.0's Synchronizer counting effects (a value counted over the fit's modules) are carried by
 # SYNC_RIG_EFFECTS (gen_sync_table.py): the page raises the rig's own attributes first, and the rig's ordinary effects below
 # read them. Before 035 this loop stopped on effect 13012 ('unexpected value expression 0').
-COUNTING = set(counting_effects(sorted(e for e in carriersByEff if e in EFFECTS)))
+# Build queue 042 (pyfa v2.70.1): the rig reads its own rigSet...Bonus now and the faction modules write it
+# (pyfa_effects.sync_effects); both are carried by SYNC_RIG_EFFECTS / SYNC_WRITER_EFFECTS. Before 042 this stopped on
+# Effect13012's new form ('unexpected value expression (-a:rigSetDreadGuristasBonus)').
+_pool = sorted(e for e in carriersByEff if e in EFFECTS)
+_sync = sync_effects(_pool)
+COUNTING = set(counting_effects(_pool)) | set(_sync['rigs']) | set(_sync['writers'])
 for eid in sorted(carriersByEff):
     if eid not in EFFECTS: continue
     if eid in COUNTING: skipped[f'Synchronizer counting effect (SYNC_RIG_EFFECTS): {ename(eid)}'] += 1; continue

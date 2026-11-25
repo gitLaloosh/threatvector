@@ -85,6 +85,8 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #67 An input that is a Map reads as empty through Object.keys and JSON.
 - #63 When a number is 0, show the cause the tool knows, not a guess about the fit.
 - #53 An independent check's exclusions are where bugs hide.
+- #181 When pyfa adds a run time or changes the order, the oracle must too: one that skips pyfa's new `earliest` pass reports false mismatches against pyfa itself.
+- #182 A pin taken from the tool where the comparison skips that stat checks nothing: the 'Vigilant' amplifier's active bonus never reached the page, and its pin said so.
 
 **Calculations: implementing (pyfa's math, stacking, rounding, states)**
 
@@ -1326,6 +1328,30 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - **Do this instead:** before writing a mutant, name an input where it gives a different answer; if there is none, it is equivalent and
   proves nothing. Mutate what can differ: here rounding to the nearest hundredth instead of up, with a test world that holds a system just
   past a tenth (shown one hundredth over) and asserts it stays out (`ly_distance_check.py`).
+## 181. When pyfa adds a run time or changes the order, the oracle must too
+
+- **What happened (build queue 042, 2026-11-24):** pyfa v2.70.1 counts Synchronizer rigs through the faction modules' own effects,
+  which run in a new first pass, `runTime = 'earliest'`, and its `fit.py` now processes rigs and subsystems before other modules.
+  `tools/pyfa_fit_oracle.py` ran only `early`, `normal`, `late`, so it never ran the writers and counted no module. Against v2.70.1
+  the dry run showed every Synchronizer golden "differing" from pyfa, by figures that were the oracle's, not pyfa's: the page looked
+  wrong in the opposite direction from the real change (lower resists than the page for the offline-hardener fit, whose count went up).
+- **How it was caught:** at the build review, by reading the oracle's loop beside pyfa's `fit.py` before trusting the mismatches.
+- **Do this instead:** when pyfa moves, diff its `eos/saveddata/fit.py` calculation loop and `eos/gamedata.py` run times against the
+  oracle's `calculate()` before reading any comparison; a mismatch on every fit of one mechanic is a reference problem until shown
+  otherwise. The oracle now runs `earliest` first and sorts rigs and subsystems first, as v2.70.1 does.
+
+## 182. A pin taken from the tool where the comparison skips that stat checks nothing
+
+- **What happened (build queue 042, 2026-11-24):** build queue 035 modelled the 'Vigilant' Vital Shield Boost Amplifier's active bonus
+  (pyfa v2.70.0 Effect13049) as a row in `SIEGE_FAMILY_REMOTE_REP_EFFECTS`, a table the page reads only for siege-family modules, so the
+  bonus never reached the page. `compare_fit_stats.py` left shield reps out on any fit with an amplifier, so the Drake golden's
+  `shieldRepSustainedDps` was pinned from the tool's own number (86, the amplifier's plain bonus) and nothing compared it with pyfa.
+- **How it was caught:** 042 rewrote the effect for v2.70.1; the new Drake fits gave 85.56 HP/s online and 118.68 active in pyfa, the
+  same 86 the old "active" pin held.
+- **Do this instead:** before pinning a value, name the check that compared it with pyfa; if a check skips that case, widen the check
+  (here: amplifiers are compared now, 10 goldens) or say in the pin's note that it is the tool's own number. A row added to a hand
+  table must land in a table the engine reads for that module (grep the table's readers).
+
 ## 160. A timing measured at the default setting isn't the feature's timing: time every loop at the setting's largest value, with the step that grows fastest in it
 
 - **What happened (build queue 039, v2026.11.12.3):** the map-look plan gave its new layout as "7 ms". That was the layout without its

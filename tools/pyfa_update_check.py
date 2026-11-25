@@ -76,7 +76,8 @@ if '--run' in sys.argv:
         ('implant / booster tables', env + 'python3 -I tools/gen_implant_table.py index.html', lambda o: 'up to date' in o),
         ('projected tables', env + 'python3 -I tools/gen_projected_table.py index.html', lambda o: 'up to date' in o),   # v2026.10.14.35
         ('module-state tables', env + 'python3 -I tools/gen_module_state_tables.py index.html', lambda o: o.count('matches pyfa + SDE') >= 3),
-        ('Synchronizer table', env + 'python3 -I tools/gen_sync_table.py index.html', lambda o: 'up to date' in o),   # build queue 035 (pyfa v2.70.0)
+        ('Synchronizer tables', env + 'python3 -I tools/gen_sync_table.py index.html', lambda o: 'up to date' in o),   # build queue 035 (pyfa v2.70.0); 042: writers + rigs (v2.70.1)
+        ('self-active table', env + 'python3 -I tools/gen_self_active_table.py index.html', lambda o: 'up to date' in o),   # build queue 042 (pyfa v2.70.1)
         ('effect tables audit', 'node tools/dump_effect_tables.mjs index.html > /tmp/_t.json && ' + env + 'python3 -I tools/audit_effect_tables.py /tmp/_t.json',
          lambda o: not re.search(r'MISSING|EXTRA|DIFF', o)),
         ('pyfa capacitor simulation', env + 'node regression_suite/compare_cap_sim.mjs index.html', lambda o: ' 0 mismatches' in o),
@@ -125,8 +126,11 @@ if '--run' in sys.argv:
         ('pasted names, either apostrophe', env + 'python3 -I tools/independent_checks/check_apostrophe_names.py index.html', lambda o: o.strip().splitlines()[-1].startswith('0 misses')),
     ]
     bad = 0
+    # build queue 042: the Weaknesses picks comparison builds an oracle fit per candidate, and with pyfa v2.70.1's fourth run
+    # time ('earliest') and the new goldens it passed 600 s on this machine (0 mismatches when run alone); it gets 20 minutes.
+    SLOW = {'Weaknesses picks vs pyfa': 1200}
     for name, cmd, good in chain:
-        rc, out = sh(cmd)
+        rc, out = sh(cmd, timeout=SLOW.get(name, 600))
         ok = rc == 0 and good(out)
         bad += not ok
         last = out.strip().splitlines()[-1] if out.strip() else ''

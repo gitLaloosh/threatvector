@@ -15,10 +15,12 @@ What is pyfa's own code and what is a hand port:
     x each stacking-penalty group separately (>1 and <1 chains, largest first,
     1 + (m-1)*exp(-i^2/7.1289)), + postIncrease, then min/maxAttributeID caps;
   * the calculation order is a hand port of eos/saveddata/fit.py calculateModifiedAttributes:
-    for runTime in early, normal, late: character skills (passive, level from the All 5
-    character), ship (passive), modules in fitted order (charge effects first; offline
-    always, passive when online+, active when active+; overheat is not run), then the
-    Tactical Destroyer mode;
+    for runTime in earliest, early, normal, late: character skills (passive, level from the All 5
+    character), ship (passive), modules with rigs and subsystems first, otherwise in fitted order
+    (charge effects first; offline always, passive when online+, active when active+; overheat is
+    not run), then the Tactical Destroyer mode. pyfa v2.70.1 (build queue 042): `earliest` (a2c7b8e,
+    the Synchronizer counters' writers) and the rigs-and-subsystems-first sort (b05457a, stable);
+    before 042 the oracle ran only early / normal / late, so it counted no Synchronizer module;
     since v2026.10.14.12 also boosters then implants, between the ship and the modules, as
     eos/saveddata/fit.py orders them (eos/saveddata/implant.py: 'passive' and activeByDefault
     effects, context ('implant',); booster.py: 'passive' effects, context ('booster',), side
@@ -40,7 +42,7 @@ getExtended / __calculateValue (extra multipliers, ignored afflictors) for pyfa'
 """
 import math, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pyfa_sde import types, td, attrs, groups, name, T, _en
+from pyfa_sde import types, td, attrs, groups, name, T, _en, ename, effs
 import pyfa_effects
 from pyfa_effects import EFFECTS
 
@@ -94,6 +96,10 @@ def _etype(eid):
     t = getattr(EFFECTS[eid], 'type', None)
     return t if isinstance(t, tuple) else ((t,) if t else ())
 def _runtime(eid): return getattr(EFFECTS[eid], 'runTime', 'normal')
+_SLOT_EFFECTS = ('rigSlot', 'loPower', 'medPower', 'hiPower', 'subSystem', 'serviceSlot')   # eos Module.calculateSlot's order
+def _slot_name(gi):
+    names = {ename(e) for e in gi.effectIds if str(e) in effs}
+    return next((n for n in _SLOT_EFFECTS if n in names), None)
 def _active_by_default(eid): return getattr(EFFECTS[eid], 'activeByDefault', True)
 
 class Attrs:
@@ -342,7 +348,12 @@ class OracleFit:
             if any(c in str(ex) for c in ("'GameItem'", "'Group'", "'Item'", "'Attrs'", "'OracleFit'", "'HList'")): self.oracleGaps.append((eid, src.item.name, str(ex)[:120]))
         except Exception as ex: self.errors.append((eid, src.item.name, repr(ex)[:120]))
     def calculate(self):
-        for rt in ('early', 'normal', 'late'):
+        # pyfa v2.70.1 eos/saveddata/fit.py calculateModifiedAttributes (build queue 042): the run times are
+        # ("earliest", "early", "normal", "late"), and modules = sorted(self.modules, key=lambda mod: mod.slot not in
+        # (RIG, SUBSYSTEM)) -- a stable sort, rigs and subsystems first. The slot is eos Module.calculateSlot's: the
+        # first of rigSlot / loPower / medPower / hiPower / subSystem / serviceSlot among the item's effect names.
+        mods = sorted(self.modules, key=lambda m: _slot_name(m.item) not in ('rigSlot', 'subSystem'))   # LESSON #181
+        for rt in ('earliest', 'early', 'normal', 'late'):
             for s in self.skills:
                 for e in s.item.effectIds:
                     if e in EFFECTS and _runtime(e) == rt and 'passive' in _etype(e) and _active_by_default(e): self._run(e, s, ('skill',))
@@ -362,7 +373,7 @@ class OracleFit:
             for imp in self.appliedImplants:   # implant.py: passive and activeByDefault
                 for e in imp.item.effectIds:
                     if e in EFFECTS and _runtime(e) == rt and 'passive' in _etype(e) and _active_by_default(e): self._run(e, imp, ('implant',))
-            for m in self.modules:
+            for m in mods:
                 ok = lambda e: (e in EFFECTS and _runtime(e) == rt and _active_by_default(e) and
                                 ('offline' in _etype(e) or ('passive' in _etype(e) and m.state >= 1) or ('active' in _etype(e) and m.state >= 2)))
                 if m.charge:

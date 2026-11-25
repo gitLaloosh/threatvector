@@ -42,7 +42,9 @@ from pyfa_effects import *
 
 attrId = {v['name']: int(k) for k, v in attrs.items()}
 DEFAULT = {v['name']: v.get('defaultValue', 0.0) for v in attrs.values()}
-pub = [int(t) for t, v in types.items() if v.get('published')]
+# Build queue 042: published as pyfa's database has it (pyfa_sde.pyfa_db_published: db_update.py's name overrides, so the
+# 'AIR ... Booster' boosters CCP leaves unpublished are in, and 'Expired ...' ones are out).
+pub = [int(t) for t, v in types.items() if pyfa_db_published(t)[1]]
 def effs_of(t): return [e['effectID'] for e in td.get(str(t), {}).get('dogmaEffects', [])]
 def etype(e):
     t = getattr(EFFECTS[e], 'type', None)

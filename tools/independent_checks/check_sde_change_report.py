@@ -227,17 +227,20 @@ try:
     sys.path.insert(0, os.path.join(ROOT, 'tools'))
     from check_game_data_pending import encode
     vb = json.load(open(os.path.join(ROOT, 'tools', 'pyfa_core_manifest.json')))['pyfa']['clientBuild']
+    # build queue 042: the listed build must come after the real manifest's verified build, so it is worked out from it (a fixed
+    # NEW, 3700000, fell behind when pyfa v2.70.1's data 3724492 was verified, and the 'sorted' case failed for that alone)
+    LB = vb + 1
     lint_dir = os.path.join(tmp, 'lint'); os.makedirs(os.path.join(lint_dir, 'tools'))
     shutil.copy(os.path.join(ROOT, 'tools', 'pyfa_core_manifest.json'), os.path.join(lint_dir, 'tools'))
     src = open(HTML, encoding='utf-8').read()
     rx = re.compile(r"^const GAME_DATA_PENDING = .*;$", re.M)
     raw = lambda ids: base64.b64encode(struct.pack('>%dI' % len(ids), *ids)).decode()
-    for label, ln, bad in (('sorted', f"const GAME_DATA_PENDING = {{verified: {vb}, build: {NEW}, types: '{encode([5, 9])}'}};", False),
-                           ('unsorted', f"const GAME_DATA_PENDING = {{verified: {vb}, build: {NEW}, types: '{raw([9, 5])}'}};", True),
-                           ('repeated', f"const GAME_DATA_PENDING = {{verified: {vb}, build: {NEW}, types: '{raw([5, 5])}'}};", True),
-                           ('verified not the manifest\'s', f"const GAME_DATA_PENDING = {{verified: {vb - 1}, build: {NEW}, types: ''}};", True),
+    for label, ln, bad in (('sorted', f"const GAME_DATA_PENDING = {{verified: {vb}, build: {LB}, types: '{encode([5, 9])}'}};", False),
+                           ('unsorted', f"const GAME_DATA_PENDING = {{verified: {vb}, build: {LB}, types: '{raw([9, 5])}'}};", True),
+                           ('repeated', f"const GAME_DATA_PENDING = {{verified: {vb}, build: {LB}, types: '{raw([5, 5])}'}};", True),
+                           ('verified not the manifest\'s', f"const GAME_DATA_PENDING = {{verified: {vb - 1}, build: {LB}, types: ''}};", True),
                            ('items without a later build', f"const GAME_DATA_PENDING = {{verified: {vb}, build: 0, types: '{encode([5])}'}};", True),
-                           ('not base64 of whole numbers', f"const GAME_DATA_PENDING = {{verified: {vb}, build: {NEW}, types: 'AAA='}};", True)):
+                           ('not base64 of whole numbers', f"const GAME_DATA_PENDING = {{verified: {vb}, build: {LB}, types: 'AAA='}};", True)):
         page = os.path.join(lint_dir, 'index.html'); open(page, 'w', encoding='utf-8').write(rx.sub(ln.replace('\\', '\\\\'), src, count=1))
         o = subprocess.run([sys.executable, '-I', os.path.join(ROOT, 'tools', 'check_game_data_pending.py'), page], capture_output=True, text=True).stdout
         check(o.splitlines()[0].endswith(' 0 problems') != bad, f'the list check, {label}: {o.splitlines()[0] if o else "no output"}')

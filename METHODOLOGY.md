@@ -82,11 +82,16 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
 - **Damage modules and rigs:** Gyrostabilizer, Magnetic Field Stabilizer, Heat Sink, Ballistic Control System, Drone
   Damage Amplifier, the rate-of-fire rigs, Bay Loading Accelerator and Warhead Calefaction Catalyst rigs, and Sentry
   Damage Augmentor rigs on sentries. Each is stacking-penalized against its own kind.
-- **Synchronizer rigs** (EVE's Fractured Skies, pyfa v2.70.0): each of its bonuses grows by one (a percentage point for
-  most) for every matching faction module fitted and online (Imperial Navy, Caldari Navy, Federation Navy, Republic Fleet,
-  Dark Blood, True Sansha, Dread Guristas, Shadow Serpentis, Domination); its drawbacks don't change. Its weapon damage joins the same penalized
-  chain as the damage modules above; its drone damage joins the Drone Damage Amplifiers'. A mutated faction module seen
-  on a killmail can't be counted (the killmail doesn't say what it was made from).
+- **Synchronizer rigs** (EVE's Fractured Skies, pyfa v2.70.1): each of its bonuses grows by one (a percentage point for
+  most) for every matching faction module fitted, online or offline (Imperial Navy, Caldari Navy, Federation Navy, Republic
+  Fleet, Dark Blood, True Sansha, Dread Guristas, Shadow Serpentis, Domination); its drawbacks don't change. Its weapon
+  damage joins the same penalized chain as the damage modules above; its drone damage joins the Drone Damage Amplifiers'.
+  A mutated faction module doesn't count, as in pyfa (a killmail names only its abyssal type, which has no counter; a
+  fit pasted from pyfa marks it mutated).
+- **The 'Vigilant' Drifter modules** (pyfa v2.70.1): while active, each raises its own bonus, which its ordinary effect then
+  applies: the Overdrive Injector's speed bonus x3, the Shield Boost Amplifier's boost bonus x3, the Drone Navigation
+  Computer's drone speed bonus x3, and the Cap Recharger's recharge multiplier set to 0.64. Online but not active, they
+  give their plain bonuses.
 - **Hull bonuses:** the hull's role and skill bonuses at V (a Vexor's hybrid damage, a Drake's kinetic missiles). On a
   Strategic Cruiser the bonus comes from the fitted Offensive subsystem instead.
 - **Siege-type modules:**

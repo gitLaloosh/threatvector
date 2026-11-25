@@ -33,6 +33,7 @@ non-propulsion speedFactor rows (EWAR, hand-tables P4), overheat ('self' rows), 
 import sys, os, re, json, inspect, hashlib, collections
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pyfa_effects import *
+_SYNC_RIGS = set(sync_effects(sorted(e for e in EFFECTS if e in carriers()))['rigs'])   # build queue 042
 import pyfa_effects
 
 SHIP_ATTRS = ('maxVelocity', 'agility', 'mass')
@@ -133,7 +134,15 @@ def collect(modAttrs, readers):
                             skipped[f'{a[1]} only on modules whose {a[1]} no speed handler reads (e.g. webs: EWAR, P4): {ename(eid)}'] += 1; continue
                         target, attr, expr = 'module', str(a[1]), a[2]
                     elif coll == 'self' and a and str(a[0]) in modAttrs:
-                        skipped[f'self {a[0]} (overheat, not modelled): {ename(eid)}'] += 1; continue
+                        # build queue 042: an ACTIVE effect on the module's own attribute (pyfa v2.70.1's 'Vigilant' Drifter
+                        # modules, Effect13048 / 13050) is SELF_ACTIVE_EFFECTS' (gen_self_active_table.py); before 042 these
+                        # were all called overheat, which only the overheat ones are.
+                        _ty = getattr(EFFECTS[eid], 'type', None); _ty = _ty if isinstance(_ty, tuple) else (_ty,)
+                        if 'overheat' in _ty: skipped[f'self {a[0]} (overheat, not modelled): {ename(eid)}'] += 1
+                        elif eid in _SYNC_RIGS: skipped[f'self {a[0]} raised by a Synchronizer rig\'s count (SYNC_RIG_EFFECTS, gen_sync_table.py): {ename(eid)}'] += 1
+                        elif 'active' in _ty: skipped[f'self {a[0]} while active (SELF_ACTIVE_EFFECTS, gen_self_active_table.py): {ename(eid)}'] += 1
+                        else: raise AssertionError(f'effect {eid}: a {_ty} effect changes its own {a[0]} (neither overheat nor active)')
+                        continue
                     else: continue
                     if getattr(EFFECTS[eid], 'runTime', 'normal') == 'late': lateEffects.append(eid)
                     kind, src, lvl = parse(expr)
