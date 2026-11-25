@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-P0GGx2/U0DDj6jBsMwJbxQ3O3GAtv/YAucvErXw0Y0Y='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MzNqtAUwYY89i6tHc8E0VT8h2nZO+efQvG0G6hQw/+c='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -10548,7 +10548,7 @@ function gdVersionCheck(){
 // The items that changed in EVE's last update and aren't checked against pyfa yet: sorted uint32 type IDs, big-endian, base64.
 // Written only by tools/sde_change_report.py --write (the workflow's pull request) and emptied by the pyfa update process
 // (PYFA_CORE.md); never typed by hand (tools/check_game_data_pending.py). build: the EVE build they changed in.
-const GAME_DATA_PENDING = {verified: 3724492, build: 0, types: ''};
+const GAME_DATA_PENDING = {verified: 3724492, build: 3744011, types: 'AAF/eA=='};
 let gdSet = null;
 function gdPendingSet(){
   if(gdSet) return gdSet;
