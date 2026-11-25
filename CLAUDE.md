@@ -603,8 +603,8 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   (`IT_JB_ICON`, `itJbBtnPaint`), shown only while `itBridgeOn()`; off (`it.set.jbHide`, `itJbHidden`) hides the curves and their hover
   (`itMapPickBridge`), never the counts or a route's bridge step. The Intel example: off. `intel_bridges_check.py`.
 - **The Wormholes tab** (v2026.11.14.1, build queue 048, part 1 of the Project doc roadmap/wormhole-mapping-plan.md; mockup `Claude outputs/
-  wormholes_tab_mockup.html` stays with the plan in Project docs until its last part): `#tabBtnWh` right after Intel (`TAB_PANELS`), "BETA" (the
-  page's `.it-gtag`) until the owner says it's done; its name is `CARD_NAMES.whmap`. The chain is `tvWhChain` `{v: 1, sys, links, pos}` (D32: its own
+  wormholes_tab_mockup.html` stays with the plan in Project docs until its last part): `#tabBtnWh` right after Intel (`TAB_PANELS`), out of beta
+  since build queue 072 (the owner: "remove "beta" tag from wormholes tab."); its name is `CARD_NAMES.whmap`, the label's own text. The chain is `tvWhChain` `{v: 1, sys, links, pos}` (D32: its own
   key, so the older page's `tvWormholes` reader never drops it), keyed by system id, nothing expires (D34). `whSeen(id or Local-log name, t, docked)`
   takes every reading of your system (the Local log in `itTick` and the scan, EVE location in `itGameLoc`): newer wins; a change with a wormhole system
   on either side links it to the last system recorded (the owner), unless EVE's answer says you're docked (a clone jump, a pod death); entering J-space

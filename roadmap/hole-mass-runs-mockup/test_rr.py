@@ -1,0 +1,181 @@
+"""Checks for the saved-runs / finisher mockup: python3 -I test_rr.py hole_mass_runs_mockup.html [shots dir]. A fresh page per width, 1440 and 390 px."""
+import os, sys
+from playwright.sync_api import sync_playwright
+PAGE = 'file://' + os.path.abspath(sys.argv[1]); SHOTS = sys.argv[2] if len(sys.argv) > 2 else None
+if SHOTS: os.makedirs(SHOTS, exist_ok=True)
+fails, n = [], 0
+def ok(c, what):
+    global n; n += 1
+    if not c: fails.append(what); print('FAIL', what)
+def boot(pg):
+    pg.wait_for_function('window.__MKREADY || window.__MKERR', timeout=90000)
+    return pg.evaluate('window.__MKERR')
+def scene(pg, s, w):
+    pg.evaluate(f"RRscene('{s}')"); pg.wait_for_timeout(500)
+    shot(pg, s, w)
+def shot(pg, s, w):
+    if SHOTS: pg.evaluate("document.querySelector('.wh-box').scrollIntoView()"); pg.screenshot(path=os.path.join(SHOTS, f'{s}_{w}.png'))
+def txt(pg): return pg.evaluate("(document.querySelector('.hm-pop') || {}).innerText || ''").replace('\n', ' | ')
+def nohscroll(pg): return pg.evaluate("document.documentElement.scrollWidth <= innerWidth + 1")
+def runs(pg): return pg.evaluate("rrRead()")
+def size(pg, sel): return pg.evaluate(f"[...document.querySelectorAll({sel!r})].filter(b => b.offsetParent).map(b => {{ const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; }})")
+def click(pg, sel): pg.locator(sel).first.evaluate('b => b.click()'); pg.wait_for_timeout(250)   # the sticky setup line can sit over a button scrolled under it
+with sync_playwright() as p:
+    for w, h in [(1440, 900), (390, 844)]:
+        b = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--no-sandbox'])
+        ctx = b.new_context(viewport={'width': w, 'height': h}, has_touch=w < 600, is_mobile=w < 600, bypass_csp=True); pg = ctx.new_page(); errs = []
+        pg.on('pageerror', lambda e: errs.append(str(e)))
+        pg.goto(PAGE); ok(not boot(pg), f'{w}: boot')
+        phone = w < 600
+        # 1. Crit with no safe jump: the odds split, the safe mass for a lone ship, the finisher offered
+        scene(pg, 'crit', w); t = txt(pg)
+        ok('that it closes with Megathron stuck in J' in t and 'that it closes on Megathron’s jump in: everyone’s home, but the hole is gone, not crit' in t, f'{w}: crit: the odds in two, by side {t[:600]}')
+        ok('(cold out and back) would be safe' in t and 'No ship is light enough' not in t, f'{w}: crit: the safe mass is for a lone ship and doesn\'t contradict the finisher offer')
+        ok('closes behind' not in t, f'{w}: the old words are gone')
+        sp = pg.evaluate("(() => { const s = hmState().step; return [s.risk, s.stuck, s.col]; })()")
+        ok(abs(sp[0] - sp[1] - sp[2]) < 1e-9 and sp[1] > 0 and sp[2] > 0, f'{w}: stuck + gone = the old number {sp}')
+        ok('Send Thorax instead: safe' in t, f'{w}: the finisher is offered')
+        ok('Megathron in cold (risky:' in t and 'stuck' in t and 'gone, not crit)' in t, f'{w}: What\'s next names both risks')
+        ok(nohscroll(pg), f'{w}: no sideways scroll (crit)')
+        if phone: ok(all(hh >= 44 for _, hh in size(pg, '.hm-sum button')), f'{w}: the run\'s buttons 44 px')
+        inside = pg.evaluate("(() => { const p = document.querySelector('.hm-pop').getBoundingClientRect(); return [...document.querySelectorAll('.hm-sum button, .hm-pop .wh-note button')].every(b => { const r = b.getBoundingClientRect(); return r.left >= p.left - 1 && r.right <= p.right + 1; }); })()")
+        ok(inside, f'{w}: the run\'s buttons fit inside the panel')
+        # 2. + Finisher: the inline row, its side, Add
+        scene(pg, 'addf', w); t = txt(pg)
+        ok('Add a finisher' in t.replace('ADD A FINISHER', 'Add a finisher') and '1,700 t hot (MWD on) · 1,200 t cold' in t, f'{w}: the add row with its masses {t[:500]}')
+        sel = pg.evaluate("(() => { const s = document.querySelector('[data-hm-af=at]'); return [s.value, s.options[s.selectedIndex].text, s.options.length]; })()")
+        ok(sel[0] == 'this' and 'where you finish' in sel[1] and sel[2] == 2, f'{w}: it starts on the finish side, the other side to pick {sel}')
+        ok(pg.evaluate("!document.querySelector('[data-hm=afadd]').disabled"), f'{w}: Add is on once the masses are known')
+        ok(pg.evaluate("document.querySelector('[data-hm=af]').getAttribute('aria-expanded')") == 'true', f'{w}: + Finisher shows the row is open')
+        if phone: ok(all(hh >= 44 for _, hh in size(pg, '.hm-addf button')), f'{w}: the row\'s buttons 44 px')
+        ok(nohscroll(pg), f'{w}: no sideways scroll (add)')
+        click(pg, '[data-hm=afadd]'); t = txt(pg); shot(pg, 'added', w)
+        ok('Thorax (finisher), Buzzard (finisher)' in t, f'{w}: added to the run {t[:200]}')
+        sends = pg.evaluate("[...document.querySelectorAll('[data-hm=finnow]')].map(b => b.textContent)")
+        ok(len(sends) == 2 and sends[0].startswith('Send Buzzard instead') and sends[1].startswith('Send Thorax instead'), f'{w}: a button per finisher, lightest first {sends}')
+        lg = runs(pg)[0]['log']
+        ok(len(lg) == 1 and lg[0]['t'] == 'add' and lg[0]['at'] == 'this', f'{w}: the add is saved {lg}')
+        # 3. Undo takes the add back
+        click(pg, '[data-hm=undo]'); t = txt(pg)
+        ok('Buzzard' not in t.split('|')[2] and runs(pg)[0]['log'] == [], f'{w}: Undo takes the added finisher back')
+        # 4. Send a finisher: one freed, the other still kept
+        scene(pg, 'two', w); click(pg, '[data-hm=finnow][data-hm-f="3"]'); t = txt(pg)
+        ok('Buzzard (finisher, sent)' in t and runs(pg)[0]['log'][-1] == {'t': 'free', 'i': 3}, f'{w}: Send Buzzard frees that one only {t[:300]}')
+        ok('Buzzard' in t.split('Cold:')[0] or 'Buzzard' in t.split('Hot:')[0], f'{w}: the next step is the Buzzard\'s')
+        # 5. Five ships at most
+        scene(pg, 'two', w); full = pg.evaluate("(() => { hmState().addF = {row: {hull: 'Heron'}, at: 'this'}; return 1; })()")
+        pg.wait_for_timeout(400); pg.evaluate("hmPaint()"); pg.wait_for_timeout(300); click(pg, '[data-hm=afadd]')
+        ok(pg.evaluate("document.querySelector('[data-hm=af]').disabled") and '5 ships at most' in pg.evaluate("document.querySelector('[data-hm=af]').title"), f'{w}: + Finisher off at 5 ships')
+        # 6. Roll: only the stuck case
+        scene(pg, 'roll', w); t = txt(pg)
+        ok('stuck in Rens' in t and 'gone, not crit' not in t, f'{w}: roll: stranded only {t[:500]}')
+        ok('would be safe: add one with + Finisher.' in t, f'{w}: roll: points at + Finisher')
+        # 7. Saved runs, setup view
+        scene(pg, 'list', w); t = txt(pg)
+        ok('Saved runs (3)' in t and t.count('Open') == 3 and t.count('Delete') >= 3, f'{w}: three saved runs, each with Open and Delete {t[:500]}')
+        ok('B274 · J' in t and '↔ Rens · roll ·' in t and 'rolled' in t, f'{w}: a finished run is kept and says so')
+        ok('mass mass' not in t and 'D382 · mass <50%' in t, f'{w}: the connection list\'s label fixed')
+        ok(nohscroll(pg), f'{w}: no sideways scroll (list)')
+        if phone: ok(all(hh >= 44 for _, hh in size(pg, '.hm-runs button')), f'{w}: the list\'s buttons 44 px')
+        click(pg, '[data-hm-open]'); t = txt(pg)
+        ok('Undo' in t and 'Change' in t and pg.evaluate("!!hmState().pl"), f'{w}: Open shows that run')
+        # 8. Delete asks first
+        scene(pg, 'del', w); t = txt(pg)
+        ok('Delete the saved run H296' in t and 'Keep it' in t, f'{w}: Delete asks first {t[:400]}')
+        click(pg, '.hm-runs [data-wh-ask=hm-del-no]'); ok(len(runs(pg)) == 3, f'{w}: Keep it keeps it')
+        pg.evaluate("hmState().delAsk = rrRead().find(r => r.code === 'H296').id; hmPaint()"); click(pg, '.hm-runs [data-wh-ask=hm-del]')
+        ok(len(runs(pg)) == 2 and 'Saved runs (2)' in txt(pg), f'{w}: Delete removes it')
+        # 9. The run view keeps the list folded; opening a run resumes it
+        scene(pg, 'runs', w); t = txt(pg)
+        ok(pg.evaluate("document.querySelector('[data-hm=runs]').getAttribute('aria-expanded')") == 'true' and ' open ' in t.replace('|', ' '), f'{w}: the open run is marked')
+        # 10. Finished run: Delete this run
+        scene(pg, 'done', w); t = txt(pg)
+        ok('Rolled:' in t and 'Delete this run' in t, f'{w}: a finished run can be deleted from its end note')
+        click(pg, '[data-hm=delcur]'); click(pg, '.hm-steps [data-wh-ask=hm-del]')
+        ok(len(runs(pg)) == 0 and not pg.evaluate("!!hmState().pl"), f'{w}: deleted, back to the setup')
+        # 11. Storage full
+        scene(pg, 'full', w); t = txt(pg)
+        box = pg.evaluate("(() => { const e = document.querySelector('.hm-sum .sa-warn.hm-full[role=alert]'); if(!e) return null; const cs = getComputedStyle(e), r = e.getBoundingClientRect(), p = document.querySelector('.hm-pop').getBoundingClientRect(); return [cs.borderTopStyle, cs.borderTopColor, !!e.querySelector('.ewar-badge.danger'), e.querySelector('.warn-title').textContent, e.textContent, r.left >= p.left - 1 && r.right <= p.right + 1]; })()")
+        ok(box and box[0] == 'solid' and box[2] and box[3] == 'This run isn’t saved' and 'Storage full: delete a saved run (WH-01)' in box[4] and box[5], f'{w}: storage full is a red warning box with a code, inside the pinned line {box}')
+        title = pg.evaluate("(document.querySelector('.hm-full .ctx') || {}).title || ''")
+        ok('will be lost if you leave or reload the page' in title, f'{w}: the whole sentence on hover {title[:80]}')
+        shot(pg, 'full_box', w)
+        pg.evaluate("window.scrollTo(0, 0); const p = document.querySelector('.hm-pop'); p.scrollTop = p.scrollHeight"); pg.wait_for_timeout(200)
+        vis = pg.evaluate("(() => { const e = document.querySelector('.hm-full').getBoundingClientRect(), p = document.querySelector('.hm-pop').getBoundingClientRect(); return e.top >= p.top - 1 && e.bottom <= p.bottom + 1; })()")
+        ok(vis, f'{w}: the warning stays in view when the steps are scrolled')
+        n0 = len([r for r in runs(pg) if r['code'] == 'D382'][0]['log'])
+        pg.evaluate("hmState().runsOpen = true; hmState().delAsk = rrRead().find(r => r.code === 'B274').id; hmPaint()"); click(pg, '.hm-runs [data-wh-ask=hm-del]')
+        rr = runs(pg)
+        ok(not pg.evaluate("!!document.querySelector('.hm-full')") and len(rr) == 1 and len(rr[0]['log']) == n0 + 1, f'{w}: deleting another run makes room: this one is saved and the warning goes {len(rr)} {n0}')
+        scene(pg, 'full', w); t = txt(pg)
+        ok('no one can be left behind, but' in t and 'A ship under' not in t.split('What’s next')[0].split('2.')[-1], f'{w}: a trip in: no lighter-ship advice')
+        # 11b. Ship lost: the row, alone in its step, Undo, a group step with a pod, the finisher
+        scene(pg, 'lostrow', w); t = txt(pg)
+        ok('A SHIP WAS LOST' in t.upper() and 'Pick the ship' in t and 'Megathron · in J' in t and '· in this step' in t, f'{w}: lost: the row lists the ships with their side {t[:400]}')
+        ok(pg.evaluate("document.querySelector('[data-hm=lfgo]').disabled"), f'{w}: lost: Mark lost is off until a ship is picked')
+        ok(pg.evaluate("document.querySelector('[data-hm=lf]').getAttribute('aria-expanded')") == 'true', f'{w}: lost: Ship lost shows the row is open')
+        if phone: ok(all(hh >= 44 for _, hh in size(pg, '.hm-addf button, .hm-sum button')), f'{w}: lost: the buttons 44 px')
+        inside = pg.evaluate("(() => { const p = document.querySelector('.hm-pop').getBoundingClientRect(); return [...document.querySelectorAll('.hm-sum button, .hm-addf button, .hm-addf select')].every(b => { const r = b.getBoundingClientRect(); return r.left >= p.left - 1 && r.right <= p.right + 1; }); })()")
+        ok(inside and nohscroll(pg), f'{w}: lost: the five run buttons and the row fit inside the panel')
+        pg.select_option('[data-hm-lf=i]', '0'); pg.wait_for_timeout(200); t = txt(pg)
+        ok('answer the step first, then mark it lost' in t and 'Its pod' not in t and 'The others in this step' not in t, f'{w}: lost: alone in its step, on the finish side: no other question {t[:600]}')
+        click(pg, '[data-hm=lfgo]'); t = txt(pg); lg = runs(pg)[0]['log']
+        ok(lg[-1]['t'] == 'lost' and lg[-1]['i'] == 0 and lg[-1]['part'] == [] and 'Megathron (lost)' in t, f'{w}: lost: saved, the ship marked lost {lg[-1]}')
+        st = pg.evaluate("(() => { const H = hmState(); return [H.step.g.map(x => x.i), H.ships.length]; })()")
+        ok(0 not in st[0] and st[1] == 2, f'{w}: lost: the next step doesn\'t use it and the setup list lost it {st}')
+        click(pg, '[data-hm=undo]'); t = txt(pg)
+        ok(runs(pg)[0]['log'] == [] and '(lost)' not in t and pg.evaluate("hmState().ships.length") == 3, f'{w}: lost: Undo puts it back, in the run and the setup')
+        scene(pg, 'group', w); t = txt(pg)
+        ok('The others in this step' in t and 'jumped: wait for Show Info' in t and 'Its pod' in t and 'The pod (30 t) gets a step of its own, home.' in t, f'{w}: lost in a group step on the far side: both questions {t[:700]}')
+        scene(pg, 'part', w); t = txt(pg); lg = runs(pg)[0]['log'][-1]
+        part = pg.evaluate("(() => { const s = hmState().step; return [!!s.part, s.g.map(x => x.i), s.m]; })()")
+        ok(part[0] and part[1] == [0] and part[2] == 296800 and 'Part of this step' in t and '296,800 t' in t, f'{w}: part: the step keeps only the ship that jumped {part}')
+        ok(lg['part'] == [[0, 'hot']] and lg['pod']['modes'][0]['m'] == 30 and 'Megathron’s pod' in t, f'{w}: part: saved with the pod {lg}')
+        pg.evaluate("hmSay('stable'); hmPaint()"); t = txt(pg)
+        ok('Megathron’s pod in' in t.split('What’s next')[0], f'{w}: part: after its answer, the pod\'s step home {t[:600]}')
+        pg.evaluate("hmSay('stable'); hmPaint()"); t = txt(pg)
+        pod = pg.evaluate("(() => { const H = hmState(), k = H.pl.ships.findIndex(s => s.pod); return [k, H.pl.ships[k].lost, H.step.g.map(x => x.i)]; })()")
+        ok('Megathron’s pod (home)' in t and pod[1] and pod[0] not in pod[2], f'{w}: part: the pod home leaves the run {pod}')
+        same = pg.evaluate("(() => { const H = hmState(), r = rrRead().find(x => x.id === H.run.id), q = rrPl(r); return JSON.stringify(q.ships.map(s => [s.at, s.lost, s.last])) === JSON.stringify(H.pl.ships.map(s => [s.at, s.lost, s.last])) && q.P.length === H.pl.P.length; })()")
+        ok(same, f'{w}: part: replaying the saved run gives the same ships, sides and holes')
+        pg.evaluate("(() => { const H = hmState(); H.lostF = {i: 1, pod: 'home', others: 'keep'}; hmPaint(); })()"); click(pg, '[data-hm=undo]'); click(pg, '[data-hm=undo]')
+        back = pg.evaluate("(() => { const s = hmState().step; return [!!s.part, s.g.map(x => x.i)]; })()")
+        ok(back == [True, [0]], f'{w}: part: Undo goes back to the part step {back}')
+        pg.evaluate("(() => { const H = hmState(); H.lostF = {i: 0, pod: 'no', others: 'keep'}; rrLost(); hmPaint(); })()"); t = txt(pg)
+        ok(not pg.evaluate("!!hmState().step.part") and 'Megathron’s pod in' in t.split('What’s next')[0], f'{w}: part: the last ship of a part step lost: the step wasn\'t made {t[:500]}')
+        scene(pg, 'replace', w); t = txt(pg)
+        sel = pg.evaluate("(() => { const s = document.querySelector('[data-hm-at]'); return s ? [s.value, s.options[s.selectedIndex].text, s.options.length] : null; })()")
+        ok(sel and sel[0] == 'other' and sel[2] == 2 and 'It’s in' in t, f'{w}: replacement: a ship added on Change while a run goes on asks its side {sel}')
+        if phone: ok(nohscroll(pg), f'{w}: replacement: no sideways scroll')
+        click(pg, '[data-hm=goon]'); t = txt(pg); lg = runs(pg)[0]['log'][-1]
+        bz = pg.evaluate("(() => { const H = hmState(), k = H.pl.ships.findIndex(s => s.name === 'Buzzard'); return [k, k >= 0 && H.pl.ships[k].at, H.pl.ships.length, H.ships.length]; })()")
+        ok(lg['t'] == 'carry' and any(x.get('at0') == 'other' for x in lg['ships']) and bz[1] == 'other', f'{w}: replacement: carried on with it on the far side {bz} {lg["t"]}')
+        ok('Megathron (lost)' not in t and 'Buzzard' in t, f'{w}: replacement: the lost ship gone from the run, the new one in it {t[:300]}')
+        scene(pg, 'lostfin', w); t = txt(pg)
+        ok('Thorax (lost)' in t and 'Send Thorax instead' not in t and 'add one with + Finisher' in t, f'{w}: a lost finisher: no finisher offered, add one {t[:500]}')
+        pg.evaluate("(() => { const H = hmState(); for(const i of [0, 1]){ H.lostF = {i, pod: 'no', others: 'new'}; rrLost(); } hmPaint(); })()"); t = txt(pg)
+        ok('No ships left: add one with + Finisher, or with Change.' in t and pg.evaluate("document.querySelector('[data-hm=lf]').disabled"), f'{w}: every ship lost: says so {t[:300]}')
+        shot(pg, 'lost_all', w)
+        # 12. Replay = live: the saved log rebuilds the same state
+        scene(pg, 'crit', w)
+        for k in range(3):
+            pg.evaluate("(() => { const H = hmState(); if(!H.step || H.pl.done) return; const s = hmPossibleSays(H.pl, H.step); hmSay(s.includes('reduced') ? 'reduced' : s[0]); hmPaint(); })()")
+        same = pg.evaluate("(() => { const H = hmState(), r = rrRead().find(x => x.id === H.run.id), q = rrPl(r); return [q.P.length === H.pl.P.length, q.obs === H.pl.obs, q.hist.length === H.pl.hist.length, JSON.stringify(q.ships.map(s => [s.at, s.last])) === JSON.stringify(H.pl.ships.map(s => [s.at, s.last]))]; })()")
+        ok(all(same), f'{w}: replaying the saved run gives the same holes, answer, steps, sides and polarization {same}')
+        size_b = pg.evaluate("localStorage.getItem('tvWhMassRuns').length")
+        ok(size_b < 4000, f'{w}: a saved run is small ({size_b} characters)')
+        # 13. Reload (the back button): the run comes back at the same step
+        before = pg.evaluate("[hmState().pl.hist.length, hmState().pl.obs]")
+        pg.evaluate("sessionStorage.setItem('rrReload', '1')"); pg.reload(); ok(not boot(pg), f'{w}: boot after reload')
+        pg.wait_for_timeout(600); after = pg.evaluate("hmState().pl ? [hmState().pl.hist.length, hmState().pl.obs] : null"); t = txt(pg)
+        ok(after == before and f'{before[0] + 1}.' in t, f'{w}: after a reload the run is picked up where it was {before} {after}')
+        ok(pg.evaluate("!document.querySelector('[data-hm=undo]').disabled"), f'{w}: Undo still works after the reload')
+        click(pg, '[data-hm=undo]'); ok(pg.evaluate("hmState().pl.hist.length") == before[0] - 1, f'{w}: Undo after the reload')
+        shot(pg, 'reloaded', w)
+        # info text
+        info = pg.evaluate("CARD_INFO['whmap#mass'].join(' ')")
+        ok('[Saved runs]' in info and '+ Finisher' in info and 'stuck on the far side' in info and '[Ship lost]' in info, f'{w}: the info text names saved runs, + Finisher, Ship lost and the split odds')
+        ok(pg.evaluate("CARD_INFO['whmap#mass'].join(' ').split(/\\s+/).filter(Boolean).length") <= 210, f'{w}: the info text stays within its 210-word cap')
+        ok(not errs, f'{w}: no page errors {errs[:3]}')
+        b.close()
+print(f'{n - len(fails)} of {n} checks pass'); sys.exit(1 if fails else 0)

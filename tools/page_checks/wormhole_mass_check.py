@@ -28,6 +28,14 @@ CCP's wormhole systems from the page's own tables; ESI answered from pyfa's SDE 
     second system is linked to the first);
   * a phone (390 px): the toolbar's controls 44 x 44 without overlapping each other or the rail, the panel without sideways scroll, the
     answers 44 px tall;
+  * 072 (Project doc roadmap/hole-mass-runs-plan.md): the odds split in two (stuck + gone, not crit = 070's number for every step, Roll never
+    "gone, not crit", the words name the far side), Crit picks the least stuck, the safe mass (Crit out Rmin / 2, Roll out Rmin, none coming in),
+    a Send X instead per finisher (lightest first, one sent frees only it), Carry on never matches a lost ship; + Finisher (its side, Add off
+    until its masses, the log, Undo), Change → + Ship asks its side and Undo goes back past Carry on with the rows, 5 ships at most; saved runs
+    (replay = live, a reload resumes the same step, two at once, Open, Delete asks, WH-01 when the browser refuses with the box in view, deleting
+    another run saves this one, a finished run stays); "mass mass" never in the connection list; a ship lost (alone on the finish side, part way
+    through a group step on the far side with its pod coming home, the last of a part step, every ship, the finisher, a replacement on the far
+    side); the five buttons inside the panel at 1440 and 390 px; the redraw with 5 ships and 3 finishers is printed (TIME);
   * mutants; no page errors.
 """
 import sys, os, json, tempfile, re
@@ -112,6 +120,107 @@ def wait_masses(pg, n, timeout=60000):
 def pop_text(pg): return pg.evaluate("() => { const p = document.querySelector('.wh-pop[data-pop=\"mass\"]'); return p && !p.hidden ? p.textContent : null; }")
 def link_mass(pg, a, o): return pg.evaluate("([a, o]) => { const s = JSON.parse(localStorage.getItem('tvWhChain') || '{}'); const l = (s.links || []).find(l => (l.a === a && l.b === o) || (l.a === o && l.b === a)); return l ? (l.mass || '') : null; }", [a, o])
 
+# ---- 072 (Project doc roadmap/hole-mass-runs-plan.md): the odds split, stuck first, the safe mass, a finisher freed per ship, Carry on's match
+SPLIT = """([sets]) => {
+  const res = {bad: [], both: 0, colOnly: 0, n: 0}, lightest = (x) => Math.min(...x.modes.map(m => m.m));
+  for(const ships of sets) for(const goal of ['crit', 'roll']) for(const code of ['B274', 'D382']) for(const st0 of ['fresh', 'stable', 'reduced']) for(const f of [0.92, 1.0, 1.08]){
+    const h = hmHole(code), pl = {H: h, M0: h.M0, goal, fin: 'this', here: 'A', there: 'B', ships: ships.map(s => ({...s, modes: s.modes.filter(m => m.m <= h.J), at: 'this', last: {out: 0, back: 0}})),
+      P: hmPoss(h.M0, st0), obs: st0, hist: [], done: '', reset: false, free: [], part: null};
+    const M = h.M0 * f; let R = st0 === 'fresh' ? M : st0 === 'stable' ? M * 0.75 : M * 0.3, now = Date.now();
+    for(let k = 0; k < 40; k++){
+      const s = hmNext(pl, now); if(!s || s.none) break; res.n++;
+      if(Math.abs(s.stuck + s.col - s.risk) > 1e-12) res.bad.push(`${goal} ${code}: stuck ${s.stuck} + gone ${s.col} isn't the risk ${s.risk}`);
+      if(goal === 'roll' && s.col) res.bad.push(`roll ${code}: a "gone, not crit" part (${s.col})`);
+      const g = s.g, m = s.m; let old;   // 070's number, worked out here
+      if(s.home){ const back = g.map(x => lightest(pl.ships[x.i])); old = hmShare(pl.P, m + back.reduce((a, b) => a + b, 0) - (goal === 'roll' ? Math.max(...back) : 0)); }
+      else { const offs = pl.ships.filter(x => x.at !== pl.fin).length, pre = m - Math.max(...g.map(x => x.mo.m)); old = hmShare(pl.P, g.length === offs && goal === 'roll' ? pre : m); }
+      if(Math.abs(old - s.risk) > 1e-12) res.bad.push(`${goal} ${code}: the risk ${s.risk} isn't 070's ${old}`);
+      if(goal === 'crit' && s.stuck > 0 && s.col > 0) res.both++;
+      if(goal === 'crit' && !s.stuck && s.col > 0){ res.colOnly++; if(!/^no one can be left behind, but /.test(hmRiskWords(pl, s))) res.bad.push('only the collapse can happen, words: ' + hmRiskWords(pl, s)); }
+      if(s.stuck > 0 && !hmRiskWords(pl, s).includes('stuck in B')) res.bad.push('the words don\\'t name the far side: ' + hmRiskWords(pl, s));
+      if(s.risk >= 0.99) break;
+      let closed = false; for(const x of g){ R -= x.mo.m; if(R <= 0){ closed = true; break; } } if(closed) break;
+      now = Math.max(now, s.wait) + 60e3; hmApply(pl, s, hmSt(M, R), now); if(pl.done) break;
+    }
+  }
+  return res; }"""
+# the pick in Crit: with no safe group, the least stuck one (worked out here from every group). For the main pick that is also the least risk (the
+# lightest ship cold alone has both the least total and the least stuck: found at the build), so the case where they differ is the faster offer
+# beside a slow safe plan (FASTSTUCK)
+STUCK = """([sets]) => {
+  const res = {bad: [], n: 0, differ: 0}, lightest = (x) => Math.min(...x.modes.map(m => m.m));
+  for(const ships of sets) for(const code of ['D382', 'B274']) for(const f of [0.9, 0.95, 1.0, 1.05, 1.1]){
+    const h = hmHole(code), pl = {H: h, M0: h.M0, goal: 'crit', fin: 'this', here: 'A', there: 'B', ships: ships.map(s => ({...s, modes: s.modes.filter(m => m.m <= h.J), at: 'this', last: {out: 0, back: 0}})),
+      P: hmPoss(h.M0, 'reduced'), obs: 'reduced', hist: [], done: '', reset: false, free: [], part: null};
+    const M = h.M0 * f; let R = M * 0.35, now = Date.now();
+    for(let k = 0; k < 30; k++){
+      const s = hmNext(pl, now); if(!s || s.none || s.risk >= 0.99) break;
+      if(s.home && s.risk > 0){
+        const S = pl.ships, C = [], idx = S.map((x, i) => i);
+        for(let mask = 1; mask < (1 << S.length); mask++){ const ii = idx.filter(i => mask & (1 << i)); let gs = [[]]; for(const i of ii) gs = gs.flatMap(c => S[i].modes.map(mo => c.concat([{i, mo}])));
+          for(const g of gs){ const back = g.map(x => lightest(S[x.i])), m = g.reduce((a, x) => a + x.mo.m, 0), all = m + back.reduce((a, b) => a + b, 0), mb = Math.max(...back); C.push({risk: hmShare(pl.P, all), stuck: hmShare(pl.P, all - mb)}); } }
+        if(!C.some(c => c.risk === 0)){ res.n++; const ms = Math.min(...C.map(c => c.stuck)), mr = Math.min(...C.map(c => c.risk)), lr = C.filter(c => c.risk === mr);
+          if(s.stuck > ms + 1e-12) res.bad.push(`crit ${code}: the step is ${s.stuck} stuck, ${ms} was possible (risk ${s.risk})`); }
+      }
+      let closed = false; for(const x of s.g){ R -= x.mo.m; if(R <= 0){ closed = true; break; } } if(closed) break;
+      now = Math.max(now, s.wait) + 60e3; hmApply(pl, s, hmSt(M, R), now); if(pl.done) break;
+    }
+  }
+  return res; }"""
+# made-up ships on an N766 at less than 50%: the least stuck faster jump (196,800 t: 0.77% stuck, 25% in all), not the least risk (190,000 t: 0.86%
+# stuck, 13% in all)
+FASTSTUCK = """() => { const mk = (n, h, c, z) => ({name: n, label: n, modes: [{k: 'hot', lab: 'MWD on', m: h}, {k: 'cold', lab: 'prop off', m: c}].concat(z ? [{k: 'zpme', lab: 'ZPME on', m: z}] : [])});
+  const h = hmHole('N766'), ships = [mk('Hauler', 90000, 40000, 8000), mk('Megathron', 296800, 196800), mk('Brick', 200000, 100000)];
+  const pl = {H: h, M0: h.M0, goal: 'crit', fin: 'this', here: 'A', there: 'B', ships: ships.map(x => ({...x, modes: x.modes.filter(m => m.m <= h.J), at: 'this', last: {out: 0, back: 0}})), P: hmPoss(h.M0, 'reduced'), obs: 'reduced', hist: [], done: '', reset: false, free: [], part: null};
+  const st = hmNext(pl, Date.now()); return st && st.fast ? [st.fast.m, st.fast.stuck, st.fast.risk] : null; }"""
+# the safe mass: Crit out Rmin / 2, Roll out Rmin (rounded down to 100 t), coming in no sentence; never "No ship is light enough" beside Send X
+SAFE = """([mega, phobos, heron]) => {
+  const res = [], mk = (code, st, goal, ships) => { const h = hmHole(code); return {H: h, M0: h.M0, goal, fin: 'this', here: 'A', there: 'B', ships: ships.map(s => ({...s, modes: s.modes.filter(m => m.m <= h.J), at: 'this', last: {out: 0, back: 0}})), P: hmPoss(h.M0, st), obs: st, hist: [], done: '', reset: false, free: [], part: null}; };
+  for(const goal of ['crit', 'roll']) for(const code of ['D382', 'B274']){
+    const pl = mk(code, 'reduced', goal, [mega]), s = hmNext(pl, Date.now()); if(!s || !(s.risk > 0)) continue;
+    const want = Math.max(0, Math.floor((goal === 'crit' ? hmLo(pl.P[0]) / 2 : hmLo(pl.P[0])) / 100) * 100);
+    res.push({goal, code, safe: s.safe, want, home: s.home, txt: hmSafeTxt(pl, s)});
+    const q = mk(code, 'critical', goal, [mega]); q.ships[0].at = 'other'; const c = hmNext(q, Date.now()); if(c && !c.none) res.push({goal, code, in: true, txt: hmSafeTxt(q, c), home: c.home});
+  }
+  const pf = mk('D382', 'reduced', 'crit', [mega, {...heron, fin: true}]), sf = hmNext(pf, Date.now()), div = document.createElement('div'); div.innerHTML = hmRiskHtml(pf, sf);
+  res.push({fin: true, alt: !!sf.finAlt, txt: div.textContent});
+  return res; }"""
+# a "Send X instead" per finisher, lightest first; one sent frees only it (a log entry replayed by hmRunPl, as the panel does)
+FREE = """([mega, phobos, heron]) => {
+  const ships = [mega, {...phobos, fin: true}, {...heron, fin: true}].map(s => hmRunShip(s));
+  const run = {code: 'D382', st0: 'reduced', goal: 'roll', fin: 'this', here: {id: 1, name: 'A'}, there: {id: 2, name: 'B'}, ships, log: []};
+  const p0 = hmRunPl(run), s0 = hmNext(p0, Date.now()), div = document.createElement('div'); div.innerHTML = hmFinAltHtml(p0, s0);
+  const btns = [...div.querySelectorAll('[data-hm-f]')].map(b => [Number(b.dataset.hmF), b.textContent]);
+  run.log.push({t: 'free', i: btns.length ? btns[0][0] : 2}); const p1 = hmRunPl(run), s1 = hmNext(p1, Date.now());
+  return {risk: s0.risk, alt: s0.finAlt || null, btns, after: s1 && s1.g ? s1.g.map(x => x.i) : null, free: p1.free}; }"""
+# Carry on matches a kept ship by its label, never a lost one: two Megathrons, the second out; the first lost; carried on with one Megathron
+CARRY = """([mega]) => {
+  const run = {code: 'B274', st0: 'fresh', goal: 'roll', fin: 'this', here: {id: 1, name: 'A'}, there: {id: 2, name: 'B'}, ships: [hmRunShip(mega), hmRunShip(mega)], log: [
+    {t: 's', g: [[1, 'cold']], d: 'out', a: 'stable', at: Date.now() - 60e3}, {t: 'lost', i: 0, at: Date.now()}, {t: 'carry', ships: [hmRunShip(mega)], rows0: []}]};
+  const pl = hmRunPl(run); return pl.ships.filter(s => !s.lost).map(s => [s.at, s.last.out > 0]); }"""
+
+def calc072(pg, out):
+    sp = pg.evaluate(SPLIT, [[[SHIPS['mega']], [SHIPS['mega'], SHIPS['mega']], [SHIPS['mega'], SHIPS['phobos'], SHIPS['heron']]]])
+    if sp['bad']: out.append(f'the odds split: {sp["bad"][0]} ({len(sp["bad"])} in all)')
+    if not sp['both']: out.append(f'no Crit step with both a stuck and a "gone, not crit" part in {sp["n"]} steps')
+    if not sp['colOnly']: out.append(f'no Crit step where only the collapse can happen in {sp["n"]} steps')
+    sk = pg.evaluate(STUCK, [[[SHIPS['mega'], SHIPS['phobos']], [SHIPS['mega'], SHIPS['bs']], [SHIPS['bs'], SHIPS['phobos'], SHIPS['heron']]]])
+    if sk['bad']: out.append(f'stuck first: {sk["bad"][0]} ({len(sk["bad"])} in all)')
+    if not sk['n']: out.append('stuck first: no risky position to check')
+    fs = pg.evaluate(FASTSTUCK)
+    if not fs or abs(fs[0] - 196800) > 1 or fs[1] > 0.0078 or fs[2] < 0.24: out.append(f'the faster offer isn\'t the least stuck (Hauler, Megathron, Brick on an N766 at less than 50%): {fs}')
+    for r in pg.evaluate(SAFE, [SHIPS['mega'], SHIPS['phobos'], SHIPS['heron']]):
+        if r.get('fin'):
+            if r['alt'] and 'No ship is light enough' in r['txt']: out.append(f'"No ship is light enough" beside a safe Send X instead: {r["txt"][:200]!r}')
+        elif r.get('in'):
+            if r['txt']: out.append(f'{r["goal"]} {r["code"]} coming in has a safe-mass sentence: {r["txt"]!r}')
+        elif r['safe'] != r['want'] or not r['home']: out.append(f'{r["goal"]} {r["code"]} out: the safe mass is {r["safe"]}, want {r["want"]}')
+    fr = pg.evaluate(FREE, [SHIPS['mega'], SHIPS['phobos'], SHIPS['heron']])
+    if not fr['alt'] or [b[0] for b in fr['btns']] != [2, 1] or not all('instead: safe' in b[1] for b in fr['btns']): out.append(f'two finishers: a Send X instead each, lightest first: {fr["alt"]} {fr["btns"]}')
+    if not fr['after'] or 2 not in fr['after'] or 1 in fr['after']: out.append(f'one finisher sent frees only it: the next step is {fr["after"]} (free {fr["free"]})')
+    ca = pg.evaluate(CARRY, [SHIPS['mega']])
+    if ca != [['other', True]]: out.append(f'Carry on matched a kept Megathron to the lost one: {ca}')
+
 def calc_cases(pg, out, parts):
     if parts is None or 'calc' in parts:
         rng = [0.9 + 0.2 * i / 59 for i in range(60)]
@@ -189,6 +298,7 @@ def calc_cases(pg, out, parts):
         if sl['pf'][3] < 2: out.append(f'a run that strands someone is counted as steps (from {sl["pf"][3]} step)')
         if not (sl['heron'][0] and sl['heron'][2] and 195 * 60e3 <= sl['heron'][1] <= 205 * 60e3): out.append(f'a Heron alone: 80 steps aren\'t about 3 h 20 min with polarization ({sl["heron"]})')
         if sl['dur'] != ['3 min', '25 min', '3 h 20 min', '1 h']: out.append(f'durations: {sl["dur"]}')
+        calc072(pg, out)
 
 def ui_cases(b, html, out, errs, parts):
     if parts is not None and not ({'fit', 'ui'} & set(parts)): return
@@ -302,6 +412,10 @@ def phone_cases(b, html, out, errs, parts):
       ans: [...p.querySelectorAll('[data-hm-say]')].map(e => e.getBoundingClientRect().height)}; }""")
     if s['sw'] > 0 or s['doc'] > 0: out.append(f'a phone: sideways scroll (panel {s["sw"]} px, page {s["doc"]} px)')
     if not s['ans'] or min(s['ans']) < 43.5: out.append(f'a phone: answer buttons under 44 px ({s["ans"]})')
+    g = pg.evaluate("""() => { const sb = document.querySelector('.hm-pop .hm-sum .hm-sb'), bs = [...sb.querySelectorAll('button')].map(b => b.getBoundingClientRect());
+      return {cols: getComputedStyle(sb).gridTemplateColumns.split(' ').length, n: bs.length, rows: new Set(bs.map(r => Math.round(r.top))).size, h: Math.min(...bs.map(r => r.height))}; }""")
+    if g != {'cols': 3, 'n': 5, 'rows': 2, 'h': g['h']} or g['h'] < 43.5: out.append(f'a phone: the pinned line\'s five buttons aren\'t 3 columns, two rows, 44 px: {g}')
+    if inside(pg): out.append('a phone: a pinned-line button runs past the panel')
     ctx.close()
 
 def fast_cases(b, html, out, errs, parts):
@@ -318,7 +432,7 @@ def fast_cases(b, html, out, errs, parts):
     fb = pg.locator('.hm-pop [data-hm="fast"]')
     if 'Safe but slow:' not in t or not fb.count(): out.append(f'a slow safe plan doesn\'t offer the faster jump: {t[:300]!r}'); ctx.close(); return
     ft = fb.text_content() or ''
-    if not re.search(r'Send Megathron out (cold|hot) instead: about 1 in \d+ that it closes behind Megathron; about [\d–]+ steps, [\d–]+ min( with polarization)? taking the faster jumps', ft): out.append(f'the faster jump\'s button: {ft!r}')
+    if not re.search(r'Send Megathron out (cold|hot) instead \(about 1 in \d+ stuck\); about [\d–]+ steps, [\d–]+ min( with polarization)? taking the faster jumps', ft): out.append(f'the faster jump\'s button: {ft!r}')
     fb.click(); pg.wait_for_timeout(300)
     t = pop_text(pg) or ''; now = pg.locator('.hm-pop .hm-now').text_content() or ''
     if 'Megathron' not in now or 'Faster, not safe:' not in t or not pg.locator('.hm-pop [data-hm="safe"]').count(): out.append(f'the faster jump picked doesn\'t show it with its odds: {now[:100]!r}')
@@ -337,6 +451,201 @@ def fast_cases(b, html, out, errs, parts):
     if 'Heron' not in now or pg.evaluate("() => hmState().fast"): out.append(f'Undo doesn\'t go back to the safe step: {now[:100]!r}')
     ctx.close()
 
+CLICK = "(s) => { const e = document.querySelector(s); if(!e) return 'missing'; if(e.disabled) return 'disabled'; e.click(); return 'ok'; }"
+ANSWER = """(avoid) => { const H = hmState(); if(!H.step || H.step.none) return null; const k = hmPossibleSays(H.pl, H.step).find(k => !avoid.includes(k)); if(!k) return null;
+  document.querySelector(`.hm-pop [data-hm-say="${k}"]`).click(); return k; }"""
+# replay = live: the run as the panel holds it against the run rebuilt from its saved log
+SIG = """() => { const H = hmState(), a = H.pl, b = hmRunPl(H.run), sg = (p) => JSON.stringify([p.P.length, p.P[0], p.P[p.P.length - 1], p.obs, p.done, p.hist.map(x => x.short + x.obs),
+  p.ships.map(s => [s.name, s.at, s.last, !!s.lost, !!s.pod, !!s.podHome]), p.free, p.part]); return [sg(a) === sg(b), sg(a).slice(0, 160), sg(b).slice(0, 160)]; }"""
+STATE = "() => { const H = hmState(); return {log: H.run ? H.run.log.map(e => e.t) : null, ships: H.pl ? H.pl.ships.map(s => [s.name, s.at, !!s.lost, !!s.pod]) : null, rows: H.ships.map(r => r.fit || r.hull), step: H.step && H.step.g ? H.step.g.map(x => x.i) : null, part: !!(H.step && H.step.part), runs: hmRunsRead().length}; }"
+def clk(pg, s, t=250):
+    r = pg.evaluate(CLICK, s); pg.wait_for_timeout(t); return r
+def answer(pg, avoid=('gone',)):
+    k = pg.evaluate(ANSWER, list(avoid)); pg.wait_for_timeout(300); return k
+def setup_run(pg, ids, link, goal, rows, fins=()):
+    pg.select_option('.hm-pop [data-hm="link"]', pg.evaluate("([a, o]) => whLinkKey(a, o)", [ids['a'], ids[link]])); pg.wait_for_timeout(100)
+    pg.select_option('.hm-pop [data-hm="goal"]', goal); pg.wait_for_timeout(100)
+    for i, r in enumerate(rows):
+        pg.click('.hm-pop [data-hm="add"]')
+        if r.startswith('mf'): pg.select_option(f'.hm-pop [data-hm-ship="{i}"]', f'fit:{r}')
+        else: f = pg.locator(f'.hm-pop [data-hm-hull="{i}"]'); f.fill(r); f.dispatch_event('change')
+        pg.wait_for_timeout(100)
+    for i in fins: pg.check(f'.hm-pop [data-hm-fin="{i}"]'); pg.wait_for_timeout(80)
+    wait_masses(pg, len(rows)); return clk(pg, '.hm-pop [data-hm="go"]', 400)
+def inside(pg):
+    return pg.evaluate("""() => { const p = document.querySelector('.hm-pop').getBoundingClientRect(); return [...document.querySelectorAll('.hm-pop .hm-sum .hm-sb button')].map(b => b.getBoundingClientRect())
+      .filter(r => r.left < p.left - 0.5 || r.right > p.right + 0.5).length; }""")
+
+def runs_cases(b, html, out, errs, parts):
+    if parts is not None and 'runs' not in parts: return
+    ctx, pg = start(b, html, 1440, errs)
+    ids = pg.evaluate(SEED); pg.evaluate("whPaint(true)"); pg.click('[data-wh-pop="mass"]'); pg.wait_for_timeout(200)
+    opts = pg.evaluate("() => [...document.querySelectorAll('.hm-pop [data-hm=\"link\"] option')].map(o => o.textContent)")
+    if any('mass mass' in o or 'mass crit' in o for o in opts) or not any('· mass <50%' in o for o in opts): out.append(f'the connection list\'s mass words: {opts}')
+    if setup_run(pg, ids, 'd', 'crit', ['mf1', 'mf3'], fins=(1,)) != 'ok': out.append('Show the steps is off'); ctx.close(); return
+    if inside(pg): out.append('1440: a pinned-line button runs past the panel')
+    for _ in range(2): answer(pg)
+    s0 = pg.evaluate(STATE)
+    # + Finisher: its row, the finish side picked, Add off until its masses are known; added on the far side; Undo takes it back
+    clk(pg, '.hm-pop [data-hm="af"]')
+    row = pg.evaluate("() => { const r = document.querySelector('.hm-pop [aria-label=\"Add a finisher\"]'), at = document.querySelector('.hm-pop [data-hm-af=\"at\"]'), add = document.querySelector('.hm-pop [data-hm=\"afadd\"]'); return r ? [at && at.value, add && add.disabled, document.querySelector('.hm-pop [data-hm=\"af\"]').getAttribute('aria-expanded')] : null; }")
+    if row != ['this', True, 'true']: out.append(f'+ Finisher\'s row (its side, Add off, expanded): {row}')
+    f = pg.locator('.hm-pop [data-hm-af="hull"]'); f.fill('Buzzard'); f.dispatch_event('change')
+    try: pg.wait_for_function("() => { const b = document.querySelector('.hm-pop [data-hm=\"afadd\"]'); return b && !b.disabled; }", timeout=60000)
+    except Exception: out.append('+ Finisher\'s Add stays off once the Buzzard\'s masses are known')
+    pg.select_option('.hm-pop [data-hm-af="at"]', 'other'); pg.wait_for_timeout(150); clk(pg, '.hm-pop [data-hm="afadd"]', 400)
+    s1 = pg.evaluate(STATE)
+    if s1['log'][-1:] != ['add'] or len(s1['ships']) != 3 or s1['ships'][2][:2] != ['Buzzard', 'other'] or s1['rows'][-1] != 'Buzzard': out.append(f'+ Finisher on the far side: {s1}')
+    if not pg.evaluate("() => { const k = JSON.parse(localStorage.getItem('tvWhMass')); return k.ships.length === 3 && k.ships[2].fin && k.ships.every(r => Object.keys(r).every(x => ['fit', 'hull', 'fin'].includes(x))); }"): out.append('tvWhMass doesn\'t keep the finisher row in its form')
+    clk(pg, '.hm-pop [data-hm="undo"]', 400); s2 = pg.evaluate(STATE)
+    if s2['log'] != s0['log'] or len(s2['ships']) != 2 or s2['rows'] != s0['rows']: out.append(f'Undo doesn\'t take the finisher back: {s2}')
+    clk(pg, '.hm-pop [data-hm="af"]'); f = pg.locator('.hm-pop [data-hm-af="hull"]'); f.fill('Buzzard'); f.dispatch_event('change')
+    pg.wait_for_function("() => { const b = document.querySelector('.hm-pop [data-hm=\"afadd\"]'); return b && !b.disabled; }", timeout=60000); clk(pg, '.hm-pop [data-hm="afadd"]', 400)
+    # Change → + Ship (its side asked) → Carry on; Undo goes back past it, the setup's rows as they were
+    clk(pg, '.hm-pop [data-hm="edit"]'); clk(pg, '.hm-pop [data-hm="add"]')
+    at = pg.evaluate("() => { const s = document.querySelector('.hm-pop [data-hm-at=\"3\"]'); return s ? s.value : null; }")
+    if at != 'this': out.append(f'a ship new to a run carried on doesn\'t ask its side (the finish side picked): {at}')
+    f = pg.locator('.hm-pop [data-hm-hull="3"]'); f.fill('Thorax'); f.dispatch_event('change'); wait_masses(pg, 4)
+    clk(pg, '.hm-pop [data-hm="goon"]', 400); s3 = pg.evaluate(STATE)
+    if s3['log'][-1:] != ['carry'] or len(s3['ships']) != 4 or s3['ships'][3][:2] != ['Thorax', 'this'] or len(s3['rows']) != 4: out.append(f'Carry on with a new ship: {s3}')
+    sg = pg.evaluate(SIG)
+    if not sg[0]: out.append(f'replay isn\'t live after Carry on: {sg[1]} / {sg[2]}')
+    clk(pg, '.hm-pop [data-hm="undo"]', 400); s4 = pg.evaluate(STATE)
+    if s4['log'][-1:] != ['add'] or len(s4['ships']) != 3 or s4['rows'] != ['mf1', 'mf3', 'Buzzard']: out.append(f'Undo past Carry on (the rows back): {s4}')
+    # five ships at most: + Finisher off with its title
+    clk(pg, '.hm-pop [data-hm="edit"]'); clk(pg, '.hm-pop [data-hm="add"]'); clk(pg, '.hm-pop [data-hm="add"]')
+    for i in (3, 4): f = pg.locator(f'.hm-pop [data-hm-hull="{i}"]'); f.fill('Heron'); f.dispatch_event('change')
+    wait_masses(pg, 5)
+    if pg.locator('.hm-pop [data-hm="add"]').count(): out.append('+ Ship still shows with 5 ships')
+    clk(pg, '.hm-pop [data-hm="goon"]', 400)
+    fb = pg.evaluate("() => { const b = document.querySelector('.hm-pop [data-hm=\"af\"]'); return b ? [b.disabled, b.title] : null; }")
+    if fb != [True, '5 ships at most']: out.append(f'+ Finisher at 5 ships: {fb}')
+    if inside(pg): out.append('1440: a pinned-line button runs past the panel with five ships')
+    clk(pg, '.hm-pop [data-hm="undo"]', 400); clk(pg, '.hm-pop [data-hm="undo"]', 400)
+    sg = pg.evaluate(SIG)
+    if not sg[0]: out.append(f'replay isn\'t live after the Undos: {sg[1]} / {sg[2]}')
+    answer(pg); before = pg.evaluate("() => [hmState().run.id, document.querySelector('.hm-pop .hm-now').textContent, hmState().run.log.length]")
+    # the page reloaded: the run comes back at the same step, Undo working
+    pg.reload(); pg.wait_for_timeout(300); pg.evaluate("switchTab('wh')"); pg.wait_for_timeout(200)
+    pg.evaluate("(a) => whSelect(a)", ids['a']); pg.click('[data-wh-pop="mass"]'); pg.wait_for_timeout(400)   # the system picked (no system is in focus after a reload)
+    after = pg.evaluate("() => { const H = hmState(), n = document.querySelector('.hm-pop .hm-now'), u = document.querySelector('.hm-pop [data-hm=\"undo\"]'); return [H.run && H.run.id, n && n.textContent, H.run && H.run.log.length, !!(u && !u.disabled)]; }")
+    if after[:3] != before or not after[3]: out.append(f'a reload doesn\'t resume the run at the same step: {after[:3]} (was {before}), Undo {after[3]}')
+    # a second run on another connection: both kept; Open, Delete asks, Keep it keeps
+    first = after[0]
+    clk(pg, '.hm-pop [data-hm="edit"]'); pg.select_option('.hm-pop [data-hm="link"]', pg.evaluate("([a, o]) => whLinkKey(a, o)", [ids['a'], ids['rens']])); pg.wait_for_timeout(150)
+    clk(pg, '.hm-pop [data-hm="go"]', 400); answer(pg)
+    r2 = pg.evaluate("() => [hmRunsRead().map(r => r.id), hmState().run.id, document.querySelector('.hm-pop [data-hm=\"runs\"]') && document.querySelector('.hm-pop [data-hm=\"runs\"]').textContent]")
+    if len(r2[0]) != 2 or first not in r2[0] or 'Saved runs (2)' not in (r2[2] or ''): out.append(f'two saved runs at once: {r2}')
+    second = r2[1]
+    clk(pg, '.hm-pop [data-hm="runs"]'); clk(pg, f'.hm-pop [data-hm-open="{first}"]', 400)
+    if pg.evaluate("() => hmState().run.id") != first: out.append('Open doesn\'t open the saved run')
+    clk(pg, '.hm-pop [data-hm="runs"]'); clk(pg, f'.hm-pop [data-hm-del="{second}"]')
+    t = pop_text(pg) or ''
+    if 'Delete the saved run B274' not in t: out.append(f'Delete doesn\'t ask: {t[:200]!r}')
+    clk(pg, '.hm-pop [data-wh-ask="hm-del-no"]')
+    if pg.evaluate("() => hmRunsRead().length") != 2: out.append('Keep it doesn\'t keep the run')
+    # WH-01: a refused save shows the red warning inside the pinned line, in view with the steps scrolled to the end; deleting the other run saves this one
+    pg.evaluate("""() => { const lim = localStorage.getItem('tvWhMassRuns').length; window.__set = Storage.prototype.setItem;
+      Storage.prototype.setItem = function(k, v){ if(k === 'tvWhMassRuns' && String(v).length > lim) throw new DOMException('full', 'QuotaExceededError'); return window.__set.call(this, k, v); }; }""")
+    answer(pg)
+    w = pg.evaluate("""() => { const p = document.querySelector('.hm-pop'), e = p.querySelector('.hm-sum .sa-warn[role="alert"]'); if(!e) return null; p.scrollTop = p.scrollHeight;
+      const r = e.getBoundingClientRect(), q = p.getBoundingClientRect(), cs = getComputedStyle(e);
+      return {txt: e.textContent, badge: !!e.querySelector('.ewar-badge.danger'), title: e.querySelector('.ctx').title, border: cs.borderTopColor, seen: r.top >= q.top - 1 && r.bottom <= q.bottom + 1}; }""")
+    danger = pg.evaluate("() => getComputedStyle(document.documentElement).getPropertyValue('--danger').trim()")
+    if not w: out.append('a refused save shows no WH-01 warning in the pinned line')
+    else:
+        if 'This run isn’t saved' not in w['txt'] or 'WH-01' not in w['txt'] or not w['badge'] or 'storage is full' not in w['title']: out.append(f'the WH-01 warning: {w}')
+        if not w['seen']: out.append('the WH-01 warning isn\'t in view with the steps scrolled to the end')
+        if w['border'] in ('rgba(0, 0, 0, 0)', '') or not danger: out.append(f'the WH-01 warning has no danger border ({w["border"]})')
+    clk(pg, '.hm-pop [data-hm="runs"]'); clk(pg, f'.hm-pop [data-hm-del="{second}"]'); clk(pg, '.hm-pop [data-wh-ask="hm-del"]', 400)
+    gone = pg.evaluate("() => [!document.querySelector('.hm-pop .sa-warn'), hmRunsRead().map(r => [r.id, r.log.length]), hmState().run.log.length]")
+    if not gone[0] or len(gone[1]) != 1 or gone[1][0][1] != gone[2]: out.append(f'deleting the other run doesn\'t save the open one: {gone}')
+    pg.evaluate("() => { Storage.prototype.setItem = window.__set; }")
+    # a finished run stays, with Delete this run
+    if not pg.locator('.hm-pop [data-hm-say="gone"]').count(): clk(pg, '.hm-pop [data-hm="undo"]', 400)   # "no safe step left" has no answers
+    pg.evaluate("() => document.querySelector('.hm-pop [data-hm-say=\"gone\"]').click()"); pg.wait_for_timeout(300)
+    fin = pg.evaluate("() => [hmRunsRead().map(r => r.done), !!document.querySelector('.hm-pop [data-hm=\"delcur\"]')]")
+    if not fin[0] or not fin[0][0] or not fin[1]: out.append(f'a finished run isn\'t kept with Delete this run: {fin}')
+    ctx.close()
+
+def timing_case(b, html, out, errs, parts):
+    if parts is not None and 'runs' not in parts: return
+    ctx, pg = start(b, html, 1440, errs)
+    ids = pg.evaluate(SEED); pg.evaluate("whPaint(true)"); pg.click('[data-wh-pop="mass"]'); pg.wait_for_timeout(200)
+    setup_run(pg, ids, 'd', 'crit', ['mf1', 'mf2', 'mf3', 'Buzzard', 'Megathron'], fins=(1, 2, 3))
+    t = pg.evaluate("() => { const H = hmState(); const t0 = performance.now(); for(let k = 0; k < 3; k++) hmPaint(); return [(performance.now() - t0) / 3, H.pl.ships.filter(s => s.fin).length, H.pl.ships.length]; }")
+    print(f'TIME the Mass panel\'s redraw with {t[2]} ships, {t[1]} finishers: {t[0]:.0f} ms (headless Chromium)')
+    if t[2] != 5 or t[1] != 3: out.append(f'the timing run isn\'t 5 ships and 3 finishers: {t}')
+    ctx.close()
+
+def lost_cases(b, html, out, errs, parts):
+    if parts is not None and 'lost' not in parts: return
+    ctx, pg = start(b, html, 1440, errs)
+    ids = pg.evaluate(SEED); pg.evaluate("whPaint(true)"); pg.click('[data-wh-pop="mass"]'); pg.wait_for_timeout(200)
+    # L1: lost alone in its step on the finish side (the Phobos is the finisher, so the Megathron goes alone)
+    setup_run(pg, ids, 'rens', 'roll', ['mf1', 'mf2'], fins=(1,))
+    st = pg.evaluate(STATE); i = st['step'][0] if st['step'] and len(st['step']) == 1 else None
+    if i is None: out.append(f'L1: step 1 isn\'t one ship: {st}'); ctx.close(); return
+    clk(pg, '.hm-pop [data-hm="lf"]')
+    row = pg.evaluate("() => { const s = document.querySelector('.hm-pop [data-hm-lf=\"i\"]'), g = document.querySelector('.hm-pop [data-hm=\"lfgo\"]'); return s ? [[...s.options].map(o => o.textContent), g.disabled] : null; }")
+    if not row or not row[1] or len(row[0]) != 3 or not any('in this step' in o for o in row[0]) or not all(' · in ' in o for o in row[0][1:]): out.append(f'L1: the Ship lost row: {row}')
+    pg.select_option('.hm-pop [data-hm-lf="i"]', str(i)); pg.wait_for_timeout(150)
+    q = pg.evaluate("() => [!!document.querySelector('.hm-pop [data-hm-lf=\"others\"]'), !!document.querySelector('.hm-pop [data-hm-lf=\"pod\"]'), document.querySelector('.hm-pop [aria-label=\"A ship was lost\"]').textContent.includes('answer the step first'), document.querySelector('.hm-pop [data-hm=\"lfgo\"]').disabled]")
+    if q != [False, False, True, False]: out.append(f'L1: lost alone on the finish side asks more ({q})')
+    clk(pg, '.hm-pop [data-hm="lfgo"]', 400); s1 = pg.evaluate(STATE)
+    if s1['log'][-1:] != ['lost'] or not s1['ships'][i][2] or (s1['step'] and i in s1['step']) or 'mf1' in s1['rows'] or '(lost)' not in (pg.locator('.hm-pop .hm-sum').text_content() or ''):
+        out.append(f'L1: marked lost: {s1}')
+    clk(pg, '.hm-pop [data-hm="undo"]', 400); s2 = pg.evaluate(STATE)
+    if s2['ships'][i][2] or 'mf1' not in s2['rows'] or s2['log']: out.append(f'L1: Undo doesn\'t put the ship back: {s2}')
+    # L2: two Megathrons out, coming back as one step; one lost before it jumped, on the far side: the other's part waits, then its pod comes home
+    clk(pg, '.hm-pop [data-hm="edit"]'); pg.evaluate("() => { const H = hmState(); H.ships = []; hmSave(); H.prev = null; hmPaint(); }"); pg.wait_for_timeout(150)
+    setup_run(pg, ids, 'rens', 'roll', ['mf1', 'mf1'])
+    for _ in range(4):
+        st = pg.evaluate("() => { const H = hmState(); return H.step && H.step.g ? [H.step.g.length, H.step.dir, H.pl.ships.map(s => s.at)] : null; }")
+        if st and st[0] == 2 and all(a == 'other' for a in st[2]): break
+        answer(pg)
+    if not st or st[0] != 2 or not all(a == 'other' for a in st[2]): out.append(f'L2: no step with both Megathrons coming in: {st}'); ctx.close(); return
+    clk(pg, '.hm-pop [data-hm="lf"]'); pg.select_option('.hm-pop [data-hm-lf="i"]', '1'); pg.wait_for_timeout(150)
+    q = pg.evaluate("() => [document.querySelector('.hm-pop [data-hm-lf=\"others\"]') && document.querySelector('.hm-pop [data-hm-lf=\"others\"]').value, document.querySelector('.hm-pop [data-hm-lf=\"pod\"]') && document.querySelector('.hm-pop [data-hm-lf=\"pod\"]').value]")
+    if q != ['keep', 'home']: out.append(f'L2: lost in a group step on the far side: {q}')
+    try: pg.wait_for_function("() => /The pod \\(\\d[\\d,]* t\\) gets a step of its own, home\\./.test(document.querySelector('.hm-pop [aria-label=\"A ship was lost\"]').textContent)", timeout=60000)
+    except Exception: out.append('L2: the pod\'s mass never shows')
+    clk(pg, '.hm-pop [data-hm="lfgo"]', 400)
+    p = pg.evaluate("() => { const H = hmState(); return [!!H.step.part, H.step.g.map(x => x.i), document.querySelector('.hm-pop').textContent.includes('Part of this step:'), H.pl.ships.map(s => [s.name, s.at, !!s.lost, !!s.pod])]; }")
+    if not p[0] or p[1] != [0] or not p[2] or len(p[3]) != 3 or not p[3][2][3]: out.append(f'L2: the part step held for its answer, the pod added: {p}')
+    answer(pg)
+    p = pg.evaluate("() => { const H = hmState(); return [H.step && H.step.g ? H.step.g.map(x => H.pl.ships[x.i].name) : null, !!(H.step && H.step.part)]; }")
+    if not p[0] or len(p[0]) != 1 or 'pod' not in p[0][0] or p[1]: out.append(f'L2: after the part step, the pod\'s step home: {p}')
+    answer(pg)
+    p = pg.evaluate("() => { const H = hmState(); return [H.pl.ships[2].podHome, document.querySelector('.hm-pop .hm-sum').textContent, H.step && H.step.g ? H.step.g.map(x => x.i) : null]; }")
+    if not p[0] or '’s pod (home)' not in p[1] or (p[2] and 2 in p[2]): out.append(f'L2: the pod home leaves the run: {p}')
+    sg = pg.evaluate(SIG)
+    if not sg[0]: out.append(f'L2: replay isn\'t live: {sg[1]} / {sg[2]}')
+    clk(pg, '.hm-pop [data-hm="undo"]', 400); clk(pg, '.hm-pop [data-hm="undo"]', 400)
+    if not pg.evaluate("() => !!hmState().step.part"): out.append('L2: Undo doesn\'t go back to the part step')
+    # L3: the last ship of a part step lost: the step wasn't made; L5: every ship lost
+    clk(pg, '.hm-pop [data-hm="lf"]'); pg.select_option('.hm-pop [data-hm-lf="i"]', '0'); pg.wait_for_timeout(150); pg.select_option('.hm-pop [data-hm-lf="pod"]', 'no'); pg.wait_for_timeout(150); clk(pg, '.hm-pop [data-hm="lfgo"]', 400)
+    p = pg.evaluate("() => { const H = hmState(); return [!!(H.step && H.step.part), H.step && H.step.g ? H.step.g.map(x => H.pl.ships[x.i].name) : null]; }")
+    if p[0] or not p[1] or not all('pod' in n for n in p[1]): out.append(f'L3: the last ship of a part step lost: {p}')
+    clk(pg, '.hm-pop [data-hm="lf"]'); pg.select_option('.hm-pop [data-hm-lf="i"]', '2'); pg.wait_for_timeout(150); clk(pg, '.hm-pop [data-hm="lfgo"]', 400)
+    p = pg.evaluate("() => [document.querySelector('.hm-pop .hm-now') && document.querySelector('.hm-pop .hm-now').textContent, document.querySelector('.hm-pop [data-hm=\"lf\"]').disabled]")
+    if not p[0] or 'No ships left: add one with + Finisher, or with Change.' not in p[0] or not p[1]: out.append(f'L5: every ship lost: {p}')
+    # L4: the finisher lost: no Send X instead, "add one with + Finisher"; L6: a replacement on Carry on, on the far side, not matched to the lost one
+    clk(pg, '.hm-pop [data-hm="edit"]'); pg.evaluate("() => { const H = hmState(); H.ships = []; hmSave(); H.prev = null; hmPaint(); }"); pg.wait_for_timeout(150)
+    setup_run(pg, ids, 'd', 'crit', ['mf1', 'mf3'], fins=(1,))
+    if not pg.locator('.hm-pop [data-hm="finnow"]').count(): out.append('L4: no Send Heron instead to begin with')
+    clk(pg, '.hm-pop [data-hm="lf"]'); pg.select_option('.hm-pop [data-hm-lf="i"]', '1'); pg.wait_for_timeout(150); clk(pg, '.hm-pop [data-hm="lfgo"]', 400)
+    t = pop_text(pg) or ''
+    if pg.locator('.hm-pop [data-hm="finnow"]').count() or 'add one with + Finisher' not in t: out.append(f'L4: the finisher lost: {t[t.find("No fully"):][:240]!r}')
+    answer(pg)
+    clk(pg, '.hm-pop [data-hm="edit"]'); clk(pg, '.hm-pop [data-hm="add"]')
+    n = pg.evaluate("() => hmState().ships.length - 1")
+    pg.select_option(f'.hm-pop [data-hm-ship="{n}"]', 'fit:mf3'); pg.wait_for_timeout(150); pg.select_option(f'.hm-pop [data-hm-at="{n}"]', 'other'); pg.wait_for_timeout(150)
+    wait_masses(pg, n + 1); clk(pg, '.hm-pop [data-hm="goon"]', 400)
+    p = pg.evaluate("() => hmState().pl.ships.filter(s => !s.lost).map(s => [s.name, s.at, s.last.out + s.last.back])")
+    if ['Heron', 'other', 0] not in p: out.append(f'L6: the replacement Heron isn\'t on the far side as a new ship: {p}')
+    ctx.close()
+
 def cases(b, html, parts=None):
     out, errs = [], []
     ui_cases(b, html, out, errs, parts)
@@ -345,14 +654,17 @@ def cases(b, html, parts=None):
         ctx, pg = start(b, html, 1440, errs, fits=False); calc_cases(pg, out, parts); ctx.close()
     link_cases(b, html, out, errs, parts)
     phone_cases(b, html, out, errs, parts)
+    runs_cases(b, html, out, errs, parts)
+    lost_cases(b, html, out, errs, parts)
+    timing_case(b, html, out, errs, parts)
     return out, errs
 
 MUTANTS = [
     ('no ±10% (the exact total)', "for(let i = 0; i < n; i++){ const M = M0 * 0.9 + (2 * i + 1) * h; P.push([M, M, h, h]); } return P; }",
      "for(let i = 0; i < n; i++){ const M = M0; P.push([M, M, h, h]); } return P; }", ('calc',)),
     ('points instead of boxes (the mockup\'s)', "  const Ml = c[0] - c[2], Mh = c[0] + c[2], Rl = c[1] - c[3] - m, Rh = c[1] + c[3] - m;", "  const Ml = c[0], Mh = c[0], Rl = c[1] - m, Rh = c[1] - m;", ('calc',)),
-    ('the out-jump rule loosened (no trip back counted)', "need = m + back.reduce((a, b) => a + b, 0) - (pl.goal === 'roll' ? Math.max(...back) : 0);", "need = m;", ('calc',)),
-    ('the finisher not kept for the end', "const finOk = pl.obs === 'critical' || pl.finOk,", "const finOk = true,", ('calc',)),
+    ('the out-jump rule loosened (no trip back counted)', "mb = Math.max(...back), need = crit ? all : all - mb;", "mb = Math.max(...back), need = m;", ('calc',)),
+    ('the finisher not kept for the end', "pool = pl.obs === 'critical' || !nf.length ? C : nf;", "pool = C;", ('calc',)),
     ('no polarization', "return t && now - t < WH_MASS_POL_MS ? t + WH_MASS_POL_MS : 0;", "return 0;", ('calc',)),
     ('an impossible answer kept', "  if(!P.length && obs !== 'gone'){ P = hmPoss(pl.M0, obs); pl.reset = true; }", "", ('calc',)),
     ('the risk by the smallest left only', "function hmShare(P, m){ return P.length ? hmLe(P, m) / P.length : 0; }", "function hmShare(P, m){ return P.length && P[0][1] <= m ? 1 : 0; }", ('calc',)),
@@ -360,17 +672,35 @@ MUTANTS = [
     ('no ZPME mode', "  if(zp.length){   // the ZPME running", "  if(false){   // the ZPME running", ('fit',)),
     ('a typed hull without its MWD', "  if(WH_MASS_PROP[rs]) modes.push(", "  if(false) modes.push(", ('fit',)),
     ('answers not written to the connection', "  if(pl.obs !== 'gone' && hmLinkLive()) hmLinkMass(pl.obs);", "", ('ui',)),
-    ('Undo not putting the Mass back', "  if(b.mass !== null && hmLinkLive() && (H.link.mass || '') !== b.mass) hmLinkMass(b.mass);", "", ('ui',)),
+    ('Undo not putting the Mass back', "if((H.link.mass || '') !== v) hmLinkMass(v); }", "}", ('ui',)),
     ('a K162\'s far side with K162 in its list', "(noK162 ? '' : o('K162',", "(false ? '' : o('K162',", ('ui',)),
     ('Start over without its question', "else if(d.hm === 'reset'){ if(H.pl && H.pl.hist.length && !H.pl.done) H.rs = true; else hmReset(); }", "else if(d.hm === 'reset') hmReset();", ('ui',)),
     ('the rows not kept', "function hmSave(){ try{ localStorage.setItem(WH_MASS_KEY,", "function hmSave(){ try{ if(0) localStorage.setItem(WH_MASS_KEY,", ('ui',)),
-    ('the faster jump chosen for you', "if(f){ st.fast = out(f, away); st.fast.isFast = true; st.fast.slow = {...st}; }", "if(f) return out(f, away);", ('calc',)),
+    ('the faster jump chosen for you', "if(f){ st.fast = out(f, away, safeOut, true); st.fast.isFast = true; st.fast.slow = {...st}; }", "if(f) return out(f, away, safeOut, true);", ('calc',)),
     ('the time without polarization', "const at = Math.max(now, st.wait);", "const at = now;", ('calc',)),
     ('no faster offer when the safe way is slow', "if(!st.fast || !pv || !(pv.cap || pv.thi >= WH_MASS_SLOW_MS)) return '';", "if(true) return '';", ('fast',)),
     ('the faster estimate takes it once only', "if(fast && st.fast) st = st.fast;", "if(fast && !k && st.fast) st = st.fast;", ('calc',)),
     ('a stranded run counted as steps', "const ok = runs.filter(r => !r.lost),", "const ok = runs,", ('calc',)),
     ('Back to the safe way doing nothing', "else if(d.hm === 'safe'){ if(H.pl && H.fast){ H.fast = false;", "else if(d.hm === 'safe'){ if(false){ H.fast = false;", ('fast',)),
     ('+ Add\'s Linked to not built after an Add', "  whSelect(id); whAddLinkList(f);   // 070", "  whSelect(id);   // 070", ('link',)),
+    # 072
+    ('one share for both (no split)', "stuck: crit ? hmShare(P, all - mb) : hmShare(P, need)", "stuck: hmShare(P, need)", ('calc',)),
+    ('the faster offer by the total, not stuck first', "c.m >= 2 * st.m).sort((a, b) => a.stuck - b.stuck || a.risk - b.risk ||", "c.m >= 2 * st.m).sort((a, b) => a.risk - b.risk ||", ('calc',)),
+    ('the safe mass by 070\'s formula', "const safeOut = crit ? Rmin / 2 : Rmin;", "const safeOut = Rmin - ((fr || best).need - (fr || best).m);", ('calc',)),
+    ('one Send X instead frees every finisher', "pl.free = pl.free.concat([e.i]);", "pl.free = pl.ships.map((s, k) => k);", ('calc',)),
+    ('Carry on matching a lost ship', "!used.has(j) && !o.lost && !o.pod && o.label === s.label", "!used.has(j) && o.label === s.label", ('calc',)),
+    ('an added finisher always on this side', "pl.ships.push({...fit(e.ship), at: e.at, last: {out: 0, back: 0}});", "pl.ships.push({...fit(e.ship), at: 'this', last: {out: 0, back: 0}});", ('runs',)),
+    ('no save after an answer', "Remove the connection to ${whName(l.a === n ? l.b : l.a)}?`; }\n  hmRunSave();", "Remove the connection to ${whName(l.a === n ? l.b : l.a)}?`; }", ('runs',)),
+    ('Undo stopping at Carry on', "  const H = hmState(), r = H.run; if(!r || !r.log.length) return;", "  const H = hmState(), r = H.run; if(!r || !r.log.length || r.log[r.log.length - 1].t === 'carry') return;", ('runs',)),
+    ('Undo past Carry on keeping the new rows', "else if(e.t === 'carry' && Array.isArray(e.rows0)) r.rows = e.rows0.map(x => ({...x}));", "", ('runs',)),
+    ('"mass mass" in the connection list', "IT_WH_INFO_TXT.mass[l.mass] ? ` · ${IT_WH_INFO_TXT.mass[l.mass][0]}` : '';", "IT_WH_INFO_TXT.mass[l.mass] ? ` · mass ${IT_WH_INFO_TXT.mass[l.mass][0]}` : '';", ('runs',)),
+    ('WH-01 never shown', "function hmErrHtml(){ return hmState().saveErr ?", "function hmErrHtml(){ return false ?", ('runs',)),
+    ('a save dropping the other runs', "hmRunsWrite(hmRunsRead().filter(x => x.id !== r.id).concat([r]));", "hmRunsWrite([r]);", ('runs',)),
+    ('a lost ship still in the steps', "LV = S.map((s, i) => i).filter(i => !S[i].lost)", "LV = S.map((s, i) => i)", ('lost',)),
+    ('the part step worked out again', "  if(pl.part){   // 6b", "  if(false){   // 6b", ('lost',)),
+    ('the pod left out', "if(e.pod) pl.ships.push(", "if(false) pl.ships.push(", ('lost',)),
+    ('a new ship on Carry on always on the finish side', "n = {...fit(s), at: s.at0 || pl.fin, last", "n = {...fit(s), at: pl.fin, last", ('lost',)),
+    ('the phone pinned line not in 3 columns', ".hm-sum .hm-sb{flex:1 1 100%; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr));}", ".hm-sum .hm-sb{flex:1 1 100%;}", ('phone',)),
     ('the phone toolbar not wrapping', ".wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px; flex-wrap:wrap; pointer-events:none;} .wh-ctl > *{flex:none; pointer-events:auto;}", ".wh-ctl{left:8px; right:8px; justify-content:flex-end; gap:6px;}", ('phone',)),
 ]
 
@@ -379,7 +709,7 @@ if __name__ == '__main__':
         b = p.chromium.launch()
         out, errs = cases(b, HTML)
         for o in out: check(False, o)
-        check(not out, 'the steps (crit, roll, both sides, the risk, the finisher, polarization, words, a slow plan\'s faster jump, the time), fits\' and hulls\' masses, the panel, + Add\'s Linked to, a phone')
+        check(not out, 'the steps (crit, roll, both sides, the risk, the finisher, polarization, words, a slow plan\'s faster jump, the time), fits\' and hulls\' masses, the panel, + Add\'s Linked to, a phone; 072: the odds split, stuck first, the safe mass, + Finisher, saved runs, WH-01, a ship lost')
         check(not errs, f'no page errors {errs[:3]}')
         for name, old, new, parts in MUTANTS:
             if PAGE.count(old) != 1: check(False, f'mutant "{name}": its line isn\'t in the page once'); continue

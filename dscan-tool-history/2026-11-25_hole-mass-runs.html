@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-25 — Wormholes, Mass: saved runs, + Finisher, a ship lost, odds that say which way it closes; Wormholes out of beta</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Wormholes, Mass: saved runs, + Finisher, a ship lost, odds that say which way it closes; Wormholes out of beta</h1>
+<p><span class="tag">Page</span><span class="tag">Wormholes</span> 2026-11-25 &middot; <code>v2026.11.25.1</code> &middot; branch <code>072-hole-mass-runs</code>: build queue 072 (plan <code>roadmap/hole-mass-runs-plan.md</code>, mockup <code>Claude outputs/hole_mass_runs_mockup.html</code>, its scripts <code>roadmap/hole-mass-runs-mockup/</code>). Builds on 070 (<code>roadmap/hole-mass-plan.md</code>).</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner, 2026-11-24: "% chance that it closes behind &lt;ship&gt; should clarify if it means close on the wrong side of the connection or if it would collapse the hole on the way back in rather than crit the hole."</li>
+<li>"plan it with the ability to add a small ship at any point in the process as a "finisher" (like a buzzard or something that can be used for critting where it's a close call or risky w/ larger ships)."</li>
+<li>"i accidentally hit the "back" button on my browser earlier mid-session and lost my rolling state. not good. let's have it persist until it's manually deleted. even allow the ability to save multiple at once."</li>
+<li>2026-11-25: "add a backlog item to account for a ship being lost during the rolling/critting process so we dont have to start from scratch in order to get accurate instructions.", then "include in 072".</li>
+<li>2026-11-24, with the next release: "remove "beta" tag from wormholes tab."</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The odds split in two, named by side</b> (<code>hmNext</code>: <code>stuck</code> and <code>col</code> = risk − stuck; <code>hmRiskWords</code>, one helper for the three notes): "about 1 in 131 that it closes with Megathron stuck in J102057; about 1 in 4 that it closes on Megathron's jump in: everyone's home, but the hole is gone, not crit". Roll shows only the stuck part. Crit ranks the least stuck first. The two parts always add up to 070's number (the check works it out for every step).</li>
+<li><b>The safe mass</b> (<code>hmSafeTxt</code>): Crit out, a lone ship cold out and back, under Rmin / 2; Roll out, Rmin; coming in, no sentence. 070 subtracted the group's own way back, so it said "No ship is light enough to be sure." beside a safe "Send Thorax instead".</li>
+<li><b>+ Finisher</b> in the run's pinned line: an inline ship row, "It's in" with the finish side picked, Add when its masses are known. Up to 5 ships. A "Send X instead" per finisher, lightest first; one sent frees only it.</li>
+<li><b>Ship lost</b> in the pinned line: if it jumped, answer the step first, then mark it lost; lost before jumping, it leaves the step, and the others of a group step that jumped wait for their answer (held, not worked out again); lost off the finish side, its pod (CCP's Capsule mass, one mode) can come home as a step of its own and leaves the run once home. A lost ship takes no part in any step, odds or "stranded"; its setup row goes (Undo puts it back). A ship added on Change → Carry on asks which side it's in (a replacement), and is never matched to a lost one.</li>
+<li><b>Saved runs</b> (<code>tvWhMassRuns</code>): every change is an entry in the run's log (<code>s</code>, <code>add</code>, <code>free</code>, <code>carry</code>, <code>lost</code>), saved at once and replayed from the start (<code>hmRunPl</code>), never the possible holes themselves. Undo goes back through the whole run (past an added finisher, a ship lost and Carry on, each putting the setup's rows back). Opening Mass resumes the newest unfinished run on one of the focus system's connections; Saved runs (N) lists them all, with Open and Delete (it asks). A finished run stays until deleted ("Delete this run" in its end note).</li>
+<li><b>WH-01</b> (a new code group, "Wormholes tab"): a refused save shows the page's warning row in a red box inside the pinned line, so it stays in view; deleting another run saves the open one again and the warning goes.</li>
+<li>The setup's connection list no longer says "mass mass &lt;50%"; the + Finisher and Ship lost rows repaint when their masses arrive; the Finisher tick reads "kept for the end, offered when it's the safe choice"; <code>whmap#mass</code> reworded (207 → 208 of its 210 words, [Ship lost] and [Saved runs] added).</li>
+<li>Phone: the pinned line's five buttons in a 3-column grid (two rows, 44 px); on a wide panel they wrap.</li>
+<li><b>The Wormholes tab is out of beta:</b> the Beta tag, its CSS rule and the "(beta)" label are gone; the tab is named by its own text, as Intel's.</li>
+</ul>
+
+<h2>Stored data</h2>
+<ul>
+<li>New key <code>tvWhMassRuns</code> <code>{v: 1, runs: [...]}</code>: the older page never reads it (reverting is safe). Each save reads the stored list first and replaces only its own run, so two tabs never drop each other's runs.</li>
+<li><code>tvWhMass</code> keeps its form (<code>{v: 1, ships: [{fit | hull, fin?}]}</code>); a 5th row is ignored by the older page's reader, which takes 4.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li><code>wormhole_mass_check.py</code> grows the plan's section 11: the split against 070's number, stuck first, the safe mass, a finisher freed per ship, Carry on's match, + Finisher, saved runs (replay = live, a reload resuming the same step, two at once, Delete, WH-01 with a refused write), "mass mass", every ship-lost case, the five buttons at 1440 and 390 px, and 18 new mutants. It prints the redraw time with 5 ships and 3 finishers (224 ms, headless Chromium; the mockup's 230 ms).</li>
+<li><code>wormhole_tab_check.py</code>: the tab right after Intel, named Wormholes, with no Beta tag.</li>
+</ul>
+</body>
+</html>

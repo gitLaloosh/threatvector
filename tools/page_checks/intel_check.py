@@ -201,7 +201,7 @@ with sync_playwright() as p:
     pg = ctx.new_page(); pg.goto('file://' + HTML)
     pg.evaluate("(s) => { localStorage.setItem('dscanSide', JSON.stringify(s)); localStorage.setItem('dscanIntel', JSON.stringify({sound: true, notify: true, nearShown: true})); }", SIDE); pg.reload(); pg.wait_for_timeout(400)   # 052: Near You's panel open (its default, shut, is intel_map_layout_check's); v2026.11.08.4 (028): a new user's alerts start off; these cases are a player who turned them on
     tabs = pg.evaluate("() => [...document.querySelectorAll('.tabs .tab-btn')].filter(b => b.checkVisibility()).map(b => b.textContent)")
-    check(tabs == ['Intel', 'WormholesBeta', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs in the order of use, Intel first (v2026.10.30.1, the owner: "intel > system > pilot > fit") {tabs}')
+    check(tabs == ['Intel', 'Wormholes', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs in the order of use, Intel first (v2026.10.30.1, the owner: "intel > system > pilot > fit") {tabs}')
     hdr = pg.evaluate("() => { const b = document.querySelector('#intelNear'); return [b.closest('#profile') ? 'profile' : '', b.hidden, document.querySelectorAll('#myShipBar input[aria-label=\"Watch the intel channels\"]').length, document.querySelector('#profile').dataset.s, b.querySelector('.pf-vw').textContent]; }")
     check(hdr == ['profile', False, 0, 'off', 'Off'], f'v2026.10.29.1: no Intel switch in the header; 032: Intel\'s lamp on the profile, "Off" while Intel is off {hdr}')
     pg.eval_on_selector('#tabBtnIntel', 'b => b.click()'); pg.wait_for_timeout(200)
