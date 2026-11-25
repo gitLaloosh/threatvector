@@ -578,6 +578,16 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   to 0.01 as the hover shows it (`itMapLyC`, the one rounding `itMapLyText` uses too; `itMapLyIn`) and landable (`itMapNoLand`: 0.5+ as shown,
   Pochven by region, Zarzakh by ID in `IT_MAP_NOLAND`); the hover's line `itMapLyTipHtml`; the Only line "within 7.0 LY (jump drive)".
   `tvMapStack.near` gains `mode` ('j' | 'ly') and `ly` (tenths, default 70): safe both ways. `ly_distance_check.py`.
+- **Sov hubs** (v2026.11.25.2, build queue 068; roadmap/sov-hubs-plan.md, mockup `Claude outputs/sov_hubs_mockup.html`; the owner: "One filter, two
+  kinds (Recommended)", "24 h fights, now for hubs (Recommended)", "Fight tags only, filter on (Recommended)", "Every 2 min, raise cap (Recommended)",
+  ""SOV 19:45" (Recommended)"): the Only filter `hub` after Sov upgrades. Fight coming up: a fight from ESI's `/sovereignty/campaigns` (`itCamp`,
+  `itCampRead`, `IT_CAMP_URL`, kind `sov`; at most every `IT_CAMP_MS`, only while `itMapLvWant('camp')`, never a timer: with Intel stopped nothing is
+  read) starting within `hub.fightH` hours (0-48) or under way; Vulnerable: the hub's window (065's `itSov.info` `vw`; `itMapLvWant('sov')` is true
+  with Sov hubs on) open now or opening within `hub.vulnH` (0-24); any ticked kind (`itHubAt`, `itHubIx` once per read). `itHubKey` (settings, each
+  list there or not, each read, the minute) is in `itMapMatch`'s key and `itMapKey`. Settings in `itMp` (`itMpHubRowHtml`, `RS.mapHubF` / `mapHubV`),
+  the hover `itHubTipHtml` (with Sov holder on, 065's window line gives way), the tags "SOV 19:45" / "SOV now" (`itHubTags`, in `itMapLabels`, only on
+  matches with Fight coming up ticked), the Only line `itHubOnlyText`. `tvMapStack` gains `only.hub`, `hub`, `seen.hub`: safe both ways. Its icon a hub
+  of our own drawing (LESSON #183); the Wormholes filter's icon is the game's wormhole shape, `WH_SWIRL` (defined before `IT_MAP_FILTERS`). `sov_hubs_check.py`.
 - **Kill counts by who died** (v2026.11.21.3, build queue 066; roadmap/kill-counts-plan.md, mockup `Claude outputs/kill_counts_mockup.html`; the owner:
   "amber X [N] [N] [N]", "go with A"): a map label's kill tag is the amber ✕, then the counts by who died, friendly, hostile, neutral (`C.kill`:
   `--side-friendly`, `#f08b7e`, `#b9c3ca`), none for a standing with no deaths; `itMapReports` counts `kb` from `st.kills`' `v` (unknown: neutral);
