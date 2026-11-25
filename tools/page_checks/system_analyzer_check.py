@@ -79,7 +79,7 @@ with sync_playwright() as p:
     pg.wait_for_timeout(300)
     # --- the tab ---
     tabs = pg.evaluate("() => [...document.querySelectorAll('.tabs .tab-btn')].filter(b => b.checkVisibility()).map(b => b.textContent.trim())")   # v.94: the Fleet tab is hidden until a fleet is open
-    check(tabs == ['Intel', 'WormholesBeta', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs: Intel, System Analyzer, Pilot Analyzer, Fit Analyzer (v2026.10.30.1, the order of use) {tabs}')
+    check(tabs == ['Intel', 'Wormholes', 'System Analyzer', 'Pilot Analyzer', 'Fit Analyzer'], f'the tabs: Intel, System Analyzer, Pilot Analyzer, Fit Analyzer (v2026.10.30.1, the order of use) {tabs}')
     pg.eval_on_selector('#tabBtnDscan', 'b => b.click()')
     ins = pg.evaluate("() => [!!document.querySelector('#localInput'), !!document.querySelector('#dscanInput'), document.querySelector('#tabDscan h2').textContent]")
     check(ins == [True, True, 'System Analyzer'], f'two inputs, the heading from CARD_NAMES {ins}')
