@@ -6,7 +6,7 @@
     "clientBuild": 3724492,
     "dataDumped": "2026-11-22",
     "verifiedOn": "2026-11-24",
-    "ownerPyfa": "v2.70.0 / EVE data 3682781 (the owner, build queue 035); build queue 042's hand test updates it to v2.70.1 / 3724492"
+    "ownerPyfa": "v2.70.1 / EVE data 3724492 (the owner's hand test, build queue 042, 2026-11-25)"
   },
   "sections": {
     "resist-calc": {
