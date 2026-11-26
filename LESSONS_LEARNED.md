@@ -168,6 +168,8 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #167 A press and hold that opens a menu under the finger: lifting it clicks the menu's first item. Cancel the release's default (touchend) when the hold opened something. See also #137.
 - #176 The `hidden` attribute loses to any rule that sets `display`: an element the code hid stayed drawn. Give such a class its own `[hidden]` rule (or hide through a class), and check the computed display, not the attribute. See also #45.
 - #179 A control placed against a row of others is covered when the row grows: list what is placed against it, and measure the phone with everything showing (a fixed `right:` offset beside a row of buttons, every optional control on).
+- #183 A mockup made before the items queued ahead of it were built can't show what they added: at the build review, put its new pieces (icons, names, places) beside the page as it is now.
+- #184 A control added to a list that wraps is checked at the sizes people use, on every kind of screen: a plan that sized the phone's column missed that a 1440 x 1000 window's column now wraps too.
 
 **Checks and test machinery**
 
@@ -3002,4 +3004,26 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - **Do this instead:** the checker now FAILS a pinned field that isn't in the
   result. When you rename or remove a result field, grep `golden_fits.json`
   for its flattened name and move every pin.
+
+## 183. A mockup made before the items queued ahead of it were built can't show what they added
+
+- **What happened (build queue 068, 2026-11-25):** the Sov hubs mockup was made on 2026-11-21 from a page without 065, which was queued
+  ahead of it. It gave the new filter a flag icon. 065 then gave its Sov holder colour a flag too, so built as mocked, the column would have
+  had two flags with different meanings. The plan's "UI rules it touches" couldn't catch it: the clash didn't exist when it was written.
+- **How it was caught:** at the build review, the mockup's icon was read beside the current column's (065's filters were in it by then).
+- **Do this instead:** when a plan says "build after N", the build review puts the mockup's new pieces (icons, names, colours, places in a
+  list) beside what N and anything else built since added, and asks the owner about a clash before building (here: a hub drawing of its
+  own). A mockup's pieces are a proposal against the page it was made from.
+
+## 184. A control added to a list that wraps is checked at the sizes people use, on every kind of screen
+
+- **What happened (build queue 069, 2026-11-26):** the plan for Activity (past hour) sized the phone's filter column with nine Only filters
+  (065 built its wrap) and said nothing of a wide window. The map's height follows the window's width (wide `min(720, max(520, w·0.5))`), and
+  the desktop column wraps a second column once it has more rows than the map holds (`itMapFlRows`: 34 px a row). With the 16th filter a
+  1440 x 1000 window's 661 px map holds 17 of the 18 rows, so Paths to you moved to the top of a second column, under the search box's list.
+- **How it was caught:** the build's full run: three checks that measured the column, a filter's panel beside it, and a press on Paths to you,
+  each written when the column fitted in one.
+- **Do this instead:** a plan that adds to a list that wraps (the filter column, a rail, a toolbar) counts it at 1280 x 800, 1440 x 1000,
+  1920 x 1080 and 390 px, says which sizes wrap, and asks the owner when a size that didn't wrap now does. A check that measures the list
+  reads its rows from the page's own height, not a number written when it fitted.
 

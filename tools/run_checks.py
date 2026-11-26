@@ -35,6 +35,8 @@ AREAS = {
     'wormhole_remove_check': ['intel', 'layout'],   # 065a
     'live_map_filters_check': ['intel', 'layout'],   # 065
     'ly_distance_check': ['intel', 'layout'],   # 067
+    'sov_hubs_check': ['intel', 'layout'],   # 068
+    'activity_filter_check': ['intel', 'layout'],   # 069
     'wormhole_layout_check': ['intel', 'layout'],   # 056
     'wormhole_sigs_check': ['intel', 'layout'],   # 059
     'wormhole_ends_check': ['intel', 'layout'],   # 059
@@ -73,7 +75,7 @@ AREAS = {
 NAMES = sorted({a for v in AREAS.values() for a in v})
 # v2026.10.31.7: a page check gets 5 minutes, these more (their longest run under load, x1.5); a hung check fails fast
 PAGE_TIMEOUT = 300
-SLOW = {'ly_distance_check': 600, 'live_map_filters_check': 2400, 'intel_home_check': 1200, 'wormhole_mass_check': 1800, 'map_kill_counts_check': 900, 'system_boxes_check': 900, 'wormhole_layout_check': 900, 'ewar_drain_check': 900, 'intel_map_layout_check': 900, 'intel_map_stack_check': 900, 'intel_bridges_check': 900, 'wormhole_sigs_check': 900, 'wormhole_ends_check': 900, 'wormhole_chain_share_check': 900, 'intel_bridge_zones_check': 1500, 'sov_upgrades_check': 900, 'dossier_fights_check': 600, 'intel_kills_check': 600, 'wormhole_tab_check': 900, 'wormhole_menu_check': 900, 'wormhole_remove_check': 900, 'wormhole_home_check': 900, 'dashless_search_check': 600, 'wormhole_filter_check': 900, 'wormhole_sig_check': 900, 'wormhole_share_check': 900, 'route_planner_check': 900, 'intel_map_look_check': 600, 'region_names_check': 600, 'zkb_slow_check': 600, 'outage_check': 900, 'sso_game_check': 900}
+SLOW = {'activity_filter_check': 1500, 'sov_hubs_check': 1500, 'ly_distance_check': 600, 'live_map_filters_check': 2400, 'intel_home_check': 1200, 'wormhole_mass_check': 1800, 'map_kill_counts_check': 900, 'system_boxes_check': 900, 'wormhole_layout_check': 900, 'ewar_drain_check': 900, 'intel_map_layout_check': 900, 'intel_map_stack_check': 900, 'intel_bridges_check': 900, 'wormhole_sigs_check': 900, 'wormhole_ends_check': 900, 'wormhole_chain_share_check': 900, 'intel_bridge_zones_check': 1500, 'sov_upgrades_check': 900, 'dossier_fights_check': 600, 'intel_kills_check': 600, 'wormhole_tab_check': 900, 'wormhole_menu_check': 900, 'wormhole_remove_check': 900, 'wormhole_home_check': 900, 'dashless_search_check': 600, 'wormhole_filter_check': 900, 'wormhole_sig_check': 900, 'wormhole_share_check': 900, 'route_planner_check': 900, 'intel_map_look_check': 600, 'region_names_check': 600, 'zkb_slow_check': 600, 'outage_check': 900, 'sso_game_check': 900}
 QUARANTINE_MAX_DAYS = 14
 # build queue 027 (Project doc roadmap/page-publish-plan.md): the page checks run on the served copy before every pull request.
 # The source-form checks (the PYFA CORE lock, the HTML-sink baseline, LESSON markers) read comments, so they stay on the source.
