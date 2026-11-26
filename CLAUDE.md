@@ -688,6 +688,13 @@ stub DOM (LESSON #36). Check: `tools/page_checks/my_ship_check.py`.
   picks a group (the way back counted, the finisher held, polarization), `hmApply` takes an answer; answers set the connection's Mass, Undo puts
   it back; It's gone asks before `whLinksDel` (the System panel's delete too). The phone toolbar wraps (44 x 44). + Add's Linked to is built by
   `whAddLinkList`, on opening and after every Add (070's bug). `wormhole_mass_check.py` (the steps replayed against holes, the exact range).
+  Build queue 073 (v2026.11.26.2; roadmap/wh-tree-layout-plan.md, mockup `Claude outputs/wh_tree_mockup.html`; the owner: "ideally, i'd like to be
+  able to move a system w/out it automatically moving any others"): a tree per chain from Home (else your first k-space entry; `whLayout`, Home first,
+  a parent centred on its children); placed systems (moved, locked or pinned) never move, every other one grows from the nearest placed system above
+  it, however many jumps (`whPlaces`, free rows on a grid, `WH_SP`); a drag pins what the move itself would shift (`whTreePin`: two layouts at the
+  release, pins in `tvWhChain.pos` like moves, Rearrange drops them); the direction by fit (`whTreeDir`, `WH_FLIP` 1.25, `M.dir` in memory, `M.dirNew`
+  from Rearrange); a new system you caused (a jump into it, + Add) out of view: `whS.showNew` run by whPaint (`whShowNew`: zoom out to `WH_FLOOR` 0.7,
+  then pan), held with "you moved" while a drag or a pinch is under way. `wormhole_tree_check.py`.
 - **Intel's own Home** (v2026.11.23.3, build queue 071; roadmap/intel-home-plan.md, mockup `Claude outputs/home_mockup.html`; the owner: "Intel's own
   Home (Recommended)", "Route to Home,Jumps from Home on hover", the house button "at the top to the left of the "center on your system""): one
   system you pick (`itHo`; `itm.home` stays *your* system), kept in localStorage `tvHome` `{v: 1, id, route}` (`itHoRead`, another tab's change

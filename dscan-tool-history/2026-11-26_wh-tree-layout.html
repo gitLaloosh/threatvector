@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-26 — Wormholes map: a tree that stays together</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Wormholes map: a tree that stays together</h1>
+<p><span class="tag">Page</span><span class="tag">Wormholes</span> 2026-11-26 &middot; <code>v2026.11.26.2</code> &middot; branch <code>073-wh-tree-layout</code> &middot; build queue 073 (plan <code>roadmap/wh-tree-layout-plan.md</code>, round 2; mockup <code>Claude outputs/wh_tree_mockup.html</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner (2026-11-25): "we need to fix this so the tree is drawn efficiently and easy to read". With Home locked off its tree place, only Home's neighbours followed it; every system two or more jumps from anything moved went back to its tree place at the map's origin, joined by long lines. New holes past a moved branch did the same.</li>
+<li>At the build review the owner asked for the opposite of round 1's "a moved system brings its branch": "ideally, i'd like to be able to move a system w/out it automatically moving any others". He keeps landmarks (the k-space home, routed k-space systems, the J-space home, targets) locked and "outside of the big constantly changing tree of systems that are often deleted w/in 24hrs", and "most branches are going to start from the home system in j-space". This build session revised the plan and the mockup with his answers: "Auto-tidy, drag pins", "Small zoom, floor, pan", "Pick the direction", "This build session" (all "(Recommended)").</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>Two kinds of system:</b> placed ones (moved, locked, or pinned by a drag) never move. Every other one grows from the nearest placed system above it in the tree (<code>whPlaces</code>), however many jumps away. A chain grows from Home (else your first k-space entry; <code>whLayout</code>). Nothing lands on another box: the next free row, found on a grid. The tree tidies itself as holes come and go.</li>
+<li><b>A drag moves only what you drag:</b> at the release, every other system the move itself would shift is pinned where it was (<code>whTreePin</code>: the map laid out with the dragged systems where they were, then where you dropped them). New holes grow from what you dragged.</li>
+<li><b>The direction</b> is left to right or top to bottom, whichever fits the free part of the map better (<code>whTreeDir</code>). The one in use stays until the other fits 1.25 times better; Rearrange picks afresh.</li>
+<li><b>A new system you caused</b> (a jump into it, + Add) whose place is out of view: a small zoom out to show it and the system it connects to, never under 0.7, else a pan (<code>whShowNew</code>, through <code>whS.showNew</code> in <code>whPaint</code>). It waits for the release of a drag or a pinch, as does the existing "you moved: brought into view".</li>
+<li><b>Words:</b> the <code>whmap</code> panel ("drag a system to move it alone", "Rearrange as a tree starts over from Home"; still 410 words), and the ⚙ panel's Rearrange note.</li>
+<li><b>Stored data:</b> none new. Pins go into <code>tvWhChain.pos</code> in its own form, so an older page reads them as moves.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>New <code>tools/page_checks/wormhole_tree_check.py</code> (1440 and 390 px, real mouse drags), from the mockup's <code>test_tree.py</code>, with 8 mutants, all caught.</li>
+<li>The mockup's own tests: 82 of 82; its 8 mutants caught. A ninth, a scan of every box instead of the grid, can't be told apart by time: 5.6 ms against 3.6 ms on 1,000 systems.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<p>LESSON #185: a mockup that wraps a page function can hide what the page does around that call. The mockup's <code>whSeen</code> wrapper put the camera back after a jump, which hid <code>whPaint</code>'s own re-centring in the middle of a drag. It was found while writing the page check; the page now holds that step while a gesture is under way.</p>
+</body>
+</html>

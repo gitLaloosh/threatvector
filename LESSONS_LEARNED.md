@@ -170,6 +170,7 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
 - #179 A control placed against a row of others is covered when the row grows: list what is placed against it, and measure the phone with everything showing (a fixed `right:` offset beside a row of buttons, every optional control on).
 - #183 A mockup made before the items queued ahead of it were built can't show what they added: at the build review, put its new pieces (icons, names, places) beside the page as it is now.
 - #184 A control added to a list that wraps is checked at the sizes people use, on every kind of screen: a plan that sized the phone's column missed that a 1440 x 1000 window's column now wraps too.
+- #185 A mockup that wraps a page function can hide what the page does around that call: a wrapper that put the view back after a jump hid whPaint's own re-centring in the middle of a drag. Re-check each wrapped path on the real page.
 
 **Checks and test machinery**
 
@@ -3027,3 +3028,14 @@ comments point at them); `tools/check_lessons_index.py` (a chain step) checks ev
   1920 x 1080 and 390 px, says which sizes wrap, and asks the owner when a size that didn't wrap now does. A check that measures the list
   reads its rows from the page's own height, not a number written when it fitted.
 
+## 185. A mockup that wraps a page function can hide what the page does around that call
+
+- **What happened (build queue 073, 2026-11-26):** the Wormholes tree mockup wrapped `whSeen` to show a new system's view (D9): it kept the
+  camera from before the call and put it back afterwards, then ran the new zoom. On the real page `whSeen` ends in `whPaint`, whose existing
+  "you moved: brought into view" step re-centres on you, also in the middle of a drag. The wrapper's restore hid that, so the mockup's
+  "the view waits during a drag" passed while the page would have moved the map under the finger.
+- **How it was caught:** writing the page check from the mockup's tests, reading `whPaint` beside the new hook (the check would have caught it too:
+  its mid-drag case compares the camera before and after a jump).
+- **Do this instead:** a prototype that replaces or wraps a page function lists in its README every page step that runs inside that call
+  (here: `whPaint`'s own view rules). The build reads each one on the real page and keeps the mockup's tests that cover them, run against the
+  page, not the prototype.
