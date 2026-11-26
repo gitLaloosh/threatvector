@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-26 — Wormholes map: landmarks don't turn the tree</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Wormholes map: landmarks don't turn the tree</h1>
+<p><span class="tag">Page</span><span class="tag">Wormholes</span> 2026-11-26 &middot; <code>v2026.11.26.3</code> &middot; branch <code>074-wh-tree-landmarks</code> &middot; build queue 074 (plan <code>roadmap/wh-tree-dir-fix-plan.md</code>; follow-up to 073)</p>
+
+<h2>Why</h2>
+<ul>
+<li>After 073 went live, the owner's desktop tree ran top to bottom after Rearrange: "i just had it rearrange the tree and it reverted to top down. add a bug and we'll do a new iteration." His answers: "1. this session, 2. your recommendation, 3. if you suggest one."</li>
+<li>The cause: 073's direction check (<code>whTreeDir</code>) counted every chain. Each landmark he sets aside (locked k-space systems connected to nothing) was a chain of its own and added a row and a half (5 rows became 9.5).</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><code>whLayout</code>: a chain whose systems are all placed takes no rows and no depth, so it no longer counts in the direction's fit or pushes other chains down. Its systems stay where they were put.</li>
+<li><code>whPlaces</code>: the shift that keeps other chains beside Home's comes from the first chain the page lays out, never from a landmark's (with no Home set, a landmark could sort first).</li>
+<li>No stored data, control or info text changes.</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li><code>wormhole_tree_check.py</code>: the owner's shape with and without three unconnected landmarks (the same direction after Rearrange, left to right at 1440 px; the landmarks stay put; with no Home they don't move the tree); two new mutants, both caught.</li>
+</ul>
+</body>
+</html>

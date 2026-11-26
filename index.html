@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-mcpZI0sNE6m70BKb7Zv4nluq/+mM2UC1Haq5Q+j2DXY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-0wFXlo+uwB5q9NTyzUTN2hFfhxphjYGenrPS/lSqZMw='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3488,7 +3488,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.26.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.26.3</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -35339,9 +35339,14 @@ function whLayout(phone){
   for(const r of order){
     if(seen.has(r)) continue;
     const kids = new Map(), dep = new Map([[r, 0]]), q = [r], bfs = [r]; seen.add(r);
-    for(let h = 0; h < q.length; h++){ const x = q[h], ks = []; for(const y of adj.get(x).slice().sort((p, s) => t(p) - t(s))) if(!seen.has(y)){ seen.add(y); dep.set(y, dep.get(x) + 1); maxd = Math.max(maxd, dep.get(y)); ks.push(y); q.push(y); bfs.push(y); up.set(y, x); } kids.set(x, ks); }
+    for(let h = 0; h < q.length; h++){ const x = q[h], ks = []; for(const y of adj.get(x).slice().sort((p, s) => t(p) - t(s))) if(!seen.has(y)){ seen.add(y); dep.set(y, dep.get(x) + 1); ks.push(y); q.push(y); bfs.push(y); up.set(y, x); } kids.set(x, ks); }
+    trees.push(bfs);
+    // build queue 074 (F1, F2): a chain whose systems are all placed (a landmark set aside, connected to nothing, say) takes no room in the tree: no rows,
+    // no depth in the direction's fit (whTreeDir); its systems keep where they were put. Before 074 each one added a row and a half and could turn the tree
+    if(!bfs.some(n => !whAt(n))){ for(const n of bfs) dr.set(n, {d: dep.get(n), r: row}); continue; }
+    for(const n of bfs) maxd = Math.max(maxd, dep.get(n));
     const place = (x) => { const ks = kids.get(x); if(!ks.length){ dr.set(x, {d: dep.get(x), r: row++}); return; } ks.forEach(place); const rs = ks.map(k => dr.get(k).r); dr.set(x, {d: dep.get(x), r: (Math.min(...rs) + Math.max(...rs)) / 2}); };
-    place(r); row += 0.5; trees.push(bfs);
+    place(r); row += 0.5;
   }
   const T = {dr, up, trees, rows: Math.max(1, row - 0.5), maxd}, dir = whTreeDir(T, phone), sp = WH_SP[dir], A = new Map();
   for(const [n, p] of dr) A.set(n, dir === 'lr' ? {x: p.d * sp.c, y: p.r * sp.r} : {x: p.r * sp.c, y: p.d * sp.r});
@@ -35368,7 +35373,7 @@ function whPlaces(phone){
   const sp = WH_SP[T.dir], st = T.dir === 'lr' ? {x: 0, y: sp.r} : {x: sp.c, y: 0};
   const free = (p) => { if(!hits(p)) return p; for(let k = 1; k <= 400; k++) for(const s of [k, -k]){ const c = {x: p.x + s * st.x, y: p.y + s * st.y}; if(!hits(c)) return c; } return p; };
   for(const n of A.keys()){ const q = whAt(n); if(q) add(n, {x: q[0], y: q[1]}); }
-  const r0 = T.trees.length ? T.trees[0][0] : null, q0 = r0 !== null ? whAt(r0) : null, sh = q0 ? {x: q0[0] - A.get(r0).x, y: q0[1] - A.get(r0).y} : {x: 0, y: 0};
+  const t0 = T.trees.find(b => b.some(n => !whAt(n))), r0 = t0 ? t0[0] : null, q0 = r0 !== null ? whAt(r0) : null, sh = q0 ? {x: q0[0] - A.get(r0).x, y: q0[1] - A.get(r0).y} : {x: 0, y: 0};   // 074: the first chain the page lays out (never a landmark's)
   for(const bfs of T.trees) for(const n of bfs){
     if(whAt(n)) continue;
     const u = T.up.get(n), a = A.get(n);

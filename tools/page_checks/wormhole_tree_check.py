@@ -19,9 +19,12 @@ intel_check.py's stand-ins answer ESI. At 1440 and 390 px, a fresh page per grou
   * the direction: a long chain left to right on a wide map, top to bottom on a phone; a bushy one left to right; the 1.25 rule;
   * a new hole out of view (a jump): in view after, the zoom never under 0.7, a small zoom out on a wide map; one arriving during a drag leaves the
     view alone until the release, then shows;
+  * 074: three landmarks connected to nothing (locked, set aside) don't change the direction after Rearrange (the owner's shape: left to right on a
+    wide map) and stay where they were put; with no Home they don't move the tree;
   * 1,000 systems (WH_SYS_MAX) placed in under 50 ms; no sideways scroll; no page errors.
 Mutants, each must fail: a system not following the placed one above it (before 073: one jump only); no free row; the tree not starting at Home;
-a drag that pins nothing; the direction never chosen; a new system never brought into view; the view moved during a drag; Rearrange keeping moves.
+a drag that pins nothing; the direction never chosen; a new system never brought into view; the view moved during a drag; Rearrange keeping moves;
+074: landmarks counted in the direction; the shift taken from a landmark.
 """
 import sys, os, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, '..'))
@@ -58,6 +61,12 @@ SEEDS = r"""() => {
     big(){ reset(); const ids = whTable().ids.filter(n => whIsJ(n)).slice(0, WH_SYS_MAX), t0 = Date.now() - 50 * 3600e3; let trunk = ids[0];
       whAddSys(ids[0], t0); for(let i = 1; i < ids.length; i++){ const n = ids[i], par = i % 4 === 0 ? trunk : ids[i - 1]; whAddSys(n, t0 + i); whAddLink(par, n, t0 + i); if(i % 4 === 0) trunk = n; }
       whS.mk[ids[0]] = {st: 'home', lock: true, at: [0, 0]}; for(let i = 50; i < ids.length; i += 97) whS.st.pos[ids[i]] = [i * 3, -400]; whSave(); whMkSave(); whS.drawKey = ''; return ids.length; },
+    lm(marks, home = true){ reset(); T0 = Date.now() - 3 * 3600e3; I = 0;   // 074: Home locked with branches (5 tree leaves, 4 deep), landmarks set aside
+      const H = J('4'), a = J('5'), b = J('2'), c = J('2'), d = J('4'), e = J('3'), f = J('5'), g = J('3');
+      L(H, a); L(a, b); L(H, c); L(c, d); L(d, K.tama); L(d, e); L(e, K.rens); L(H, f); L(H, g);
+      const mk = home ? {[H]: {st: 'home', lock: true, at: [600, 300]}} : {};
+      if(marks) [[30000772, [1300, -100]], [30000142, [1300, 0]], [30004759, [1300, 100]]].forEach(([n, at]) => { whAddSys(n, T0 - 9e5); mk[n] = {lock: true, at}; });
+      finish(H, mk, {}); window.TJ = {H, a, c}; },
     fresh(){ return whTable().ids.find(x => whIsJ(x) && !whS.st.sys[x]); },
     look(s, n){ const M = whS.M; M.cam.s = s; whCenter(n); whDraw(); },
     you(from){ const S = whS; S.last = from; S.lastT = Date.now() - 5e3; S.youNew = false; S.who = 0; S.M.viewFor = from; },   // you're in `from` (not a fresh start: 063)
@@ -150,6 +159,15 @@ def run(b, html, w):
     ctx.close()
     # 3. the direction, a new hole's view, 1,000 systems
     ctx, pg = start(b, html, w, errs)
+    arr = "() => { whZoomBtn(document.createElement('button'), 'arr'); return whS.M.dir; }"   # Rearrange picks the direction afresh (M.dirNew)
+    pg.evaluate("() => CK.lm(false)"); pg.wait_for_timeout(200); d0 = pg.evaluate(arr)
+    pg.evaluate("() => CK.lm(true)"); pg.wait_for_timeout(200); d1 = pg.evaluate(arr)
+    ck(d1 == d0, f"074: landmarks connected to nothing don't change the direction (Rearrange): {d0} without, {d1} with")
+    if not ph: ck(d1 == 'lr', f"074: the owner's shape with three landmarks, wide map: left to right after Rearrange: {d1}")
+    ck(pg.evaluate("[30000772, 30000142, 30004759].every((n, i) => { const p = whS.M.P.get(n); return p && p.x === 1300 && p.y === [-100, 0, 100][i]; })"), '074: the landmarks stay where they were put')
+    pg.evaluate("() => CK.lm(false, false)"); pg.wait_for_timeout(200); r0 = pg.evaluate(AT, 30002510)
+    pg.evaluate("() => CK.lm(true, false)"); pg.wait_for_timeout(200); r1 = pg.evaluate(AT, 30002510)
+    ck(r0 == r1, f"074: no Home, landmarks don't move the tree (the shift comes from the first chain the page lays out): {r0} without, {r1} with")
     seed(pg, 'long'); ck(pg.evaluate('whS.M.dir') == ('tb' if ph else 'lr'), f"long chain: {'top to bottom on a phone' if ph else 'left to right'}: {pg.evaluate('whS.M.dir')}")
     seed(pg, 'bushy'); ck(pg.evaluate('whS.M.dir') == 'lr', f"bushy chain: left to right: {pg.evaluate('whS.M.dir')}")
     if ph:
@@ -193,6 +211,8 @@ MUTANTS = [
     ('the direction never chosen', "M.dirNew = false; M.dir = d; return d;", "M.dirNew = false; M.dir = cur; return cur;", (390,)),
     ('a new system never brought into view', "const M = whS.M; if(!M.cam || !M.P.has(n) || whInView(n)) return;", "return;", (1440,)),
     ('the view moved during a drag', "if(S.showNew && !M.drag && !M.pinch){", "if(S.showNew){", (1440,)),
+    ('074: landmarks counted in the direction (073\'s rule)', "    if(!bfs.some(n => !whAt(n))){ for(const n of bfs) dr.set(n, {d: dep.get(n), r: row}); continue; }\n", '', (1440,)),
+    ('074: the shift taken from a landmark', "const t0 = T.trees.find(b => b.some(n => !whAt(n))), r0", "const t0 = T.trees[0], r0", (1440,)),
     ('Rearrange keeping moves', "S.st.pos = Object.fromEntries(Object.entries(S.st.pos).filter(([k]) => whLocked(k)));", "S.st.pos = {...S.st.pos};", (1440,)),
 ]
 
