@@ -443,8 +443,8 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   Light years, 0.1 to 20.0, the straight-line distance from your system rounded up to 0.01 exactly as the hover shows it, and only where a jump
   drive can land: not 0.5 security or higher (the number the map shows), not Pochven, not Zarzakh. Its quick picks are jump ranges at Jump Drive
   Calibration V, twice CCP's `jumpDriveRange`: 6 LY titans and supercarriers (3.0), 7 carriers, dreadnoughts and FAX (3.5), 7.5 command
-  carriers (3.75), 8 Black Ops and Lancers (4.0), 10 jump freighters and the Rorqual (5.0). Intel reports, Kills from Intel, Wormholes, Sov upgrades and Sov hubs (below) and Region pick (the regions you tick in its list, with a search
-  and Select all; none ticked matches nothing but you). While one is on, the systems
+  carriers (3.75), 8 Black Ops and Lancers (4.0), 10 jump freighters and the Rorqual (5.0). Intel reports, Kills from Intel, Wormholes, Sov upgrades and Sov hubs (below), Region pick (the regions you tick in its list, with a search
+  and Select all; none ticked matches nothing but you) and Activity (past hour) (below). While one is on, the systems
   that match are bright anywhere on the map, a little bigger and in full colour, the rest dim, and no system fades with
   distance; hostile and neutral rings, the alert range's glow and your pin never fade; the legend's second line says what
   is on and how many match, and "N match ›" at the bottom left moves the view to each, nearest first. View: Paths to you
@@ -607,6 +607,17 @@ at level V, so a less-trained pilot with fewer damage modules hits softer and ta
   been under way, the defending alliance and the score (a freeport's taking part instead), that command nodes can be anywhere
   in the constellation, and the hub's window with how long is left or when it opens; with Sov holder's colour on too, the window
   is said once. Your choices are kept with the other filters (`tvMapStack`: `only.hub`, `hub`, `seen.hub`).
+- **Activity (past hour)** (build queue 069): systems with at least N of one kind in the past hour, from ESI's public hourly counts
+  (`/universe/system_jumps/` and `/universe/system_kills/`, the lists Jumps and Kills (past hour) colour by; no request of its own and no
+  login). One kind at a time in the filter's settings: Jumps (ship jumps through the system), Ship + pod kills (ships and capsules killed
+  there, added together) or NPC kills (ratting). Each kind keeps its own minimum (Jumps 50, Ship + pod kills 1, NPC kills 200 by default),
+  on the steps 1, 2, 3, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200, 300, 500, 750, 1000, 1500, 2000; a typed number goes to the
+  nearest step. A system missing from ESI's list had none that hour (0); before a list is read nothing matches but your system and
+  the legend says "no data yet", never 0. Only the picked kind's list is read, at most once an hour, while the filter is on and the map
+  updates (it updates while Intel runs); nothing is kept after the page closes. The legend says "at least N … in the past hour", how many
+  systems on the map have that many, and "ESI HH:MM", the EVE time the counts are as of. The hover gives the system's count of the picked
+  kind, unless Jumps or Kills (past hour) is the colour, whose own line already says it. The filter adds no numbers to the map: put the
+  matching colour on to see them. Your choices are kept with the other filters (`tvMapStack`: `only.act`, `act`, `seen.act`).
 - **Your system and jumps:** your system comes from your character's Local log, or from EVE with Use my game location
   on, whichever is newer. While that switch is on and you're logged in, You is the logged-in character (its system from
   EVE alone when the folder has no Local log for it); the character picked in Intel settings is You again after Log out

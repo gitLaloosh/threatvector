@@ -170,7 +170,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
     if 'bar' in parts:
         bb = pg.evaluate("""() => { const box = itm.box.getBoundingClientRect(); return [...itm.box.querySelectorAll('[data-im-f]')].map(b => { const r = b.getBoundingClientRect();
           return [b.dataset.imF, b.getAttribute('aria-pressed'), Math.round(r.width), Math.round(r.height), r.left >= box.left && r.right <= box.right && r.top >= box.top && r.bottom <= box.bottom]; }); }""")
-        if [x[0] for x in bb] != ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick', 'paths'] or [x[1] for x in bb] != ['true'] + ['false'] * 14 or any(x[2] != 32 or x[3] != 32 or not x[4] for x in bb):   # 058: Security range, Within N jumps
+        if [x[0] for x in bb] != ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick', 'act', 'paths'] or [x[1] for x in bb] != ['true'] + ['false'] * 15 or any(x[2] != 32 or x[3] != 32 or not x[4] for x in bb):   # 058: Security range, Within N jumps
             out.append(f'the bar at 1440 px: {bb}')
         pg.mouse.move(5, 5); pg.click('#intelPanel [data-im-f="region"]'); pg.mouse.move(5, 5); pg.wait_for_timeout(500)
         nm = pg.evaluate("() => { const n = itm.box.querySelector('.it-map-fn'); return [n.textContent, getComputedStyle(n).opacity, itm.box.querySelector('[data-im-f=\"region\"]').getAttribute('aria-pressed')]; }")
@@ -222,7 +222,7 @@ def layout_cases(b, html, out, errs, parts=('layout', 'look', 'filters', 'bar', 
         if ph != [44, 44, 'none']: out.append(f'390 px: one 44 px button, the row hidden {ph}')
         pg.tap('#intelPanel .it-map-fcur'); pg.wait_for_timeout(150)
         op = pg.evaluate("() => [itm.box.querySelector('.it-map-fb').classList.contains('open'), [...itm.box.querySelectorAll('[data-im-f]')].map(b => { const r = b.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; })]")
-        if not op[0] or op[1] != [[44, 44]] * 15: out.append(f'390 px: a tap opens the column of fifteen 44 px buttons {op}')   # 068: Sov hubs   # 053: Sov upgrades; 058: Security range, Within N jumps; 065: Sov holder, Jumps and Kills (past hour), Region pick
+        if not op[0] or op[1] != [[44, 44]] * 16: out.append(f'390 px: a tap opens the column of sixteen 44 px buttons {op}')   # 069: Activity   # 068: Sov hubs   # 053: Sov upgrades; 058: Security range, Within N jumps; 065: Sov holder, Jumps and Kills (past hour), Region pick
         pg.tap('#intelPanel [data-im-f="jumps"]'); pg.wait_for_timeout(150)
         pk = pg.evaluate("() => [itMapSt().colour, itm.box.querySelector('.it-map-fb').classList.contains('open')]")
         pg.tap('#intelPanel .it-map-fcur'); pg.wait_for_timeout(100); pg.keyboard.press('Escape'); pg.wait_for_timeout(100)

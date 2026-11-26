@@ -271,7 +271,7 @@ MUTANTS = [
     ('campaigns asked on every refresh', "  if((itCamp.d && now < itCamp.exp) || now < itCamp.next) return;\n  itCampRead();", "  if(now < itCamp.next && !itCamp.d) return;\n  itCampRead();"),
     ('campaigns asked while off', "if(itCamp.busy || !itMapLvWant('camp')) return;", "if(itCamp.busy) return;"),
     ('a freeport without its alliances', "if(f.part) return f.part.length ?", "if(false) return f.part.length ?"),
-    ('its settings not opened the first time', "(k === 'secr' || k === 'near' || k === 'hub') && !s.seen[k]", "(k === 'secr' || k === 'near') && !s.seen[k]"),
+    ('its settings not opened the first time', "(k === 'secr' || k === 'near' || k === 'hub' || k === 'act') && !s.seen[k]", "(k === 'secr' || k === 'near' || k === 'act') && !s.seen[k]"),   # 069: Activity's in the same line
     ('bad hours kept', "fightH: int(h.fightH, 0, 48, 24)", "fightH: h.fightH"),
 ]
 
