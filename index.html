@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Wvfs/MyxYpIKiBMqqQ4vqinGgaummYOGURuaCWJyuVc='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-hvFgV/w4qS+VdCkKulB4MYuxFzEjjK8aupymag35ZQM='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3488,7 +3488,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.25.2</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.26.1</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3870,7 +3870,7 @@ const CARD_INFO = {
   "[Tags] Camp (red): a report puts them on a gate with camp words (camp, bubble, drag, smartbomb, hot). Orange: two kills at one gate with no such report. Grey: a gate named, no camp words. ESS: white when someone is at it, red when they're linked. Bubble: not at a gate. Wormhole: wh, wormhole, drifter, with any signature ID (ABC-123 or ABC) and type.",
   "[Alerts] A hostile or neutral within your alert range plays a sound and notifies (if you turn them on in Intel settings), once per system every 30 seconds; friendlies never alert. A report stays for the time set in Intel settings (15 minutes unless you change it), until someone reports it clear.",
   "[Kills] zKillboard's live feed within the Feed's kill range, no NPC kills. A kill, or a badge in {card:itnear}, opens in the {card:fleet} tab.",
-  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none), Sov holder, Jumps and Kills (past hour) from ESI: who holds each system (by your standings or one colour per alliance; zoomed in, its logo) and the past hour's jumps or kills; Only filters, any number, all must match (their settings beside them; Distance counts stargate jumps, or light years where a jump drive can land; Region pick: the regions you tick; Sov hubs: sov fights coming up and vulnerable hubs, from ESI); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter or ESI colour on, systems past {card:itnear}'s range fade. Set as Home (right-click): a house marks it, hovers count jumps from it, the top house button centers on it, its menu shows the route.",
+  "[Map] A ring's colour is the standing, its size the gang (solo, 2–10, 11+); ✕ counts kills by who died (friendly, hostile, neutral). Filters (left): one colour (press it again for none), Sov holder, Jumps and Kills (past hour) from ESI: who holds each system (by your standings or one colour per alliance; zoomed in, its logo) and the past hour's jumps or kills; Only filters, any number, all must match (their settings beside them; Distance counts stargate jumps, or light years where a jump drive can land; Region pick: the regions you tick; Sov hubs: sov fights coming up and vulnerable hubs, from ESI; Activity: at least N jumps or kills in the past hour); Paths to you, routes from hostiles in your alert range as a tree. Matches stay bright, the rest dim; rings never fade; the chip steps through matches. Wormholes: reported, kept 24 h, edited and shared in its list (a name there shows it on the map). With no Only filter or ESI colour on, systems past {card:itnear}'s range fade. Set as Home (right-click): a house marks it, hovers count jumps from it, the top house button centers on it, its menu shows the route.",
   "[Jumps and your system] Your system comes from your character's Local log, or from EVE with Use my game location on (whichever is newer). Jumps are by stargate; in a wormhole, from the system you came in through. The map's drawn route follows Intel settings → Routes; its jump counts are the shortest by stargate, plus jump bridges you can use with Use jump bridges on the map (green curves, the bridge button hides them; the alert glow and Paths to you stay by stargate).",
   "[Routes] Intel settings → Routes: Prefer shorter, safer or less secure (with the security penalty, as in EVE), and what to avoid: gate camps, bubbles, reported hostiles, neutrals or ESS, kills, and your avoid list. A flagged system is avoided when any route goes round it, however long; otherwise the route passes the fewest and says which. For shorter routes, turn an avoid option off. The search box finds a system and keeps its route. Add your game's avoided systems here too: EVE doesn't share that list. With Use jump bridges on, routes take only bridge jumps arriving in the ticked zones (zone 1 free by default).",
   "[Send destination to EVE] Right-click a system (on a phone, press it, then its tooltip's buttons). Threat Vector's route sends every system as a waypoint, in order, so EVE follows it; EVE's route sends the destination only, and EVE plans it with your game's settings. Both need your EVE login with the Waypoints permission (Set my destination in EVE, on your profile's EVE tab). Send it while in the game: logged off, EVE drops it.",
@@ -30871,8 +30871,10 @@ const IT_MAP_PANEL_BTN = {wh: () => `<button type="button" class="it-map-pb it-w
   killh: () => `<button type="button" class="it-map-pb" data-it-mpn="killh" aria-haspopup="dialog" aria-expanded="false" aria-label="Kills (past hour): ships and pods or NPC kills" title="Kills (past hour): ships and pods or NPC kills">${IT_MAP_SET_ICON}</button>`,
   regpick: () => `<button type="button" class="it-map-pb" data-it-mpn="regpick" aria-haspopup="dialog" aria-expanded="false" aria-label="Region pick: which regions" title="Region pick: which regions">${IT_MAP_SET_ICON}</button>`,
   // 068: Sov hubs' kinds and hours
-  hub: () => `<button type="button" class="it-map-pb" data-it-mpn="hub" aria-haspopup="dialog" aria-expanded="false" aria-label="Sov hubs: which and when" title="Sov hubs: which and when">${IT_MAP_SET_ICON}</button>`};
-const IT_MP_KEYS = ['secr', 'near', 'sovh', 'killh', 'regpick', 'hub'];   // the filters whose settings are itMp's
+  hub: () => `<button type="button" class="it-map-pb" data-it-mpn="hub" aria-haspopup="dialog" aria-expanded="false" aria-label="Sov hubs: which and when" title="Sov hubs: which and when">${IT_MAP_SET_ICON}</button>`,
+  // build queue 069: Activity (past hour)'s kind and minimum
+  act: () => `<button type="button" class="it-map-pb" data-it-mpn="act" aria-haspopup="dialog" aria-expanded="false" aria-label="Activity (past hour): which kind and how many" title="Activity (past hour): which kind and how many">${IT_MAP_SET_ICON}</button>`};
+const IT_MP_KEYS = ['secr', 'near', 'sovh', 'killh', 'regpick', 'hub', 'act'];   // the filters whose settings are itMp's   // 069: Activity
 // build queue 053 (the owner at its review: "Yes, one shared path"): the filter panel that is open, one at a time (the Wormholes list or Sov
 // upgrades): its filter, its element, the room it needs beside Near You and the width it takes
 function itMapPanel(){
@@ -31010,7 +31012,7 @@ function itMapFilterSet(k){
   else {
     s.only[k] = !s.only[k];
     if(!s.only[k]){ if(itMp.k === k) itMpOpen('', false); if(k === 'sov') sovOpen(false, false); if(k === 'wh') itWhListOpen(false, false); }
-    else if((k === 'secr' || k === 'near' || k === 'hub') && !s.seen[k]){ s.seen[k] = true; open = k; }   // 068: Sov hubs too
+    else if((k === 'secr' || k === 'near' || k === 'hub' || k === 'act') && !s.seen[k]){ s.seen[k] = true; open = k; }   // 068: Sov hubs too   // 069: Activity
     else if(k === 'sov' && !sovStore().lists.length && !sovBridgeEnds().length) open = 'sov-paste';   // 053: no lists yet: its panel opens at the paste box
     else if(k === 'sov' && !sovStore().pick.length) open = 'sov';
     else if(k === 'regpick' && !s.regions.length) open = 'regpick';   // 065: as Sov upgrades with nothing picked
@@ -31019,7 +31021,7 @@ function itMapFilterSet(k){
   itMapFbarPaint(true); itMapLegend(); itMpPaint(); if(sovShown()) sovPaint(true);
   if(itm.P && itm.home >= 0){ itMapDraw(); if(itm.rep && itm.D) itm.key = itMapKey(); }   // 040: the key follows the filters (what the wormholes show depends on them)
   if(open && live){ if(open.startsWith('sov')) sovOpen(true, false, open === 'sov-paste' ? 'paste' : ''); else itMpOpen(open); }
-  if(f.g === 'colour' || k === 'hub') itMapLvAsk();   // 065: a live colour's data, if it isn't held yet   // 068: Sov hubs' fights and windows
+  if(f.g === 'colour' || k === 'hub' || k === 'act') itMapLvAsk();   // 065: a live colour's data, if it isn't held yet   // 068: Sov hubs' fights and windows   // 069: Activity's kind
 }
 // ---- 058 (plan 4.5): the settings panels of Security range and Within N jumps, one element, a filter panel like the Wormholes list's
 // (itMapPanel: one at a time, taking turns with Near You, itMapFree; rule B, the shared close button, Escape, a press outside), placed by
@@ -31036,6 +31038,8 @@ function itMpBodyHtml(k){
   if(k === 'regpick') return itMpRegHtml();
   if(k === 'hub') return itMpHubRowHtml('fight', s.hub.fight, 'Fight coming up', 'mapHubF') + itMpHubRowHtml('vuln', s.hub.vuln, 'Vulnerable', 'mapHubV')   // 068: a tick and its hours per kind
     + '<div class="it-mp-note">Any ticked kind counts; a started fight always does. EVE time, from ESI: fights every 2 minutes, hub windows every 5, while the map updates (Intel on).</div><div class="it-mp-cnt" role="status"></div>';
+  if(k === 'act') return `<div class="it-mp-row" role="radiogroup" aria-label="Count">${Object.entries(IT_ACT_KINDS).map(([v, K]) => itMpRadHtml('itMpAct', v, s.act.k === v, K.t)).join('')}</div><div class="it-mp-row">${rsHtml('mapAct')}</div>`   // 069: the kind, its own minimum
+    + '<div class="it-mp-note">In the past hour, from ESI (once an hour, while the map updates). Each kind keeps its own number. A system missing from ESI’s list had none.</div><div class="it-mp-cnt" role="status"></div>';
   if(k === 'secr') return `<div class="it-mp-row">${rsHtml('mapSecLo')}${rsHtml('mapSecHi')}</div><div class="it-mp-q"><span>Quick:</span><button type="button" data-it-mpq="hi">High</button><button type="button" data-it-mpq="low">Low</button><button type="button" data-it-mpq="null">Null</button></div>`
     + '<div class="it-mp-note">Both ends count, in either order. It compares the number the map shows (one decimal).</div><div class="it-mp-cnt" role="status"></div>';
   if(k === 'near' && s.near.mode === 'ly') return itMpNearModeHtml(s) + `<div class="it-mp-row">${rsHtml('mapLy')}</div><div class="it-mp-q"><span>Quick:</span>${itMpLyQuickHtml()}</div>`
@@ -31089,6 +31093,7 @@ function itMpMake(){
     if(t.name === 'itMpSovBy'){ s.sovBy = t.value === 'alliance' ? 'alliance' : 'standing'; itMpChanged(); }
     else if(t.name === 'itMpKill'){ s.killNpc = t.value === 'npc'; itMpChanged(); }
     else if(t.dataset.itMphk !== undefined){ s.hub[t.dataset.itMphk === 'vuln' ? 'vuln' : 'fight'] = t.checked; itMpChanged(); }   // 068: Sov hubs' kinds
+    else if(t.name === 'itMpAct'){ s.act.k = ['j', 'sp', 'npc'].includes(t.value) ? t.value : 'j'; itMpChanged(); itMapLvAsk(); }   // 069: the stepper shows that kind's own minimum (rsPaint); that kind's list asked for
     else if(t.name === 'itMpNear'){ s.near.mode = t.value === 'ly' ? 'ly' : 'j'; itMp.built = ''; itMpChanged(); const r = p.querySelector('[name=itMpNear]:checked'); if(r) r.focus({preventScroll: true}); }   // 067: the body built again, focus kept on the switch
     else if(t.dataset.itMprall !== undefined){
       const shown = [...p.querySelectorAll('[data-it-mpr]')].filter(l => !l.hidden).map(l => l.querySelector('input'));
@@ -31262,7 +31267,7 @@ function itMapRefresh(force){
 function itMapKey(){
   const fq = itFlSys();
   // 066: who died, not only the total (a re-work of sides, itSidesRework, can change it with the same total)
-  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kb ? `${r.kb.f}.${r.kb.h}.${r.kb.n}` : r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}|lv:${itMapLvKey()}|ho:${itHoKey()}|hub:${itMapHubOn() ? itHubKey() : ''}`;   // 068: Sov hubs' reads and the minute   // 058: the stack   // 065: the live colour's read   // 047: Threat Vector's route   // 041: the bridges counted
+  return [...itm.rep].map(([i, r]) => `${i}:${r.side}:${r.n}:${r.kb ? `${r.kb.f}.${r.kb.h}.${r.kb.n}` : r.kills}`).join(',') + `|${[...itm.pinned].join(',')}|${it.set.range}|${itNearReach()}|${fq || ''}|${itSysNamesReady()}|${itMapWhKey(itMapWh())}|sov:${sovMapKey()}|st:${itMapStKey()}|rp:${itRpAside ? '' : itRp.key}|jb:${itm.jbKey || ''}|lv:${itMapLvKey()}|ho:${itHoKey()}|hub:${itMapHubOn() ? itHubKey() : ''}|act:${itMapActOn() ? itActKey() : ''}`;   // 069: Activity's read   // 068: Sov hubs' reads and the minute   // 058: the stack   // 065: the live colour's read   // 047: Threat Vector's route   // 041: the bridges counted
 }
 // slide the map so your system (071: or Home, i) is in the middle of the box, at the zoom you have (the owner: "Keep current zoom")
 function itMapCenter(draw = true, i = itm.home){
@@ -31457,6 +31462,10 @@ const IT_MAP_FILTERS = [
   // build queue 065 (L3): only the regions you pick (any pick counts)
   {k: 'regpick', g: 'only', name: 'Region pick', note: 'only: systems in the regions you pick',
     icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.6l4-2 5 2 4-2v10.8l-4 2-5-2-4 2z"/><path d="M6.5 2.6v10.8M11.5 4.6v10.8"/></svg>'},
+  // build queue 069 (roadmap/activity-filter-plan.md A1; the owner: "One filter, kind + minimum (Recommended)"): systems with at least N jumps,
+  // ship + pod kills or NPC kills in the past hour, from 065's reader; last in the Only group, its icon a pulse line of our own drawing
+  {k: 'act', g: 'only', name: 'Activity (past hour)', note: 'only: systems with at least N jumps or kills in the past hour (ESI)',
+    icon: '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 9.5h3.4l1.9-5.2 3.4 10 2-6.3 1 1.5h2.7"/></svg>'},
   // 052 (plan 4.3): the order is free now that a filter's panel button sits beside it; Paths to you last
   // build queue 043 (the owner: "the wormhole filter button needs to be furthest right so it sits next to it's wormhole list button. also
   // fix the orientation of the "path to you" filter button."): before Wormholes; the icon top down like the tree, you filled at the top
@@ -31468,9 +31477,14 @@ const IT_MAP_FILTERS = [
 // (the one that is on, pressed again: Q1, "i can't toggle anything "off""); any number of Only filters, every one that is on must match and any
 // pick inside one counts (Q2); a view, Paths to you (Q4). Each Only filter keeps its settings while off. Remembered (Q11) in localStorage
 // tvMapStack, a new key: the older page never reads it, and this page never writes tvSov for it (053's reader drops unknown fields)
-const MAP_STACK_KEY = 'tvMapStack', IT_MAP_COLOURS = ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh'], IT_MAP_ONLY = ['secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick'];   // 065: Sov holder, Jumps and Kills (past hour), Region pick   // 068: Sov hubs
+const MAP_STACK_KEY = 'tvMapStack', IT_MAP_COLOURS = ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh'], IT_MAP_ONLY = ['secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick', 'act'];   // 065: Sov holder, Jumps and Kills (past hour), Region pick   // 068: Sov hubs   // 069: Activity
 const IT_MAP_PLAIN = '#56616b';   // no colour: every system this grey, no number in its circle
-function itMapStackBlank(){ return {v: 1, colour: 'sec', view: 'map', only: Object.fromEntries(IT_MAP_ONLY.map(k => [k, false])), secr: {lo: -5, hi: -3}, near: {n: 5, mode: 'j', ly: 70}, sovLv: [], seen: {secr: false, near: false, hub: false}, sovBy: 'standing', killNpc: false, regions: [], hub: {fight: true, fightH: 24, vuln: true, vulnH: 0}}; }   // Q16: Security, soft   // 065: sovBy, killNpc, regions (names, so a region CCP adds never shifts them)   // 068: hub (Q2: "24 h fights, now for hubs")
+// build queue 069 (A1; the owner: "Per kind, those defaults (Recommended)", "Round numbers 1–2000 (Recommended)"): Activity's kinds, each with
+// the reader it uses (065's itLv), the words the Only line and the hover say, and its own minimum on these steps
+const IT_ACT_STEPS = [1, 2, 3, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200, 300, 500, 750, 1000, 1500, 2000];
+const IT_ACT_KINDS = {j: {lv: 'jumps', t: 'Jumps', w1: 'jump', w: 'jumps'}, sp: {lv: 'kills', t: 'Ship + pod kills', w1: 'ship or pod kill', w: 'ship and pod kills'}, npc: {lv: 'kills', t: 'NPC kills', w1: 'NPC kill', w: 'NPC kills'}};
+const IT_ACT_DEF = {k: 'j', j: 50, sp: 1, npc: 200};
+function itMapStackBlank(){ return {v: 1, colour: 'sec', view: 'map', only: Object.fromEntries(IT_MAP_ONLY.map(k => [k, false])), secr: {lo: -5, hi: -3}, near: {n: 5, mode: 'j', ly: 70}, sovLv: [], seen: {secr: false, near: false, hub: false, act: false}, sovBy: 'standing', killNpc: false, regions: [], hub: {fight: true, fightH: 24, vuln: true, vulnH: 0}, act: {...IT_ACT_DEF}}; }   // Q16: Security, soft   // 065: sovBy, killNpc, regions (names, so a region CCP adds never shifts them)   // 068: hub (Q2: "24 h fights, now for hubs")   // 069: act
 function itMapStackRead(){
   const o = itMapStackBlank(); let s = null; try{ s = JSON.parse(localStorage.getItem(MAP_STACK_KEY)); }catch(e){ s = null; }
   if(!s || typeof s !== 'object' || s.v !== 1) return o;   // a bad value reads as the defaults, field by field below
@@ -31481,11 +31495,12 @@ function itMapStackRead(){
   if(s.secr && typeof s.secr === 'object'){ o.secr.lo = int(s.secr.lo, -10, 10, o.secr.lo); o.secr.hi = int(s.secr.hi, -10, 10, o.secr.hi); }   // tenths
   if(s.near && typeof s.near === 'object'){ o.near.n = int(s.near.n, 1, 30, o.near.n); if(s.near.mode === 'ly') o.near.mode = 'ly'; o.near.ly = int(s.near.ly, 1, 200, o.near.ly); }   // 067: mode 'j' | 'ly', ly in tenths (an older page drops both)
   if(Array.isArray(s.sovLv)) o.sovLv = [...new Set(s.sovLv.filter(n => n === 1 || n === 2 || n === 3))].sort();   // an entry outside 1-3 is dropped
-  if(s.seen && typeof s.seen === 'object') for(const k of ['secr', 'near', 'hub']) o.seen[k] = s.seen[k] === true;   // 068: hub
+  if(s.seen && typeof s.seen === 'object') for(const k of ['secr', 'near', 'hub', 'act']) o.seen[k] = s.seen[k] === true;   // 068: hub   // 069: act
   if(s.sovBy === 'alliance') o.sovBy = 'alliance';   // 065
   o.killNpc = s.killNpc === true;
   if(Array.isArray(s.regions)){ const T = itMapTable(), R = T ? T.regions : []; o.regions = [...new Set(s.regions.filter(r => typeof r === 'string' && R.includes(r)))]; }   // a region the table doesn't have is dropped
   if(s.hub && typeof s.hub === 'object'){ const h = s.hub; o.hub = {fight: h.fight !== false, fightH: int(h.fightH, 0, 48, 24), vuln: h.vuln !== false, vulnH: int(h.vulnH, 0, 24, 0)}; }   // 068: an older page drops it; a bad hour falls back
+  if(s.act && typeof s.act === 'object'){ const a = s.act, st = (k) => IT_ACT_STEPS.includes(a[k]) ? a[k] : IT_ACT_DEF[k]; o.act = {k: ['j', 'sp', 'npc'].includes(a.k) ? a.k : 'j', j: st('j'), sp: st('sp'), npc: st('npc')}; }   // 069: an older page drops it; a bad kind or an off-step number falls back
   return o;
 }
 function itMapSt(){ return itm.st || (itm.st = itMapStackRead()); }
@@ -31493,8 +31508,44 @@ function itMapStackSave(){ try{ localStorage.setItem(MAP_STACK_KEY, JSON.stringi
 function itMapPaths(){ return itMapSt().view === 'paths'; }
 function itMapOnlyOn(){ const s = itMapSt(); return s.view !== 'paths' && IT_MAP_ONLY.some(k => s.only[k]); }   // Paths to you: no Only filter applies there
 function itMapOnlyCount(){ const s = itMapSt(); return IT_MAP_ONLY.filter(k => s.only[k]).length; }
-function itMapStKey(){ const s = itMapSt(); return JSON.stringify([s.colour, s.view, s.only, s.secr, s.near, s.sovLv, s.sovBy, s.killNpc, s.regions, s.hub]); }   // 068: hub
+function itMapStKey(){ const s = itMapSt(); return JSON.stringify([s.colour, s.view, s.only, s.secr, s.near, s.sovLv, s.sovBy, s.killNpc, s.regions, s.hub, s.act]); }   // 068: hub   // 069: act
 function itMapWhOn(){ return itMapOnlyOn() && itMapSt().only.wh; }
+// ---- build queue 069 (Project doc roadmap/activity-filter-plan.md, mockup Claude outputs/activity_mockup.html; the owner: "One filter, kind +
+// minimum (Recommended)", "Per kind, those defaults (Recommended)", "Round numbers 1–2000 (Recommended)", "No, use 065's colours (Recommended)"):
+// Activity (past hour), an Only filter. Systems with at least N of the picked kind (jumps, ship + pod kills, NPC kills) in ESI's hourly counts,
+// read by 065's reader (no request of its own). A system missing from ESI's list had none that hour (065's hand test); before a read nothing
+// matches but your system ("no data yet", never 0). Worked out once per key (the kind, its minimum, whether the list is there, the read), never
+// per draw (LESSON #120)
+function itMapActOn(){ try{ return itMapOnlyOn() && !!itMapSt().only.act; }catch(e){ return false; } }
+function itActLv(){ return itLv[IT_ACT_KINDS[itMapSt().act.k].lv]; }
+function itActCount(id, k, L){ const x = L.d.get(id); return k === 'j' ? x || 0 : x ? (k === 'sp' ? x[0] + x[1] : x[2]) : 0; }   // a system missing from the list: 0
+function itActKey(){ const a = itMapSt().act, L = itActLv(); return `${a.k}.${a[a.k]}|d${L.d ? 1 : 0}.${L.at}`; }   // 068's lesson: whether the list is there, not only its time
+// per map index once per key: whether it matches, and how many do (the Only line's count)
+let itActIxC = null;
+function itActIx(){
+  const T = itMapTable(); if(!T) return null;
+  const key = itActKey(); if(itActIxC && itActIxC.T === T && itActIxC.key === key) return itActIxC;
+  const a = itMapSt().act, L = itActLv(), n = T.n, m = new Uint8Array(n), ids = itGraphGet().ids, min = a[a.k];
+  let c = 0;
+  if(L.d) for(let i = 0; i < n; i++) if(itActCount(ids[i], a.k, L) >= min){ m[i] = 1; c++; }
+  return (itActIxC = {T, key, m, c});
+}
+function itActWord(k, v){ const K = IT_ACT_KINDS[k]; return v === 1 ? K.w1 : K.w; }
+// the Only line's part (A2): "at least 50 jumps in the past hour (1,121) · ESI 20:51", the time ESI's counts are as of, in EVE time
+function itActOnlyText(){
+  const a = itMapSt().act, L = itActLv(), X = itActIx(), v = a[a.k];
+  if(!L.d) return 'activity: no data yet';
+  return `at least ${v} ${itActWord(a.k, v)} in the past hour (${(X ? X.c : 0).toLocaleString('en-US')}) · ESI ${itMapLvAsOf(L.lm)}`;
+}
+// the hover's line for the picked kind (A2), only when 065's colour of the same counts isn't on: its line says it already (never twice)
+function itActTipHtml(i){
+  if(!itMapActOn()) return '';
+  const a = itMapSt().act, c = itMapSt().colour, L = itActLv();
+  if(c === (a.k === 'j' ? 'jumph' : 'killh')) return '';
+  if(!L.d) return `<br><span class="d">${escapeHtml(`Activity: ${itMapLvState(IT_ACT_KINDS[a.k].lv)}`)}</span>`;
+  const v = itActCount(itGraphGet().ids[i], a.k, L);
+  return `<br>${escapeHtml(`${v} ${itActWord(a.k, v)} in the past hour`)}<span class="d">${escapeHtml(` (ESI, as of ${itMapLvAsOf(L.lm)} EVE)`)}</span>`;
+}
 // ---- build queue 068 (Project doc roadmap/sov-hubs-plan.md, mockup Claude outputs/sov_hubs_mockup.html; the owner: "One filter, two kinds
 // (Recommended)", "24 h fights, now for hubs (Recommended)", "Fight tags only, filter on (Recommended)", "Every 2 min, raise cap (Recommended)",
 // ""SOV 19:45" (Recommended)", and at the build review "your recommendations are fine"): Sov hubs, an Only filter. Fight coming up: a fight in
@@ -31576,13 +31627,14 @@ const itMt = {key: null, m: null, list: []};
 function itMapMatch(wh){
   if(!itm.D || !itMapOnlyOn()) return null;
   const s = itMapSt(), o = s.only, W = wh || itm.wh || itMapWh(), T = itMapTable();
-  const key = `${itMapStKey()}|${itm.home}|${itm.jbKey || ''}|${o.wh || o.reports ? `${[...W.kept.keys()].join(',')}/${[...W.live.keys()].join(',')}` : ''}|${o.sov ? `${sovIndexKey()}#${sovStore().pick.join(',')}` : ''}|${o.reports || o.kills ? [...itm.rep].map(([i, r]) => `${i}:${r.kills || 0}`).join(',') : ''}|${o.hub ? itHubKey() : ''}`;   // 068: whether there is data, its reads and the minute
+  const key = `${itMapStKey()}|${itm.home}|${itm.jbKey || ''}|${o.wh || o.reports ? `${[...W.kept.keys()].join(',')}/${[...W.live.keys()].join(',')}` : ''}|${o.sov ? `${sovIndexKey()}#${sovStore().pick.join(',')}` : ''}|${o.reports || o.kills ? [...itm.rep].map(([i, r]) => `${i}:${r.kills || 0}`).join(',') : ''}|${o.hub ? itHubKey() : ''}|${o.act ? itActKey() : ''}`;   // 068: whether there is data, its reads and the minute   // 069: Activity's, the same
   if(key === itMt.key) return itMt;
   const n = T.n, m = new Uint8Array(n), D = itm.D, lo = Math.min(s.secr.lo, s.secr.hi), hi = Math.max(s.secr.lo, s.secr.hi);
   const sv = o.sov ? sovIndex() : null, pick = new Set(o.sov ? sovStore().pick : []), lvT = sovTable().lv, lv = s.sovLv;
   const rg = o.regpick ? new Set(s.regions.map(r => T.regions.indexOf(r))) : null;   // 065: Region pick, any pick counts
   const lyMode = s.near.mode === 'ly';   // 067
   const HX = o.hub ? itHubIx() : null, now = Date.now();   // 068: Sov hubs, the clock of this pass (its key holds the minute, B2)
+  const AX = o.act ? itActIx() : null;   // 069: Activity, worked out once per its key
   for(let i = 0; i < n; i++){
     let ok = true;
     if(o.secr){ const t = itMapSecT(i); ok = t >= lo && t <= hi; }   // Q9: the number the map shows, both ends, either order
@@ -31593,6 +31645,7 @@ function itMapMatch(wh){
     if(ok && o.sov){ const e = sv.at.get(i); ok = false; if(e) for(const [k, l] of e) if(pick.has(k) && (!lvT.has(k) || !lv.length || lv.includes(l))){ ok = true; break; } }   // Q10: any ticked level; none ticked: any
     if(ok && rg) ok = rg.has(T.reg[i]);
     if(ok && o.hub) ok = !!HX && itHubAt(i, HX, now, s.hub);   // 068: any ticked kind counts
+    if(ok && o.act) ok = !!AX && AX.m[i] === 1;   // 069: at least N of the picked kind (no data: none)
     m[i] = ok ? 1 : 0;
   }
   if(itm.home >= 0) m[itm.home] = 1;
@@ -31648,6 +31701,7 @@ function itMapNoFade(){ return !itMapPaths() && !!IT_MAP_LV[itMapSt().colour]; }
 function itMapLvWant(k){
   try{ if(itRpAside || !itm.el || !itm.box || itm.cv.parentNode !== itm.box || !itMapVisible() || itMapPaths()) return false; }catch(e){ return false; }
   if((k === 'sov' || k === 'camp') && itMapHubOn()) return true;
+  if((k === 'jumps' || k === 'kills') && itMapActOn() && IT_ACT_KINDS[itMapSt().act.k].lv === k) return true;   // 069: Activity's picked kind only
   return IT_MAP_LV[itMapSt().colour] === k;
 }
 function itMapLvAsk(){
@@ -31835,6 +31889,7 @@ function itMapDraw(){
   itm.draws++; itJbBtnPaint();
   itm.wh = itMapWh();   // build queue 040: the kept wormholes, and those shown as reports (itMapFcol, itMapDimmed, the labels and the hover read it)
   itm.mt = itMapMatch(itm.wh);   // 058: the systems every Only filter that is on picks out, once a draw (null with none on)
+  if(itm.cv.parentNode === itm.box) itMpCountPaint();   // 069: an open settings panel's count follows a read that lands after it opened (written only when its words change)
   itMapLvPrep();   // 065: the live colour that is on, worked out again only when its data or settings changed
   if(!itm.lvAsk && itm.cv.parentNode === itm.box){ itm.lvAsk = true; Promise.resolve().then(() => { itm.lvAsk = false; itMapLvAsk(); }); }   // 065: its data, once per ESI's Expires (after the draw, never inside it)
   if(itPtLive()){ itMapWhPulse([]); itMapMtPaint(); itPtPaint(); return; }   // build queue 043: the tree covers the map, so the galaxy under it isn't drawn
@@ -32114,6 +32169,7 @@ function itMapOnlyHtml(){
   if(o.hub) p.push(itHubOnlyText());   // 068
   if(o.reports) p.push('a report'); if(o.kills) p.push('kills in Intel'); if(o.wh) p.push(`a wormhole (last ${Number(itWhStore().keepH)} h)`);
   if(o.regpick){ const rs = s.regions; p.push(rs.length ? 'in ' + (rs.length > 2 ? `${rs.slice(0, 2).join(', ')} +${rs.length - 2}` : rs.join(', ')) : 'no region picked'); }   // 065
+  if(o.act) p.push(itActOnlyText());   // 069: last, as in the column
   return `<b>Only</b> <b>${Number(n)} match</b> · ${escapeHtml(p.join(' · '))}`;
 }
 function itMapLegend(){
@@ -32408,6 +32464,7 @@ function itMapTip(i, x, y){
   if(IT_MAP_LV[itMapSt().colour] && !itMapPaths()) h += itMapLvTipHtml(i);   // 065: the live colour's lines
   if(itMapOnlyOn() && itMapSt().only.sov) h += sovTipHtml(i);   // 058: while Sov upgrades is on   // build queue 053: every kind the system has in your lists, with its level
   if(itMapHubOn()) h += itHubTipHtml(i);   // 068: its fights and its hub's window
+  h += itActTipHtml(i);   // 069: the picked kind's count, when 065's colour of it isn't on
   const dg = itm.Dg ? itm.Dg[i] : d;   // 041: the Feed reads kills by stargate (itJumps), whatever the map counts
   if(dg > itKillRange()) h += `<br><span class="d">past the Feed's kill range (${itKillRange()}): its kills aren’t read</span>`;
   if(d > 0){
@@ -34326,6 +34383,9 @@ const RS = {
   // only; a started fight always counts) and a hub vulnerable now or opening within 1-24 h
   mapHubF: {label: 'Within', title: () => 'Sov fight: starting within N hours (0: started fights only; a started fight always counts)', steps: () => itRangeList(0, 48), value: () => itMapSt().hub.fightH, set: (v) => { itMapSt().hub.fightH = v; },
     why: (end) => end === 'lo' ? 'Started fights only' : 'At most 48 hours', unit: 'h', aria: 'hours', after: () => itMpChanged()},
+  // build queue 069 (A1; Q2: "Round numbers 1–2000 (Recommended)"): Activity's minimum, one per kind (the kind picked in its settings)
+  mapAct: {label: 'At least', title: () => 'Activity: at least this many in the past hour (ESI’s hourly counts)', steps: () => IT_ACT_STEPS, value: () => { const a = itMapSt().act; return a[a.k]; }, set: (v) => { const a = itMapSt().act; a[a.k] = v; },
+    why: (end) => end === 'lo' ? 'At least 1' : 'At most 2,000', unit: '', aria: 'count', after: () => itMpChanged()},
   mapHubV: {label: 'Opens within', title: () => 'Vulnerable: now, or opening within N hours', steps: () => itRangeList(0, 24), value: () => itMapSt().hub.vulnH, set: (v) => { itMapSt().hub.vulnH = v; },
     why: (end) => end === 'lo' ? 'Vulnerable now' : 'At most 24 hours', unit: '', aria: 'hours', show: (v) => v ? `${v} h` : 'now', read: (t) => /now/i.test(t) ? 0 : Math.round(parseFloat(t)), after: () => itMpChanged()},
 };

@@ -13,7 +13,7 @@ The drawing is read from the map's own canvas calls (fills with their strength, 
 Checks, at 1440 px and 390 px:
   * the column: Colour 6 (Security, Jumps, Region, Sov holder, Jumps (past hour), Kills (past hour)), Only 8 (Sov hubs, build queue 068, then Region pick after Sov upgrades),
     View 1, in groups; settings buttons for Sov holder, Kills (past hour) and Region pick, none for Jumps (past hour); the desktop column's rows
-    count the filters and lines (17), not the group wrappers;
+    count the filters and lines (18), not the group wrappers;
   * the reader: nothing asked with Security on; Sov holder on: one sov read, none again before Expires (refreshes, draws, a setting); a failed
     read: grey everywhere (never a colour) and "no data yet" in the legend and hover, asked again only after its wait; Jumps / Kills (past hour)
     one read each (kind 'activity'), switching NPC kills asks nothing; nothing kept in localStorage; the Intel example asks nothing;
@@ -120,15 +120,15 @@ def run(b, html, w, parts):
         # ---- the column
         if want('column'):
             keys = pg.evaluate("() => [...document.querySelectorAll('#intelPanel .it-map-fbtns [data-im-f]')].map(b => b.dataset.imF)")
-            if keys != ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick', 'paths']: out.append(f'{w}: the column {keys}')   # 068: Sov hubs
+            if keys != ['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick', 'act', 'paths']: out.append(f'{w}: the column {keys}')   # 068: Sov hubs
             grp = pg.evaluate("() => [...document.querySelectorAll('#intelPanel .it-map-fbtns .it-map-fg')].map(g => [g.className.split(' ').pop(), g.querySelectorAll('[data-im-f]').length])")
-            if grp != [['it-map-fg-colour', 6], ['it-map-fg-only', 8], ['it-map-fg-view', 1]]: out.append(f'{w}: the groups {grp}')
+            if grp != [['it-map-fg-colour', 6], ['it-map-fg-only', 9], ['it-map-fg-view', 1]]: out.append(f'{w}: the groups {grp}')
             names = pg.evaluate("() => ['sovh','jumph','killh','regpick'].map(k => document.querySelector(`#intelPanel [data-im-f=${k}]`).getAttribute('aria-label'))")
             if names != ['Sov holder', 'Jumps (past hour)', 'Kills (past hour)', 'Region pick']: out.append(f'{w}: names {names}')
             if not pg.evaluate("() => ['sovh','killh','regpick'].every(k => document.querySelector(`#intelPanel [data-it-mpn=${k}]`)) && !document.querySelector('#intelPanel [data-it-mpn=jumph]')"): out.append(f'{w}: settings buttons')
             if not phone:
                 rows = pg.evaluate("() => document.querySelector('#intelPanel .it-map-fbtns').style.getPropertyValue('--it-flr')")
-                if rows != '17': out.append(f'{w}: the column\'s rows {rows!r} (17: 15 filters and 2 lines; 068 added Sov hubs)')
+                if rows != '18': out.append(f'{w}: the column\'s rows {rows!r} (18: 16 filters and 2 lines; 068 added Sov hubs, 069 Activity)')
                 if pg.evaluate("() => getComputedStyle(document.querySelector('#intelPanel .it-map-fg-only')).display") != 'contents': out.append(f'{w}: the desktop groups aren\'t display:contents')
         # ---- the reader: nothing with Security on
         if want('read', 'sov', 'live', 'fade', 'region'):

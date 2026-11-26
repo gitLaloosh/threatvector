@@ -137,7 +137,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
         out.append('no Paths to you filter on the page'); ctx.close(); return out, errs
     if 'bar' in parts:
         o = pg.evaluate("() => [[...document.querySelectorAll('.it-map-fbtns [data-im-f]')].map(b => b.dataset.imF), (() => { const w = document.querySelector('[data-im-f=wh]'); return !!w.nextElementSibling && w.nextElementSibling.matches('[data-it-whl]'); })()]")
-        if o != [['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick', 'paths'], True]:   # 065: three ESI colours, Region pick   # 068: Sov hubs
+        if o != [['sec', 'jumps', 'region', 'sovh', 'jumph', 'killh', 'secr', 'near', 'reports', 'kills', 'wh', 'sov', 'hub', 'regpick', 'act', 'paths'], True]:   # 065: three ESI colours, Region pick   # 068: Sov hubs
             out.append(f'the bar: {o} (want Paths to you last since 052, Sov upgrades before it since 053, the list button right after Wormholes)')
     pg.click('[data-im-f="paths"]'); pg.wait_for_timeout(300)
     T = pg.evaluate(TREE)
@@ -249,7 +249,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
           const w = itm.box.querySelector('[data-im-f=wh]').getBoundingClientRect(), l = itm.box.querySelector('[data-it-whl]').getBoundingClientRect();
           return [bs.length, bs.every(q => Math.round(q.width) === 44 && Math.round(q.height) === 44), bs.every(q => q.left >= box.left - 0.5 && q.right <= box.right + 0.5 && q.top >= box.top - 0.5 && q.bottom <= box.bottom + 0.5),
             Math.abs(w.top - l.top) < 1 && l.left > w.left && l.left - w.right < 8]; }""")
-        if P != [16, True, True, True]: out.append(f'390 px: the opened column {P} (want 15 filters + the list button, 44 px, inside the box, Wormholes beside its list button)')
+        if P != [17, True, True, True]: out.append(f'390 px: the opened column {P} (want 16 filters + the list button, 44 px, inside the box, Wormholes beside its list button)')
         pg.tap('#intelPanel [data-im-f="paths"]'); pg.wait_for_timeout(300)
         Q = pg.evaluate("() => [[...document.querySelectorAll('.pt-z button')].every(b => Math.round(b.getBoundingClientRect().height) === 44), itPt.v.k >= 0.75, !itPt.ov.hidden, document.scrollingElement.scrollWidth <= innerWidth + 1]")
         if Q != [True, True, True, True]: out.append(f'390 px: the tree {Q} (want 44 px buttons, fitted at 0.75 or more, shown, no sideways scroll)')
