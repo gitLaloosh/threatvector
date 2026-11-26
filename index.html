@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-hvFgV/w4qS+VdCkKulB4MYuxFzEjjK8aupymag35ZQM='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-er2d8gCMXSKac5VTE0Dgx4jNA9wl+BS3K5ZLQcnxryE='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -31038,7 +31038,7 @@ function itMpBodyHtml(k){
   if(k === 'regpick') return itMpRegHtml();
   if(k === 'hub') return itMpHubRowHtml('fight', s.hub.fight, 'Fight coming up', 'mapHubF') + itMpHubRowHtml('vuln', s.hub.vuln, 'Vulnerable', 'mapHubV')   // 068: a tick and its hours per kind
     + '<div class="it-mp-note">Any ticked kind counts; a started fight always does. EVE time, from ESI: fights every 2 minutes, hub windows every 5, while the map updates (Intel on).</div><div class="it-mp-cnt" role="status"></div>';
-  if(k === 'act') return `<div class="it-mp-row" role="radiogroup" aria-label="Count">${Object.entries(IT_ACT_KINDS).map(([v, K]) => itMpRadHtml('itMpAct', v, s.act.k === v, K.t)).join('')}</div><div class="it-mp-row">${rsHtml('mapAct')}</div>`   // 069: the kind, its own minimum
+  if(k === 'act') return `<div class="it-mp-row" role="radiogroup" aria-label="Count">${itMpActKindsHtml(s.act.k)}</div><div class="it-mp-row">${rsHtml('mapAct')}</div>`   // 069: the kind, its own minimum
     + '<div class="it-mp-note">In the past hour, from ESI (once an hour, while the map updates). Each kind keeps its own number. A system missing from ESI’s list had none.</div><div class="it-mp-cnt" role="status"></div>';
   if(k === 'secr') return `<div class="it-mp-row">${rsHtml('mapSecLo')}${rsHtml('mapSecHi')}</div><div class="it-mp-q"><span>Quick:</span><button type="button" data-it-mpq="hi">High</button><button type="button" data-it-mpq="low">Low</button><button type="button" data-it-mpq="null">Null</button></div>`
     + '<div class="it-mp-note">Both ends count, in either order. It compares the number the map shows (one decimal).</div><div class="it-mp-cnt" role="status"></div>';
@@ -31067,6 +31067,7 @@ const IT_MP_LY_QUICK = [[60, 'Titans, supercarriers'], [70, 'Carriers, dreadnoug
 function itMpLyQuickHtml(){ return IT_MP_LY_QUICK.map(([v, who]) => `<button type="button" data-it-mply="${Number(v)}" title="${escapeHtml(`${who}, Jump Drive Calibration V`)}" aria-pressed="false">${escapeHtml(`${v / 10} LY`)}</button>`).join(''); }
 function itMpNearModeHtml(s){ const ly = s.near.mode === 'ly'; return `<div class="it-mp-row" role="radiogroup" aria-label="Count in">${itMpRadHtml('itMpNear', 'j', !ly, 'Jumps')}${itMpRadHtml('itMpNear', 'ly', ly, 'Light years')}</div>`; }
 function itMpHubRowHtml(v, on, t, rs){ return `<div class="it-mp-row"><label class="it-sov-k"><input type="checkbox" data-it-mphk="${escapeHtml(v)}"${escapeHtml(on ? ' checked' : '')}> <span>${escapeHtml(t)}</span></label>${rsHtml(rs)}</div>`; }   // 068
+function itMpActKindsHtml(k){ return Object.entries(IT_ACT_KINDS).map(([v, K]) => itMpRadHtml('itMpAct', v, k === v, K.t)).join(''); }   // 069: Activity's kinds
 function itMpRadHtml(nm, v, on, t){ return `<label class="it-sov-k"><input type="radio" name="${escapeHtml(nm)}" value="${escapeHtml(v)}"${escapeHtml(on ? ' checked' : '')}> <span>${escapeHtml(t)}</span></label>`; }
 function itMpRegPaint(){
   const p = itMp.el, e = p && itMp.k === 'regpick' && p.querySelector('.it-mp-rn'); if(!e) return;
@@ -31180,7 +31181,7 @@ function itMapRowHtml(){ return '<div class="it-map-row"><span class="it-map-rs"
 // 055: the live map's height (052: full width and taller), and the filter column's rows for a map that tall (a second column when it's too
 // short), for the live map and the example's picture alike
 function itMapH(w, phone){ return Math.round(phone ? Math.min(600, Math.max(440, w * 1.45)) : Math.min(720, Math.max(520, w * 0.5))); }
-function itMapFlRows(H, top, phone, n){ return Math.min(n, Math.max(3, Math.floor((H - 8 - top - 8) / (phone ? 46 : 34)))); }
+function itMapFlRows(H, top, phone, n){ return Math.min(n, Math.max(3, Math.floor((H - 8 - top - 8) / (phone ? 46 : 34)))); }   // LESSON #184: a filter added here is counted at every common window size (a 661 px map holds 17 rows)
 // 065: the column's rows, written only when they change: a wide map one grid down the left (a second column when too short); a phone by group,
 // Only's rows (--it-flr) and Colour's above View (--it-flc), 44 px each, so a group taller than the map's room wraps into another column
 function itMapFlSet(bs, H, top, phone){

@@ -182,7 +182,7 @@ def cases(b, html, parts=('bar', 'tree', 'look', 'badges', 'chrome', 'trace', 'v
         s0 = pg.evaluate(SB)
         pg.click('[data-im-f="sec"]'); pg.wait_for_timeout(200); s1 = pg.evaluate(SB)
         pg.fill('.it-rp-search input', SYSNAME[TWO][:2]); pg.wait_for_timeout(150); s2 = pg.evaluate(SB)
-        pg.click('[data-im-f="paths"]'); pg.wait_for_timeout(250); s3 = pg.evaluate(SB)
+        pg.eval_on_selector('[data-im-f="paths"]', 'b => b.click()'); pg.wait_for_timeout(250); s3 = pg.evaluate(SB)   # 069: at 1440 px it wraps to the column's second row, under the search box's open list
         pg.evaluate("() => { itm.el.querySelector('.it-rp-search input').value = ''; }")
         if s0[0] != 'none' or s1[0] == 'none' or s2[1] or s3 != ['none', True]: out.append(f'the search box: on Paths {s0}, on Security {s1}, typed {s2}, back on Paths {s3} (want hidden, shown, its list open, hidden and closed)')
     if 'trace' in parts:

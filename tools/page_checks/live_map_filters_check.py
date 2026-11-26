@@ -128,7 +128,7 @@ def run(b, html, w, parts):
             if not pg.evaluate("() => ['sovh','killh','regpick'].every(k => document.querySelector(`#intelPanel [data-it-mpn=${k}]`)) && !document.querySelector('#intelPanel [data-it-mpn=jumph]')"): out.append(f'{w}: settings buttons')
             if not phone:
                 rows = pg.evaluate("() => document.querySelector('#intelPanel .it-map-fbtns').style.getPropertyValue('--it-flr')")
-                if rows != '18': out.append(f'{w}: the column\'s rows {rows!r} (18: 16 filters and 2 lines; 068 added Sov hubs, 069 Activity)')
+                if rows != str(min(18, pg.evaluate("() => { const fb = document.querySelector('#intelPanel .it-map-fb'); return Math.floor((itm.H - 16 - fb.offsetTop) / 34); }"))): out.append(f'{w}: the column\'s rows {rows!r} (18: 16 filters and 2 lines, fewer on a map too short for them; 068 added Sov hubs, 069 Activity)')
                 if pg.evaluate("() => getComputedStyle(document.querySelector('#intelPanel .it-map-fg-only')).display") != 'contents': out.append(f'{w}: the desktop groups aren\'t display:contents')
         # ---- the reader: nothing with Security on
         if want('read', 'sov', 'live', 'fade', 'region'):

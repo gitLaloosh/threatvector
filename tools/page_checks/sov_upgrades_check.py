@@ -204,8 +204,8 @@ def cases(b, html, parts=('table', 'store', 'filter', 'paste', 'map', 'lists', '
           sovOpen(true, false); const c = [sovShown(), itWhListShown()]; return [a, b, c]; }""")
         if o != [[True, False], [False, True], [True, False]]: out.append(f'one filter panel at a time: {o}')
         pg.evaluate("() => itNearToggle(true)"); pg.wait_for_timeout(300)
-        P = pg.evaluate("""() => { const p = sovP.el.getBoundingClientRect(), bx = itm.box.getBoundingClientRect(), ny = document.getElementById('itNearCol').getBoundingClientRect(), pb = document.querySelector('[data-it-sovl]').getBoundingClientRect();
-          return [sovShown(), itNearShown(), Math.round(p.left - pb.right), p.right <= ny.left + 0.5, p.top >= bx.top + 7.5 && p.bottom <= bx.bottom - 7.5, Math.round(p.width), itMapFree()[0] >= p.right - bx.left]; }""")
+        P = pg.evaluate("""() => { const p = sovP.el.getBoundingClientRect(), bx = itm.box.getBoundingClientRect(), ny = document.getElementById('itNearCol').getBoundingClientRect(), pb = document.querySelector('[data-it-sovl]').getBoundingClientRect(), cr = Math.max(pb.right, document.querySelector('#intelPanel .it-map-fbtns').getBoundingClientRect().right + 6 + 32);   // 069: a wrapped column (a 661 px map holds 17 rows): the settings buttons' lane right of its last column
+          return [sovShown(), itNearShown(), Math.round(p.left - cr), p.right <= ny.left + 0.5, p.top >= bx.top + 7.5 && p.bottom <= bx.bottom - 7.5, Math.round(p.width), itMapFree()[0] >= p.right - bx.left]; }""")
         if not (P[0] and P[1] and 0 <= P[2] <= 12 and P[3] and P[4] and P[5] >= SOV_MIN and P[6]): out.append(f'1440 px with Near You: {P} (want both open, the panel right of its button, clear of Near You, inside the map, at least {SOV_MIN} px, centring right of it)')
         pg.set_viewport_size({'width': 760, 'height': 1000}); pg.wait_for_timeout(500)
         t = pg.evaluate("() => [sovShown(), itNearShown(), itMapRoomForBoth(SOV_PANEL_MIN), itMapRoomForBoth()]")

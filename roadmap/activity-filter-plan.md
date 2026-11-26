@@ -1,4 +1,6 @@
-# Plan (READY, QUEUED 069): the Intel map's "Activity (past hour)" Only filter
+# Plan (BUILT, build queue 069): the Intel map's "Activity (past hour)" Only filter
+
+**BUILT** 2026-11-26: v2026.11.26.1, branch `069-activity-filter` (see "Built" at the end).
 
 Status: READY 2026-11-21 (research session, main 991dd4a, v2026.11.21.2). All questions answered 2026-11-21 (section 7); mockup sent (section 8). **QUEUED as build queue 069** 2026-11-21 ([stated] "yes"; `claude/build-queue/069-activity-filter.md`).
 Planning list group E, E4 (`claude/roadmap/intel-later-filters-research.md`, section E4; born as 065's Q4, [stated] "Later, own item (Recommended)"). Answered 2026-11-20: [stated] "One filter, kind + minimum (Recommended)": one Only filter "Activity (past hour)", a kind (jumps / ship + pod kills / NPC kills) and a minimum N in its settings, like Security range. 2026-11-21: [stated] "plan E4".
@@ -94,4 +96,26 @@ Panel review: not a fit (a small filter on data 065 already reads).
 |---|---|---|---|
 | `/universe/system_jumps/`: `{system_id, ship_jumps}`, 4,918 rows, no zero rows, the spread above, 1 h between Last-Modified and Expires | live answer: `GET https://esi.evetech.net/universe/system_jumps/?datasource=tranquility` from threatvector.space in the owner's built-in browser | 2026-11-21 | verified |
 | `/universe/system_kills/`: `{system_id, ship_kills, pod_kills, npc_kills}`, 2,850 rows, no all-zero rows, the spread above, 1 h | live answer: `GET https://esi.evetech.net/universe/system_kills/?datasource=tranquility`, as above | 2026-11-21 | verified |
-| A system missing from either list had 0 in that hour | live answer: no row with 0 appears | 2026-11-21 | UNVERIFIED: 065's hand test looks at a missing system on the in-game map (expect 0) |
+| A system missing from either list had 0 in that hour | live answer: no row with 0 appears; repo `roadmap/live-map-filters-plan.md`, Sources, its row "A system missing from the jumps / kills lists had 0 in that hour": verified, the owner's hand test 2026-11-22 | 2026-11-21, settled at 065's hand test 2026-11-22 | verified |
+
+## Built (2026-11-26, v2026.11.26.1, branch `069-activity-filter`)
+
+Reviewed against main 52063c1 (v2026.11.25.2, after 065, 067, 068, 071 and 072); nothing to decide at the review (the owner: "yes").
+- **As planned:** `IT_MAP_FILTERS` / `IT_MAP_ONLY` `act`, last in the Only group (after Region pick); `IT_ACT_STEPS`, `IT_ACT_KINDS`, `IT_ACT_DEF`;
+  `itMapActOn`, `itActLv`, `itActCount`, `itActKey`, `itActIx`, `itActOnlyText`, `itActTipHtml`; `itMapLvWant` true for the picked kind's list
+  only; `itMapFilterSet` opens the settings the first time (`seen.act`) and asks the reader; `itMpBodyHtml('act')` with 065's `itMpRadHtml`
+  radios and `RS.mapAct`; `tvMapStack` `only.act`, `act`, `seen.act`; the key in both `itMapMatch` and `itMapKey`.
+- **Where it differs:** the kind row reuses `.it-mp-row` (it already wraps), so no new CSS (the mockup's `.mk-ak` and the plan's "one row
+  rule"). Switching kind doesn't rebuild the panel's body: `rsPaint` already shows that kind's own number, so focus stays where it was.
+  The Only line's ESI time is the counts' own (Last-Modified, as 065's hover says "as of"), not the read's.
+- **Found:** a filter panel's count was written only when a setting changed, so a list read after the panel opened (065's, 068's) left it
+  stale; `itMapDraw` now writes it after working out the match (live map only, only when its words change).
+- **Info text:** `CARD_INFO.intel` [Map] "Activity: at least N jumps or kills in the past hour" (11 words); the cap 776, from the final count.
+  METHODOLOGY.md: Activity (past hour). The Intel example's notes: unchanged.
+- **Checks:** `tools/page_checks/activity_filter_check.py` (13 mutants: `>` for `>=`, one shared minimum, a missing system as no data, the
+  key without the data flag, the reader not asked, both lists read, the hover twice, ship + pod as ships only, the settings not opened, a
+  bad kind and an off-step number kept, the stepper showing the jumps minimum, the panel's count not following a read); the hand-written
+  filter lists in `intel_map_stack_check`, `live_map_filters_check` (rows 18), `sov_upgrades_check`, `intel_map_look_check` (16 phone
+  buttons), `paths_to_you_check`.
+- **The mockup** is archived as built on 991dd4a (`Claude outputs/activity_mockup.html`, scripts `roadmap/activity-mockup/`): its stand-ins
+  for Region pick and Sov hubs are the real filters now.

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026-11-26 — Intel map: Activity (past hour), an Only filter</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif; max-width:960px; margin:40px auto; padding:0 20px; line-height:1.55; color:#1a1a1a;}
+h1{font-size:22px;} h2{font-size:17px; margin-top:30px; border-bottom:1px solid #ddd; padding-bottom:4px;}
+code{background:#f0f0f0; padding:2px 5px; border-radius:3px; font-size:0.92em;}
+.tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:3px; background:#eef; color:#334; margin-right:6px;}
+</style></head>
+<body>
+<h1>Intel map: Activity (past hour), an Only filter</h1>
+<p><span class="tag">Page</span><span class="tag">Intel map</span> 2026-11-26 &middot; <code>v2026.11.26.1</code> &middot; branch <code>069-activity-filter</code> &middot; build queue 069 (plan <code>roadmap/activity-filter-plan.md</code>, mockup <code>Claude outputs/activity_mockup.html</code>)</p>
+
+<h2>Why</h2>
+<ul>
+<li>The owner (planning list E4, born as 065's Q4): "One filter, kind + minimum (Recommended)"; his answers (2026-11-21): "Per kind, those defaults (Recommended)", "Round numbers 1–2000 (Recommended)", "No, use 065's colours (Recommended)", "Mockup yes, raise cap (Recommended)".</li>
+<li>At the build review (2026-11-25) nothing needed deciding: 065 and 068 were built as the plan expected; the owner: "yes".</li>
+</ul>
+
+<h2>What changed</h2>
+<ul>
+<li><b>The filter:</b> a new Only filter <b>Activity (past hour)</b> (<code>IT_MAP_FILTERS</code> <code>act</code>, last in the Only group, after Region pick; <code>IT_MAP_ONLY</code>), its icon a pulse line of our own drawing, its settings button "Activity (past hour): which kind and how many".</li>
+<li><b>The data:</b> no request of its own. 065's reader (<code>itLv</code>, <code>itLvNeed</code>) is wanted for the picked kind only while the filter is on and the live map shows (<code>itMapLvWant</code>: <code>jumps</code> for Jumps, <code>kills</code> for Ship + pod kills and NPC kills); asked when the filter or its kind changes (<code>itMapLvAsk</code>) and after each draw, as 065's colours are.</li>
+<li><b>The match</b> (<code>itMapMatch</code>, <code>itActIx</code>, <code>itActCount</code>): at least N of the picked kind; ship + pod kills add the two; a system missing from ESI's list is 0; no list yet: nothing but your system. Worked out once per key (<code>itActKey</code>: the kind, its minimum, whether the list is there, the read), in both <code>itMapMatch</code>'s key and <code>itMapKey</code>.</li>
+<li><b>Its settings</b> (058's panel <code>itMp</code>, <code>IT_MP_KEYS</code>): the kind as radios (Jumps · Ship + pod kills · NPC kills, <code>itMpRadHtml</code>), "At least" (<code>RS.mapAct</code>, on <code>IT_ACT_STEPS</code> 1–2000; a typed number goes to the nearest step), a note, the count. Each kind keeps its own minimum (<code>IT_ACT_DEF</code>: 50, 1, 200); switching kind shows that kind's number. Switched on the first time, they open (<code>seen.act</code>).</li>
+<li><b>The Only line</b> (<code>itActOnlyText</code>): "at least 50 jumps in the past hour (N) · ESI HH:MM" (N: the systems on the map with that many; the EVE time ESI's counts are as of), "activity: no data yet".</li>
+<li><b>The hover</b> (<code>itActTipHtml</code>): the system's count of the picked kind, unless Jumps or Kills (past hour) is the colour, whose own line already says it.</li>
+<li><b>Found at the build:</b> a filter panel's count ("N systems match every Only filter that is on") was written only when a setting changed, so a read that landed after the panel opened (065's lists, 068's fights) left it stale. <code>itMapDraw</code> now writes it after working out the match (only while the live map shows, only when its words change).</li>
+<li><b>Stored:</b> <code>tvMapStack</code> gains <code>only.act</code>, <code>act</code> <code>{k, j, sp, npc}</code> and <code>seen.act</code>. A stack from before reads with Activity off and the defaults; a bad kind or an off-step number falls back; the page from main drops the new fields and keeps the rest.</li>
+<li><code>CARD_INFO.intel</code> [Map]: "Activity: at least N jumps or kills in the past hour"; the Intel cap 776, from the final count. METHODOLOGY.md: Activity (past hour).</li>
+<li>Checks: <code>tools/page_checks/activity_filter_check.py</code> (new; 13 mutants); the filter lists in <code>intel_map_stack_check</code>, <code>live_map_filters_check</code> (the column's rows, 18), <code>sov_upgrades_check</code>, <code>intel_map_look_check</code> (16 phone buttons) and <code>paths_to_you_check</code>.</li>
+<li><b>Found at the full run:</b> with 16 filters, a 1440 x 1000 window's map (661 px) holds 17 of the column's 18 rows, so the column wraps a second column there, as 065 built it for short maps (at 1280 x 800 it wrapped before this change too; 1920 x 1080 holds all 18). Paths to you moves to the top of the second column. Three checks that measured a one-column list were made to read the page's own rows. For the owner to judge at the hand test.</li>
+</ul>
+
+<h2>Lesson for future models</h2>
+<ul>
+<li>LESSON #184: the plan sized the phone's column and not a wide window's: a control added to a list that wraps is counted at the sizes people use, on every kind of screen, and a size that newly wraps goes to the owner.</li>
+</ul>
+</body></html>
