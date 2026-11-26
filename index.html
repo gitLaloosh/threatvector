@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-wayJPFClgaS/gLMTSmt1qJR5j9s5aA9RQZGsOh+YH70='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-mcpZI0sNE6m70BKb7Zv4nluq/+mM2UC1Haq5Q+j2DXY='; style-src 'unsafe-inline'; img-src 'self' https://images.evetech.net data: blob:; connect-src https://esi.evetech.net https://login.eveonline.com https://r2z2.zkillboard.com https://zkillboard.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -3488,7 +3488,7 @@
          budgets beside the version tag; Refresh item data's status still takes the tag's place, never the gauge's. -->
     <div class="bg-wrap">
       <button type="button" class="bg-gauge" id="bgGauge" aria-haspopup="dialog" aria-expanded="false" aria-controls="bgPop" title="How much of zKillboard's and ESI's allowance this browser has used. Press for who used it."><span class="bg-segs" id="bgSegs"></span></button>
-      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.26.1</span>
+      <span class="build-tag" title="Tool version — reference this when troubleshooting or reporting an issue, so it's clear exactly which build is being discussed">v2026.11.26.2</span>
       <span class="hero-status" id="cacheStatus" role="status" aria-live="polite" hidden></span>
       <div class="bg-pop" id="bgPop" role="dialog" aria-label="Lookup budgets" hidden>
         <div class="bg-head"><h4>Lookup budgets</h4><button type="button" class="x-close" aria-label="Close" title="Close (Esc)">×</button></div>
@@ -3909,7 +3909,7 @@ const CARD_INFO = {
  ],
  "whmap": [
   "Your wormhole chain, drawn as you jump: each wormhole system you enter is added with the connection you came through, from your Local log or from EVE with Use my game location on. Landing docked (a jump clone, a pod death) or switching pilots adds no connection.",
-  "[Moving around] Drag to pan, the wheel or a pinch to zoom, drag a system to move it. Select (or Shift) drags a box around a group to move or remove together (Delete); right-click empty space for Select all. The overview in the corner shows where everything is. ⚙ → Rearrange as a tree puts them back; locked ones stay.",
+  "[Moving around] Drag to pan, wheel or pinch to zoom, drag a system to move it alone. Select (or Shift) drags a box around a group to move or remove together (Delete); right-click empty space for Select all. The overview in the corner shows where everything is. ⚙ → Rearrange as a tree starts over from Home; locked ones stay.",
   "[Focus and adding] Click a system for the System panel (its button, top left): class, effect and its numbers, statics (a community list's until you type your own; hover one for its lifetime and mass), notes, connections, signatures. Right-click it (press and hold on a phone) for its menu: status, tag, Lock, Copy the name, Remove. + Add adds a system or connection by hand; Mass works out how to crit or roll a hole; right-click empty space adds one there.",
   "[Connections] Each side of a hole has its own signature ID: hover the mark at its end, or see that side's list.",
   "[Signatures] Paste the Probe Scanner's list (Ctrl+A, Ctrl+C) for the system in focus: signatures and anomalies. Colours follow the game's signal; Type sorts as the game does. Select rows (Ctrl-click adds) to copy, edit or delete. With Lazy update on, a paste is the whole list: signatures missing from it go, after you confirm. Undo takes back the last paste.",
@@ -35208,8 +35208,8 @@ function whSeen(id, t, docked, who){
   if(who) S.who = who;
   if(!fresh && id === S.last){ S.lastT = t; return; }
   const prev = fresh ? null : S.last; S.last = id; S.lastT = t; S.youNew = false;
-  const j = whIsJ(id), jp = prev !== null && whIsJ(prev);
-  if(prev !== null && (j || jp) && !docked){ whAddSys(prev, t); whAddSys(id, t); whAddLink(prev, id, t); whSave(); if(j !== jp) itWhJumpAdd(j ? prev : id, j ? id : prev, t, !j); }   // a hole: from where you were last; 062 (A1) k ↔ J also Intel's list
+  const j = whIsJ(id), jp = prev !== null && whIsJ(prev), had = !!S.st.sys[id];
+  if(prev !== null && (j || jp) && !docked){ whAddSys(prev, t); whAddSys(id, t); whAddLink(prev, id, t); whSave(); if(!had && S.st.sys[id]) S.showNew = [id, prev]; if(j !== jp) itWhJumpAdd(j ? prev : id, j ? id : prev, t, !j); }   // a hole: from where you were last; 062 (A1) k ↔ J also Intel's list; 073 (D9): into a system the map didn't have, shown
   else if(j && whAddSys(id, t)) whSave();   // into a hole docked (a clone jump into your own structure, say), or the first reading: the system, no connection
   if(j) S.sel = id;
   const hm = whHomeOne(); if(hm) whMsg(hm, true);   // 063: two Homes saved before: settled once where you are is known
@@ -35281,7 +35281,7 @@ function whShellHtml(){
     + `${whAddSelHtml('life')}${whAddSelHtml('mass')}${whAddSelHtml('size')}<label class="wh-dr"><input type="checkbox" name="dr"> Drifter</label><button type="submit">Add</button></form></div>`
     + `<div class="wh-pop hm-pop" data-pop="mass" role="dialog" aria-label="Crit or roll a hole" hidden></div>`   // 070: drawn by hmPaint while open
     + `<div class="wh-pop" data-pop="set" role="dialog" aria-label="Wormholes settings" hidden><div class="wh-poph">Wormholes settings<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
-    + `<div class="wh-sub">Map</div><button type="button" data-wh-z="arr">Rearrange as a tree</button><div class="wh-note">Puts every system back in the tree layout, dropping where you moved them; locked systems stay where they are.</div></div>`
+    + `<div class="wh-sub">Map</div><button type="button" data-wh-z="arr">Rearrange as a tree</button><div class="wh-note">Lays the chain out again as a tree from Home (else where you came in), dropping where you moved them; locked systems stay where they are.</div></div>`
     + `<div class="wh-pop" data-pop="share" role="dialog" aria-label="Share your chain" hidden><div class="wh-poph">Share your chain<button type="button" class="x-close" data-wh-popx aria-label="Close" title="Close (Esc)">×</button></div>`
     + `<label class="wh-note"><input type="checkbox" data-wh-shinc> Include notes and who’s there</label>${itWhShareHtml('chain')}</div>`
     + whRailHtml()
@@ -35321,38 +35321,88 @@ function whMsg(t, keep){
   S.msgWait = '';
   m.textContent = t; clearTimeout(S.msgT); S.msgT = setTimeout(() => { if(m.textContent === t) m.textContent = ''; }, 6000);   // D30: a toast that fades
 }
-// ---- the map: a tree from your k-space entry (left to right; top to bottom on a phone); where you moved a system is kept (tvWhChain.pos)
+// ---- the map (build queue 073; roadmap/wh-tree-layout-plan.md): a tree per chain, from Home (else your first k-space entry), left to right or top to
+// bottom (whTreeDir). Two kinds of system (D2): placed ones (moved, locked, or pinned by a drag; tvWhChain.pos / tvWhMarks) the page never moves; every
+// other one grows from the nearest placed system above it in the tree (the owner: "users should have flexibility to move any system they want w/out it
+// screwing up the entire map"), the tree tidying itself as holes come and go (D5)
+const WH_SP = {lr: {c: 150, r: 64}, tb: {c: 130, r: 84}}, WH_GAP = 8, WH_FLOOR = 0.7, WH_FLIP = 1.25;   // WH_FLOOR: the zoom whPaint already reads as readable
+// the tree's shape: each chain breadth-first from its start (D1: Home's chain first, from Home: the owner, "most branches are going to start from the home
+// system in j-space"; a chain without Home from your first k-space entry, as before: "it can start elsewhere (like k-space after a death)"); each system's
+// depth (d) and row (r; a parent centred on its children: the shortest lines, the plan's section 4), its parent (up); the direction and the places
+// in the tree (A) for that direction
 function whLayout(phone){
   const st = whState().st, ids = Object.keys(st.sys).map(Number), adj = new Map(ids.map(n => [n, []]));
   for(const l of st.links) if(adj.has(l.a) && adj.has(l.b)){ adj.get(l.a).push(l.b); adj.get(l.b).push(l.a); }
-  const t = (n) => st.sys[n].t, seen = new Set(), pos = new Map();
-  const order = ids.slice().sort((a, b) => (whIsJ(a) ? 1 : 0) - (whIsJ(b) ? 1 : 0) || t(a) - t(b));   // a tree starts at your own k-space entry
-  let row = 0;
+  const t = (n) => st.sys[n].t, seen = new Set(), dr = new Map(), up = new Map(), trees = [], home = whHomes()[0];
+  const order = ids.slice().sort((a, b) => (a === home ? 0 : 1) - (b === home ? 0 : 1) || (whIsJ(a) ? 1 : 0) - (whIsJ(b) ? 1 : 0) || t(a) - t(b));
+  let row = 0, maxd = 0;
   for(const r of order){
     if(seen.has(r)) continue;
-    const kids = new Map(), dep = new Map([[r, 0]]), q = [r]; seen.add(r);
-    while(q.length){ const x = q.shift(), ks = []; for(const y of adj.get(x).slice().sort((p, s) => t(p) - t(s))) if(!seen.has(y)){ seen.add(y); dep.set(y, dep.get(x) + 1); ks.push(y); q.push(y); } kids.set(x, ks); }
-    const place = (x) => { const ks = kids.get(x) || []; if(!ks.length){ pos.set(x, {d: dep.get(x), r: row++}); return; } ks.forEach(place); const rs = ks.map(k => pos.get(k).r); pos.set(x, {d: dep.get(x), r: (Math.min(...rs) + Math.max(...rs)) / 2}); };
-    place(r); row += 0.5;
+    const kids = new Map(), dep = new Map([[r, 0]]), q = [r], bfs = [r]; seen.add(r);
+    for(let h = 0; h < q.length; h++){ const x = q[h], ks = []; for(const y of adj.get(x).slice().sort((p, s) => t(p) - t(s))) if(!seen.has(y)){ seen.add(y); dep.set(y, dep.get(x) + 1); maxd = Math.max(maxd, dep.get(y)); ks.push(y); q.push(y); bfs.push(y); up.set(y, x); } kids.set(x, ks); }
+    const place = (x) => { const ks = kids.get(x); if(!ks.length){ dr.set(x, {d: dep.get(x), r: row++}); return; } ks.forEach(place); const rs = ks.map(k => dr.get(k).r); dr.set(x, {d: dep.get(x), r: (Math.min(...rs) + Math.max(...rs)) / 2}); };
+    place(r); row += 0.5; trees.push(bfs);
   }
-  const out = new Map();
-  for(const [n, p] of pos) out.set(n, phone ? {x: p.r * 130, y: p.d * 84} : {x: p.d * 150, y: p.r * 64});
-  return out;
+  const T = {dr, up, trees, rows: Math.max(1, row - 0.5), maxd}, dir = whTreeDir(T, phone), sp = WH_SP[dir], A = new Map();
+  for(const [n, p] of dr) A.set(n, dir === 'lr' ? {x: p.d * sp.c, y: p.r * sp.r} : {x: p.r * sp.c, y: p.d * sp.r});
+  return {...T, dir, A};
 }
+// D6 (the owner: "Pick the direction (Recommended)"): left to right or top to bottom, whichever lets the whole tree fit the free part of the map at the
+// larger zoom; the one in use stays until the other fits WH_FLIP times better (one hole doesn't turn the tree over); Rearrange picks afresh (M.dirNew).
+// In memory only (M.dir): the first draw starts from left to right, top to bottom on a phone
+function whTreeDir(T, phone){
+  const M = whS.M, v = whS.el && whS.el.isConnected && whCv().clientWidth ? whFree() : {w: phone ? 390 : 1400, h: 700}, cur = M.dir || (phone ? 'tb' : 'lr'), oth = cur === 'lr' ? 'tb' : 'lr';
+  const fit = (d) => { const sp = WH_SP[d], w = (d === 'lr' ? T.maxd * sp.c : (T.rows - 1) * sp.c) + WH_NW, h = (d === 'lr' ? (T.rows - 1) * sp.r : T.maxd * sp.r) + WH_NH; return Math.min((v.w - 40) / w, (v.h - 40) / h); };
+  const fc = fit(cur), fo = fit(oth), d = M.dirNew ? (fo > fc ? oth : cur) : (fo >= fc * WH_FLIP ? oth : cur);
+  M.dirNew = false; M.dir = d; return d;
+}
+// where each system goes (D2, D3): a placed one where you put it; every other one at the place of the system above it plus its offset in the tree, however
+// many jumps from anything placed (before 073 only one jump: a system further out went back to the tree's place at the map's origin); a chain's start with
+// nothing placed above it at its tree place, every chain shifted with the first chain's start when that one is placed (so other chains sit beside Home's);
+// none on top of another box (the owner: "Nearest free row (Recommended)"): the next free row, alternating (a column when the tree runs top to bottom), its
+// branch after it. The overlap test is a grid of the boxes placed (cells a box and the gap wide; the 9 around): a crowded map stays cheap
 function whPlaces(phone){
-  const st = whState().st, A = whLayout(phone), P = new Map();
-  for(const n of A.keys()){ const q = whAt(n); if(q) P.set(n, {x: q[0], y: q[1]}); }
-  let left = [...A.keys()].filter(n => !P.has(n)), grew = true;
-  while(left.length && grew){   // a system added later sits beside the moved neighbour it came from
-    grew = false;
-    for(const n of left){
-      const nb = st.links.map(l => l.a === n ? l.b : l.b === n ? l.a : null).find(m => m !== null && P.has(m) && whAt(m));
-      if(nb !== undefined){ const a = A.get(n), b = A.get(nb), q = P.get(nb); P.set(n, {x: q.x + a.x - b.x, y: q.y + a.y - b.y}); grew = true; }
-    }
-    left = left.filter(n => !P.has(n));
+  const T = whLayout(phone), A = T.A, P = new Map(), cw = WH_NW + WH_GAP, ch = WH_NH + WH_GAP, G = new Map(), ck = (i, j) => i + ',' + j;
+  const add = (n, p) => { P.set(n, p); const k = ck(Math.floor(p.x / cw), Math.floor(p.y / ch)); let L = G.get(k); if(!L) G.set(k, L = []); L.push(p); };
+  const hits = (p) => { const i = Math.floor(p.x / cw), j = Math.floor(p.y / ch); for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++){ const L = G.get(ck(i + a, j + b)); if(L) for(const o of L) if(Math.abs(o.x - p.x) < cw && Math.abs(o.y - p.y) < ch) return true; } return false; };
+  const sp = WH_SP[T.dir], st = T.dir === 'lr' ? {x: 0, y: sp.r} : {x: sp.c, y: 0};
+  const free = (p) => { if(!hits(p)) return p; for(let k = 1; k <= 400; k++) for(const s of [k, -k]){ const c = {x: p.x + s * st.x, y: p.y + s * st.y}; if(!hits(c)) return c; } return p; };
+  for(const n of A.keys()){ const q = whAt(n); if(q) add(n, {x: q[0], y: q[1]}); }
+  const r0 = T.trees.length ? T.trees[0][0] : null, q0 = r0 !== null ? whAt(r0) : null, sh = q0 ? {x: q0[0] - A.get(r0).x, y: q0[1] - A.get(r0).y} : {x: 0, y: 0};
+  for(const bfs of T.trees) for(const n of bfs){
+    if(whAt(n)) continue;
+    const u = T.up.get(n), a = A.get(n);
+    add(n, free(u === undefined ? {x: a.x + sh.x, y: a.y + sh.y} : {x: P.get(u).x + a.x - A.get(u).x, y: P.get(u).y + a.y - A.get(u).y}));
   }
-  for(const n of left) P.set(n, A.get(n));
   return P;
+}
+// D4 (the owner: "i'd like to be able to move a system w/out it automatically moving any others", "Auto-tidy, drag pins (Recommended)"): after a drag,
+// every other system the move itself would shift keeps where it was, as a place of its own (a pin, in tvWhChain.pos like a move; Rearrange drops it).
+// The map laid out with the dragged systems where they were (was: their places before the drag, null for none), then where you dropped them: a change
+// made during the drag (a new hole, say) is in both, so it pins nothing. Returns how many were pinned
+function whTreePin(keys, was){
+  const S = whS, pos = S.st.pos, ks = [...keys], now = new Map(ks.map(n => [n, pos[n]]));
+  for(const n of ks){ const w = was.get(n); if(w) pos[n] = w; else delete pos[n]; }
+  const P0 = whPlaces(S.M.phone);
+  for(const [n, q] of now) pos[n] = q;
+  const P1 = whPlaces(S.M.phone); let k = 0;
+  for(const [n, p] of P1){ if(now.has(n) || whAt(n)) continue; const o = P0.get(n); if(o && (Math.abs(o.x - p.x) > 0.5 || Math.abs(o.y - p.y) > 0.5)){ pos[n] = [Math.round(o.x), Math.round(o.y)]; k++; } }
+  return k;
+}
+// D9 (the owner: "if there isn't enough room in the visible space for a new system to be drawn, would it be better to auto zoom out a bit", then
+// "Small zoom, floor, pan (Recommended)"): a new system you caused (a jump into it, + Add; never an import) whose place is out of view: zoom out just
+// enough to show it and the system it connects to (nb) with what you see now, never under WH_FLOOR; at the floor, pan to the two (or to it alone).
+// Asked through whS.showNew, run by whPaint, held while a drag or a pinch is under way (the map never moves under a finger)
+function whShowNew(n, nb){
+  const M = whS.M; if(!M.cam || !M.P.has(n) || whInView(n)) return;
+  const v = whFree(), s0 = M.cam.s, pts = [n, nb].filter(x => x !== null && x !== undefined && M.P.has(x)).map(x => M.P.get(x));
+  const a = whToWorld(v.l, v.t), b = whToWorld(v.r, v.b);
+  const x0 = Math.min(a.x, ...pts.map(p => p.x)) - 12, y0 = Math.min(a.y, ...pts.map(p => p.y)) - 26, x1 = Math.max(b.x, ...pts.map(p => p.x + WH_NW)) + 12, y1 = Math.max(b.y, ...pts.map(p => p.y + WH_NH)) + 12;
+  const s = Math.min(s0, v.w / (x1 - x0), v.h / (y1 - y0));
+  if(s >= WH_FLOOR){ M.cam = {x: (x0 + x1) / 2 - (v.l + v.w / 2) / s, y: (y0 + y1) / 2 - (v.t + v.h / 2) / s, s}; return; }
+  const z = Math.min(s0, WH_FLOOR), px0 = Math.min(...pts.map(p => p.x)), py0 = Math.min(...pts.map(p => p.y)), px1 = Math.max(...pts.map(p => p.x + WH_NW)), py1 = Math.max(...pts.map(p => p.y + WH_NH));
+  const c = (px1 - px0) * z <= v.w - 24 && (py1 - py0) * z <= v.h - 24 ? {x: (px0 + px1) / 2, y: (py0 + py1) / 2} : {x: M.P.get(n).x + WH_NW / 2, y: M.P.get(n).y + WH_NH / 2};
+  M.cam = {x: c.x - (v.l + v.w / 2) / z, y: c.y - (v.t + v.h / 2) / z, s: z};
 }
 function whCv(){ return whS.el.querySelector('.wh-box canvas'); }
 function whView(){ const cv = whCv(); return {w: cv.clientWidth, h: cv.clientHeight}; }
@@ -35406,8 +35456,9 @@ function whPaint(force){
   M.P = whPlaces(phone);
   for(const g of [...M.group]) if(!M.P.has(g)) M.group.delete(g);
   const me = S.last;
-  if(!M.cam){ M.cam = {x: -20, y: -30, s: 1}; whFit(); if(M.cam.s < 0.7 && me !== null && M.P.has(me)){ M.cam.s = 0.9; whCenter(me); } M.viewFor = me; }
-  if(me !== null && M.viewFor !== me){ M.viewFor = me; if(!whInView(me)) whCenter(me); }   // you moved: brought into view (not on every redraw)
+  if(!M.cam){ M.cam = {x: -20, y: -30, s: 1}; whFit(); if(M.cam.s < 0.7 && me !== null && M.P.has(me)){ M.cam.s = 0.9; whCenter(me); } M.viewFor = me; S.showNew = null; }
+  if(S.showNew && !M.drag && !M.pinch){ const [sn, nb] = S.showNew; S.showNew = null; if(M.P.has(sn)){ whShowNew(sn, nb); if(sn === me) M.viewFor = me; } }   // 073 (D9): held during a gesture
+  if(me !== null && M.viewFor !== me && !M.drag && !M.pinch){ M.viewFor = me; if(!whInView(me)) whCenter(me); }   // you moved: brought into view (not on every redraw; 073: not under a finger, LESSON #185)
   whDraw();
 }
 function whCols(){ const c = (n, d) => itMapCol(n, d); return {lo: c('--cyan', '#4fc3d9'), mid: c('--amber', '#d99a3c'), hi: c('--danger', '#c65b4e'), sp: c('--it-wh', '#a98bd8'), k: c('--text-dim', '#7c8a94'),
@@ -36103,8 +36154,10 @@ function whAddForm(f){
   if(sig && !/^[A-Z]{3}(-\d{0,3})?$/.test(sig)){ whMsg('A signature ID is three letters and three digits (RZL-429), or its start.'); f.sig.setAttribute('aria-invalid', 'true'); f.sig.focus(); return; }
   const tc = itWhTyOrCls(f.ty.value);
   if(tc.bad){ whMsg(`“${f.ty.value.trim()}” isn’t a type or class the page knows: a type (Z971, K162), a class (C3, C13), or HS, LS, NS, Thera.`); f.ty.setAttribute('aria-invalid', 'true'); f.ty.focus(); return; }
+  const had = !!whS.st.sys[id];
   if(!whAddSys(id)){ whMsg(`Your map holds ${WH_SYS_MAX} systems at most.`); return; }
   const to = f.link.value ? Number(f.link.value) : null;
+  if(!had) whS.showNew = [id, to !== id ? to : null];   // 073 (D9): shown by whPaint (whSelect below)
   if(to !== null && to !== id){ const l = whAddLink(to, id); if(l){ if(sig || tc.type) whEndSet(l, to, sig, tc.type || ''); for(const k of ['life', 'mass', 'size']) if(f[k].value) l[k] = f[k].value; if(f.dr.checked) l.dr = true; l.u = Date.now(); } }   // 059 (P11): the ID is the end in the system you scanned it from
   if(tc.cls && whIsJ(id)){ const m = /^C(13|[1-6])$/.exec(tc.cls), key = m ? (m[1] === '13' ? 'c13' : 'c' + m[1]) : tc.cls === 'Thera' ? 'th' : null; if(key && key !== whClsData(id)) whS.st.sys[id].cls = key; }
   whSave(); whEndSave(); whMsg(`Added ${whName(id)}${to !== null && to !== id ? `, linked to ${whName(to)}` : ''}${sig ? ` through ${sig}` : ''}.`);
@@ -37171,7 +37224,7 @@ function whZoomBtn(b, a){
   if(a === 'sel'){ M.selMode = !M.selMode; b.setAttribute('aria-pressed', String(M.selMode)); }
   if(a === 'arr'){
     const kept = Object.keys(S.st.sys).filter(whLocked);   // D34: Rearrange leaves a locked system where it is
-    S.st.pos = Object.fromEntries(Object.entries(S.st.pos).filter(([k]) => whLocked(k))); whSave(); M.group.clear(); S.drawKey = ''; whPopClose(); whPaint(true); whFit();
+    S.st.pos = Object.fromEntries(Object.entries(S.st.pos).filter(([k]) => whLocked(k))); whSave(); M.group.clear(); M.dirNew = true; S.drawKey = ''; whPopClose(); whPaint(true); whFit();   // 073: pins go too; the direction picked afresh (D6, D7)
     whMsg(`Rearranged as a tree${kept.length ? ` (${kept.length} locked system${kept.length === 1 ? '' : 's'} stayed where ${kept.length === 1 ? 'it was' : 'they were'})` : ''}. Moving a system again keeps it where you put it.`);
   }
 }
@@ -37186,6 +37239,7 @@ function whWireMap(el){
     const hit = whHit(whToWorld(q.x, q.y));
     if(hit !== null){
       M.drag = {kind: 'move', hit, sx: q.x, sy: q.y, moved: false, locked: whLocked(hit), from: new Map((M.group.has(hit) ? [...M.group] : [hit]).filter(n => !whLocked(n)).map(n => [n, {...M.P.get(n)}])), shift: ev.shiftKey};
+      M.drag.was = new Map([...M.drag.from.keys()].map(n => [n, whS.st.pos[n] ? [...whS.st.pos[n]] : null]));   // 073 (D4): their places before, for whTreePin
       if(ev.pointerType !== 'mouse'){ const d0 = M.drag; clearTimeout(M.lp); M.lp = setTimeout(() => { if(M.drag === d0 && !d0.moved && M.ptrs.size === 1){ M.drag = null; M.ptrs.clear(); M.lpOpen = true; whMenuOpen(hit, q.x, q.y); } }, 550); }   // press and hold on a system: its menu (D25)
     }
     else if(ev.shiftKey || M.selMode){ M.drag = {kind: 'band', sx: q.x, sy: q.y, moved: false, add: ev.shiftKey}; M.band = {x0: q.x, y0: q.y, x1: q.x, y1: q.y}; }
@@ -37211,7 +37265,7 @@ function whWireMap(el){
     if(M.pinch){ if(M.ptrs.size < 2) M.pinch = null; M.drag = null; return; }
     const d = M.drag; M.drag = null; if(!d) return;
     if(d.kind === 'move'){
-      if(d.moved){ for(const n of d.from.keys()){ const p = M.P.get(n); whS.st.pos[n] = [Math.round(p.x), Math.round(p.y)]; } whSave(); whS.drawKey = ''; if(d.locked) whMsg(WH_LOCKED(whName(d.hit))); }   // this browser only
+      if(d.moved){ for(const n of d.from.keys()){ const p = M.P.get(n); whS.st.pos[n] = [Math.round(p.x), Math.round(p.y)]; } if(d.from.size) whTreePin(d.from.keys(), d.was); whSave(); whS.drawKey = ''; if(d.locked) whMsg(WH_LOCKED(whName(d.hit))); }   // this browser only; 073 (D4): nothing else moves
       else if(d.shift){ if(M.group.has(d.hit)) M.group.delete(d.hit); else { M.group.add(d.hit); M.last = d.hit; } whDraw(); }
       else{ if(!M.selMode && whS.open !== 'sum') whPnSet('sum', true); whSelect(d.hit); }   // 056: a click on a system opens System (the owner: "Yes, a click opens it"); a drag, Shift or the menu doesn't
     }
@@ -37224,7 +37278,8 @@ function whWireMap(el){
     if(d.kind === 'pan' && !d.moved){ const e = whEndAt(d.sx, d.sy); if(e){ whMsg(e.txt.split('\n').join(' · ') + '.'); return; } }   // 059: a press on an end mark (a phone's way to its ID)
     if(d.kind === 'pan' && !d.moved && M.group.size){ M.group.clear(); whDraw(); }
   };
-  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  const upNew = (ev) => { up(ev); if((whS.showNew || (whS.last !== null && M.viewFor !== whS.last)) && !M.drag && !M.pinch) whPaint(true); };   // 073 (D9): a view held during the gesture
+  cv.addEventListener('pointerup', upNew); cv.addEventListener('pointercancel', upNew);
   // a press and hold opened a menu under the finger: lifting it must not also click that menu's first item (the browser's click after a touch;
   // it picked a status nobody chose, 051's check). LESSON #167
   cv.addEventListener('touchend', (ev) => { if(M.lpOpen){ M.lpOpen = false; ev.preventDefault(); } }, {passive: false});
